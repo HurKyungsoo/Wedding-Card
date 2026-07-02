@@ -14,7 +14,8 @@ public interface WeddingRepository extends JpaRepository<WeddingEntity, Long> {
     List<WeddingEntity> findByUserId(Long userId);
     List<WeddingEntity> findAllByOrderByCreatedAtDesc();
 
-    @Modifying
+    // clearAutomatically: 벌크 업데이트 후 영속성 컨텍스트를 비워 같은 트랜잭션 내 재조회 시 stale 값을 방지
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE WeddingEntity w SET w.viewCount = COALESCE(w.viewCount, 0) + 1 WHERE w.id = :id")
     void incrementViewCount(Long id);
 }

@@ -16,7 +16,8 @@ public interface ViewLogRepository extends JpaRepository<ViewLogEntity, Long> {
     Optional<ViewLogEntity> findByWeddingIdAndViewDate(Long weddingId, LocalDate viewDate);
 
     // 오늘 행이 이미 있으면 count +1 (동시성 안전한 벌크 UPDATE)
-    @Modifying
+    // clearAutomatically: 벌크 업데이트 후 영속성 컨텍스트를 비워 같은 트랜잭션 내 재조회 시 stale 값을 방지
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE ViewLogEntity v SET v.count = v.count + 1 " +
            "WHERE v.weddingId = :weddingId AND v.viewDate = :viewDate")
     int incrementCount(@Param("weddingId") Long weddingId, @Param("viewDate") LocalDate viewDate);
