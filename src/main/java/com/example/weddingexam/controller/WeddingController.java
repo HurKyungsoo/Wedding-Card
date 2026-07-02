@@ -5,6 +5,7 @@ import com.example.weddingexam.account.AccountService;
 import com.example.weddingexam.dto.WeddingDto;
 import com.example.weddingexam.security.CustomOAuth2User;
 import com.example.weddingexam.service.WeddingService;
+import com.example.weddingexam.viewlog.ViewLogService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -25,6 +26,7 @@ public class WeddingController {
 
     private final WeddingService weddingService;
     private final AccountService accountService;
+    private final ViewLogService viewLogService;
 
     @Value("${kakao.map.appkey:502b99c57514360a34fdf5b9181ed284}")
     private String kakaoAppKey;
@@ -32,9 +34,11 @@ public class WeddingController {
     @Value("${kakao.map.restkey:03a041000c72178b476cbb6e29431e81}")
     private String kakaoRestKey;
 
-    public WeddingController(WeddingService weddingService, AccountService accountService) {
+    public WeddingController(WeddingService weddingService, AccountService accountService,
+                              ViewLogService viewLogService) {
         this.weddingService = weddingService;
         this.accountService = accountService;
+        this.viewLogService = viewLogService;
     }
 
     /* ── 랜딩 페이지 ── */
@@ -49,6 +53,7 @@ public class WeddingController {
         WeddingDto dto = weddingService.findBySlug(slug)
             .orElseThrow(() -> new IllegalArgumentException("청첩장을 찾을 수 없습니다: " + slug));
         weddingService.incrementViewCount(dto.getId());
+        viewLogService.recordView(dto.getId());  // 일별 방문 로그 기록
         addFormattedFields(model, dto);
         List<AccountDto> accounts = accountService.findByWeddingId(dto.getId());
         if (accounts.isEmpty()) accounts = accountService.findAll();

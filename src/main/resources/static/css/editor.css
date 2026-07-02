@@ -651,6 +651,34 @@ textarea.ed-input{resize:none;line-height:1.75;}
     width:100px;height:4px;background:rgba(255,255,255,.5);border-radius:2px;z-index:5;
 }
 
+/* ── 전체 미리보기 모달 모바일 대응 ── */
+@media (max-width: 430px) {
+    .fullprev-phone{
+        padding:14px 10px;
+    }
+    .fullprev-screen{
+        border-radius:30px;
+    }
+    #fullPrevFrame{
+        width:390px;
+        height:calc(min(680px, 100dvh - 130px) / 0.79);
+        transform:scale(0.79);
+    }
+}
+@media (max-width: 360px) {
+    .fullprev-phone{
+        padding:12px 8px;
+    }
+    .fullprev-screen{
+        border-radius:26px;
+    }
+    #fullPrevFrame{
+        width:390px;
+        height:calc(min(680px, 100dvh - 130px) / 0.74);
+        transform:scale(0.74);
+    }
+}
+
 /* ── 캘린더 스타일 카드 (기존 공유) ── */
 /* 캘린더 스타일 가로 스크롤 — 스크롤바 표시 */
 .cal-style-scroll{
@@ -1367,8 +1395,8 @@ textarea.ed-input{resize:none;line-height:1.75;}
     .ed-preview{
         width:100%;
         min-width:0;
-        height:40vh;
-        min-height:180px;
+        height:50vh;
+        min-height:220px;
         flex-shrink:0;
         align-items:stretch;
         border-right:none;

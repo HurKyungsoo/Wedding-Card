@@ -81,12 +81,26 @@
       .lp-hero-visual { display: none; }
       .lp-hero-ctas { justify-content: center; }
       .lp-hero-deco { font-size: clamp(120px,35vw,220px); opacity: 0.3; }
+      .lp-nav-inner { padding: 0 32px !important; }
+      .lp-stat-item { padding: 0 40px !important; }
     }
     @media (max-width: 640px) {
       .lp-wrap { padding: 0 20px; }
       .lp-feat-grid { grid-template-columns: 1fr; }
-      .lp-themes-row { gap: 12px; }
       .lp-hero-deco { display: none; }
+      .lp-nav-inner { padding: 0 20px !important; }
+      .lp-stats-wrap { flex-direction: column; }
+      .lp-stat-item { padding: 20px 0 !important; }
+      .lp-stats-divider { display: none !important; }
+      .lp-themes-row {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding-bottom: 16px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .lp-themes-row::-webkit-scrollbar { display: none; }
     }
     @media (prefers-reduced-motion: reduce) {
       [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
@@ -98,7 +112,7 @@
 
 <!-- ── NAV ── -->
 <nav class="lp-nav" id="mainNav">
-  <div style="max-width:1120px;margin:0 auto;padding:0 56px;display:flex;align-items:center;justify-content:space-between;height:100%;">
+  <div class="lp-nav-inner" style="max-width:1120px;margin:0 auto;padding:0 56px;display:flex;align-items:center;justify-content:space-between;height:100%;">
     <a href="/" style="font-family:'Noto Serif KR',serif;font-size:18px;font-weight:600;color:#1c1814;letter-spacing:1.5px;text-decoration:none;">WeddingCard</a>
     <div style="display:flex;align-items:center;gap:36px;">
       <a href="#themes" class="nav-link" style="text-decoration:none;color:#7a6a60;font-size:13px;font-weight:300;letter-spacing:0.5px;transition:color 0.2s;">테마</a>
@@ -167,18 +181,18 @@
 
 <!-- ── STATS ── -->
 <div style="border-top:1px solid #e8e2da;border-bottom:1px solid #e8e2da;padding:52px 0;background:#fdfaf7;">
-  <div style="display:flex;align-items:stretch;justify-content:center;">
-    <div data-reveal style="text-align:center;padding:0 72px;">
+  <div class="lp-stats-wrap" style="display:flex;align-items:stretch;justify-content:center;">
+    <div class="lp-stat-item" data-reveal style="text-align:center;padding:0 72px;">
       <div style="font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;color:#b89870;line-height:1;">5</div>
       <div style="font-size:10px;letter-spacing:3px;color:#9a8a78;margin-top:9px;font-weight:300;text-transform:uppercase;">가지 테마</div>
     </div>
-    <div style="width:1px;background:#e8e2da;flex-shrink:0;"></div>
-    <div data-reveal data-delay="1" style="text-align:center;padding:0 72px;">
+    <div class="lp-stats-divider" style="width:1px;background:#e8e2da;flex-shrink:0;"></div>
+    <div class="lp-stat-item" data-reveal data-delay="1" style="text-align:center;padding:0 72px;">
       <div style="font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;color:#b89870;line-height:1;">5분</div>
       <div style="font-size:10px;letter-spacing:3px;color:#9a8a78;margin-top:9px;font-weight:300;text-transform:uppercase;">안에 완성</div>
     </div>
-    <div style="width:1px;background:#e8e2da;flex-shrink:0;"></div>
-    <div data-reveal data-delay="2" style="text-align:center;padding:0 72px;">
+    <div class="lp-stats-divider" style="width:1px;background:#e8e2da;flex-shrink:0;"></div>
+    <div class="lp-stat-item" data-reveal data-delay="2" style="text-align:center;padding:0 72px;">
       <div style="font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;color:#b89870;line-height:1;">무료</div>
       <div style="font-size:10px;letter-spacing:3px;color:#9a8a78;margin-top:9px;font-weight:300;text-transform:uppercase;">로 시작</div>
     </div>
