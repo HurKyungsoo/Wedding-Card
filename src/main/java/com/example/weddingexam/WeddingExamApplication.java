@@ -19,6 +19,9 @@ public class WeddingExamApplication {
     @Bean
     CommandLineRunner initData(WeddingService weddingService, AccountService accountService) {
         return args -> {
+            // 이미 데이터가 있으면 재시작할 때마다 중복 생성하지 않음
+            if (!weddingService.findAll().isEmpty()) return;
+
             // 청첩장 샘플 데이터
             weddingService.save(weddingService.getDefaultDto());
 

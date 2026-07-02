@@ -33,6 +33,21 @@
     document.head.appendChild(s);
 })();
 </script>
+<!-- 카카오 JS SDK (공유하기용) -->
+<script th:inline="javascript">
+(function() {
+    var key = /*[[${kakaoAppKey}]]*/ '';
+    if (!key) return;
+    var s = document.createElement('script');
+    s.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js';
+    s.onload = function() {
+        if (window.Kakao && !Kakao.isInitialized()) {
+            Kakao.init(key);
+        }
+    };
+    document.head.appendChild(s);
+})();
+</script>
 </head>
 <body>
 
@@ -718,7 +733,11 @@
 </div>
 
 <!-- QR 라이브러리 -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script type="module">
+    /* qrcode 패키지는 npm에 완성된 브라우저용 번들을 배포하지 않아 jsDelivr의 ESM 자동 번들을 사용 */
+    import QRCodeLib from 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/+esm';
+    window.QRCode = QRCodeLib;
+</script>
 <script th:src="@{/js/invitation.js(v=20260629)}"></script>
 <script th:inline="javascript">
     initPage({
@@ -731,6 +750,8 @@
         groomName:       /*[[${wedding.groomName}]]*/ '신랑',
         brideName:       /*[[${wedding.brideName}]]*/ '신부'
     });
+
+    initShare(/*[[${wedding.groomName}]]*/ '신랑', /*[[${wedding.brideName}]]*/ '신부');
 
     /* 페이지 로드 시 디자인 날짜 초기화 */
     (function initDesignDate() {

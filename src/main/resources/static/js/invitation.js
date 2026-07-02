@@ -713,7 +713,7 @@ function initShare(groomName, brideName) {
                 content: {
                     title: shareTitle,
                     description: shareText,
-                    imageUrl: '',
+                    imageUrl: window.location.origin + '/images/theme-basic.png',
                     link: { mobileWebUrl: pageUrl, webUrl: pageUrl }
                 }
             });
