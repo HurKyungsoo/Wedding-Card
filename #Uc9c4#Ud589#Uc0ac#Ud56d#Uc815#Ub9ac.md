@@ -48,8 +48,8 @@
 ## 남은 작업
 
 ### 즉시 필요
-- [ ] 로컬 변경사항 git push (index.html, editor.css 수정됨)
-- [ ] 서버 재배포 (git pull + mvn build + 앱 재시작)
+- [x] 로컬 변경사항 git push (index.html, editor.css 수정됨) — 2026-07-02 완료
+- [ ] 서버 재배포 (git pull + mvn build + 앱 재시작) — SSH 키 없어 보류
 
 ### 선택사항
 - [ ] systemd 서비스 등록 (서버 재부팅 시 자동 실행)
