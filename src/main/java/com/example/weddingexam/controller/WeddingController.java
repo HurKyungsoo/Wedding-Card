@@ -28,10 +28,10 @@ public class WeddingController {
     private final AccountService accountService;
     private final ViewLogService viewLogService;
 
-    @Value("${kakao.map.appkey:502b99c57514360a34fdf5b9181ed284}")
+    @Value("${kakao.map.appkey:}")
     private String kakaoAppKey;
 
-    @Value("${kakao.map.restkey:03a041000c72178b476cbb6e29431e81}")
+    @Value("${kakao.map.restkey:}")
     private String kakaoRestKey;
 
     public WeddingController(WeddingService weddingService, AccountService accountService,
