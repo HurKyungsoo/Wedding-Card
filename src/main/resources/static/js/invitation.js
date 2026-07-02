@@ -915,6 +915,12 @@ function initDdayStyle(data) {
     var card = document.getElementById('ddayCard');
     if (!card) return;
 
+    /* 이전 스타일의 카운트다운 타이머가 남아있으면 정리 (재호출마다 누적되는 것 방지) */
+    if (_ddayTimer) {
+        clearInterval(_ddayTimer);
+        _ddayTimer = null;
+    }
+
     var style   = data.ddayStyle || 'text';
     var dateStr = data.weddingDate;
     var groomRaw = data.groomName || '신랑';
