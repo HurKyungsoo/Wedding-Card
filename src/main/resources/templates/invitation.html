@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title th:text="|${wedding.groomName} ♥ ${wedding.brideName} 결혼합니다|">결혼합니다</title>
+    <style>
+        /* 스크롤바 완전 제거 - 인라인으로 최우선 적용 */
+        *,*::before,*::after{scrollbar-width:none!important;-ms-overflow-style:none!important;}
+        ::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;}
+        html,body{overflow-x:hidden;width:100%;margin:0;padding:0;}
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500&family=Noto+Sans+KR:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Pinyon+Script&family=Brittany+Signature&family=Patrick+Hand&display=swap" rel="stylesheet">
+    <!-- Pretendard — 한글 기본 폰트 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/invitation.css}">
+    <!-- 카카오 JS SDK (지도 렌더링용) -->
+<script th:inline="javascript">
+(function() {
+    var key = /*[[${kakaoAppKey}]]*/ '';
+    if (!key) return;
+    var s = document.createElement('script');
+    s.src = '//dapi.kakao.com/v2/maps/sdk.js?appkey=' + key + '&autoload=false';
+    s.onload = function() {
+        kakao.maps.load(function() {
+            window._kakaoReady = true;
+            if (typeof initInvitationMap === 'function') initInvitationMap();
+        });
+    };
+    document.head.appendChild(s);
+})();
+</script>
+</head>
+<body>
+
+<div class="petals" id="petals"></div>
+<div class="toast" id="toast">복사되었습니다 ✓</div>
+
+
+<div class="wc">
+
+    <!-- ① HERO -->
+    <div class="hero" id="heroSection" th:classappend="${wedding.mainDesign != null} ? 'design-' + ${wedding.mainDesign} : 'design-basic'">
+
+        <!-- 상단 텍스트 영역 (사진 위, 흰 배경) -->
+        <div class="hero-top">
+            <div class="hero-top-label">THE MARRIAGE</div>
+            <div class="hero-top-date" id="heroDateShort">10.24</div>
+            <div class="hero-top-names" th:attr="data-order=${wedding.displayOrder != null ? wedding.displayOrder : 'groom'}">
+                <span class="name-groom" th:text="${wedding.groomName}">신랑</span><span class="name-sep">, </span><span class="name-bride" th:text="${wedding.brideName}">신부</span><span class="name-marry"> 결혼합니다.</span>
+            </div>
+            <!-- We're getting married! 손글씨 살리기 -->
+            <div class="hero-script-wrap">
+                <span class="hero-heart-left">♡</span>
+                <div class="hero-script">We're getting married!</div>
+                <span class="hero-heart-right">♡</span>
+            </div>
+        </div>
+
+        <!-- 풀블리드 사진 -->
+        <div class="hero-fullphoto" th:classappend="${wedding.mainPhotoBase64 != null and !#strings.isEmpty(wedding.mainPhotoBase64)} ? 'has-photo' : ''">
+            <img th:if="${wedding.mainPhotoBase64 != null and !#strings.isEmpty(wedding.mainPhotoBase64)}"
+                 th:src="|data:image/jpeg;base64,${wedding.mainPhotoBase64}|"
+                 alt="메인 사진"
+                 class="hero-fullphoto-img"
+                 th:style="${wedding.photoFilter != null and wedding.photoFilter != 'none'} ? 'filter:' + ${wedding.photoFilter} : ''">
+            <div class="hero-fullphoto-placeholder"
+                 th:if="${wedding.mainPhotoBase64 == null or #strings.isEmpty(wedding.mainPhotoBase64)}">
+                <i class="ti ti-camera"></i>
+                <span>사진을 업로드하세요</span>
+            </div>
+
+            <!-- 디자인 타이틀 오버레이 (design-* 클래스에 따라 표시) -->
+            <div class="hero-design-title" id="heroDesignTitle"></div>
+
+            <!-- 디자인 타이틀 아래 신랑·신부 이름 -->
+            <div class="hero-design-names" id="heroDesignNames" th:attr="data-order=${wedding.displayOrder != null ? wedding.displayOrder : 'groom'}">
+                <span class="name-groom" th:text="${wedding.groomName}">신랑</span>
+                <span class="hdn-sep"> </span>
+                <span class="name-bride" th:text="${wedding.brideName}">신부</span>
+            </div>
+
+            <!-- forever 테마 하단 텍스트 (위/아래 분리용) -->
+            <div class="hero-design-title-bottom" id="heroDesignTitleBottom"></div>
+
+            <!-- 디자인 날짜 (3분할: 일 / 월 / 연) -->
+            <div class="hero-design-date" id="heroDesignDate">
+                <span class="hdd-day">29TH</span>
+                <span class="hdd-month">OCT</span>
+                <span class="hdd-year">2026</span>
+            </div>
+
+            <!-- forever 테마용 중앙 날짜/장소 -->
+            <div class="hero-design-center-info" id="heroDesignCenterInfo">
+                <div class="hdci-date" id="hdciDate">2026.06.20 SAT 13:00</div>
+                <div class="hdci-place" id="hdciPlace">웨딩홀</div>
+            </div>
+
+            <!-- 효과 레이어 (fog/wave/paper) — z-index:2, 오버레이 텍스트(z-index:3) 아래 -->
+            <div id="effectLayer" class="effect-layer"></div>
+        </div>
+
+        <!-- ★ design-forever 전용 레이아웃 (배경색 + 아치사진 + 텍스트) -->
+        <div class="forever-layout">
+            <div class="forever-script">We're getting married!</div>
+            <div class="forever-names" th:attr="data-order=${wedding.displayOrder != null ? wedding.displayOrder : 'groom'}">
+                <span class="forever-name-groom" th:text="${wedding.groomName}">신랑</span>
+                <span class="forever-name-sep">&amp;</span>
+                <span class="forever-name-bride" th:text="${wedding.brideName}">신부</span>
+            </div>
+            <div class="forever-arch">
+                <img th:if="${wedding.mainPhotoBase64 != null and !#strings.isEmpty(wedding.mainPhotoBase64)}"
+                     th:src="|data:image/jpeg;base64,${wedding.mainPhotoBase64}|"
+                     class="forever-arch-img"
+                     alt="메인 사진"
+                     th:style="${wedding.photoFilter != null and wedding.photoFilter != 'none'} ? 'filter:' + ${wedding.photoFilter} : ''">
+                <div class="forever-arch-placeholder"
+                     th:if="${wedding.mainPhotoBase64 == null or #strings.isEmpty(wedding.mainPhotoBase64)}">
+                    <span>📷</span>
+                </div>
+            </div>
+            <div class="forever-date" id="foreverDate"
+                 th:data-date="${wedding.weddingDate}"
+                 th:data-time="${wedding.weddingTime}">2026. 06. 27</div>
+            <div class="forever-place-wrap">
+                <div class="forever-place1" th:text="${wedding.weddingPlace}">MARRIAGE WEDDING HALL</div>
+                <div class="forever-place2" th:text="${wedding.mapPlaceName}">POCKET HALL</div>
+            </div>
+        </div>
+
+        <!-- 하단 날짜·장소 영역 (사진 아래, 흰 배경) -->
+        <div class="hero-bottom">
+            <!-- ★ design-basic 전용: Groom/Bride 이름 블록 -->
+            <div class="hero-bottom-names" th:attr="data-order=${wedding.displayOrder != null ? wedding.displayOrder : 'groom'}">
+                <div class="hbn-person hbn-groom">
+                    <span class="hbn-label">Groom</span>
+                    <span class="hbn-name" th:text="${wedding.groomName}">신랑</span>
+                </div>
+                <div class="hbn-shell">🐚</div>
+                <div class="hbn-person hbn-bride">
+                    <span class="hbn-label">Bride</span>
+                    <span class="hbn-name" th:text="${wedding.brideName}">신부</span>
+                </div>
+            </div>
+            <div class="hero-bottom-date" id="heroDate"
+                 th:data-date="${wedding.weddingDate}"
+                 th:data-time="${wedding.weddingTime}">2026. 10. 24. Saturday 12:30 PM</div>
+            <div class="hero-bottom-place"
+                 th:text="${wedding.weddingPlace + ', ' + wedding.mapPlaceName}">더채플앳청담 커티지홀, 3층</div>
+        </div>
+
+    </div>
+
+    <!-- ② 인사말 -->
+    <div th:if="${wedding.greetingVisible}" class="section-divider" data-vis="greeting">
+        <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
+    </div>
+    <div th:if="${wedding.greetingVisible}" class="sec" data-vis="greeting">
+        <div class="sec-label reveal">Greeting</div>
+        <div class="sec-title reveal delay-1">인사말</div>
+        <div class="greet-card reveal-scale delay-2">
+            <div class="greet-title reveal-blur" th:utext="${greetingTitleHtml}">인사말 제목</div>
+            <div class="greet-text" th:utext="${greetingTextHtml}">인사말 내용</div>
+            <div class="greet-sign" th:text="${(wedding.displayOrder == 'bride') ? (wedding.brideName + ' & ' + wedding.groomName) : (wedding.groomName + ' & ' + wedding.brideName)}">신랑 & 신부</div>
+        </div>
+    </div>
+
+    <!-- ③ 일시 및 장소 -->
+    <div class="section-divider">
+        <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
+    </div>
+    <div class="sec">
+        <div class="sec-label reveal">Date &amp; Venue</div>
+        <div class="sec-title reveal delay-1">일시 및 장소</div>
+        <div class="info-block">
+            <div class="info-item">
+                <div class="info-icon"><i class="ti ti-calendar-event"></i></div>
+                <div class="info-detail">
+                    <div class="info-label-txt">DATE</div>
+                    <div class="info-val-txt" id="infoDate" th:data-date="${wedding.weddingDate}">날짜</div>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon"><i class="ti ti-clock"></i></div>
+                <div class="info-detail">
+                    <div class="info-label-txt">TIME</div>
+                    <div class="info-val-txt" id="infoTime" th:data-time="${wedding.weddingTime}">시간</div>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon"><i class="ti ti-building"></i></div>
+                <div class="info-detail">
+                    <div class="info-label-txt">HALL</div>
+                    <div class="info-val-txt" th:text="${wedding.weddingPlace}">홀</div>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon"><i class="ti ti-map-pin"></i></div>
+                <div class="info-detail">
+                    <div class="info-label-txt">ADDRESS</div>
+                    <div class="info-val-txt" th:text="${wedding.weddingAddress}">주소</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ④ 달력 -->
+    <div th:if="${wedding.calendarVisible}" class="section-divider" data-vis="calendar">
+        <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
+    </div>
+    <div th:if="${wedding.calendarVisible}" class="sec" data-vis="calendar">
+        <div class="sec-label reveal">Calendar</div>
+        <div class="sec-title reveal delay-1">달력</div>
+        <!-- 캘린더 스타일별 래퍼 — JS가 calendarStyle에 따라 클래스 적용 -->
+        <div class="cal-card reveal-scale delay-2"
+             id="calCard"
+             th:data-style="${wedding.calendarStyle ?: 'basic'}"
+             th:data-date="${wedding.weddingDate}"
+             th:data-time="${wedding.weddingTime}">
+
+            <!-- 스타일 2: 날짜형 헤더 -->
+            <div class="cal-date-header" id="calDateHeader" style="display:none;">
+                <div class="cal-date-main" id="calDateMain"></div>
+                <div class="cal-date-sub" id="calDateSub"></div>
+            </div>
+
+            <!-- 스타일 3: 영문형 헤더 -->
+            <div class="cal-en-header" id="calEnHeader" style="display:none;">
+                <div class="cal-en-month" id="calEnMonth"></div>
+            </div>
+
+            <!-- 스타일 4: 텍스트형 헤더 -->
+            <div class="cal-text-header" id="calTextHeader" style="display:none;">
+                <div class="cal-text-msg" id="calTextMsg"
+                     th:data-groom="${wedding.groomName}"
+                     th:data-bride="${wedding.brideName}"></div>
+            </div>
+
+            <!-- 공통: 월 타이틀 (basic/date) -->
+            <div class="cal-month-title" id="calTitle"></div>
+
+            <!-- 공통: 달력 그리드 -->
+            <div class="cal-grid" id="calGrid"></div>
+        </div>
+    </div>
+
+    <!-- D-Day -->
+    <div th:if="${wedding.ddayVisible}" class="section-divider" data-vis="dday">
+        <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
+    </div>
+    <div th:if="${wedding.ddayVisible}" class="sec" data-vis="dday">
+        <div class="sec-label reveal">D-Day</div>
+        <div class="dday-card reveal-scale delay-1"
+             id="ddayCard"
+             th:data-style="${wedding.ddayStyle ?: 'text'}"
+             th:data-date="${wedding.weddingDate}"
+             th:data-groom="${wedding.groomName}"
+             th:data-bride="${wedding.brideName}">
+
+            <!-- 스타일 1: 텍스트형 -->
+            <div class="dday-style-text" id="ddayStyleText" style="display:none;">
+                <div class="dday-text-msg" id="ddayTextMsg"></div>
+            </div>
+
+            <!-- 스타일 2: 시계형 (숫자 크게) -->
+            <div class="dday-style-clock" id="ddayStyleClock" style="display:none;">
+                <div class="dday-clock-row">
+                    <div class="dday-unit"><span class="dday-num" id="clockDays">00</span><span class="dday-lbl">Days</span></div>
+                    <span class="dday-colon">:</span>
+                    <div class="dday-unit"><span class="dday-num" id="clockHours">00</span><span class="dday-lbl">Hour</span></div>
+                    <span class="dday-colon">:</span>
+                    <div class="dday-unit"><span class="dday-num" id="clockMins">00</span><span class="dday-lbl">Min</span></div>
+                    <span class="dday-colon">:</span>
+                    <div class="dday-unit"><span class="dday-num" id="clockSecs">00</span><span class="dday-lbl">Sec</span></div>
+                </div>
+            </div>
+
+            <!-- 스타일 3: 시계 + 텍스트 아래 -->
+            <div class="dday-style-clock-bottom" id="ddayStyleClockBottom" style="display:none;">
+                <div class="dday-clock-row">
+                    <div class="dday-unit"><span class="dday-num" id="clockDays2">00</span><span class="dday-lbl">Days</span></div>
+                    <span class="dday-colon">:</span>
+                    <div class="dday-unit"><span class="dday-num" id="clockHours2">00</span><span class="dday-lbl">Hour</span></div>
+                    <span class="dday-colon">:</span>
+                    <div class="dday-unit"><span class="dday-num" id="clockMins2">00</span><span class="dday-lbl">Min</span></div>
+                    <span class="dday-colon">:</span>
+                    <div class="dday-unit"><span class="dday-num" id="clockSecs2">00</span><span class="dday-lbl">Sec</span></div>
+                </div>
+                <div class="dday-sub-text" id="ddaySubText2"></div>
+            </div>
+
+            <!-- 스타일 4: 인라인형 -->
+            <div class="dday-style-inline" id="ddayStyleInline" style="display:none;">
+                <div class="dday-inline-row">
+                    <b class="dday-in-num" id="inDays">00</b><small class="dday-in-lbl">Days</small>
+                    <b class="dday-in-num" id="inHours">00</b><small class="dday-in-lbl">Hour</small>
+                    <b class="dday-in-num" id="inMins">00</b><small class="dday-in-lbl">Min</small>
+                    <b class="dday-in-num" id="inSecs">00</b><small class="dday-in-lbl">Sec</small>
+                </div>
+                <div class="dday-sub-text" id="ddaySubTextInline"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑤ 혼주 -->
+    <div th:if="${wedding.hostsVisible}" class="section-divider" data-vis="hosts">
+        <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
+    </div>
+    <div th:if="${wedding.hostsVisible}" class="sec" data-vis="hosts">
+        <div class="sec-label reveal">Family</div>
+        <div class="sec-title reveal delay-1">혼주</div>
+        <div class="hosts-wrap reveal delay-1" th:attr="data-order=${wedding.displayOrder != null ? wedding.displayOrder : 'groom'}">
+            <!-- 신랑측 -->
+            <div class="host-card reveal-left delay-2" data-side="groom">
+                <div class="host-badge">신 랑 측</div>
+                <div class="host-main-name" th:text="${wedding.groomName}">신랑</div>
+                <div class="host-family">
+                    <!-- 아버지 -->
+                    <span class="host-parent-row" data-person="groomFather"
+                          th:data-deceased="${wedding.groomFatherDeceased}"
+                          th:data-dtype="${wedding.deceasedDisplayType}">
+                        아버지
+                        <span class="deceased-mark"
+                              th:classappend="${wedding.groomFatherDeceased} ? 'show' : ''"
+                              th:attr="data-dtype=${wedding.deceasedDisplayType}">
+                            <span class="deceased-hanja" th:if="${wedding.deceasedDisplayType != 'flower'}">故</span>
+                            <span class="deceased-flower" th:if="${wedding.deceasedDisplayType == 'flower'}"><svg class="deceased-flower-svg" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><g opacity="0.65"><ellipse cx="10" cy="5.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="10" cy="14.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="5.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="14.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="6.8" cy="6.8" rx="1.5" ry="3" transform="rotate(45 6.8 6.8)" fill="#888"/><ellipse cx="13.2" cy="13.2" rx="1.5" ry="3" transform="rotate(45 13.2 13.2)" fill="#888"/><ellipse cx="13.2" cy="6.8" rx="1.5" ry="3" transform="rotate(-45 13.2 6.8)" fill="#888"/><ellipse cx="6.8" cy="13.2" rx="1.5" ry="3" transform="rotate(-45 6.8 13.2)" fill="#888"/><circle cx="10" cy="10" r="2.2" fill="#bbb"/></g></svg></span>
+                        </span>
+                        <strong th:text="${wedding.groomFatherName}">부친</strong>
+                    </span>
+                    <br>
+                    <!-- 어머니 -->
+                    <span class="host-parent-row" data-person="groomMother"
+                          th:data-deceased="${wedding.groomMotherDeceased}"
+                          th:data-dtype="${wedding.deceasedDisplayType}">
+                        어머니
+                        <span class="deceased-mark"
+                              th:classappend="${wedding.groomMotherDeceased} ? 'show' : ''"
+                              th:attr="data-dtype=${wedding.deceasedDisplayType}">
+                            <span class="deceased-hanja" th:if="${wedding.deceasedDisplayType != 'flower'}">故</span>
+                            <span class="deceased-flower" th:if="${wedding.deceasedDisplayType == 'flower'}"><svg class="deceased-flower-svg" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><g opacity="0.65"><ellipse cx="10" cy="5.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="10" cy="14.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="5.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="14.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="6.8" cy="6.8" rx="1.5" ry="3" transform="rotate(45 6.8 6.8)" fill="#888"/><ellipse cx="13.2" cy="13.2" rx="1.5" ry="3" transform="rotate(45 13.2 13.2)" fill="#888"/><ellipse cx="13.2" cy="6.8" rx="1.5" ry="3" transform="rotate(-45 13.2 6.8)" fill="#888"/><ellipse cx="6.8" cy="13.2" rx="1.5" ry="3" transform="rotate(-45 6.8 13.2)" fill="#888"/><circle cx="10" cy="10" r="2.2" fill="#bbb"/></g></svg></span>
+                        </span>
+                        <strong th:text="${wedding.groomMotherName}">모친</strong>
+                    </span>
+                </div>
+                <div class="contact-row" data-contact-row
+                     th:style="${wedding.contactPopupEnabled != null and !wedding.contactPopupEnabled} ? 'display:none' : ''">
+                    <button class="cbtn" data-contact
+                            th:data-name="${wedding.groomName}"
+                            th:data-phone="${wedding.groomPhone}">
+                        <i class="ti ti-phone"></i>신랑
+                    </button>
+                    <button class="cbtn" data-contact
+                            th:data-name="${wedding.groomFatherName}"
+                            th:data-phone="${wedding.groomFatherPhone}">
+                        <i class="ti ti-phone"></i>부
+                    </button>
+                    <button class="cbtn" data-contact
+                            th:data-name="${wedding.groomMotherName}"
+                            th:data-phone="${wedding.groomMotherPhone}">
+                        <i class="ti ti-phone"></i>모
+                    </button>
+                </div>
+            </div>
+            <div class="hosts-center reveal delay-3">
+                <div class="hosts-center-line"></div>
+                <i class="ti ti-heart heart-pulse" style="color:#c4748a;font-size:18px;"></i>
+                <div class="hosts-center-line"></div>
+            </div>
+            <!-- 신부측 -->
+            <div class="host-card reveal-right delay-2" data-side="bride">
+                <div class="host-badge">신 부 측</div>
+                <div class="host-main-name" th:text="${wedding.brideName}">신부</div>
+                <div class="host-family">
+                    <!-- 아버지 -->
+                    <span class="host-parent-row" data-person="brideFather"
+                          th:data-deceased="${wedding.brideFatherDeceased}"
+                          th:data-dtype="${wedding.deceasedDisplayType}">
+                        아버지
+                        <span class="deceased-mark"
+                              th:classappend="${wedding.brideFatherDeceased} ? 'show' : ''"
+                              th:attr="data-dtype=${wedding.deceasedDisplayType}">
+                            <span class="deceased-hanja" th:if="${wedding.deceasedDisplayType != 'flower'}">故</span>
+                            <span class="deceased-flower" th:if="${wedding.deceasedDisplayType == 'flower'}"><svg class="deceased-flower-svg" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><g opacity="0.65"><ellipse cx="10" cy="5.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="10" cy="14.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="5.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="14.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="6.8" cy="6.8" rx="1.5" ry="3" transform="rotate(45 6.8 6.8)" fill="#888"/><ellipse cx="13.2" cy="13.2" rx="1.5" ry="3" transform="rotate(45 13.2 13.2)" fill="#888"/><ellipse cx="13.2" cy="6.8" rx="1.5" ry="3" transform="rotate(-45 13.2 6.8)" fill="#888"/><ellipse cx="6.8" cy="13.2" rx="1.5" ry="3" transform="rotate(-45 6.8 13.2)" fill="#888"/><circle cx="10" cy="10" r="2.2" fill="#bbb"/></g></svg></span>
+                        </span>
+                        <strong th:text="${wedding.brideFatherName}">부친</strong>
+                    </span>
+                    <br>
+                    <!-- 어머니 -->
+                    <span class="host-parent-row" data-person="brideMother"
+                          th:data-deceased="${wedding.brideMotherDeceased}"
+                          th:data-dtype="${wedding.deceasedDisplayType}">
+                        어머니
+                        <span class="deceased-mark"
+                              th:classappend="${wedding.brideMotherDeceased} ? 'show' : ''"
+                              th:attr="data-dtype=${wedding.deceasedDisplayType}">
+                            <span class="deceased-hanja" th:if="${wedding.deceasedDisplayType != 'flower'}">故</span>
+                            <span class="deceased-flower" th:if="${wedding.deceasedDisplayType == 'flower'}"><svg class="deceased-flower-svg" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><g opacity="0.65"><ellipse cx="10" cy="5.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="10" cy="14.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="5.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="14.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="6.8" cy="6.8" rx="1.5" ry="3" transform="rotate(45 6.8 6.8)" fill="#888"/><ellipse cx="13.2" cy="13.2" rx="1.5" ry="3" transform="rotate(45 13.2 13.2)" fill="#888"/><ellipse cx="13.2" cy="6.8" rx="1.5" ry="3" transform="rotate(-45 13.2 6.8)" fill="#888"/><ellipse cx="6.8" cy="13.2" rx="1.5" ry="3" transform="rotate(-45 6.8 13.2)" fill="#888"/><circle cx="10" cy="10" r="2.2" fill="#bbb"/></g></svg></span>
+                        </span>
+                        <strong th:text="${wedding.brideMotherName}">모친</strong>
+                    </span>
+                </div>
+                <div class="contact-row" data-contact-row
+                     th:style="${wedding.contactPopupEnabled != null and !wedding.contactPopupEnabled} ? 'display:none' : ''">
+                    <button class="cbtn" data-contact
+                            th:data-name="${wedding.brideName}"
+                            th:data-phone="${wedding.bridePhone}">
+                        <i class="ti ti-phone"></i>신부
+                    </button>
+                    <button class="cbtn" data-contact
+                            th:data-name="${wedding.brideFatherName}"
+                            th:data-phone="${wedding.brideFatherPhone}">
+                        <i class="ti ti-phone"></i>부
+                    </button>
+                    <button class="cbtn" data-contact
+                            th:data-name="${wedding.brideMotherName}"
+                            th:data-phone="${wedding.brideMotherPhone}">
+                        <i class="ti ti-phone"></i>모
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑥ 갤러리 -->
+    <div th:if="${wedding.galleryVisible}" class="section-divider" data-vis="gallery">
+        <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
+    </div>
+    <div th:if="${wedding.galleryVisible}" class="sec" data-vis="gallery">
+        <div class="sec-label reveal">Gallery</div>
+        <div class="sec-title reveal delay-1">갤러리</div>
+        <div class="gallery-outer reveal-zoom delay-2" id="galleryOuter"
+             th:classappend="'galtype-' + ${wedding.galleryType ?: 'slide'}"
+             th:attr="data-galtype=${wedding.galleryType ?: 'slide'}">
+            <div class="gallery-track" id="galleryTrack">
+                <div th:if="${wedding.galleryImages != null and !#strings.isEmpty(wedding.galleryImages)}"
+                     th:each="imgUrl : ${#strings.arraySplit(wedding.galleryImages, '|||')}"
+                     class="gallery-slide">
+                    <img th:src="${imgUrl.trim()}" alt="갤러리" style="width:100%;height:100%;object-fit:cover;">
+                </div>
+                <div th:if="${wedding.galleryImages == null or #strings.isEmpty(wedding.galleryImages)}"
+                     th:each="i : ${#numbers.sequence(1,6)}" class="gallery-slide">
+                    <i class="ti ti-photo"></i>
+                </div>
+            </div>
+            <div class="gallery-arrows">
+                <button class="garrow" id="galleryPrev" aria-label="이전"><i class="ti ti-chevron-left"></i></button>
+                <button class="garrow" id="galleryNext" aria-label="다음"><i class="ti ti-chevron-right"></i></button>
+            </div>
+        </div>
+        <div class="gallery-dots" id="galleryDots"></div>
+    </div>
+
+    <!-- ⑦ 지도 -->
+    <div th:if="${wedding.mapVisible}" class="section-divider" data-vis="map">
+        <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
+    </div>
+    <div th:if="${wedding.mapVisible}" class="sec" data-vis="map">
+        <div class="sec-label reveal">LOCATION</div>
+        <div class="sec-title reveal delay-1">오시는 길</div>
+
+        <!-- 주소 (카드 위, 중앙) -->
+        <div class="map-addr-header reveal delay-2">
+            <div class="map-place-name" th:text="${wedding.mapPlaceName}">예식장명</div>
+            <div class="map-addr-text" th:text="${wedding.mapAddressRoad}">도로명주소</div>
+        </div>
+
+        <!-- 지도 full-width (카드 없이) -->
+        <div class="map-full reveal-scale delay-3"
+             th:attr="data-lat=${wedding.mapLat},data-lng=${wedding.mapLng},data-place=${wedding.mapPlaceName},data-addr=${wedding.mapAddressRoad}">
+
+            <!-- 카카오 Static Map 이미지 — 항상 DOM에 존재 (postMessage 실시간 반영용) -->
+            <div class="map-wrap" id="invitationMap"
+                 th:style="${wedding.mapLat == null or wedding.mapLng == null} ? 'display:none' : ''"
+                 th:attr="data-lat=${wedding.mapLat},data-lng=${wedding.mapLng},data-place=${wedding.mapPlaceName},data-kakaolink=|https://map.kakao.com/link/map/${wedding.mapPlaceName},${wedding.mapLat},${wedding.mapLng}|">
+                <!-- JS에서 Static Map img 주입 -->
+            </div>
+            <a class="map-detail-btn" id="mapDetailBtn"
+               th:href="|https://map.kakao.com/link/map/${wedding.mapPlaceName},${wedding.mapLat},${wedding.mapLng}|"
+               th:style="${wedding.mapLat == null or wedding.mapLng == null} ? 'display:none' : ''"
+               target="_blank">지도를 자세히 보려면 여기를 눌러주세요</a>
+            <div class="map-wrap map-placeholder" id="invitationMapPlaceholder"
+                 th:style="${wedding.mapLat != null and wedding.mapLng != null} ? 'display:none' : ''">
+                <i class="ti ti-map-pin" style="font-size:36px;color:#c4a882;opacity:0.5;"></i>
+                <span style="font-size:12px;color:#9a8a74;margin-top:8px;">지도를 등록해주세요</span>
+            </div>
+        </div>
+
+        <!-- 내비게이션 — 지도 밖 별도 섹션 -->
+        <div class="map-navi-section" id="mapNaviBtns"
+             th:if="${wedding.mapNaviKakao == true or wedding.mapNaviTmap == true or wedding.mapNaviNaver == true}">
+            <div class="map-navi-title">내비게이션</div>
+            <div class="map-navi-desc">원하시는 앱을 선택하시면 길안내가 시작됩니다.</div>
+            <div class="map-navi-row">
+                    <a id="naviKakao"
+                       th:href="|https://map.kakao.com/link/to/${wedding.mapPlaceName},${wedding.mapLat},${wedding.mapLng}|"
+                       th:style="${wedding.mapNaviKakao == true} ? '' : 'display:none'"
+                       class="map-navi-btn kakao-navi" target="_blank">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iMTAiIGZpbGw9IiNGRUU1MDAiLz48dGV4dCB4PSIyNCIgeT0iMzQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjM0MxRTFFIj5LPC90ZXh0Pjwvc3ZnPg=="
+                             style="width:26px;height:26px;border-radius:6px;flex-shrink:0;" alt="">
+                        카카오내비
+                    </a>
+                    <a id="naviTmap"
+                       th:href="|https://tmap.life/route/goal?goalname=${wedding.mapPlaceName}&goalx=${wedding.mapLng}&goaly=${wedding.mapLat}|"
+                       th:style="${wedding.mapNaviTmap == true} ? '' : 'display:none'"
+                       class="map-navi-btn tmap-navi" target="_blank">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iMTAiIGZpbGw9IiMxYTZkZDgiLz48dGV4dCB4PSIyNCIgeT0iMzQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjZmZmIj5UPC90ZXh0Pjwvc3ZnPg=="
+                             style="width:26px;height:26px;border-radius:6px;flex-shrink:0;object-fit:cover;" alt="">
+                        티맵
+                    </a>
+                    <a id="naviNaver"
+                       th:href="|https://map.naver.com/p/directions/-/-/-/transit?goalName=${wedding.mapPlaceName}&goalX=${wedding.mapLng}&goalY=${wedding.mapLat}|"
+                       th:style="${wedding.mapNaviNaver == true} ? '' : 'display:none'"
+                       class="map-navi-btn naver-navi" target="_blank">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iMTAiIGZpbGw9IiMwM0M3NUEiLz48dGV4dCB4PSIyNCIgeT0iMzQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjZmZmIj5OPC90ZXh0Pjwvc3ZnPg=="
+                             style="width:26px;height:26px;border-radius:6px;flex-shrink:0;object-fit:cover;" alt="">
+                        네이버지도
+                    </a>
+                </div>
+        </div>
+    </div>
+
+    <!-- ⑧ 마음 전하실 곳 -->
+    <div class="section-divider" data-vis="acct" th:if="${accounts != null and !accounts.isEmpty()}">
+        <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
+    </div>
+    <div class="sec" data-vis="acct" th:if="${wedding.accountVisible != false and accounts != null and !accounts.isEmpty()}">
+        <div class="sec-label reveal">Account</div>
+        <div class="sec-title reveal delay-1">마음 전하실 곳</div>
+
+        <!-- 신랑/신부 탭 -->
+        <div class="acct-tab-wrap reveal delay-2" th:attr="data-order=${wedding.displayOrder != null ? wedding.displayOrder : 'groom'}">
+            <button class="acct-tab active" id="acctTabGroom" data-side="groom">
+                <i class="ti ti-heart" style="color:#a0b8e8;font-size:12px;"></i>
+                신랑측
+            </button>
+            <button class="acct-tab" id="acctTabBride" data-side="bride">
+                <i class="ti ti-heart" style="color:#c4748a;font-size:12px;"></i>
+                신부측
+            </button>
+        </div>
+
+        <!-- 신랑측 계좌 -->
+        <div class="acct-panel" id="acctPanelGroom">
+            <div class="acct-card reveal delay-3" th:if="${#lists.isEmpty(accounts.?[side == 'groom'])}">
+                <div class="acct-empty"><i class="ti ti-credit-card-off"></i><p>등록된 계좌가 없습니다</p></div>
+            </div>
+            <div class="acct-card reveal delay-3" th:unless="${#lists.isEmpty(accounts.?[side == 'groom'])}">
+                <div class="acct-item" th:each="acct,stat : ${accounts}"
+                     th:if="${acct.side == 'groom'}">
+                    <div class="acct-left">
+                        <div class="acct-side-dot groom"></div>
+                        <div>
+                            <div class="acct-who" th:text="${acct.owner}">예금주</div>
+                            <div class="acct-bank-wrap">
+                                <span class="acct-bank-badge" th:text="${acct.bank}">은행</span>
+                                <span class="acct-num" th:text="${acct.accountNumber}">계좌번호</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="acct-btns">
+                        <button class="copy-btn" th:data-copy="${acct.accountNumber}">
+                            <i class="ti ti-copy"></i>복사
+                        </button>
+                        <a class="kakao-pay-btn"
+                           th:if="${acct.kakaoPayUrl != null and !#strings.isEmpty(acct.kakaoPayUrl)}"
+                           th:href="${acct.kakaoPayUrl}" target="_blank">
+                            <span class="kakao-icon">K</span>송금
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 신부측 계좌 -->
+        <div class="acct-panel" id="acctPanelBride" style="display:none;">
+            <div class="acct-card reveal delay-3" th:if="${#lists.isEmpty(accounts.?[side == 'bride'])}">
+                <div class="acct-empty"><i class="ti ti-credit-card-off"></i><p>등록된 계좌가 없습니다</p></div>
+            </div>
+            <div class="acct-card reveal delay-3" th:unless="${#lists.isEmpty(accounts.?[side == 'bride'])}">
+                <div class="acct-item" th:each="acct,stat : ${accounts}"
+                     th:if="${acct.side == 'bride'}">
+                    <div class="acct-left">
+                        <div class="acct-side-dot bride"></div>
+                        <div>
+                            <div class="acct-who" th:text="${acct.owner}">예금주</div>
+                            <div class="acct-bank-wrap">
+                                <span class="acct-bank-badge" th:text="${acct.bank}">은행</span>
+                                <span class="acct-num" th:text="${acct.accountNumber}">계좌번호</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="acct-btns">
+                        <button class="copy-btn" th:data-copy="${acct.accountNumber}">
+                            <i class="ti ti-copy"></i>복사
+                        </button>
+                        <a class="kakao-pay-btn"
+                           th:if="${acct.kakaoPayUrl != null and !#strings.isEmpty(acct.kakaoPayUrl)}"
+                           th:href="${acct.kakaoPayUrl}" target="_blank">
+                            <span class="kakao-icon">K</span>송금
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑨ RSVP -->
+    <div class="section-divider" data-vis="rsvp" th:style="${wedding.rsvpEnabled != null and !wedding.rsvpEnabled} ? 'display:none' : ''">
+        <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
+    </div>
+    <div class="sec" data-vis="rsvp" th:style="${wedding.rsvpEnabled != null and !wedding.rsvpEnabled} ? 'display:none' : ''">
+        <div class="sec-label reveal">RSVP</div>
+        <div class="sec-title reveal delay-1">참석 여부</div>
+        <div class="rsvp-card reveal delay-2" id="rsvpCard">
+            <div id="rsvpFormWrap">
+                <div class="rsvp-row">
+                    <label class="rsvp-label">이름 <span class="rsvp-required">*</span></label>
+                    <input class="rsvp-input" type="text" id="rsvpName" placeholder="홍길동" maxlength="20">
+                </div>
+                <div class="rsvp-row">
+                    <label class="rsvp-label">연락처 <span class="rsvp-optional">(선택)</span></label>
+                    <input class="rsvp-input" type="tel" id="rsvpPhone" placeholder="010-0000-0000" maxlength="20">
+                </div>
+                <div class="rsvp-row">
+                    <label class="rsvp-label">참석 여부 <span class="rsvp-required">*</span></label>
+                    <div class="rsvp-attend-btns">
+                        <button type="button" class="rsvp-attend-btn" id="rsvpAttendYes" data-val="true">참석</button>
+                        <button type="button" class="rsvp-attend-btn" id="rsvpAttendNo"  data-val="false">불참</button>
+                    </div>
+                </div>
+                <div class="rsvp-row" id="rsvpMealRow">
+                    <label class="rsvp-label">참석 인원</label>
+                    <div class="rsvp-count-wrap">
+                        <button type="button" class="rsvp-count-btn" id="rsvpMinus">−</button>
+                        <span id="rsvpMealCount">1</span>
+                        <span class="rsvp-count-unit">명</span>
+                        <button type="button" class="rsvp-count-btn" id="rsvpPlus">+</button>
+                    </div>
+                </div>
+                <div class="rsvp-row">
+                    <label class="rsvp-label">메시지 <span class="rsvp-optional">(선택)</span></label>
+                    <textarea class="rsvp-textarea" id="rsvpMsg" placeholder="축하 메시지를 남겨주세요" maxlength="200"></textarea>
+                </div>
+                <div id="rsvpErrMsg" class="rsvp-err" style="display:none;"></div>
+                <button type="button" class="rsvp-submit-btn" id="rsvpSubmitBtn">참석 여부 전달하기</button>
+            </div>
+            <div id="rsvpSuccess" style="display:none;">
+                <div class="rsvp-success-wrap">
+                    <div class="rsvp-success-icon">✓</div>
+                    <p class="rsvp-success-msg">전달되었습니다.<br>감사합니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑩ 공유하기 -->
+    <div class="section-divider">
+        <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
+    </div>
+    <div class="sec">
+        <div class="sec-label reveal">Share</div>
+        <div class="sec-title reveal delay-1">공유하기</div>
+        <div class="share-grid reveal delay-2">
+            <!-- 카카오톡 -->
+            <button class="share-btn" id="shareKakao">
+                <div class="share-icon" style="background:#FEE500;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#3C1E1E">
+                        <path d="M12 3C6.477 3 2 6.477 2 10.8c0 2.7 1.7 5.1 4.3 6.5l-1.1 4c-.1.3.2.6.5.4l4.7-3.1c.5.1 1 .1 1.5.1 5.523 0 10-3.477 10-7.8S17.523 3 12 3z"/>
+                    </svg>
+                </div>
+                <span>카카오톡</span>
+            </button>
+            <!-- URL 복사 -->
+            <button class="share-btn" id="shareUrl">
+                <div class="share-icon" style="background:#3a2e22;">
+                    <i class="ti ti-link" style="font-size:22px;color:#fff;"></i>
+                </div>
+                <span>링크 복사</span>
+            </button>
+            <!-- 문자 -->
+            <button class="share-btn" id="shareSms">
+                <div class="share-icon" style="background:#4CAF50;">
+                    <i class="ti ti-message" style="font-size:22px;color:#fff;"></i>
+                </div>
+                <span>문자 보내기</span>
+            </button>
+            <!-- QR코드 -->
+            <button class="share-btn" id="shareQr">
+                <div class="share-icon" style="background:#5a4e40;">
+                    <i class="ti ti-qrcode" style="font-size:22px;color:#fff;"></i>
+                </div>
+                <span>QR 코드</span>
+            </button>
+        </div>
+
+        <!-- QR 코드 표시 영역 -->
+        <div class="qr-wrap" id="qrWrap" style="display:none;">
+            <div class="qr-box">
+                <canvas id="qrCanvas"></canvas>
+                <p class="qr-hint">QR코드를 스캔하면 청첩장이 열립니다</p>
+                <button class="qr-close-btn" id="qrCloseBtn"><i class="ti ti-x"></i> 닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑪ 푸터 -->
+    <div class="footer-sec reveal">
+        <div class="footer-flower">✿ ✿ ✿</div>
+        <div class="footer-msg">
+            두 사람이 하나 되는 길에<br>함께해 주셔서 감사합니다<br><br>행복하게 살겠습니다
+        </div>
+        <div class="footer-copy" th:text="|${wedding.weddingDate} — ${wedding.mapPlaceName}|">날짜 — 장소</div>
+    </div>
+</div>
+
+<!-- QR 라이브러리 -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script th:src="@{/js/invitation.js(v=20260629)}"></script>
+<script th:inline="javascript">
+    initPage({
+        weddingDate:     /*[[${wedding.weddingDate}]]*/ '2025-10-25',
+        weddingTime:     /*[[${wedding.weddingTime}]]*/ '13:00',
+        ddayVisible:     /*[[${wedding.ddayVisible}]]*/ true,
+        calendarVisible: /*[[${wedding.calendarVisible}]]*/ true,
+        calendarStyle:   /*[[${wedding.calendarStyle ?: 'basic'}]]*/ 'basic',
+        ddayStyle:       /*[[${wedding.ddayStyle ?: 'text'}]]*/ 'text',
+        groomName:       /*[[${wedding.groomName}]]*/ '신랑',
+        brideName:       /*[[${wedding.brideName}]]*/ '신부'
+    });
+
+    /* 페이지 로드 시 디자인 날짜 초기화 */
+    (function initDesignDate() {
+        var dateStr = /*[[${wedding.weddingDate}]]*/ '2025-10-25';
+        if (!dateStr) return;
+        var dd = new Date(dateStr);
+        if (isNaN(dd)) return;
+        var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+        var day = dd.getDate();
+        var suffix = (day % 10 === 1 && day !== 11) ? 'ST' : (day % 10 === 2 && day !== 12) ? 'ND' : (day % 10 === 3 && day !== 13) ? 'RD' : 'TH';
+        var dayEl = document.querySelector('.hdd-day');
+        var monthEl = document.querySelector('.hdd-month');
+        var yearEl = document.querySelector('.hdd-year');
+        if (dayEl) dayEl.textContent = day + suffix;
+        if (monthEl) monthEl.textContent = months[dd.getMonth()];
+        if (yearEl) yearEl.textContent = dd.getFullYear();
+
+        /* forever 테마 중앙 날짜/장소 */
+        var timeStr = /*[[${wedding.weddingTime}]]*/ '13:00';
+        var place = /*[[${wedding.weddingPlace}]]*/ '웨딩홀';
+        var hdciDate = document.getElementById('hdciDate');
+        var hdciPlace = document.getElementById('hdciPlace');
+        if (hdciDate) {
+            var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+            var mm = String(dd.getMonth()+1).padStart(2,'0');
+            var ddd = String(dd.getDate()).padStart(2,'0');
+            var tp = timeStr ? timeStr.split(':') : ['',''];
+            var timePart = timeStr ? ' ' + tp[0] + ':' + (tp[1]||'00') : '';
+            hdciDate.textContent = dd.getFullYear() + '.' + mm + '.' + ddd + ' ' + days[dd.getDay()] + timePart;
+        }
+        if (hdciPlace && place) hdciPlace.textContent = place;
+    })();
+</script>
+
+<!-- ══ 실시간 편집 postMessage 수신기 ══ -->
+<script>
+(function() {
+    function q(sel)  { return document.querySelector(sel); }
+    function qa(sel) { return document.querySelectorAll(sel); }
+
+    /* 사진 필터 + 유색효과 합산 적용 */
+    function applyPhotoFilter() {
+        var img = q('.hero-fullphoto-img');
+        if (!img) return;
+        var parts = [];
+        if (window._livePhotoFilter && window._livePhotoFilter !== 'none') parts.push(window._livePhotoFilter);
+        if (window._liveColorEff) parts.push(window._liveColorEff);
+        img.style.filter = parts.join(' ') || '';
+    }
+    function setText(sel, val) {
+        if (val === undefined || val === null) return;
+        var el = (typeof sel === 'string') ? q(sel) : sel;
+        if (el) el.textContent = val;
+    }
+    function setHtml(sel, val) {
+        if (val === undefined || val === null) return;
+        var el = (typeof sel === 'string') ? q(sel) : sel;
+        if (el) el.innerHTML = val;
+    }
+    function esc(s) {
+        return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+    function fmtDate(s) {
+        if (!s) return '';
+        var d = new Date(s);
+        if (isNaN(d)) return '';
+        var w = ['일','월','화','수','목','금','토'][d.getDay()];
+        return d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일 '+w+'요일';
+    }
+    function fmtTime(t) {
+        if (!t) return '';
+        var p = t.split(':').map(Number);
+        if (p.length < 2) return t;
+        var ampm = p[0] >= 12 ? '오후' : '오전';
+        var hh = p[0] > 12 ? p[0]-12 : p[0]===0 ? 12 : p[0];
+        return ampm + ' ' + hh + '시 ' + (p[1] ? p[1] : '00') + '분';
+    }
+    /* 섹션 전체 블록(구분선 + 섹션) 표시/숨김 */
+    function showHideSection(selector, visible) {
+        var show = (visible === true || visible === 'true' || visible === 1);
+        /* 해당 selector를 포함하는 모든 요소 찾기 */
+        qa(selector).forEach(function(el) {
+            el.style.display = show ? '' : 'none';
+            /* 바로 앞 section-divider도 같이 */
+            var prev = el.previousElementSibling;
+            while (prev) {
+                if (prev.classList.contains('section-divider')) {
+                    prev.style.display = show ? '' : 'none';
+                    break;
+                }
+                /* divider가 아닌 다른 요소가 나오면 중단 */
+                if (!prev.classList.contains('section-divider')) break;
+                prev = prev.previousElementSibling;
+            }
+        });
+    }
+
+    /* 섹션 하나의 구분선+본체 쌍을 함께 제어 */
+    function showHidePair(mainSel, visible) {
+        var show = (visible === true || visible === 'true' || visible === 1);
+        var el = q(mainSel);
+        if (!el) return;
+        /* 현재 요소 숨김/표시 */
+        el.style.display = show ? '' : 'none';
+        /* 바로 앞 section-divider */
+        var prev = el.previousElementSibling;
+        if (prev && prev.classList.contains('section-divider')) {
+            prev.style.display = show ? '' : 'none';
+        }
+        /* 다음 형제 중 같은 th:if 조건을 가진 섹션도 함께 (인사말처럼 divider+sec 쌍) */
+        var next = el.nextElementSibling;
+        if (next && !next.classList.contains('section-divider') &&
+            next.style !== undefined) {
+            /* 같은 가시성 조건이 적용된 연속 섹션 */
+        }
+    }
+
+    window.addEventListener('message', function(e) {
+        if (!e.data || e.data.type !== 'WEDDING_LIVE_UPDATE') return;
+        var d = e.data.payload;
+        if (!d) return;
+
+        /* ── 0. 신랑/신부 표시 순서 ── */
+        if (d.displayOrder !== undefined) {
+            var ord = d.displayOrder || 'groom';
+
+            /* 현재 이름 읽기 (이름 변경과 순서 변경이 동시에 올 수도 있음) */
+            var curGn = d.groomName !== undefined ? d.groomName
+                        : (q('.name-groom') ? q('.name-groom').textContent : '신랑');
+            var curBn = d.brideName !== undefined ? d.brideName
+                        : (q('.name-bride') ? q('.name-bride').textContent : '신부');
+            var first = (ord === 'bride') ? curBn : curGn;
+            var second = (ord === 'bride') ? curGn : curBn;
+
+            /* 히어로 이름 */
+            var heroNames = q('.hero-top-names');
+            if (heroNames) heroNames.setAttribute('data-order', ord);
+
+            /* design-basic 하단 이름 블록 실시간 업데이트 */
+            var bottomNames = q('.hero-bottom-names');
+            if (bottomNames) {
+                bottomNames.setAttribute('data-order', ord);
+                var groomNameEl = bottomNames.querySelector('.hbn-groom .hbn-name');
+                var brideNameEl = bottomNames.querySelector('.hbn-bride .hbn-name');
+                if (groomNameEl) groomNameEl.textContent = curGn;
+                if (brideNameEl) brideNameEl.textContent = curBn;
+            }
+
+            /* forever-layout 이름 블록 실시간 업데이트 */
+            var foreverNames = q('.forever-names');
+            if (foreverNames) {
+                foreverNames.setAttribute('data-order', ord);
+                var fgn = foreverNames.querySelector('.forever-name-groom');
+                var fbn = foreverNames.querySelector('.forever-name-bride');
+                if (fgn) fgn.textContent = curGn;
+                if (fbn) fbn.textContent = curBn;
+            }
+
+            /* 디자인 테마 이름 — data-order 변경 + innerHTML 재구성으로 즉시 반영 */
+            var designNamesEl = document.getElementById('heroDesignNames');
+            if (designNamesEl) {
+                designNamesEl.setAttribute('data-order', ord);
+                designNamesEl.innerHTML =
+                    '<span class="name-groom">' + esc(curGn) + '</span>' +
+                    '<span class="hdn-sep"> </span>' +
+                    '<span class="name-bride">' + esc(curBn) + '</span>';
+            }
+
+            /* 히어로 이름 — innerHTML 재구성으로 즉시 반영 */
+            if (heroNames) {
+                heroNames.innerHTML =
+                    '<span class="name-groom">' + esc(curGn) + '</span>' +
+                    '<span class="name-sep">, </span>' +
+                    '<span class="name-bride">' + esc(curBn) + '</span>' +
+                    '<span class="name-marry"> 결혼합니다.</span>';
+            }
+
+            /* 혼주 wrap */
+            var hostsWrap = q('.hosts-wrap');
+            if (hostsWrap) hostsWrap.setAttribute('data-order', ord);
+
+            /* 인사말 서명 — 순서 반영 */
+            var greetSignEl = q('.greet-sign');
+            if (greetSignEl) greetSignEl.textContent = first + ' & ' + second;
+
+            /* D-Day 텍스트형 */
+            var ddayTextMsgEl = document.getElementById('ddayTextMsg');
+            if (ddayTextMsgEl) {
+                var strong = ddayTextMsgEl.querySelector('strong');
+                var daysStr = strong ? strong.textContent : '';
+                ddayTextMsgEl.innerHTML = first + ' ♥ ' + second + ' 예식일까지, <strong>' + daysStr + '</strong>';
+            }
+
+            /* D-Day 시계+텍스트형 서브 */
+            var ddaySub2El = document.getElementById('ddaySubText2');
+            if (ddaySub2El) {
+                var strong2 = ddaySub2El.querySelector('strong');
+                var daysStr2 = strong2 ? strong2.textContent : '';
+                ddaySub2El.innerHTML = first + ' ♥ ' + second + ' 예식일까지, <strong>' + daysStr2 + '</strong>';
+            }
+
+            /* D-Day inline 서브 (clock_inline은 이름 없음 — 패스) */
+
+            /* 계좌 탭 */
+            var acctTabWrap = q('.acct-tab-wrap');
+            if (acctTabWrap) {
+                acctTabWrap.setAttribute('data-order', ord);
+                var tabGroom = document.getElementById('acctTabGroom');
+                var tabBride = document.getElementById('acctTabBride');
+                var panelGroom = document.getElementById('acctPanelGroom');
+                var panelBride = document.getElementById('acctPanelBride');
+                if (tabGroom && tabBride && panelGroom && panelBride) {
+                    if (ord === 'bride') {
+                        tabBride.classList.add('active');
+                        tabGroom.classList.remove('active');
+                        panelBride.style.display = '';
+                        panelGroom.style.display = 'none';
+                    } else {
+                        tabGroom.classList.add('active');
+                        tabBride.classList.remove('active');
+                        panelGroom.style.display = '';
+                        panelBride.style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        /* ── 1. 히어로 상단 날짜 ── */
+        var heroShort = document.getElementById('heroDateShort');
+        if (heroShort && d.weddingDate) {
+            var dd = new Date(d.weddingDate);
+            if (!isNaN(dd)) heroShort.textContent = (dd.getMonth()+1) + '.' + String(dd.getDate()).padStart(2,'0');
+        }
+
+        /* ── 2. 이름 — 전체 섹션 연동 ── */
+        /* 현재 값 보존 */
+        var curGroom = d.groomName;
+        var curBride = d.brideName;
+
+        /* 값이 없으면 기존 DOM에서 읽기 */
+        if (curGroom === undefined) {
+            var existSpan = q('.hero-top-names span');
+            curGroom = existSpan ? existSpan.textContent : '';
+        }
+        if (curBride === undefined) {
+            var existSpanB = q('.hero-top-names span:last-of-type');
+            curBride = existSpanB ? existSpanB.textContent : '';
+        }
+
+        if (d.groomName !== undefined || d.brideName !== undefined) {
+            var gn = curGroom || '';
+            var bn = curBride || '';
+
+            /* 히어로 이름 — 순서 반영 + name-marry 포함 */
+            var namesEl = q('.hero-top-names');
+            if (namesEl) {
+                var _ord = namesEl.getAttribute('data-order') || 'groom';
+                var _first  = (_ord === 'bride') ? bn : gn;
+                var _second = (_ord === 'bride') ? gn : bn;
+                namesEl.innerHTML =
+                    '<span class="name-groom">' + esc(gn) + '</span>' +
+                    '<span class="name-sep">, </span>' +
+                    '<span class="name-bride">' + esc(bn) + '</span>' +
+                    '<span class="name-marry"> 결혼합니다.</span>';
+            }
+
+            /* 디자인 테마 타이틀 아래 이름 — & 없이, 순서 data-order 유지 */
+            var designNames = document.getElementById('heroDesignNames');
+            if (designNames) {
+                designNames.innerHTML =
+                    '<span class="name-groom">' + esc(gn) + '</span>' +
+                    '<span class="hdn-sep"> </span>' +
+                    '<span class="name-bride">' + esc(bn) + '</span>';
+            }
+
+            /* 현재 표시 순서 읽기 */
+            var curOrd = (function() {
+                var hw = q('.hero-top-names');
+                return hw ? (hw.getAttribute('data-order') || 'groom') : 'groom';
+            })();
+            var first  = (curOrd === 'bride') ? bn : gn;
+            var second = (curOrd === 'bride') ? gn : bn;
+
+            /* 인사말 서명 — 순서 반영 */
+            var greetSign = q('.greet-sign');
+            if (greetSign) greetSign.textContent = first + ' & ' + second;
+
+            /* 혼주 메인 이름 — data-side 기준으로 업데이트 */
+            var hostCardGroom = q('.host-card[data-side="groom"] .host-main-name');
+            var hostCardBride = q('.host-card[data-side="bride"] .host-main-name');
+            if (hostCardGroom) hostCardGroom.textContent = gn;
+            if (hostCardBride) hostCardBride.textContent = bn;
+
+            /* D-Day 텍스트 (텍스트형) — 순서 반영 */
+            var ddayTextMsg = document.getElementById('ddayTextMsg');
+            if (ddayTextMsg) {
+                var ddStrong = ddayTextMsg.querySelector('strong');
+                var ddDays = ddStrong ? ddStrong.textContent : '';
+                ddayTextMsg.innerHTML = first + ' ♥ ' + second + ' 예식일까지, <strong>' + ddDays + '</strong>';
+            }
+
+            /* D-Day 시계+텍스트형 서브 텍스트 — 순서 반영 */
+            var ddaySub2 = document.getElementById('ddaySubText2');
+            if (ddaySub2) {
+                var daysNum = ddaySub2.querySelector('strong') ? ddaySub2.querySelector('strong').textContent : '';
+                ddaySub2.innerHTML = first + ' ♥ ' + second + ' 예식일까지, <strong>' + daysNum + '일</strong>';
+            }
+
+            /* 계좌 섹션 신랑/신부 이름 */
+            qa('.acct-who').forEach(function(el) {
+                var txt = el.textContent;
+                if (txt.indexOf('신랑') !== -1 && gn) el.textContent = '신랑 ' + gn;
+                if (txt.indexOf('신부') !== -1 && bn) el.textContent = '신부 ' + bn;
+            });
+
+            /* 푸터 */
+            var footerCopy = q('.footer-copy');
+            if (footerCopy) {
+                var datePart = footerCopy.textContent.split('—')[1] || '';
+                footerCopy.textContent = (gn && bn ? gn + ' ♥ ' + bn + '  ' : '') + '—' + datePart;
+            }
+        }
+
+        /* ── 3. 히어로 하단 날짜 ── */
+        var heroBottom = document.getElementById('heroDate');
+        if (heroBottom && d.weddingDate) {
+            var dd2 = new Date(d.weddingDate);
+            if (!isNaN(dd2)) {
+                var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+                var mm = String(dd2.getMonth()+1).padStart(2,'0');
+                var dy = String(dd2.getDate()).padStart(2,'0');
+                var timeStr = '';
+                if (d.weddingTime) {
+                    var tp = d.weddingTime.split(':').map(Number);
+                    var ampm = tp[0] >= 12 ? 'PM' : 'AM';
+                    var hh2 = tp[0] > 12 ? tp[0]-12 : tp[0]===0 ? 12 : tp[0];
+                    timeStr = ' ' + hh2 + ':' + String(tp[1]||0).padStart(2,'0') + ' ' + ampm;
+                }
+                heroBottom.textContent = dd2.getFullYear() + '. ' + mm + '. ' + dy + '. ' + days[dd2.getDay()] + timeStr;
+            }
+        }
+
+        /* ── 4. 하단 장소 ── */
+        var placeEl = q('.hero-bottom-place');
+        if (placeEl && (d.weddingPlace !== undefined || d.mapPlaceName !== undefined)) {
+            var wp = d.weddingPlace || '';
+            var mn = d.mapPlaceName || '';
+            placeEl.textContent = wp + (wp && mn ? ', ' : '') + mn;
+        }
+
+        /* ── 4-1. 지도 섹션 장소명/주소/지도 실시간 반영 ── */
+        var mapAddrHeader = q('.map-addr-header .map-addr-text');
+        if (mapAddrHeader && d.mapAddressRoad !== undefined) setText(mapAddrHeader, d.mapAddressRoad || '');
+
+        /* 지도 장소명/주소만 업데이트 — iframe src 교체는 하지 않음 (스크롤 방지) */
+
+        /* 지도 재생성 (좌표 변경 시) */
+        var smDiv = document.getElementById('invitationMap');
+        var smPh  = document.getElementById('invitationMapPlaceholder');
+        var smBtn = document.getElementById('mapDetailBtn');
+        if (smDiv) {
+            if (d.mapLat && d.mapLng) {
+                if (d.mapLat) smDiv.setAttribute('data-lat', d.mapLat);
+                if (d.mapLng) smDiv.setAttribute('data-lng', d.mapLng);
+                if (d.mapPlaceName) smDiv.setAttribute('data-place', d.mapPlaceName);
+                var smLat   = smDiv.getAttribute('data-lat');
+                var smLng   = smDiv.getAttribute('data-lng');
+                var smPlace = smDiv.getAttribute('data-place') || '';
+                var smKakaoLink = 'https://map.kakao.com/link/map/' + encodeURIComponent(smPlace) + ',' + smLat + ',' + smLng;
+                smDiv.setAttribute('data-kakaolink', smKakaoLink);
+                smDiv.style.display = '';
+                if (smPh) smPh.style.display = 'none';
+                if (smBtn) { smBtn.style.display = ''; smBtn.href = smKakaoLink; }
+                if (typeof initInvitationMap === 'function') initInvitationMap();
+            } else if (d.mapLat !== undefined || d.mapLng !== undefined) {
+                smDiv.style.display = 'none';
+                if (smPh) smPh.style.display = '';
+                if (smBtn) smBtn.style.display = 'none';
+            }
+        }
+
+        /* 내비 버튼 href 업데이트 */
+        if (d.mapLat && d.mapLng) {
+            var nk = document.getElementById('naviKakao');
+            var nt = document.getElementById('naviTmap');
+            var nn = document.getElementById('naviNaver');
+            var pn = encodeURIComponent(d.mapPlaceName || '');
+            if (nk) nk.href = 'https://map.kakao.com/link/to/' + pn + ',' + d.mapLat + ',' + d.mapLng;
+            if (nt) nt.href = 'https://tmap.life/route/goal?goalname=' + pn + '&goalx=' + d.mapLng + '&goaly=' + d.mapLat;
+            if (nn) nn.href = 'https://map.naver.com/p/directions/-/-/-/walk?goalName=' + pn + '&goalX=' + d.mapLng + '&goalY=' + d.mapLat;
+        }
+
+        /* ── 5. 인사말 ── */
+        var gtEl = q('.greet-title');
+        var gxEl = q('.greet-text');
+        if (gtEl && d.greetingTitle !== undefined) setHtml(gtEl, esc(d.greetingTitle).replace(/\n/g,'<br>'));
+        if (gxEl && d.greetingText  !== undefined) setHtml(gxEl, esc(d.greetingText).replace(/\n/g,'<br>'));
+
+        /* ── 6. 정보 블록 날짜/시간 ── */
+        var infoItems = qa('.info-item');
+        if (infoItems.length >= 2) {
+            var dateValEl = infoItems[0].querySelector('.info-val-txt');
+            var timeValEl = infoItems[1].querySelector('.info-val-txt');
+            if (dateValEl && d.weddingDate) setText(dateValEl, fmtDate(d.weddingDate));
+            if (timeValEl && d.weddingTime) setText(timeValEl, fmtTime(d.weddingTime));
+        }
+        if (infoItems.length >= 3 && d.weddingPlace !== undefined) {
+            var placeVal = infoItems[2].querySelector('.info-val-txt');
+            if (placeVal) setText(placeVal, d.weddingPlace);
+        }
+        if (infoItems.length >= 4 && d.weddingAddress !== undefined) {
+            var addrVal = infoItems[3].querySelector('.info-val-txt');
+            if (addrVal) setText(addrVal, d.weddingAddress);
+        }
+
+        /* ── 7. 섹션 전체 표시/숨김 (구분선 포함) ── */
+        var visMap = {
+            greetingVisible: 'greeting',
+            hostsVisible:    'hosts',
+            calendarVisible: 'calendar',
+            ddayVisible:     'dday',
+            galleryVisible:  'gallery',
+            mapVisible:      'map',
+            accountVisible:  'acct',
+            rsvpEnabled:     'rsvp'
+        };
+        Object.keys(visMap).forEach(function(key) {
+            if (d[key] === undefined) return;
+            var show  = (d[key] === true || d[key] === 'true' || d[key] === 1);
+            var group = visMap[key];
+            qa('[data-vis="' + group + '"]').forEach(function(el) {
+                el.style.display = show ? '' : 'none';
+            });
+        });
+
+        /* ── 8. 내비게이션 버튼 실시간 표시/숨김 ── */
+        var naviKakao = document.getElementById('naviKakao');
+        var naviTmap  = document.getElementById('naviTmap');
+        var naviNaver = document.getElementById('naviNaver');
+        if (naviKakao && d.mapNaviKakao !== undefined) naviKakao.style.display = d.mapNaviKakao ? '' : 'none';
+        if (naviTmap  && d.mapNaviTmap  !== undefined) naviTmap.style.display  = d.mapNaviTmap  ? '' : 'none';
+        if (naviNaver && d.mapNaviNaver !== undefined) naviNaver.style.display  = d.mapNaviNaver ? '' : 'none';
+
+        /* ── 9. 혼주 이름 + 고인 표시 실시간 반영 ── */
+
+        /* 부모님 이름 업데이트 — data-person 속성으로 정확히 찾기 */
+        var personMap = {
+            groomFatherName: '[data-person="groomFather"] strong',
+            groomMotherName: '[data-person="groomMother"] strong',
+            brideFatherName: '[data-person="brideFather"] strong',
+            brideMotherName: '[data-person="brideMother"] strong'
+        };
+        Object.keys(personMap).forEach(function(key) {
+            if (d[key] !== undefined) {
+                var el = q(personMap[key]);
+                if (el) el.textContent = d[key];
+            }
+        });
+
+        /* 고인 체크 여부 실시간 반영 */
+        var deceasedMap = {
+            groomFatherDeceased: '[data-person="groomFather"] .deceased-mark',
+            groomMotherDeceased: '[data-person="groomMother"] .deceased-mark',
+            brideFatherDeceased: '[data-person="brideFather"] .deceased-mark',
+            brideMotherDeceased: '[data-person="brideMother"] .deceased-mark'
+        };
+        Object.keys(deceasedMap).forEach(function(key) {
+            if (d[key] !== undefined) {
+                var mark = q(deceasedMap[key]);
+                if (mark) {
+                    var show = (d[key] === true || d[key] === 'true' || d[key] === 1);
+                    mark.classList.toggle('show', show);
+                }
+            }
+        });
+
+        /* 고인 표시 방식(한자/국화) 전환 — deceasedDisplayType 변경 시 */
+        if (d.deceasedDisplayType !== undefined) {
+            var dtype = d.deceasedDisplayType || 'hanja';
+            qa('.deceased-mark').forEach(function(mark) {
+                var hanjaEl = mark.querySelector('.deceased-hanja');
+                var flowerEl = mark.querySelector('.deceased-flower');
+                if (dtype === 'flower') {
+                    if (hanjaEl) hanjaEl.style.display = 'none';
+                    if (!flowerEl) {
+                        var svg = document.createElement('span');
+                        svg.className = 'deceased-flower';
+                        svg.innerHTML = '<svg class="deceased-flower-svg" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><g opacity="0.65"><ellipse cx="10" cy="5.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="10" cy="14.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="5.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="14.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="6.8" cy="6.8" rx="1.5" ry="3" transform="rotate(45 6.8 6.8)" fill="#888"/><ellipse cx="13.2" cy="13.2" rx="1.5" ry="3" transform="rotate(45 13.2 13.2)" fill="#888"/><ellipse cx="13.2" cy="6.8" rx="1.5" ry="3" transform="rotate(-45 13.2 6.8)" fill="#888"/><ellipse cx="6.8" cy="13.2" rx="1.5" ry="3" transform="rotate(-45 6.8 13.2)" fill="#888"/><circle cx="10" cy="10" r="2.2" fill="#bbb"/></g></svg>';
+                        mark.appendChild(svg);
+                    } else {
+                        flowerEl.style.display = '';
+                    }
+                } else {
+                    if (flowerEl) flowerEl.style.display = 'none';
+                    if (!hanjaEl) {
+                        var hj = document.createElement('span');
+                        hj.className = 'deceased-hanja';
+                        hj.textContent = '故';
+                        mark.insertBefore(hj, mark.firstChild);
+                    } else {
+                        hanjaEl.style.display = '';
+                    }
+                }
+            });
+        }
+
+        /* ── 8-1. 연락하기 팝업 표시/숨김 실시간 반영 ── */
+        if (d.contactPopupEnabled !== undefined) {
+            var show = (d.contactPopupEnabled === true || d.contactPopupEnabled === 'true');
+            qa('[data-contact-row]').forEach(function(row) {
+                row.style.display = show ? '' : 'none';
+            });
+        }
+
+        /* 전화번호 실시간 업데이트 */
+        var phoneMap = {
+            groomPhone:       '[data-name]:nth-of-type(1)',   /* 신랑 */
+            groomFatherPhone: null,
+            groomMotherPhone: null,
+            bridePhone:       null,
+            brideFatherPhone: null,
+            brideMotherPhone: null
+        };
+        var phonePairs = [
+            ['groomPhone',       'groomName',       0],
+            ['groomFatherPhone', 'groomFatherName', 1],
+            ['groomMotherPhone', 'groomMotherName', 2],
+            ['bridePhone',       'brideName',       3],
+            ['brideFatherPhone', 'brideFatherName', 4],
+            ['brideMotherPhone', 'brideMotherName', 5]
+        ];
+        phonePairs.forEach(function(pair) {
+            var phoneKey = pair[0], nameKey = pair[1], idx = pair[2];
+            var btns = qa('[data-contact]');
+            if (btns[idx]) {
+                if (d[phoneKey] !== undefined) btns[idx].dataset.phone = d[phoneKey] || '';
+                if (d[nameKey]  !== undefined) btns[idx].dataset.name  = d[nameKey]  || '';
+            }
+        });
+
+        /* ── 9. 캘린더 스타일 즉시 전환 ── */
+        if (d.calendarStyle !== undefined) {
+            var calCard = document.getElementById('calCard');
+            if (calCard) {
+                /* 기존 스타일 헤더 모두 숨김 */
+                var dateHdr = document.getElementById('calDateHeader');
+                var enHdr   = document.getElementById('calEnHeader');
+                var txtHdr  = document.getElementById('calTextHeader');
+                var title   = document.getElementById('calTitle');
+                if (dateHdr) dateHdr.style.display = 'none';
+                if (enHdr)   enHdr.style.display   = 'none';
+                if (txtHdr)  txtHdr.style.display   = 'none';
+                if (title)   title.style.display    = '';
+                /* 새 스타일 적용 */
+                initCalendarStyle({
+                    calendarStyle: d.calendarStyle,
+                    weddingDate:   d.weddingDate,
+                    weddingTime:   d.weddingTime
+                });
+            }
+        }
+
+        /* ── 10. D-Day 스타일 즉시 전환 ── */
+        if (d.ddayStyle !== undefined) {
+            var ddayCard = document.getElementById('ddayCard');
+            if (ddayCard) {
+                /* 기존 스타일 모두 숨김 */
+                ['ddayStyleText','ddayStyleClock','ddayStyleClockBottom','ddayStyleInline'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) el.style.display = 'none';
+                });
+                /* 새 스타일 적용 */
+                initDdayStyle({
+                    ddayStyle:   d.ddayStyle,
+                    weddingDate: d.weddingDate,
+                    groomName:   d.groomName,
+                    brideName:   d.brideName
+                });
+            }
+        }
+
+        /* ── 10.5 갤러리 실시간 업데이트 ── */
+        if (d.galleryImages !== undefined || d.galleryType !== undefined) {
+            var galOuter = document.getElementById('galleryOuter');
+            var track = document.getElementById('galleryTrack');
+            var galType = d.galleryType || (galOuter ? galOuter.getAttribute('data-galtype') : 'slide') || 'slide';
+            if (galOuter) galOuter.setAttribute('data-galtype', galType);
+
+            var imgs = (d.galleryImages !== undefined ? (d.galleryImages || '') : (track ? track.getAttribute('data-imgs') || '' : ''))
+                       .split('|||').filter(function(s){ return s.trim(); });
+            if (track && d.galleryImages !== undefined) track.setAttribute('data-imgs', d.galleryImages || '');
+
+            if (galOuter && track) {
+                renderGallery(galOuter, track, imgs, galType);
+            }
+        }
+
+        /* ── 11. 메인 글꼴 색상 ── */
+        if (d.mainFontColor !== undefined && d.mainFontColor) {
+            /* 기본형 히어로 텍스트 */
+            qa('.hero-top-names, .hero-top-date, .hero-marriage-label, #heroDateShort').forEach(function(el) {
+                el.style.color = d.mainFontColor;
+            });
+            /* 디자인 테마 타이틀 + 날짜 */
+            var dTitle = document.getElementById('heroDesignTitle');
+            var dDate  = document.getElementById('heroDesignDate');
+            var heroEl3 = document.getElementById('heroSection');
+            var isOurStoryTheme = heroEl3 && (
+                heroEl3.classList.contains('design-our_story') ||
+                heroEl3.classList.contains('design-our_story_pink')
+            );
+
+            if (dTitle) {
+                if (!isOurStoryTheme) {
+                    /* our_story/pink 외 테마는 인라인 색상 적용 */
+                    dTitle.style.color = d.mainFontColor;
+                    dTitle.style.mixBlendMode = 'normal';
+                } else if (heroEl3.classList.contains('design-our_story_pink')) {
+                    /* our_story_pink — 타이틀 색상은 CSS 고정(#ff9a9a), hdci만 변경 */
+                    qa('.hdci-date, .hdci-place').forEach(function(el) {
+                        el.style.color = d.mainFontColor;
+                    });
+                } else {
+                    /* our_story — 타이틀 색상 적용, 폰트는 Great Vibes 유지 */
+                    dTitle.style.color = d.mainFontColor;
+                    dTitle.style.mixBlendMode = 'normal';
+                }
+            }
+            if (dDate) {
+                dDate.style.color = d.mainFontColor;
+                qa('#heroDesignDate span').forEach(function(s){ s.style.color = d.mainFontColor; });
+            }
+            /* 디자인 테마 하단 날짜/장소 (핑크 테마용) */
+            qa('.hero-design-info, .hero-design-info span, .hero-design-place').forEach(function(el) {
+                el.style.color = d.mainFontColor;
+            });
+            /* forever 테마 하단 타이틀 + 중앙 정보 */
+            var fBottom = document.getElementById('heroDesignTitleBottom');
+            if (fBottom) fBottom.style.color = d.mainFontColor;
+            qa('#heroDesignCenterInfo, .hdci-date, .hdci-place').forEach(function(el) {
+                el.style.color = d.mainFontColor;
+            });
+            /* 디자인 테마 이름 */
+            var dNames = document.getElementById('heroDesignNames');
+            if (dNames) {
+                dNames.style.color = d.mainFontColor;
+                qa('#heroDesignNames span').forEach(function(s){ s.style.color = d.mainFontColor; });
+            }
+        }
+
+        /* ── 12. 메인 글꼴 ── */
+        if (d.mainFont !== undefined && d.mainFont) {
+            var fontMap = {
+                noto:       "'Noto Serif KR', serif",
+                playfair:   "'Playfair Display', 'Noto Serif KR', serif",
+                eb_garamond:"'EB Garamond', 'Cormorant Garamond', serif",
+                cormorant:  "'Cormorant Garamond', serif",
+                dancing:    "'Dancing Script', cursive",
+                nanum:      "'Nanum Myeongjo', serif"
+            };
+            /* our_story 타이틀 폰트별 크기 보정 — 손글씨/세리프마다 글자 너비가 달라 넘침 방지 */
+            var titleSizeMap = {
+                noto:       'min(13cqw, 62px)',
+                playfair:   'min(11cqw, 54px)',
+                eb_garamond:'min(12cqw, 58px)',
+                cormorant:  'min(12cqw, 58px)',
+                dancing:    'min(11cqw, 52px)',
+                nanum:      'min(12cqw, 58px)'
+            };
+            var ff = fontMap[d.mainFont];
+            if (ff) {
+                ['.hero-top-names', '.hero-top-date', '#heroDateShort',
+                 '.hero-script', '.hero-bottom-date', '.hero-bottom-place'].forEach(function(sel) {
+                    var el = q(sel); if (el) el.style.fontFamily = ff;
+                });
+                var dTitle = document.getElementById('heroDesignTitle');
+                var dNames = document.getElementById('heroDesignNames');
+                var dTitleBottom = document.getElementById('heroDesignTitleBottom');
+                if (dTitle) {
+                    var heroEl2 = document.getElementById('heroSection');
+                    var isPink     = heroEl2 && heroEl2.classList.contains('design-our_story_pink');
+                    var isOurStory = heroEl2 && heroEl2.classList.contains('design-our_story');
+
+                    if (isPink) {
+                        /* our_story_pink — 영어 타이틀 Dancing Script 고정 */
+                        dTitle.style.fontFamily = "'Dancing Script', cursive";
+                        dTitle.style.fontSize   = '';
+                        /* 한글 날짜/장소만 선택 폰트 */
+                        var dDate  = document.getElementById('hdciDate');
+                        var dPlace = document.getElementById('hdciPlace');
+                        if (dDate)  dDate.style.fontFamily  = ff;
+                        if (dPlace) dPlace.style.fontFamily = ff;
+                    } else if (isOurStory) {
+                        /* our_story — 영어 타이틀 Great Vibes 고정 */
+                        dTitle.style.fontFamily = "'Great Vibes', 'Dancing Script', cursive";
+                        dTitle.style.fontSize   = 'min(19cqw, 90px)';
+                        /* 이름/날짜만 선택 폰트 */
+                        if (dNames) {
+                            dNames.style.fontFamily = ff;
+                            qa('#heroDesignNames span').forEach(function(s){ s.style.fontFamily = ff; });
+                        }
+                        qa('#heroDesignDate span').forEach(function(el) { el.style.fontFamily = ff; });
+                    } else {
+                        dTitle.style.fontFamily = ff;
+                    }
+                }
+                if (dTitleBottom) dTitleBottom.style.fontFamily = ff;
+                if (dNames) {
+                    dNames.style.fontFamily = ff;
+                    qa('#heroDesignNames span').forEach(function(s){ s.style.fontFamily = ff; });
+                }
+                qa('.hdci-date, .hdci-place').forEach(function(el) { el.style.fontFamily = ff; });
+            }
+        }
+
+        /* ── 12b. 글꼴 크기 ── */
+        if (d.mainFontSize !== undefined && d.mainFontSize) {
+            var heroEl = document.getElementById('heroSection');
+            if (heroEl) {
+                heroEl.classList.remove('fs-sm', 'fs-md', 'fs-lg');
+                heroEl.classList.add('fs-' + d.mainFontSize);
+            }
+        }
+
+        /* ── 12c. 유색효과 (사진 필터와 합산) ── */
+        if (d.colorEffect !== undefined) {
+            var cMap = {
+                warm:    'sepia(0.15) saturate(1.4) hue-rotate(-12deg)',
+                cool:    'sepia(0.08) saturate(0.82) hue-rotate(18deg) brightness(1.04)',
+                vintage: 'sepia(0.4) contrast(0.88) brightness(1.06) saturate(0.78)'
+            };
+            window._liveColorEff = (d.colorEffect && d.colorEffect !== 'none')
+                ? (cMap[d.colorEffect] || '') : '';
+            applyPhotoFilter();
+        }
+
+        /* ── 12d. 메인 효과 (fog/wave/paper) ── */
+        if (d.mainEffect !== undefined) {
+            var effLayer = document.getElementById('effectLayer');
+            if (effLayer) {
+                effLayer.className = 'effect-layer';
+                if (d.mainEffect && d.mainEffect !== 'none') {
+                    effLayer.classList.add('eff-' + d.mainEffect);
+                }
+            }
+        }
+
+        /* ── 13. 메인 디자인 템플릿 (액자 스타일) ── */
+        if (d.mainDesign !== undefined && d.mainDesign) {
+            var hero = document.getElementById('heroSection');
+            if (hero) {
+                hero.className = hero.className.replace(/\bdesign-\S+/g, '').trim();
+                hero.classList.add('design-' + d.mainDesign);
+            }
+
+            /* 디자인 날짜 3분할 채우기 */
+            fillDesignDate(d.weddingDate);
+            /* forever 테마 중앙 날짜/장소 채우기 */
+            fillForeverInfo(d.weddingDate, d.weddingTime, d.weddingPlace, d.mapPlaceName);
+            /* 디자인 전환 시 타이틀 크기·색상 즉시 동기화 */
+            var dTitleDesign = document.getElementById('heroDesignTitle');
+            if (dTitleDesign) {
+                if (d.mainDesign === 'our_story') {
+                    dTitleDesign.style.fontSize = 'min(19cqw, 90px)';
+                    dTitleDesign.style.color = d.mainFontColor || '#000000';
+                } else if (d.mainDesign === 'our_story_pink') {
+                    dTitleDesign.style.fontSize = '';
+                    dTitleDesign.style.color = '#ff9a9a';
+                } else {
+                    dTitleDesign.style.fontSize = '';
+                    dTitleDesign.style.color = '';
+                }
+            }
+        }
+        /* 날짜만 바뀌어도 디자인 날짜 갱신 */
+        if (d.weddingDate !== undefined) {
+            fillDesignDate(d.weddingDate);
+            fillForeverInfo(d.weddingDate, d.weddingTime, d.weddingPlace, d.mapPlaceName);
+        }
+
+        /* ── 14. 메인 사진 실시간 반영 ── */
+        if (d.mainPhotoBase64 !== undefined) {
+            var photoImg = q('.hero-fullphoto-img');
+            var photoPlaceholder = q('.hero-fullphoto-placeholder');
+            var fullphotoEl = q('.hero-fullphoto');
+            if (d.mainPhotoBase64 && d.mainPhotoBase64.trim()) {
+                /* 사진 있음 — img 표시 */
+                if (!photoImg) {
+                    /* img 태그가 없으면 동적으로 생성 */
+                    var wrap = q('.hero-fullphoto');
+                    if (wrap) {
+                        photoImg = document.createElement('img');
+                        photoImg.className = 'hero-fullphoto-img';
+                        photoImg.alt = '메인 사진';
+                        wrap.insertBefore(photoImg, wrap.firstChild);
+                    }
+                }
+                if (photoImg) {
+                    photoImg.src = 'data:image/jpeg;base64,' + d.mainPhotoBase64;
+                    photoImg.style.display = '';
+                }
+                if (photoPlaceholder) photoPlaceholder.style.display = 'none';
+                if (fullphotoEl) fullphotoEl.classList.add('has-photo');
+            } else {
+                /* 사진 없음 — 플레이스홀더 표시 */
+                if (photoImg) photoImg.style.display = 'none';
+                if (photoPlaceholder) photoPlaceholder.style.display = '';
+                if (fullphotoEl) fullphotoEl.classList.remove('has-photo');
+            }
+        }
+
+        /* ── 15. 사진 필터 실시간 반영 ── */
+        if (d.photoFilter !== undefined) {
+            var filterImg = q('.hero-fullphoto-img');
+            if (filterImg) {
+                filterImg.style.filter = (d.photoFilter && d.photoFilter !== 'none')
+                    ? d.photoFilter : '';
+            }
+        }
+    });
+
+    /* 갤러리 타입별 렌더링 */
+    function renderGallery(outer, track, imgs, type) {
+        var arrows = outer.querySelector('.gallery-arrows');
+        var dotsEl = document.getElementById('galleryDots');
+
+        if (!imgs.length) {
+            outer.className = outer.className.replace(/galtype-\S+/g, '').trim();
+            outer.classList.add('galtype-slide');
+            var ph = '';
+            for (var i = 0; i < 6; i++) ph += '<div class="gallery-slide"><i class="ti ti-photo"></i></div>';
+            track.innerHTML = ph;
+            track.style.transform = '';
+            if (arrows) arrows.style.display = '';
+            if (dotsEl) dotsEl.innerHTML = '';
+            return;
+        }
+
+        outer.className = outer.className.replace(/galtype-\S+/g, '').trim();
+        outer.classList.add('galtype-' + type);
+
+        if (type === 'slide') {
+            track.innerHTML = imgs.map(function(url) {
+                return '<div class="gallery-slide"><img src="' + url.trim() + '" alt="갤러리" style="width:100%;height:100%;object-fit:cover;cursor:pointer;"></div>';
+            }).join('');
+            track.style.display = 'flex';
+            track.style.transform = '';
+            if (arrows) arrows.style.display = '';
+            /* 슬라이드 네비게이션 재연결 */
+            setupSlideNav(outer, track, dotsEl, imgs.length);
+        } else if (type === 'thumb_swipe') {
+            /* 메인 슬라이드 영역 */
+            track.style.display = 'block';
+            track.style.transform = '';
+            if (arrows) arrows.style.display = 'none'; /* 기본 화살표 숨김 — ts-main-wrap 내부 버튼 사용 */
+            if (dotsEl) dotsEl.innerHTML = '';
+            var tsIdx = 0;
+            track.setAttribute('data-ts-idx', '0');
+
+            /* 초기 DOM 구성: 화살표를 ts-main-wrap 안에 배치해 이미지 영역 기준으로 중앙 정렬 */
+            var tsNavBtns = imgs.length > 1
+                ? '<button class="garrow ts-nav-prev" aria-label="이전"><i class="ti ti-chevron-left"></i></button>' +
+                  '<button class="garrow ts-nav-next" aria-label="다음"><i class="ti ti-chevron-right"></i></button>'
+                : '';
+            track.innerHTML =
+                '<div class="ts-main-wrap">' +
+                '  <img class="ts-main-img" src="' + imgs[0].trim() + '" alt="갤러리">' +
+                tsNavBtns +
+                '</div>' +
+                '<div class="ts-thumb-row">' +
+                imgs.map(function(u, i) {
+                    return '<img class="ts-thumb' + (i === 0 ? ' active' : '') + '" src="' + u.trim() + '" data-idx="' + i + '" alt="썸네일">';
+                }).join('') +
+                '</div>';
+
+            var tsMainImg = track.querySelector('.ts-main-img');
+            var tsThumbs  = track.querySelectorAll('.ts-thumb');
+
+            /* 메인 이미지만 교체 (DOM 재생성 없이 부드럽게) */
+            function updateTS(idx) {
+                tsIdx = idx;
+                track.setAttribute('data-ts-idx', String(idx));
+                if (tsMainImg) {
+                    tsMainImg.style.opacity = '0';
+                    tsMainImg.style.transition = 'opacity 0.2s';
+                    setTimeout(function() {
+                        tsMainImg.src = imgs[tsIdx].trim();
+                        tsMainImg.style.opacity = '1';
+                    }, 180);
+                }
+                tsThumbs.forEach(function(th) {
+                    th.classList.toggle('active', parseInt(th.dataset.idx) === tsIdx);
+                });
+                if (tsThumbs[tsIdx]) {
+                    tsThumbs[tsIdx].scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+                }
+            }
+
+            /* 썸네일 클릭 → 메인 교체 (라이트박스 열림 방지를 위해 전파 차단) */
+            tsThumbs.forEach(function(th) {
+                th.onclick = function(e) { e.stopPropagation(); updateTS(parseInt(this.dataset.idx)); };
+            });
+
+            /* ts-main-wrap 내부 화살표 */
+            var btnP = track.querySelector('.ts-nav-prev');
+            var btnN = track.querySelector('.ts-nav-next');
+            if (btnP) { btnP.onclick = function(e) { e.stopPropagation(); updateTS(Math.max(0, tsIdx-1)); }; }
+            if (btnN) { btnN.onclick = function(e) { e.stopPropagation(); updateTS(Math.min(imgs.length-1, tsIdx+1)); }; }
+
+            /* 메인 스와이프 */
+            var mainWrap = track.querySelector('.ts-main-wrap');
+            if (mainWrap) {
+                var sx = 0;
+                mainWrap.ontouchstart = function(e) { sx = e.touches[0].clientX; };
+                mainWrap.ontouchend   = function(e) {
+                    var dx = e.changedTouches[0].clientX - sx;
+                    if (Math.abs(dx) > 40) { updateTS(dx < 0 ? Math.min(imgs.length-1, tsIdx+1) : Math.max(0, tsIdx-1)); }
+                };
+            }
+
+        } else {
+            track.innerHTML = imgs.map(function(url) {
+                return '<div class="gallery-cell"><img src="' + url.trim() + '" alt="갤러리" style="width:100%;height:100%;object-fit:cover;cursor:pointer;"></div>';
+            }).join('');
+            track.style.display = '';
+            track.style.transform = '';
+            if (arrows) arrows.style.display = 'none';
+            if (dotsEl) dotsEl.innerHTML = '';
+        }
+    }
+
+    /* 슬라이드 네비게이션 연결 (재사용 가능) */
+    function setupSlideNav(outer, track, dotsEl, total) {
+        var btnP = document.getElementById('galleryPrev');
+        var btnN = document.getElementById('galleryNext');
+        var slides = track.querySelectorAll('.gallery-slide');
+        var maxIdx = Math.max(0, total - 1);
+        var gIdx = 0;
+
+        function update() {
+            if (!slides.length) return;
+            var w = slides[0].offsetWidth;
+            track.style.transform = 'translateX(-' + (gIdx * w) + 'px)';
+            if (dotsEl) {
+                var dots = '';
+                for (var i = 0; i <= maxIdx; i++) {
+                    dots += '<button class="gdot ' + (i === gIdx ? 'active' : '') + '" data-idx="' + i + '"></button>';
+                }
+                dotsEl.innerHTML = dots;
+                dotsEl.querySelectorAll('.gdot').forEach(function(b) {
+                    b.addEventListener('click', function() { gIdx = parseInt(this.dataset.idx); update(); });
+                });
+            }
+        }
+
+        /* 기존 이벤트 제거 위해 클론 교체 */
+        if (btnP) {
+            var newP = btnP.cloneNode(true);
+            btnP.parentNode.replaceChild(newP, btnP);
+            newP.addEventListener('click', function() { gIdx = Math.max(0, gIdx-1); update(); });
+        }
+        if (btnN) {
+            var newN = btnN.cloneNode(true);
+            btnN.parentNode.replaceChild(newN, btnN);
+            newN.addEventListener('click', function() { gIdx = Math.min(maxIdx, gIdx+1); update(); });
+        }
+
+        /* 스와이프 */
+        var startX = 0;
+        outer.ontouchstart = function(e) { startX = e.touches[0].clientX; };
+        outer.ontouchend = function(e) {
+            var dx = e.changedTouches[0].clientX - startX;
+            if (Math.abs(dx) > 40) { gIdx = dx < 0 ? Math.min(maxIdx, gIdx+1) : Math.max(0, gIdx-1); update(); }
+        };
+
+        setTimeout(update, 50);
+    }
+
+    /* 디자인 템플릿용 날짜 (29TH · OCT · 2026) */
+    function fillDesignDate(dateStr) {
+        if (!dateStr) return;
+        var dd = new Date(dateStr);
+        if (isNaN(dd)) return;
+        var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+        var dayEl   = document.querySelector('.hdd-day');
+        var monthEl = document.querySelector('.hdd-month');
+        var yearEl  = document.querySelector('.hdd-year');
+        var day = dd.getDate();
+        var suffix = (day % 10 === 1 && day !== 11) ? 'ST' : (day % 10 === 2 && day !== 12) ? 'ND' : (day % 10 === 3 && day !== 13) ? 'RD' : 'TH';
+        if (dayEl)   dayEl.textContent   = day + suffix;
+        if (monthEl) monthEl.textContent = months[dd.getMonth()];
+        if (yearEl)  yearEl.textContent  = dd.getFullYear();
+    }
+
+    /* forever 테마 중앙 날짜/장소 (2026.06.20 SAT 13:00 / 웨딩홀) */
+    function fillForeverInfo(dateStr, timeStr, place, mapPlaceName) {
+        var dateEl  = document.getElementById('hdciDate');
+        var placeEl = document.getElementById('hdciPlace');
+        /* 새 forever-layout 요소 */
+        var newDateEl   = document.getElementById('foreverDate');
+        var newPlace1El = document.querySelector('.forever-place1');
+        var newPlace2El = document.querySelector('.forever-place2');
+
+        var formatted = '';
+        if (dateStr) {
+            var dd = new Date(dateStr);
+            if (!isNaN(dd)) {
+                var y = dd.getFullYear();
+                var m = String(dd.getMonth()+1).padStart(2,'0');
+                var d = String(dd.getDate()).padStart(2,'0');
+                formatted = y + '. ' + m + '. ' + d;
+                /* 기존 hdciDate */
+                if (dateEl) {
+                    var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+                    var dow = days[dd.getDay()];
+                    var timePart = '';
+                    if (timeStr) { var tp = timeStr.split(':'); timePart = ' ' + tp[0] + ':' + (tp[1]||'00'); }
+                    dateEl.textContent = y + '.' + m + '.' + d + ' ' + dow + timePart;
+                }
+            }
+        }
+        if (placeEl && place !== undefined) placeEl.textContent = place || '웨딩홀';
+
+        /* 새 forever-layout */
+        if (newDateEl && formatted) newDateEl.textContent = formatted;
+        if (newPlace1El && place !== undefined) newPlace1El.textContent = (place || '').toUpperCase();
+        if (newPlace2El && mapPlaceName !== undefined) newPlace2El.textContent = (mapPlaceName || '').toUpperCase();
+    }
+
+    /* ── 메인 사진 / 필터 별도 수신 (WEDDING_PHOTO_UPDATE) ── */
+    window.addEventListener('message', function(e) {
+        if (!e.data || e.data.type !== 'WEDDING_PHOTO_UPDATE') return;
+        var d = e.data.payload;
+        if (!d) return;
+
+        var photoImg = document.querySelector('.hero-fullphoto-img');
+        var photoPlaceholder = document.querySelector('.hero-fullphoto-placeholder');
+        var fullphotoEl2 = document.querySelector('.hero-fullphoto');
+
+        /* 사진 표시/숨김 */
+        if (d.mainPhotoBase64 !== undefined) {
+            if (d.mainPhotoBase64 && d.mainPhotoBase64.trim()) {
+                if (!photoImg) {
+                    var wrap = document.querySelector('.hero-fullphoto');
+                    if (wrap) {
+                        photoImg = document.createElement('img');
+                        photoImg.className = 'hero-fullphoto-img';
+                        photoImg.alt = '메인 사진';
+                        wrap.insertBefore(photoImg, wrap.firstChild);
+                    }
+                }
+                if (photoImg) {
+                    photoImg.src = 'data:image/jpeg;base64,' + d.mainPhotoBase64;
+                    photoImg.style.display = '';
+                }
+                if (photoPlaceholder) photoPlaceholder.style.display = 'none';
+                if (fullphotoEl2) fullphotoEl2.classList.add('has-photo');
+
+                /* forever-arch 사진도 업데이트 */
+                var archImg = document.querySelector('.forever-arch-img');
+                var archPlaceholder = document.querySelector('.forever-arch-placeholder');
+                if (!archImg) {
+                    var arch = document.querySelector('.forever-arch');
+                    if (arch) {
+                        archImg = document.createElement('img');
+                        archImg.className = 'forever-arch-img';
+                        archImg.alt = '메인 사진';
+                        arch.insertBefore(archImg, arch.firstChild);
+                    }
+                }
+                if (archImg) { archImg.src = 'data:image/jpeg;base64,' + d.mainPhotoBase64; archImg.style.display = ''; }
+                if (archPlaceholder) archPlaceholder.style.display = 'none';
+            } else {
+                if (photoImg) photoImg.style.display = 'none';
+                if (photoPlaceholder) photoPlaceholder.style.display = '';
+                if (fullphotoEl2) fullphotoEl2.classList.remove('has-photo');
+            }
+        }
+
+        /* 필터 적용 (유색효과와 합산) */
+        if (d.photoFilter !== undefined) {
+            window._livePhotoFilter = d.photoFilter;
+            applyPhotoFilter();
+        }
+    });
+
+    /* ── 편집 패널 섹션 클릭 → 청첩장 스크롤 연동 ── */
+    /* ── 섹션 순서 변경 ── */
+    window.addEventListener('message', function(e) {
+        if (!e.data || e.data.type !== 'WEDDING_SECTION_ORDER') return;
+        var order = e.data.order;
+        if (!order || !order.length) return;
+
+        var idToVis = {
+            greet: 'greeting', cal: 'calendar', dday: 'dday',
+            hosts: 'hosts',    gal: 'gallery',  map:  'map',  acct: 'acct',  rsvp: 'rsvp'
+        };
+
+        /* 고정 앵커 = 일시 및 장소 섹션 */
+        var infoEl = document.querySelector('.info-block');
+        if (!infoEl) return;
+        var anchor = infoEl.closest('.sec') || infoEl;
+        var parent = anchor.parentNode;
+
+        order.forEach(function(sid) {
+            var vis = idToVis[sid];
+            if (!vis) return;
+
+            /* 섹션 본체 — 없으면(th:if false) 스킵 */
+            var sec = document.querySelector('.sec[data-vis="' + vis + '"]');
+            if (!sec) return;
+
+            /* 구분선 — 없으면 새로 생성 (acct 등 원래 없는 경우) */
+            var divider = document.querySelector('.section-divider[data-vis="' + vis + '"]');
+            if (!divider) {
+                divider = document.createElement('div');
+                divider.className = 'section-divider';
+                divider.setAttribute('data-vis', vis);
+                divider.innerHTML =
+                    '<div class="div-line"></div>' +
+                    '<div class="div-icon">✦</div>' +
+                    '<div class="div-line"></div>';
+            }
+
+            /* 구분선 → 앵커 바로 뒤에 배치 */
+            if (anchor.nextElementSibling !== divider) {
+                parent.insertBefore(divider, anchor.nextElementSibling);
+            }
+            anchor = divider;
+
+            /* 섹션 본체 → 구분선 바로 뒤에 배치 */
+            if (anchor.nextElementSibling !== sec) {
+                parent.insertBefore(sec, anchor.nextElementSibling);
+            }
+            anchor = sec;
+        });
+    });
+
+    window.addEventListener('message', function(e) {
+        /* 스크롤 위치 복원 (새로고침 후 위치 유지) */
+        if (e.data && e.data.type === 'WEDDING_SCROLL_RESTORE') {
+            var y = e.data.scrollY || 0;
+            window.scrollTo({ top: y, behavior: 'instant' });
+            return;
+        }
+
+        if (!e.data || e.data.type !== 'WEDDING_SCROLL_TO') return;
+
+        /* 'sec-greet' 또는 'greet' 둘 다 처리 */
+        var sec = (e.data.section || '').replace(/^sec-/, '');
+
+        var targetMap = {
+            'main':    null,
+            'basic':   null,
+            'wedding': '.info-block',
+            'greet':   '.greet-card',
+            'hosts':   '.hosts-wrap',
+            'cal':     '#calCard',
+            'dday':    '#ddayCard',
+            'gal':     '#galleryOuter',
+            'map':     '.map-full',
+            'acct':    '.acct-tab-wrap',
+        };
+
+        var selector = targetMap[sec];
+
+        if (selector === undefined) return;  /* 매핑 없으면 무시 */
+
+        if (!selector) {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+            return;
+        }
+
+        var el = document.querySelector(selector);
+        if (el) {
+            /* 약간 위 여백을 두고 이동 */
+            var top = el.getBoundingClientRect().top + window.pageYOffset - 20;
+            window.scrollTo({top: top, behavior: 'smooth'});
+        }
+    });
+
+    /* ── 페이지 로드 시 저장된 갤러리 타입으로 렌더링 ── */
+    (function initGalleryType() {
+        var galOuter = document.getElementById('galleryOuter');
+        var track = document.getElementById('galleryTrack');
+        if (!galOuter || !track) return;
+        var galType = galOuter.getAttribute('data-galtype') || 'slide';
+        /* 슬라이드형이면 기존 HTML 그대로 (initGallery가 처리) */
+        if (galType === 'slide') return;
+        /* 그리드/매거진/혼합형이면 이미지 추출 후 재렌더링 */
+        var imgEls = track.querySelectorAll('img');
+        var imgs = Array.prototype.slice.call(imgEls).map(function(img){ return img.src; }).filter(function(s){ return s; });
+        if (imgs.length) {
+            track.setAttribute('data-imgs', imgs.join('|||')); /* 라이트박스가 전체 이미지를 알 수 있도록 */
+            renderGallery(galOuter, track, imgs, galType);
+        }
+    })();
+})();
+</script>
+
+<!-- 이미지 확대 라이트박스 -->
+<div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose">&times;</button>
+    <button class="lightbox-prev" id="lightboxPrev">&#8249;</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="">
+    <button class="lightbox-next" id="lightboxNext">&#8250;</button>
+    <div class="lightbox-counter" id="lightboxCounter"></div>
+</div>
+
+<script>
+(function() {
+    var lightbox = document.getElementById('lightbox');
+    var lightboxImg = document.getElementById('lightboxImg');
+    var counter = document.getElementById('lightboxCounter');
+    var images = [];
+    var current = 0;
+
+    function collectImages() {
+        var galOuter = document.getElementById('galleryOuter');
+        var isThumbSwipe = galOuter && galOuter.classList.contains('galtype-thumb_swipe');
+        if (isThumbSwipe) {
+            var track = document.getElementById('galleryTrack');
+            var raw = track ? (track.getAttribute('data-imgs') || '') : '';
+            var urls = raw.split('|||').filter(function(s){ return s.trim(); });
+            if (!urls.length) {
+                /* data-imgs 미설정 시 DOM의 썸네일 src로 대체 */
+                urls = Array.prototype.slice.call(track ? track.querySelectorAll('.ts-thumb') : [])
+                       .map(function(img){ return img.src; }).filter(function(s){ return s; });
+            }
+            if (urls.length) { images = urls.map(function(u){ return {src: u.trim()}; }); return; }
+        }
+        images = Array.prototype.slice.call(
+            document.querySelectorAll('#galleryOuter img:not(.ts-thumb), .gallery-img, .gallery-grid img, .gallery-slide img')
+        ).filter(function(img){ return img.src && !img.closest('.lightbox'); });
+    }
+
+    function openLightbox(index) {
+        collectImages();
+        if (!images.length) return;
+        current = index;
+        showImage();
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+        lightbox.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    function showImage() {
+        if (!images[current]) return;
+        lightboxImg.src = images[current].src;
+        counter.textContent = (current+1) + ' / ' + images.length;
+    }
+    function next() { current = (current+1) % images.length; showImage(); }
+    function prev() { current = (current-1+images.length) % images.length; showImage(); }
+
+    /* 갤러리 이미지 클릭 시 라이트박스 (썸네일 제외) */
+    document.addEventListener('click', function(e) {
+        var img = e.target.closest('#galleryOuter img:not(.ts-thumb), .gallery-img, .gallery-grid img, .gallery-slide img');
+        if (img) {
+            collectImages();
+            var galOuter = document.getElementById('galleryOuter');
+            var isThumbSwipe = galOuter && galOuter.classList.contains('galtype-thumb_swipe');
+            var idx;
+            if (isThumbSwipe) {
+                var track = document.getElementById('galleryTrack');
+                idx = parseInt(track ? (track.getAttribute('data-ts-idx') || '0') : '0');
+            } else {
+                idx = images.indexOf(img);
+            }
+            if (idx >= 0) openLightbox(idx);
+        }
+    });
+
+    document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+    document.getElementById('lightboxNext').addEventListener('click', function(e){ e.stopPropagation(); next(); });
+    document.getElementById('lightboxPrev').addEventListener('click', function(e){ e.stopPropagation(); prev(); });
+    lightbox.addEventListener('click', function(e){
+        if (touchMoved) { touchMoved = false; return; } /* 스와이프 후 발생하는 click 무시 */
+        if (e.target === lightbox || e.target === lightboxImg) closeLightbox();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (!lightbox.classList.contains('open')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowRight') next();
+        if (e.key === 'ArrowLeft') prev();
+    });
+
+    /* 스와이프 (모바일) — touchMoved 플래그로 후속 click 이벤트가 라이트박스를 닫는 것을 방지 */
+    var touchStartX = 0;
+    var touchMoved = false;
+    lightbox.addEventListener('touchstart', function(e){ touchStartX = e.touches[0].clientX; touchMoved = false; }, {passive:true});
+    lightbox.addEventListener('touchend', function(e) {
+        var diff = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(diff) > 50) { touchMoved = true; diff > 0 ? prev() : next(); }
+    }, {passive:true});
+})();
+</script>
+
+    <!-- ══ 갤러리 이미지 팝업 뷰어 ══ -->
+    <div id="galleryPopup" class="gp-overlay" style="display:none;" onclick="closeGalleryPopup(event)">
+        <button class="gp-close" id="gpCloseBtn"><i class="ti ti-x"></i></button>
+        <button class="gp-arrow gp-prev" id="gpPrev"><i class="ti ti-chevron-left"></i></button>
+        <div class="gp-img-wrap">
+            <img class="gp-img" id="gpImg" src="" alt="">
+            <div class="gp-counter" id="gpCounter"></div>
+        </div>
+        <button class="gp-arrow gp-next" id="gpNext"><i class="ti ti-chevron-right"></i></button>
+    </div>
+
+    <!-- ══ RSVP 스크립트 ══ -->
+<script>
+(function() {
+    var attendance = null;
+    var mealCount  = 1;
+
+    function q(id) { return document.getElementById(id); }
+
+    var yesBtn    = q('rsvpAttendYes');
+    var noBtn     = q('rsvpAttendNo');
+    var mealRow   = q('rsvpMealRow');
+    var minusBtn  = q('rsvpMinus');
+    var plusBtn   = q('rsvpPlus');
+    var mealEl    = q('rsvpMealCount');
+    var submitBtn = q('rsvpSubmitBtn');
+    var errMsg    = q('rsvpErrMsg');
+
+    function pickAttend(val) {
+        attendance = val;
+        if (val === true) {
+            yesBtn.classList.add('active');
+            noBtn.classList.remove('active');
+            mealRow.style.display = '';
+        } else {
+            noBtn.classList.add('active');
+            yesBtn.classList.remove('active');
+            mealRow.style.display = 'none';
+        }
+    }
+
+    if (yesBtn) yesBtn.addEventListener('click', function() { pickAttend(true); });
+    if (noBtn)  noBtn.addEventListener('click',  function() { pickAttend(false); });
+
+    if (minusBtn) minusBtn.addEventListener('click', function() {
+        if (mealCount > 1) { mealCount--; if (mealEl) mealEl.textContent = mealCount; }
+    });
+    if (plusBtn) plusBtn.addEventListener('click', function() {
+        if (mealCount < 20) { mealCount++; if (mealEl) mealEl.textContent = mealCount; }
+    });
+
+    if (submitBtn) submitBtn.addEventListener('click', function() {
+        var name = (q('rsvpName') && q('rsvpName').value.trim()) || '';
+        var phone = (q('rsvpPhone') && q('rsvpPhone').value.trim()) || '';
+        var msg   = (q('rsvpMsg') && q('rsvpMsg').value.trim()) || '';
+
+        if (!name) { showErr('이름을 입력해 주세요.'); return; }
+        if (attendance === null) { showErr('참석 여부를 선택해 주세요.'); return; }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = '전송 중...';
+
+        var payload = {
+            name: name,
+            phone: phone || null,
+            attendance: attendance,
+            mealCount: attendance ? mealCount : 0,
+            message: msg || null
+        };
+
+        fetch('/api/rsvp', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.error) {
+                showErr(data.error);
+                submitBtn.disabled = false;
+                submitBtn.textContent = '참석 여부 전달하기';
+            } else {
+                q('rsvpFormWrap').style.display = 'none';
+                q('rsvpSuccess').style.display = '';
+            }
+        })
+        .catch(function() {
+            showErr('전송에 실패했습니다. 다시 시도해 주세요.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = '참석 여부 전달하기';
+        });
+    });
+
+    function showErr(txt) {
+        if (!errMsg) return;
+        errMsg.textContent = txt;
+        errMsg.style.display = '';
+        setTimeout(function() { errMsg.style.display = 'none'; }, 3000);
+    }
+})();
+</script>
+
+    <!-- ══ 연락하기 팝업 모달 ══ -->
+    <div id="contactModal" class="contact-modal-overlay" style="display:none;" onclick="closeContactModal(event)">
+        <div class="contact-modal-box">
+            <div class="contact-modal-name" id="contactModalName">이름</div>
+            <div class="contact-modal-phone" id="contactModalPhone">010-0000-0000</div>
+            <div class="contact-modal-btns">
+                <a class="contact-modal-btn call" id="contactModalCallBtn" href="#">
+                    <i class="ti ti-phone"></i>
+                    <span>전화하기</span>
+                </a>
+                <a class="contact-modal-btn sms" id="contactModalSmsBtn" href="#">
+                    <i class="ti ti-message"></i>
+                    <span>문자하기</span>
+                </a>
+            </div>
+            <button class="contact-modal-close" onclick="closeContactModal()">닫기</button>
+        </div>
+    </div>
+<!-- ══ forever 테마 하트 장식 ══ -->
+<script>
+(function() {
+    // 스크린샷 기준 고정 위치 (top%, left% 기준)
+    // 하트 크기/투명도도 약간씩 다르게
+    var hearts = [
+        { top:  4, left: 12, size: 11, opacity: 0.7 },
+        { top:  7, left: 28, size:  8, opacity: 0.5 },
+        { top:  3, left: 68, size: 10, opacity: 0.75 },
+        { top:  6, left: 82, size:  8, opacity: 0.55 },
+        { top: 14, left:  6, size:  9, opacity: 0.6 },
+        { top: 18, left: 88, size: 10, opacity: 0.65 },
+        { top: 32, left:  4, size:  8, opacity: 0.5 },
+        { top: 29, left: 91, size:  9, opacity: 0.6 },
+        { top: 48, left:  5, size: 10, opacity: 0.55 },
+        { top: 52, left: 88, size:  8, opacity: 0.5 },
+        { top: 64, left:  8, size:  9, opacity: 0.6 },
+        { top: 68, left: 86, size: 10, opacity: 0.65 },
+    ];
+
+    function renderHearts() {
+        var layout = document.querySelector('.forever-layout');
+        if (!layout) return;
+
+        // 기존 하트 제거
+        layout.querySelectorAll('.forever-heart').forEach(function(el) { el.remove(); });
+
+        hearts.forEach(function(h) {
+            var el = document.createElement('span');
+            el.className = 'forever-heart';
+            el.textContent = '♡';
+            el.style.top     = h.top  + '%';
+            el.style.left    = h.left + '%';
+            el.style.fontSize = h.size + 'px';
+            el.style.opacity  = h.opacity;
+            layout.appendChild(el);
+        });
+    }
+
+    // 초기 렌더
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderHearts);
+    } else {
+        renderHearts();
+    }
+
+    // 테마 전환 시 재렌더 (postMessage 수신 후)
+    window.addEventListener('message', function(e) {
+        if (!e.data) return;
+        var d = e.data.payload || e.data;
+        if (d && d.mainDesign === 'forever') {
+            setTimeout(renderHearts, 50);
+        }
+    });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,2505 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500&family=Noto+Sans+KR:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Pinyon+Script&display=swap');
+
+/* ── 전역 스크롤바 숨김 + 풀화면 레이아웃 ── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+
+/* 스크롤바 완전 숨김 (모바일/태블릿/데스크톱) */
+html,body,::-webkit-scrollbar{scrollbar-width:none;-ms-overflow-style:none;}
+::-webkit-scrollbar{display:none;width:0;height:0;}
+
+html{scroll-behavior:smooth;height:100%;}
+body{
+    background:#f5f2ec;
+    display:flex;
+    justify-content:center;
+    font-family:'Pretendard','Noto Sans KR',sans-serif;
+    min-height:100%;
+    overflow-x:hidden;
+}
+
+/* 청첩장 래퍼 — 모바일 화면 꽉 채우기 */
+.wc{
+    width:100%;
+    max-width:480px;
+    background:#f5f1eb;
+    position:relative;
+    overflow-x:hidden;
+    box-shadow:none;
+    container-type:inline-size;  /* 컨테이너 쿼리 기준 */
+}
+@media(min-width:500px){
+    .wc{box-shadow:0 0 40px rgba(0,0,0,0.1);}
+    body{background:#ede8e0;}
+}
+
+/* ── 꽃잎 ── */
+.petals{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;overflow:hidden;}
+.petal{position:absolute;top:-30px;animation:fall linear infinite;opacity:0.8;user-select:none;}
+@keyframes fall{0%{transform:translateY(-30px) rotate(0deg) scale(1);opacity:0.8;}50%{opacity:0.6;}100%{transform:translateY(110vh) rotate(520deg) scale(0.6);opacity:0;}}
+
+/* ── 토스트 ── */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(60px);background:#3a2e22;color:#f9f3ee;font-size:13px;padding:10px 28px;border-radius:20px;letter-spacing:1px;z-index:9999;opacity:0;transition:all .35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* ════════════════════════════════════════
+   HERO — 풀블리드 사진 스타일
+   ════════════════════════════════════════ */
+.hero{
+    position:relative;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    background:#fff;
+    overflow:hidden;
+}
+
+/* ── 상단 텍스트 블록 ── */
+.hero-top{
+    background:#fff;
+    text-align:center;
+    padding:2.4rem 1.5rem 1.4rem;
+    position:relative;
+    z-index:2;
+    animation:fadeUp 0.8s 0.1s both;
+}
+.hero-top-label{
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:11px;
+    letter-spacing:5px;
+    color:#aaa;
+    font-weight:300;
+    margin-bottom:0.5rem;
+    text-transform:uppercase;
+}
+.hero-top-date{
+    font-family:'Noto Serif KR',serif;
+    font-size:52px;
+    font-weight:200;
+    color:#1a1a1a;
+    line-height:1;
+    letter-spacing:2px;
+    margin-bottom:0.8rem;
+}
+.hero-top-names{
+    font-family:'Noto Serif KR',serif;
+    font-size:17px;
+    font-weight:300;
+    color:#1a1a1a;
+    letter-spacing:1px;
+    margin-bottom:0.9rem;
+    line-height:1.5;
+    display:flex;
+    align-items:baseline;
+    justify-content:center;
+    flex-wrap:nowrap;
+    white-space:nowrap;
+    gap:0;
+}
+/* We're getting married 손글씨 */
+.hero-script-wrap{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    margin-bottom:0;
+}
+.hero-script{
+    font-family:'Dancing Script',cursive;
+    font-size:22px;
+    font-weight:600;
+    color:#3a3a38;
+    line-height:1.2;
+    letter-spacing:-0.3px;
+    transform:rotate(-1deg);
+    display:inline-block;
+    position:relative;
+}
+/* 손글씨 아래 밑줄 */
+.hero-script::after{
+    content:'';
+    position:absolute;
+    bottom:-2px;left:10%;right:10%;
+    height:2px;
+    background:linear-gradient(90deg,transparent,#e8a0b0 30%,#e8a0b0 70%,transparent);
+    border-radius:2px;
+}
+.hero-heart-left,.hero-heart-right{
+    font-size:13px;
+    color:#e8a0b0;
+    animation:heartBeat 1.8s ease infinite;
+}
+.hero-heart-right{animation-delay:0.5s;}
+@keyframes heartBeat{0%,100%{transform:scale(1);}35%{transform:scale(1.4);}65%{transform:scale(1.15);}}
+
+/* ── 풀블리드 사진 ── */
+.hero-fullphoto{
+    position:relative;
+    width:100%;
+    /* 4:5 → 더 길게 — 사진이 덜 잘림 */
+    aspect-ratio:4/5;
+    overflow:hidden;
+    background:#e8e4de;
+    animation:photoReveal 1.2s 0.3s cubic-bezier(0.25,0.46,0.45,0.94) both;
+}
+@keyframes photoReveal{
+    from{opacity:0;transform:scale(1.04);}
+    to{opacity:1;transform:scale(1);}
+}
+.hero-fullphoto-img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center 15%;
+    display:block;
+    z-index:1;
+}
+.hero-fullphoto:hover .hero-fullphoto-img{ }
+
+.hero-fullphoto-placeholder{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:12px;color:#b0a898;width:100%;height:100%;
+    position:absolute;inset:0;
+    background:#f0ece6;
+}
+.hero-fullphoto-placeholder i{font-size:48px;opacity:0.4;}
+.hero-fullphoto-placeholder span{font-size:13px;letter-spacing:2px;opacity:0.6;}
+
+/* ── 하단 날짜·장소 블록 ── */
+.hero-bottom{
+    background:#fff;
+    text-align:center;
+    padding:1.5rem 1.5rem 1.8rem;
+    border-top:0.5px solid #f0ece6;
+    animation:fadeUp 0.8s 0.6s both;
+}
+.hero-bottom-date{
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:13px;
+    font-weight:300;
+    color:#3a3a38;
+    letter-spacing:0.5px;
+    margin-bottom:0.4rem;
+    line-height:1.6;
+}
+.hero-bottom-place{
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:13px;
+    font-weight:300;
+    color:#7a7a78;
+    letter-spacing:0.5px;
+    line-height:1.6;
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── 섹션 구분선 ── */
+.section-divider{display:flex;align-items:center;justify-content:center;gap:12px;padding:2.5rem 2rem 0;}
+.div-line{flex:1;height:0.5px;background:#c4a882;opacity:0.2;}
+.div-icon{font-size:12px;color:#b89870;opacity:0.3;letter-spacing:3px;}
+
+/* ── 공통 섹션 ── */
+.sec{padding:2.5rem 1.8rem;}
+.sec-white{background:transparent;}
+.sec-label{font-family:'EB Garamond','Cormorant Garamond',serif;font-size:11.5px;letter-spacing:5px;color:#b89870;text-align:center;margin-bottom:0.4rem;font-style:italic;font-weight:400;}
+.sec-title{font-family:'Noto Serif KR',serif;font-size:16px;font-weight:300;color:#3a2e22;text-align:center;letter-spacing:3px;margin-bottom:1.8rem;}
+
+/* ── 스크롤 애니메이션 클래스 ── */
+/* 기본 페이드업 */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.reveal.on{opacity:1;transform:translateY(0);}
+
+/* 좌에서 슬라이드 */
+.reveal-left{opacity:0;transform:translateX(-28px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.reveal-left.on{opacity:1;transform:translateX(0);}
+
+/* 우에서 슬라이드 */
+.reveal-right{opacity:0;transform:translateX(28px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.reveal-right.on{opacity:1;transform:translateX(0);}
+
+/* 스케일업 */
+.reveal-scale{opacity:0;transform:scale(0.94);transition:opacity 0.55s ease,transform 0.55s cubic-bezier(0.34,1.3,0.64,1);}
+.reveal-scale.on{opacity:1;transform:scale(1);}
+
+/* 지연 클래스 */
+.delay-1{transition-delay:0.08s!important;}
+.delay-2{transition-delay:0.16s!important;}
+.delay-3{transition-delay:0.24s!important;}
+.delay-4{transition-delay:0.32s!important;}
+
+/* JS 로드 실패 / 애니메이션 비활성 환경 대비 fallback */
+@media (prefers-reduced-motion: reduce) {
+    .reveal,.reveal-left,.reveal-right,.reveal-scale{opacity:1!important;transform:none!important;transition:none!important;}
+}
+
+/* 섹션 구분선 애니메이션 */
+.section-divider .div-line{transform:scaleX(0);transform-origin:center;transition:transform 0.8s ease;}
+.section-divider.on .div-line{transform:scaleX(1);}
+.section-divider .div-icon{opacity:0;transition:opacity 0.5s 0.4s ease;}
+.section-divider.on .div-icon{opacity:0.55;}
+
+/* ── 인사말 ── */
+.greet-card{background:transparent;border-radius:16px;padding:2rem 1.5rem;border:0.5px solid rgba(180,160,130,0.2);position:relative;overflow:hidden;}
+.greet-card::before{content:'❝';font-family:Georgia,serif;font-size:60px;color:#b89870;opacity:0.07;position:absolute;top:-6px;left:10px;line-height:1;}
+.greet-title{font-family:'Noto Serif KR',serif;font-size:15px;font-weight:400;color:#3a2e22;line-height:2.1;margin-bottom:1.2rem;text-align:center;letter-spacing:0.5px;}
+.greet-text{font-family:'Noto Serif KR',serif;font-size:13px;color:#5a4e40;line-height:2.4;font-weight:300;word-break:keep-all;text-align:center;letter-spacing:0.3px;}
+.greet-sign{margin-top:1.5rem;font-family:'EB Garamond','Cormorant Garamond',serif;font-size:15px;color:#b89870;letter-spacing:3px;font-style:italic;text-align:center;font-weight:400;}
+
+/* 타이핑 커서 효과 */
+.typing-cursor::after{content:'|';animation:blink 1s infinite;color:#b89870;font-weight:300;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+/* ── 정보 블록 ── */
+.info-block{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);overflow:hidden;backdrop-filter:blur(4px);}
+.info-item{display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:0.5px solid #f5ede4;
+  opacity:0;transform:translateX(-20px);transition:opacity 0.5s ease,transform 0.5s ease;}
+.info-item.on{opacity:1;transform:translateX(0);}
+.info-item:last-child{border-bottom:none;}
+.info-icon{width:34px;height:34px;background:#fdf4ec;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.info-icon i{font-size:16px;color:#b89870;}
+.info-label-txt{font-size:10px;letter-spacing:2px;color:#b89870;margin-bottom:2px;}
+.info-val-txt{font-size:13px;color:#3a2e22;font-weight:300;line-height:1.5;}
+
+/* ── 달력 ── */
+.cal-card{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);padding:1.5rem;backdrop-filter:blur(4px);}
+.cal-month-title{font-family:'Noto Serif KR',serif;font-size:14px;color:#3a2e22;font-weight:300;letter-spacing:2px;text-align:center;margin-bottom:1.2rem;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:2px;}
+.cal-dow{font-size:10px;color:#b89870;padding:5px 0;letter-spacing:1px;}
+.cal-cell{padding:6px 2px;font-size:12px;color:#5a4e40;font-weight:300;border-radius:50%;transition:all 0.2s;}
+.cal-cell.wed{background:#3a2e22;color:#fff;font-weight:500;
+  animation:calPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;}
+@keyframes calPop{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
+.cal-cell.sun{color:#d4845a;}
+.cal-cell.sat{color:#7a8ab8;}
+.cal-cell.empty{color:transparent;pointer-events:none;}
+.dday-wrap{text-align:center;margin-top:1.2rem;}
+.dday-pill{display:inline-block;background:#3a2e22;color:#f9f3ee;font-size:11px;letter-spacing:3px;padding:7px 26px;border-radius:20px;font-weight:300;
+  animation:pillIn 0.6s 0.3s cubic-bezier(0.34,1.56,0.64,1) both;}
+@keyframes pillIn{from{opacity:0;transform:scale(0.7);}to{opacity:1;transform:scale(1);}}
+
+/* ── 혼주 ── */
+.hosts-wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:10px;}
+.host-card{text-align:center;}
+.host-badge{font-size:10px;letter-spacing:2px;color:#b89870;margin-bottom:0.7rem;}
+.host-main-name{font-family:'Noto Serif KR',serif;font-size:17px;color:#3a2e22;font-weight:300;margin-bottom:5px;}
+.host-family{font-size:11px;color:#7a6a54;line-height:2;font-weight:300;}
+.hosts-center{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:1.8rem;}
+.hosts-center-line{width:0.5px;height:26px;background:#d4bfa0;}
+.contact-row{display:flex;gap:4px;justify-content:center;margin-top:0.7rem;flex-wrap:wrap;}
+.cbtn{display:flex;align-items:center;gap:3px;font-size:10px;color:#b89870;background:#fdf9f5;border:0.5px solid #d4bfa0;border-radius:14px;padding:4px 9px;cursor:pointer;letter-spacing:1px;font-family:'Noto Sans KR',sans-serif;transition:all 0.2s;}
+.cbtn:hover,.cbtn:active{background:#fdf4ec;transform:scale(0.96);}
+.cbtn i{font-size:11px;}
+
+/* 하트 펄스 */
+.heart-pulse{animation:heartPulse 1.5s ease infinite;}
+@keyframes heartPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+
+/* ── 갤러리 ── */
+.gallery-outer{position:relative;overflow:hidden;}
+.gallery-track{display:flex;transition:transform 0.42s cubic-bezier(0.25,0.46,0.45,0.94);}
+.gallery-slide{flex:0 0 100%;margin-right:0;aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:#e8ddd0;display:flex;align-items:center;justify-content:center;color:#b89870;
+  transition:transform 0.3s ease,box-shadow 0.3s ease;}
+.gallery-slide:last-child{margin-right:0;}
+.gallery-slide i{font-size:28px;opacity:0.4;}
+.gallery-arrows{position:absolute;top:50%;width:100%;transform:translateY(-50%);display:flex;justify-content:space-between;pointer-events:none;padding:0 6px;}
+.garrow{pointer-events:all;width:30px;height:30px;background:rgba(255,255,255,0.88);border:0.5px solid #e8ddd0;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.2s;}
+.garrow:active{transform:scale(0.9);}
+.garrow i{font-size:14px;color:#3a2e22;}
+.gallery-dots{display:flex;justify-content:center;gap:6px;margin-top:12px;}
+.gdot{width:5px;height:5px;border-radius:50%;background:#d4bfa0;cursor:pointer;transition:all .3s;border:none;padding:0;}
+.gdot.active{background:#3a2e22;width:14px;border-radius:3px;}
+
+/* ── 지도 ── */
+.map-card{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);overflow:hidden;backdrop-filter:blur(4px);}
+.map-visual{background:linear-gradient(135deg,#e8ddd0 0%,#d4bfa0 100%);height:150px;display:flex;align-items:center;justify-content:center;position:relative;}
+.map-visual i{font-size:40px;color:#8a6a44;opacity:0.55;}
+/* 지도 핀 바운스 */
+.map-pin-icon{animation:pinBounce 2s ease infinite;}
+@keyframes pinBounce{0%,100%{transform:translateY(0);}40%{transform:translateY(-10px);}60%{transform:translateY(-4px);}}
+.map-info{padding:1.3rem;}
+.map-place-name{font-family:'Noto Serif KR',serif;font-size:15px;color:#3a2e22;font-weight:400;margin-bottom:5px;}
+.map-addr-text{font-size:12px;color:#7a6a54;line-height:1.8;font-weight:300;}
+.map-btns{display:flex;gap:6px;margin-top:1rem;flex-wrap:wrap;}
+.mbtn{flex:1;min-width:80px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:11px;padding:9px 4px;border-radius:8px;border:0.5px solid #d4bfa0;background:#fdf9f5;color:#5a4e40;cursor:pointer;letter-spacing:0.5px;font-family:'Noto Sans KR',sans-serif;transition:all 0.2s;}
+.mbtn:hover,.mbtn:active{background:#fdf4ec;transform:scale(0.97);}
+.mbtn i{font-size:13px;color:#b89870;}
+
+/* ── 계좌 ── */
+.acct-card{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);overflow:hidden;}
+.acct-item{padding:1rem 1.3rem;border-bottom:0.5px solid #f5ede4;display:flex;justify-content:space-between;align-items:center;}
+.acct-item:last-child{border-bottom:none;}
+.acct-who{font-size:10px;letter-spacing:2px;color:#b89870;margin-bottom:3px;}
+.acct-bank{font-size:12px;color:#5a4e40;font-weight:300;}
+.acct-num{font-size:13px;color:#3a2e22;font-weight:400;letter-spacing:1px;}
+.copy-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:#fff;background:#3a2e22;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;letter-spacing:1px;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;transition:all 0.2s;}
+.copy-btn:hover{background:#5a4e40;}
+.copy-btn:active{transform:scale(0.95);}
+.copy-btn i{font-size:14px;}
+/* 복사 성공 효과 */
+.copy-btn.copied{background:#6a8a5a;}
+
+/* ── 푸터 ── */
+.footer-sec{padding:3.5rem 2rem;text-align:center;background:#f5f0e8;border-top:0.5px solid #e8ddd0;}
+.footer-flower{font-size:15px;letter-spacing:8px;color:#b89870;opacity:0.4;margin-bottom:1.2rem;}
+.footer-msg{font-family:'Noto Serif KR',serif;font-size:13px;color:#7a6a54;line-height:2.3;font-weight:300;letter-spacing:1px;}
+.footer-copy{font-family:'Cormorant Garamond',serif;font-size:11px;color:#b89870;letter-spacing:3px;margin-top:1.8rem;font-style:italic;}
+
+/* ── 반응형 ── */
+@media(max-width:380px){
+  .hero-names{font-size:24px;}
+  .hero-photo{width:160px;height:210px;border-radius:80px 80px 0 0;}
+  .hosts-wrap{gap:6px;}
+  .host-main-name{font-size:15px;}
+}
+
+/* ── 연락하기 팝업 ── */
+.contact-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:8000;display:flex;align-items:flex-end;justify-content:center;}
+.contact-popup{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:1.5rem 1.5rem 2rem;}
+.contact-popup-title{font-family:'Noto Serif KR',serif;font-size:15px;color:#3a2e22;text-align:center;margin-bottom:1.2rem;font-weight:400;letter-spacing:2px;}
+.contact-popup-list{display:flex;flex-direction:column;gap:8px;}
+.contact-popup-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fdf9f5;border-radius:10px;border:0.5px solid #e8ddd0;}
+.contact-popup-who{font-size:13px;color:#3a2e22;}
+.contact-popup-num{font-size:12px;color:#b89870;letter-spacing:1px;}
+.contact-popup-call{display:flex;align-items:center;gap:4px;background:#3a2e22;color:#f9f3ee;border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.contact-popup-close{width:100%;margin-top:12px;padding:12px;background:#f0ebe3;border:none;border-radius:10px;font-size:13px;color:#5a4e40;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+
+/* ── 고인 표시 ── */
+.host-relation{font-size:11px;color:#b89870;letter-spacing:1px;margin-top:4px;}
+
+/* ── 갤러리 슬라이드 카운터 ── */
+.gallery-slide-counter{text-align:center;font-size:11px;color:#b89870;margin-top:8px;letter-spacing:1px;}
+.gallery-scroll-hint{text-align:center;font-size:11px;color:#b89870;margin-top:8px;letter-spacing:1px;opacity:0.7;}
+
+/* ── 갤러리 그리드 3열 ── */
+.gallery-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;border-radius:12px;overflow:hidden;}
+.grid3-item{aspect-ratio:1;background:#e8ddd0;display:flex;align-items:center;justify-content:center;color:#b89870;overflow:hidden;}
+.grid3-item i{font-size:20px;opacity:0.4;}
+
+/* ── 갤러리 혼합 타입 ── */
+.gallery-mixed{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,80px);gap:3px;border-radius:12px;overflow:hidden;}
+.mixed-item{background:#e8ddd0;display:flex;align-items:center;justify-content:center;color:#b89870;overflow:hidden;}
+.mixed-item.big{grid-row:1/3;}
+.mixed-item i{font-size:20px;opacity:0.4;}
+
+/* ── 카카오 지도 ── */
+.invitation-map{width:100%;height:200px;background:#e8e4de;}
+
+/* ── 내비게이션 버튼 ── */
+.navi-btns{display:flex;gap:8px;margin:12px 0 8px;flex-wrap:wrap;}
+.navi-app-btn{flex:1;min-width:80px;padding:10px 4px;border-radius:10px;border:0.5px solid #d4bfa0;font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-weight:500;letter-spacing:0.5px;transition:all .2s;}
+.navi-app-btn:active{transform:scale(0.96);}
+.kakao-navi-btn{background:#FEE500;color:#3C1E1E;border-color:#FEE500;}
+.tmap-btn{background:#E8232A;color:#fff;border-color:#E8232A;}
+.naver-btn{background:#03C75A;color:#fff;border-color:#03C75A;}
+
+/* ════════════════════════════════════════
+   공유하기 (Share)
+   ════════════════════════════════════════ */
+.share-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.share-btn{display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:none;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:transform .2s;}
+.share-btn:hover{transform:translateY(-3px);}
+.share-btn:active{transform:scale(0.95);}
+.share-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.12);}
+.share-btn span{font-size:11px;color:#7a6a54;letter-spacing:0.5px;font-weight:300;}
+
+/* QR */
+.qr-wrap{margin-top:1.5rem;}
+.qr-box{background:#fdf9f5;border-radius:16px;border:0.5px solid #e8ddd0;padding:1.5rem;text-align:center;animation:qrIn .3s cubic-bezier(0.34,1.3,0.64,1);}
+@keyframes qrIn{from{opacity:0;transform:scale(0.9);}to{opacity:1;transform:scale(1);}}
+.qr-box canvas{border-radius:8px;max-width:180px;}
+.qr-hint{font-size:12px;color:#9a8a74;margin-top:0.8rem;font-weight:300;letter-spacing:0.5px;}
+.qr-close-btn{margin-top:0.8rem;display:inline-flex;align-items:center;gap:4px;padding:6px 16px;border:0.5px solid #d4bfa0;border-radius:16px;background:#fff;font-size:11px;color:#9a8a74;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+
+/* ════════════════════════════════════════
+   계좌 송금 섹션 (청첩장)
+   ════════════════════════════════════════ */
+.acct-tab-wrap{display:flex;gap:8px;margin-bottom:1.2rem;}
+.acct-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:10px;border-radius:10px;border:0.5px solid rgba(180,160,130,0.25);background:rgba(255,255,255,0.45);font-size:13px;color:#9a8a74;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .25s;}
+.acct-tab.active{background:#3a2e22;border-color:#3a2e22;color:#f9f3ee;font-weight:500;}
+.acct-panel{}
+.acct-card{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);overflow:hidden;}
+.acct-item{display:flex;justify-content:space-between;align-items:center;padding:1.1rem 1.3rem;border-bottom:0.5px solid rgba(180,160,130,0.15);}
+.acct-item:last-child{border-bottom:none;}
+.acct-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0;}
+.acct-side-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.acct-side-dot.groom{background:#a0b8e8;}
+.acct-side-dot.bride{background:#c4748a;}
+.acct-who{font-size:13px;font-weight:500;color:#3a2e22;margin-bottom:4px;}
+.acct-bank-wrap{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.acct-bank-badge{font-size:10px;color:#b89870;background:#fdf4ec;padding:2px 8px;border-radius:10px;letter-spacing:0.5px;white-space:nowrap;}
+.acct-num{font-size:12px;color:#7a6a54;font-weight:300;letter-spacing:0.5px;}
+.acct-btns{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+.copy-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:#fff;background:#3a2e22;border:none;border-radius:8px;padding:7px 12px;cursor:pointer;letter-spacing:1px;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;transition:all .2s;}
+.copy-btn:hover{background:#5a4e40;}
+.copy-btn:active{transform:scale(0.95);}
+.copy-btn.copied{background:#6a8a5a;}
+.copy-btn i{font-size:13px;}
+.kakao-pay-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:#3C1E1E;background:#FEE500;border:none;border-radius:8px;padding:7px 12px;cursor:pointer;letter-spacing:0.5px;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;text-decoration:none;transition:all .2s;}
+.kakao-pay-btn:hover{background:#F5D800;}
+.kakao-icon{width:16px;height:16px;background:#3C1E1E;border-radius:3px;color:#FEE500;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.acct-empty{text-align:center;padding:2rem;color:#c4beb5;}
+.acct-empty i{font-size:28px;display:block;margin-bottom:0.5rem;opacity:0.4;}
+.acct-empty p{font-size:12px;}
+
+/* ════════════════════════════════════════
+   캘린더 스타일별 추가 CSS
+   ════════════════════════════════════════ */
+.cal-card{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);padding:1.5rem;backdrop-filter:blur(4px);}
+
+/* 공통 달력 그리드 */
+.cal-month-title{font-family:'Noto Serif KR',serif;font-size:14px;color:#3a2e22;font-weight:300;letter-spacing:2px;text-align:center;margin-bottom:1.2rem;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:2px;}
+.cal-dow{font-size:10px;color:#b89870;padding:5px 0;letter-spacing:0.5px;}
+.cal-dow-sun{color:#d4845a;}
+.cal-dow-sat{color:#7a8ab8;}
+.cal-cell{padding:6px 2px;font-size:12px;color:#5a4e40;font-weight:300;border-radius:50%;}
+.cal-cell.wed{background:#3a2e22;color:#fff;font-weight:500;animation:calPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;}
+.cal-cell.sun{color:#d4845a;}
+.cal-cell.sat{color:#7a8ab8;}
+.cal-cell.empty{color:transparent;pointer-events:none;}
+@keyframes calPop{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
+
+/* 영문형 폰트 크기 축소 */
+.cal-grid-en .cal-dow{font-size:8px;letter-spacing:0;}
+.cal-grid-en .cal-cell{font-size:11px;}
+
+/* 스타일 2: 날짜형 헤더 */
+.cal-date-header{text-align:center;margin-bottom:1.2rem;}
+.cal-date-main{font-size:18px;font-weight:700;color:#3a2e22;letter-spacing:2px;}
+.cal-date-sub{font-size:12px;color:#c4748a;letter-spacing:1px;margin-top:4px;}
+
+/* 스타일 3: 영문형 헤더 */
+.cal-en-header{text-align:center;margin-bottom:1.2rem;}
+.cal-en-month{font-size:20px;font-weight:700;color:#3a2e22;letter-spacing:4px;font-family:'Cormorant Garamond',serif;}
+
+/* 스타일 4: 텍스트형 헤더 */
+.cal-text-header{text-align:left;margin-bottom:1.2rem;}
+.cal-text-msg{font-family:'Noto Serif KR',serif;font-size:18px;color:#7a6a54;line-height:1.8;font-weight:300;letter-spacing:.5px;}
+
+/* ════════════════════════════════════════
+   D-Day 스타일별 CSS
+   ════════════════════════════════════════ */
+.dday-card{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);padding:1.8rem 1.5rem;text-align:center;backdrop-filter:blur(4px);}
+
+/* 스타일 1: 텍스트형 */
+.dday-style-text{padding:0.5rem 0;}
+.dday-text-msg{font-size:14px;color:#5a4e40;line-height:2;font-weight:300;}
+.dday-text-msg strong{color:#c4748a;font-size:18px;font-weight:700;}
+
+/* 공통 시계 요소 */
+.dday-clock-row{display:flex;align-items:flex-end;justify-content:center;gap:8px;}
+.dday-unit{display:flex;flex-direction:column;align-items:center;min-width:40px;}
+.dday-num{font-size:36px;font-weight:700;color:#3a2e22;line-height:1;font-family:'Noto Sans KR',sans-serif;
+  animation:numTick .15s ease;}
+@keyframes numTick{from{transform:scale(1.1);}to{transform:scale(1);}}
+.dday-lbl{font-size:10px;color:#b89870;letter-spacing:1px;margin-top:4px;}
+.dday-colon{font-size:28px;font-weight:700;color:#d4bfa0;padding-bottom:14px;line-height:1;}
+
+/* 스타일 2: 시계형 */
+.dday-style-clock{padding:0.5rem 0;}
+
+/* 스타일 3: 시계+텍스트 */
+.dday-style-clock-bottom{padding:0.5rem 0;}
+.dday-sub-text{font-size:13px;color:#7a6a54;margin-top:1rem;font-weight:300;}
+.dday-sub-text strong{color:#c4748a;font-weight:600;}
+
+/* 스타일 4: 인라인형 */
+.dday-style-inline{padding:0.5rem 0;}
+.dday-inline-row{display:flex;align-items:baseline;justify-content:center;gap:4px;flex-wrap:wrap;}
+.dday-in-num{font-size:28px;font-weight:700;color:#3a2e22;font-family:'Noto Sans KR',sans-serif;}
+.dday-in-lbl{font-size:11px;color:#b89870;letter-spacing:1px;margin-right:8px;}
+
+/* D-Day 섹션도 달력처럼 독립 섹션으로 */
+.sec.dday-sec{background:#fdf9f5;}
+
+/* ── 故人 표시 ── */
+.host-parent-row{display:inline-flex;align-items:center;gap:3px;}
+.deceased-hanja{
+    font-size:11px;color:#888;font-weight:400;
+    margin:0 2px;
+}
+.deceased-flower{
+    display:inline-flex;
+    align-items:center;
+    margin:0 2px;
+    vertical-align:middle;
+}
+/* 국화 SVG 인라인 크기 */
+.deceased-flower-svg{
+    width:16px;
+    height:16px;
+    display:inline-block;
+    vertical-align:middle;
+    opacity:0.7;
+}
+/* deceased-mark — 기본 숨김, .show 시 표시 */
+.deceased-mark{
+    display:none;
+    align-items:center;
+    vertical-align:middle;
+}
+.deceased-mark.show{
+    display:inline-flex;
+}
+
+/* ── 전체 배경 통일 (흰 카드 제거 후 자연스럽게) ── */
+
+/* wc 배경을 크림 단일톤 */
+.wc{ background:#f5f1eb; }
+
+/* 모든 sec 배경 투명 */
+.sec{ background:transparent; }
+.sec-white{ background:transparent; }
+.sec-gb{ background:rgba(240,236,228,0.6); }
+
+/* 카드 공통 — 반투명 유리 느낌 */
+.greet-card,
+.cal-card,
+.dday-card,
+.map-card,
+.acct-card,
+.info-block,
+.host-card{
+    background:rgba(255,255,255,0.52);
+    border-color:rgba(180,160,130,0.18);
+    border-radius:18px;
+}
+
+/* 갤러리 배경 */
+.gallery-outer{ background:transparent; }
+
+/* 인사말 텍스트 색 살짝 어둡게 */
+.greet-title{ color:#4a3e30; }
+.greet-text{ color:#6a5e4e; }
+
+/* 달력 날짜 마킹 */
+.cal-cell.wed{
+    background:#b89870;
+    color:#fff;
+}
+
+/* 계좌 탭 active */
+.acct-tab.active{
+    background:#3a2e22;
+    border-color:#3a2e22;
+    color:#f9f3ee;
+}
+
+/* 공유 아이콘 배경 어울리게 */
+.share-btn .share-icon{
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* 섹션 레이블 색상 */
+.sec-label{ color:#b89870; }
+.sec-title{ color:#3a2e22; }
+
+/* 푸터 */
+.footer-sec{
+    background:transparent;
+    padding-top:2rem;
+}
+.footer-flower{ color:#b89870; opacity:0.6; }
+.footer-msg{ color:#6a5e4e; }
+.footer-copy{ color:#9a8a74; }
+
+/* ════════════════════════════════════════
+   모바일 청첩장 스크롤 효과 — 고급
+   ════════════════════════════════════════ */
+
+/* 부드러운 페이드업 + 블러 인 (모바일 청첩장 인기 효과) */
+.fade-in-up{
+    opacity:0;
+    transform:translateY(40px);
+    filter:blur(8px);
+    transition:opacity 1.1s cubic-bezier(0.22,1,0.36,1),
+               transform 1.1s cubic-bezier(0.22,1,0.36,1),
+               filter 1.1s cubic-bezier(0.22,1,0.36,1);
+    will-change:opacity, transform, filter;
+}
+.fade-in-up.visible{
+    opacity:1;
+    transform:translateY(0);
+    filter:blur(0);
+}
+
+/* 순차 등장 (자식 요소 stagger) */
+.stagger-children > *{
+    opacity:0;
+    transform:translateY(30px);
+    filter:blur(6px);
+    transition:opacity 0.9s cubic-bezier(0.22,1,0.36,1),
+               transform 0.9s cubic-bezier(0.22,1,0.36,1),
+               filter 0.9s cubic-bezier(0.22,1,0.36,1);
+}
+.stagger-children.visible > *{
+    opacity:1;
+    transform:translateY(0);
+    filter:blur(0);
+}
+.stagger-children.visible > *:nth-child(1){ transition-delay:0.05s; }
+.stagger-children.visible > *:nth-child(2){ transition-delay:0.15s; }
+.stagger-children.visible > *:nth-child(3){ transition-delay:0.25s; }
+.stagger-children.visible > *:nth-child(4){ transition-delay:0.35s; }
+.stagger-children.visible > *:nth-child(5){ transition-delay:0.45s; }
+.stagger-children.visible > *:nth-child(6){ transition-delay:0.55s; }
+
+/* 스케일 인 (사진/카드용) */
+.scale-in{
+    opacity:0;
+    transform:scale(0.92);
+    transition:opacity 1s ease, transform 1s cubic-bezier(0.22,1,0.36,1);
+}
+.scale-in.visible{
+    opacity:1;
+    transform:scale(1);
+}
+
+/* 좌우 슬라이드 인 */
+.slide-in-left{
+    opacity:0;
+    transform:translateX(-50px);
+    transition:opacity 1s ease, transform 1s cubic-bezier(0.22,1,0.36,1);
+}
+.slide-in-left.visible{ opacity:1; transform:translateX(0); }
+.slide-in-right{
+    opacity:0;
+    transform:translateX(50px);
+    transition:opacity 1s ease, transform 1s cubic-bezier(0.22,1,0.36,1);
+}
+.slide-in-right.visible{ opacity:1; transform:translateX(0); }
+
+/* 패럴랙스 사진 (히어로) */
+.hero-fullphoto-img{
+    will-change:transform;
+}
+
+/* 접근성: 모션 줄이기 설정 시 */
+@media (prefers-reduced-motion: reduce){
+    .fade-in-up, .stagger-children > *, .scale-in, .slide-in-left, .slide-in-right{
+        opacity:1 !important;
+        transform:none !important;
+        filter:none !important;
+        transition:none !important;
+    }
+}
+
+/* ════════════════════════════════════════
+   모바일 청첩장 스크롤 효과 (고급)
+   ════════════════════════════════════════ */
+
+/* 부드러운 페이드업 — 더 우아하게 */
+.reveal{
+    opacity:0;
+    transform:translateY(40px);
+    transition:opacity 1.1s cubic-bezier(0.16,1,0.3,1),
+               transform 1.1s cubic-bezier(0.16,1,0.3,1);
+    will-change:opacity,transform;
+}
+.reveal.on{ opacity:1; transform:translateY(0); }
+
+/* 좌우 슬라이드 — 부드럽게 */
+.reveal-left{
+    opacity:0;transform:translateX(-44px);
+    transition:opacity 1.1s cubic-bezier(0.16,1,0.3,1),
+               transform 1.1s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal-left.on{ opacity:1; transform:translateX(0); }
+.reveal-right{
+    opacity:0;transform:translateX(44px);
+    transition:opacity 1.1s cubic-bezier(0.16,1,0.3,1),
+               transform 1.1s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal-right.on{ opacity:1; transform:translateX(0); }
+
+/* 스케일 페이드 — 사진/카드용 */
+.reveal-scale{
+    opacity:0;transform:scale(0.92);
+    transition:opacity 1.2s cubic-bezier(0.16,1,0.3,1),
+               transform 1.2s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal-scale.on{ opacity:1; transform:scale(1); }
+
+/* 블러 페이드 — 텍스트 강조용 */
+.reveal-blur{
+    opacity:0;filter:blur(8px);transform:translateY(20px);
+    transition:opacity 1.3s ease, filter 1.3s ease, transform 1.3s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal-blur.on{ opacity:1; filter:blur(0); transform:translateY(0); }
+
+/* 단어별 순차 등장 (글자 강조) */
+.reveal-words .word{
+    display:inline-block;
+    opacity:0;
+    transform:translateY(16px);
+    transition:opacity 0.7s ease, transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal-words.on .word{ opacity:1; transform:translateY(0); }
+
+/* 시차 딜레이 (자연스러운 계단식 등장) */
+.delay-1{ transition-delay:0.12s !important; }
+.delay-2{ transition-delay:0.24s !important; }
+.delay-3{ transition-delay:0.36s !important; }
+.delay-4{ transition-delay:0.48s !important; }
+.delay-5{ transition-delay:0.60s !important; }
+
+/* 히어로 사진 패럴랙스 */
+.hero-fullphoto-img{
+    will-change:transform;
+}
+
+/* 구분선 가로 확장 효과 */
+.section-divider .div-line{
+    transform:scaleX(0);
+    transform-origin:center;
+    transition:transform 1.2s cubic-bezier(0.16,1,0.3,1);
+}
+.section-divider.on .div-line{ transform:scaleX(1); }
+.section-divider .div-icon{
+    opacity:0;
+    transform:scale(0.5) rotate(-90deg);
+    transition:opacity 0.6s ease 0.5s, transform 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.5s;
+}
+.section-divider.on .div-icon{ opacity:0.4; transform:scale(1) rotate(0); }
+
+/* 카드 떠오르기 (부드러운 상승) */
+.greet-card.reveal-scale,
+.cal-card.reveal-scale,
+.dday-card.reveal-scale{
+    transition:opacity 1.2s cubic-bezier(0.16,1,0.3,1),
+               transform 1.2s cubic-bezier(0.16,1,0.3,1),
+               box-shadow 1.2s ease;
+}
+
+/* 접근성 — 모션 줄이기 설정 시 */
+@media (prefers-reduced-motion: reduce){
+    .reveal,.reveal-left,.reveal-right,.reveal-scale,.reveal-blur,
+    .reveal-words .word,.section-divider .div-line,.section-divider .div-icon{
+        opacity:1 !important;
+        transform:none !important;
+        filter:none !important;
+        transition:none !important;
+    }
+}
+
+/* ════════════════════════════════════════
+   메인 디자인 템플릿 — 사진 위 오버레이 방식
+   ════════════════════════════════════════ */
+
+/* 기본: 오버레이 텍스트 숨김 */
+.hero-design-title{ display:none; }
+.hero-design-date{ display:none; }
+
+/* ─────────────────────────────────────
+   기본형 — 상단 사진 풀블리드 + 하단 이름/날짜/장소
+───────────────────────────────────── */
+
+/* 오버레이 요소 전부 숨김 */
+.hero.design-basic .hero-design-title,
+.hero.design-basic .hero-design-date,
+.hero.design-basic .hero-design-names,
+.hero.design-basic .hero-design-title-bottom,
+.hero.design-basic .hero-design-center-info,
+.hero.design-basic .hero-script-wrap,
+.hero.design-basic .hero-top{ display:none !important; }
+
+/* hero 전체 구조 */
+.hero.design-basic{
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 사진 — 상단 꽉 채움, 여백 없음 */
+.hero.design-basic .hero-fullphoto{
+    width: 100%;
+    height: 72vh;
+    min-height: 380px;
+    aspect-ratio: unset;
+    margin: 0;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.hero.design-basic .hero-fullphoto-img{
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    position: absolute;
+    inset: 0;
+}
+
+/* 하단 흰 배경 블록 */
+.hero.design-basic .hero-bottom{
+    background: #fff;
+    padding: 2rem 1.5rem 1.8rem;
+    border-top: none;
+    text-align: center;
+    flex: 1;
+}
+
+/* ── Groom / Bride 이름 블록 ── */
+.hero.design-basic .hero-bottom-names{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1.2rem;
+}
+.hero.design-basic .hbn-person{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+.hero.design-basic .hbn-label{
+    font-family: 'Cormorant Garamond', 'EB Garamond', serif;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #C4956A;
+}
+.hero.design-basic .hbn-name{
+    font-family: 'Noto Serif KR', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: #1a1a1a;
+    letter-spacing: 10px;
+    word-spacing: 4px;
+}
+/* 구분선 — 세로 얇은 라인 */
+.hero.design-basic .hbn-shell{
+    font-size: 0;
+    width: 1px;
+    height: 48px;
+    background: #C4956A;
+    margin-top: 18px;
+    flex-shrink: 0;
+}
+
+/* 신부/신랑 순서 전환 */
+.hero.design-basic .hero-bottom-names[data-order="bride"] .hbn-groom{ order: 3; }
+.hero.design-basic .hero-bottom-names[data-order="bride"] .hbn-shell { order: 2; }
+.hero.design-basic .hero-bottom-names[data-order="bride"] .hbn-bride { order: 1; }
+
+/* ── 날짜 ── */
+.hero.design-basic .hero-bottom-date{
+    font-family: 'Cormorant Garamond', 'EB Garamond', serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #C4956A;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.3rem;
+    line-height: 1.8;
+}
+
+/* ── 장소 ── */
+.hero.design-basic .hero-bottom-place{
+    font-family: 'Noto Serif KR', serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #3a3228;
+    letter-spacing: 1px;
+    line-height: 1.8;
+}
+
+/* 다른 테마에서 basic으로 전환 시 이름 블록은 basic만 보임 */
+.hero:not(.design-basic) .hero-bottom-names{ display: none !important; }
+
+
+
+/* ★ 하단 날짜 — EB Garamond, 세련된 영문 날짜 */
+.hero.design-basic .hero-bottom-date{
+    font-family: 'EB Garamond', 'Cormorant Garamond', serif;
+    font-size: 14.5px;
+    font-weight: 400;
+    color: #2a2a28;
+    letter-spacing: 0.8px;
+    margin-bottom: 0.45rem;
+    line-height: 1.7;
+}
+
+/* ★ 하단 장소 — Noto Serif KR, 단아한 한글 */
+.hero.design-basic .hero-bottom-place{
+    font-family: 'Noto Serif KR', serif;
+    font-size: 13px;
+    font-weight: 300;
+    color: #5a5a58;
+    letter-spacing: 0.5px;
+    line-height: 1.7;
+}
+
+/* ─────────────────────────────────────
+   디자인 적용 공통: 상단 텍스트/손글씨 숨기고
+   사진을 더 크게, 텍스트를 사진 위에 오버레이
+───────────────────────────────────── */
+.hero.design-our_story .hero-top,
+.hero.design-our_story_pink .hero-top,
+.hero.design-married .hero-top,
+.hero.design-forever .hero-top,
+.hero.design-our_story .hero-bottom,
+.hero.design-our_story_pink .hero-bottom,
+.hero.design-married .hero-bottom,
+.hero.design-forever .hero-bottom{
+    display:none;
+}
+
+/* 사진 영역 — 디자인 적용 시 화면 전체를 꽉 채움 */
+.hero.design-our_story,
+.hero.design-our_story_pink,
+.hero.design-married,
+.hero.design-forever{
+    min-height:100vh;
+    min-height:100dvh;
+    height:100vh;
+    height:100dvh;
+    display:block;
+    position:relative;
+    overflow:hidden;
+}
+.hero.design-our_story .hero-fullphoto,
+.hero.design-our_story_pink .hero-fullphoto,
+.hero.design-married .hero-fullphoto,
+.hero.design-forever .hero-fullphoto{
+    aspect-ratio:auto !important;
+    position:absolute !important;
+    top:0;left:0;right:0;bottom:0;
+    width:100% !important;
+    height:100% !important;
+    min-height:0 !important;
+    margin:0 !important;
+    border-radius:0 !important;
+}
+.hero.design-our_story .hero-fullphoto-img,
+.hero.design-our_story_pink .hero-fullphoto-img,
+.hero.design-married .hero-fullphoto-img,
+.hero.design-forever .hero-fullphoto-img,
+.hero.design-our_story .hero-fullphoto-placeholder,
+.hero.design-our_story_pink .hero-fullphoto-placeholder,
+.hero.design-married .hero-fullphoto-placeholder,
+.hero.design-forever .hero-fullphoto-placeholder{
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
+}
+
+/* 디자인 타이틀 오버레이 — 사진 위에 큼직하게 */
+.hero.design-our_story .hero-design-title,
+.hero.design-our_story_pink .hero-design-title,
+.hero.design-married .hero-design-title,
+.hero.design-forever .hero-design-title{
+    display:block;
+    position:absolute;
+    left:0;right:0;
+    bottom:18%;
+    text-align:center;
+    z-index:3;
+    padding:0 1.5rem;
+    pointer-events:none;
+}
+
+/* 디자인 날짜 오버레이 — 사진 맨 아래 가로 3분할 */
+.hero.design-our_story .hero-design-date,
+.hero.design-our_story_pink .hero-design-date,
+.hero.design-married .hero-design-date,
+.hero.design-forever .hero-design-date{
+    display:flex;
+    position:absolute;
+    left:0;right:0;
+    bottom:5%;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 2rem;
+    z-index:3;
+    pointer-events:none;
+}
+.hero-design-date span{
+    font-size:13px;
+    letter-spacing:3px;
+    color:#2c2822;
+    font-family:'Cormorant Garamond',serif;
+    font-weight:500;
+}
+/* Getting Married 테마 — 날짜 흰색 + Patrick Hand */
+.hero.design-married .hero-design-date span{
+    font-family:'Patrick Hand', sans-serif;
+    color:#fff;
+    font-size:14px;
+    font-weight:400;
+    letter-spacing:3px;
+    text-shadow:none;
+}
+/* Our story 테마 — 날짜 */
+.hero.design-our_story .hero-design-date span{
+    color:#000000;
+    font-family:'Pretendard','Noto Sans KR',sans-serif;
+    font-weight:400;
+}
+}
+
+/* ─────────────────────────────────────
+   Our story begins — 세리프 오버레이
+───────────────────────────────────── */
+.hero.design-our_story .hero-design-title{
+    font-family:'Great Vibes','Dancing Script',cursive !important;
+    font-size:min(19cqw, 90px) !important;
+    font-weight:400;
+    line-height:0.92;
+    color:#000000;
+    letter-spacing:-1px;
+    mix-blend-mode:normal;
+    text-align:center;
+    padding:0 1rem;
+    white-space:normal;
+    word-break:break-word;
+    bottom:22% !important;
+    top:auto !important;
+    left:0 !important;
+    right:0 !important;
+    transform:none;
+    z-index:4;
+}
+.hero.design-our_story .hero-design-title::after{
+    content:'Our story begins';
+    display:block;
+}
+
+/* ─────────────────────────────────────
+   Our story (핑크) — 핑크 손글씨
+───────────────────────────────────── */
+.hero.design-our_story_pink .hero-fullphoto{
+    background:linear-gradient(180deg,#fdf0f3 0%,#faf5f2 100%);
+}
+.hero.design-our_story_pink .hero-fullphoto-img{
+    object-position:center 18%;
+}
+/* 핑크 테마 하단 그라데이션 — 더 핑크하게 */
+.hero.design-our_story_pink .hero-fullphoto::after{
+    background:linear-gradient(180deg,
+        transparent 0%,
+        rgba(253,240,243,0.4) 50%,
+        rgba(253,240,243,0.85) 80%,
+        rgba(253,240,243,0.98) 100%) !important;
+    height:55% !important;
+}
+.hero.design-our_story_pink .hero-design-title{
+    font-family:'Dancing Script',cursive !important; /* 영어 폰트 고정 */
+    font-size:min(19cqw, 90px);                      /* 크게 */
+    color:#ff9a9a;
+    line-height:0.92;
+    padding:0 1rem;
+    white-space:normal;
+    text-align:center;                               /* 가운데 정렬 */
+    bottom:18% !important;
+    top:auto !important;
+    left:0 !important;
+    right:0 !important;
+    transform:none;
+    mix-blend-mode:normal !important;
+    text-shadow:0 1px 8px rgba(255,255,255,0.3);
+    z-index:4;
+}
+.hero.design-our_story_pink .hero-design-title::after{
+    content:'Our story begins';
+    display:block;
+    word-break:break-word;
+}
+/* 날짜/장소 — 타이틀 바로 아래 좌측 */
+/* our_story_pink — 3분할 날짜 숨기고 center-info로 대체 */
+.hero.design-our_story_pink .hero-design-date{
+    display:none !important;
+}
+/* center-info — 가운데 정렬 */
+.hero.design-our_story_pink .hero-design-center-info{
+    display:flex !important;
+    flex-direction:column;
+    align-items:center;
+    gap:0.15rem;
+    position:absolute;
+    bottom:6%;
+    left:0;
+    right:0;
+    z-index:4;
+    pointer-events:none;
+    text-align:center;
+}
+.hero.design-our_story_pink .hdci-date{
+    font-size:12px;
+    color:#ff9a9a;
+    letter-spacing:1px;
+    font-weight:400;
+    line-height:1.5;
+    text-align:center;
+}
+.hero.design-our_story_pink .hdci-place{
+    font-size:11px;
+    color:#ff9a9a;
+    letter-spacing:0.5px;
+    font-weight:400;
+    line-height:1.5;
+    text-align:center;
+}
+/* 이름 숨김 */
+.hero.design-our_story_pink .hero-design-names{
+    display:none !important;
+}
+
+/* ─────────────────────────────────────
+   Getting Married — 스크린샷 완벽 구현
+   전체화면 사진 꽉참 + Great Vibes 스크립트
+   배경/그라디언트 없음, 모든 글자 흰색
+───────────────────────────────────── */
+
+/* 타이틀 위치: 하단 좌측, 글자 크게 */
+.hero.design-married .hero-design-title{
+    font-family:'Great Vibes','Pinyon Script','Dancing Script',cursive;
+    line-height:0.88;
+    color:#fff;
+    white-space:normal;
+    bottom:14% !important;
+    left:1% !important;
+    right:0 !important;
+    text-align:left !important;
+    text-shadow:none;
+    z-index:5;
+    overflow:hidden;
+}
+
+/* Getting — 약간 작게 */
+.hero.design-married .hero-design-title::before{
+    content:'Getting';
+    display:block;
+    font-size:min(22cqw, 105px);
+    font-weight:400;
+    color:#fff;
+    letter-spacing:-0.5px;
+}
+
+/* Married — 더 크게, 위로 살짝 올라오며 겹침 */
+.hero.design-married .hero-design-title::after{
+    content:'Married';
+    display:block;
+    font-size:min(27cqw, 130px);
+    font-weight:400;
+    margin-top:-0.22em;
+    color:#fff;
+    letter-spacing:-0.5px;
+}
+
+/* ─────────────────────────────────────
+   Together forever — 위/아래 분리 배치
+───────────────────────────────────── */
+/* 기본: 분리 요소들 숨김 */
+.hero-design-title-bottom{ display:none; }
+.hero-design-center-info{ display:none; }
+.hero-design-names{ display:none; }
+
+/* 사진 없을 때 오버레이 요소 전부 숨김 */
+.hero-fullphoto:not(.has-photo) .hero-design-title,
+.hero-fullphoto:not(.has-photo) .hero-design-names,
+.hero-fullphoto:not(.has-photo) .hero-design-date,
+.hero-fullphoto:not(.has-photo) .hero-design-title-bottom,
+.hero-fullphoto:not(.has-photo) .hero-design-center-info{ display:none !important; }
+
+/* 디자인 적용 시 이름 표시 — 타이틀 아래 */
+.hero.design-our_story .hero-design-names,
+.hero.design-our_story_pink .hero-design-names,
+.hero.design-married .hero-design-names{
+    display:block;
+    position:absolute;
+    left:0;right:0;
+    bottom:13%;
+    text-align:center;
+    z-index:3;
+    pointer-events:none;
+    font-family:'Cormorant Garamond',serif;
+    font-size:18px;
+    letter-spacing:3px;
+    color:#2c2822;
+    font-weight:500;
+}
+.hero-design-names .hdn-amp{ display:none; }
+.hero-design-names .hdn-sep{ margin:0 4px; }
+
+/* Our story begins (2번째) — & 구분자 */
+.hero.design-our_story .hero-design-names{
+    text-align:center;
+    bottom:14%;
+    font-family:'Cormorant Garamond',serif;
+    font-style:normal;
+    font-weight:400;
+    font-size:17px;
+    letter-spacing:3px;
+    color:#000000;
+}
+/* 2번 & — 이탤릭 세리프 */
+.hero.design-our_story .hero-design-names .hdn-sep::before{
+    content:'&';
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:19px;
+    color:rgba(0,0,0,0.6);
+    margin:0 8px;
+}
+.hero.design-our_story .hero-design-names .hdn-sep{ margin:0; font-size:0; }
+.hero.design-our_story .hero-design-names .hdn-amp{ display:none; }
+
+/* 핑크 테마 (3번째) — ♥ 구분자 */
+.hero.design-our_story_pink .hero-design-names{
+    color:#e68a9a;
+    font-family:'Noto Serif KR',serif;
+    font-size:16px;
+    bottom:15% !important;
+    text-align:center;
+}
+/* 3번 ♥ — hdn-sep을 핑크 하트로 표시 */
+.hero.design-our_story_pink .hero-design-names .hdn-sep::before{
+    content:'♥';
+    color:#e8a0b0;
+    font-size:12px;
+    margin:0 6px;
+}
+.hero.design-our_story_pink .hero-design-names .hdn-sep{ margin:0; font-size:0; }
+.hero.design-our_story_pink .hero-design-names .hdn-amp{ display:none; }
+
+/* Getting Married (4번째) — 이름 숨김, 텍스트만 */
+.hero.design-married .hero-design-names{
+    display:none !important;
+}
+
+/* ─────────────────────────────────────
+   forever 테마 — 배경색+손글씨+아치사진+날짜
+───────────────────────────────────── */
+
+/* forever일 때 기존 풀스크린 구조 요소 전부 숨김 */
+.hero.design-forever .hero-top,
+.hero.design-forever .hero-bottom,
+.hero.design-forever .hero-fullphoto,
+.hero.design-forever .hero-design-title,
+.hero.design-forever .hero-design-title-bottom,
+.hero.design-forever .hero-design-names,
+.hero.design-forever .hero-design-date,
+.hero.design-forever .hero-design-center-info,
+.hero.design-forever .hero-script-wrap{ display:none !important; }
+
+/* forever-layout만 표시 */
+.forever-layout{ display:none; }
+.hero.design-forever .forever-layout{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #F5F2EC;
+    min-height: 100vh;
+    padding: 3rem 1.5rem 3.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 손글씨 — Brittany Signature */
+.forever-script{
+    font-family: 'Brittany Signature', 'Dancing Script', cursive;
+    font-size: 38px;
+    color: #2a2a28;
+    margin-bottom: 1.2rem;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* 이름 블록 */
+.forever-names{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    margin-bottom: 1.6rem;
+}
+.forever-name-groom,
+.forever-name-bride{
+    font-family: 'Noto Serif KR', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: #2a2a28;
+    letter-spacing: 8px;
+}
+.forever-name-sep{
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16px;
+    color: #E8A0B4;
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+
+/* 신랑/신부 순서 전환 */
+.forever-names[data-order="bride"] .forever-name-groom{ order: 3; }
+.forever-names[data-order="bride"] .forever-name-sep  { order: 2; }
+.forever-names[data-order="bride"] .forever-name-bride{ order: 1; }
+
+/* 아치형 사진 프레임 */
+.forever-arch{
+    width: 75%;
+    max-width: 260px;
+    aspect-ratio: 3/4;
+    border-radius: 999px 999px 0 0;
+    overflow: hidden;
+    margin-bottom: 1.8rem;
+    background: #ddd;
+    position: relative;
+    flex-shrink: 0;
+}
+.forever-arch-img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+}
+.forever-arch-placeholder{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    background: #e8e4de;
+    color: #b0a898;
+}
+
+/* 날짜 — 민트/그린 큰 폰트 */
+.forever-date{
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 500;
+    color: #6FAF8A;
+    letter-spacing: 3px;
+    margin-bottom: 0.8rem;
+    text-align: center;
+}
+
+/* 장소 */
+.forever-place-wrap{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+}
+.forever-place1,
+.forever-place2{
+    font-family: 'Cormorant Garamond', 'EB Garamond', serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: #5a5a58;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.8;
+}
+
+/* 하트 장식 — JS로 동적 배치 */
+.forever-heart{
+    position: absolute;
+    color: #F4A0B4;
+    font-size: 12px;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.85;
+}
+
+/* forever 테마일 때 hero 자체 height 초기화 */
+.hero.design-forever{
+    height: auto !important;
+    min-height: 0 !important;
+    display: block !important;
+    overflow: visible !important;
+}
+/* Getting Married — 상단 흰 그라디언트 제거 */
+.hero.design-married .hero-fullphoto::before{
+    display:none;
+}
+
+/* 사진 위 텍스트 가독성 — 하단 그라데이션 */
+.hero.design-our_story .hero-fullphoto::after,
+.hero.design-our_story_pink .hero-fullphoto::after,
+.hero.design-forever .hero-fullphoto::after{
+    content:'';
+    position:absolute;
+    left:0;right:0;bottom:0;
+    height:45%;
+    background:linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.25) 60%, rgba(255,255,255,0.5) 100%);
+    z-index:2;
+    pointer-events:none;
+}
+.hero.design-married .hero-design-date{
+    bottom: 2.5% !important;
+    padding: 0 1.4rem;
+    align-items: center;
+    font-family: 'Patrick Hand', sans-serif !important;
+}
+/* married 날짜 안의 span도 Patrick Hand */
+.hero.design-married .hero-design-date span{
+    font-family: 'Patrick Hand', sans-serif !important;
+}
+
+/* ── design-married 한글 Pretendard 디폴트 적용 ── */
+.hero.design-married .hero-design-names,
+.hero.design-married .hero-design-names *{
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif !important;
+}
+
+/* Getting Married — 사진 object-position 상단 기준 */
+.hero.design-married .hero-fullphoto-img{
+    object-position: center top !important;
+}
+
+/* Getting Married — 그라디언트 완전 없음 */
+.hero.design-married .hero-fullphoto::after{
+    display:none;
+}
+
+/* ════════════════════════════════════════
+   모바일 청첩장 추가 효과 모음
+   ════════════════════════════════════════ */
+
+/* 1) 부드러운 관성 스크롤 */
+html{
+    scroll-behavior:smooth;
+}
+body{
+    -webkit-overflow-scrolling:touch;  /* iOS 관성 스크롤 */
+}
+
+/* 2) 섹션 진입 시 살짝 떠오르며 나타남 (기본보다 부드럽게) */
+.sec{
+    transition:transform 0.3s ease;
+}
+
+/* 3) 사진 줌인 효과 (스크롤로 보일 때) */
+.reveal-zoom{
+    opacity:0;
+    transform:scale(1.15);
+    transition:opacity 1.4s cubic-bezier(0.16,1,0.3,1),
+               transform 1.4s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal-zoom.on{ opacity:1; transform:scale(1); }
+
+/* 4) 페이드인 (위치 이동 없이) */
+.reveal-fade{
+    opacity:0;
+    transition:opacity 1.4s ease;
+}
+.reveal-fade.on{ opacity:1; }
+
+/* 5) 갤러리 사진 호버/탭 시 줌 */
+.gallery-img, .gallery-slide img, .gallery-grid img{
+    transition:transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.gallery-img:active, .gallery-slide img:active{
+    transform:scale(1.05);
+}
+
+/* 6) D-Day 숫자 플립 느낌 */
+.dday-num, .dp-num, .dp-in{
+    display:inline-block;
+    transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.dday-num.flip{ animation:numFlip 0.5s ease; }
+@keyframes numFlip{
+    0%{ transform:rotateX(0); }
+    50%{ transform:rotateX(-90deg); opacity:0.3; }
+    100%{ transform:rotateX(0); opacity:1; }
+}
+
+/* 7) 카드 호버 시 살짝 떠오름 (데스크톱) */
+@media(hover:hover){
+    .greet-card:hover, .cal-card:hover, .dday-card:hover,
+    .host-card:hover, .acct-card:hover{
+        transform:translateY(-3px);
+        transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+}
+
+/* 8) 스크롤 인디케이터 (하단 화살표) */
+.scroll-hint{
+    position:absolute;
+    bottom:24px;left:50%;
+    transform:translateX(-50%);
+    z-index:5;
+    color:rgba(255,255,255,0.85);
+    font-size:22px;
+    animation:bounceDown 2s ease-in-out infinite;
+    pointer-events:none;
+    text-shadow:0 2px 6px rgba(0,0,0,0.2);
+}
+@keyframes bounceDown{
+    0%,100%{ transform:translateX(-50%) translateY(0); opacity:0.85; }
+    50%{ transform:translateX(-50%) translateY(8px); opacity:0.4; }
+}
+
+/* 9) 하트 떠오르기 (혼주 섹션 등) */
+@keyframes floatUp{
+    0%{ transform:translateY(0) scale(1); opacity:0; }
+    20%{ opacity:0.7; }
+    100%{ transform:translateY(-40px) scale(0.6); opacity:0; }
+}
+
+/* 10) 글자 한 자씩 타이핑 느낌 (인사말 제목) */
+.typing-reveal{
+    overflow:hidden;
+    white-space:nowrap;
+    border-right:2px solid transparent;
+}
+
+/* 11) 부드러운 패럴랙스 배경 */
+.parallax-bg{
+    will-change:transform;
+    transition:transform 0.1s linear;
+}
+
+/* 12) 섹션 구분선 반짝임 */
+.div-icon{
+    animation:twinkle 3s ease-in-out infinite;
+}
+@keyframes twinkle{
+    0%,100%{ opacity:0.3; transform:scale(1); }
+    50%{ opacity:0.6; transform:scale(1.15); }
+}
+
+/* ════════════════════════════════════════
+   이미지 확대 라이트박스
+   ════════════════════════════════════════ */
+.lightbox{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(30,25,20,0.45);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    z-index:10000;
+    align-items:center;justify-content:center;
+    opacity:0;
+    transition:opacity 0.3s ease;
+}
+.lightbox.open{
+    display:flex;
+    opacity:1;
+}
+.lightbox-img{
+    max-width:92vw;
+    max-height:88vh;
+    object-fit:contain;
+    border-radius:4px;
+    box-shadow:0 8px 40px rgba(0,0,0,0.5);
+    animation:lightboxZoom 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes lightboxZoom{
+    from{ opacity:0; transform:scale(0.9); }
+    to{ opacity:1; transform:scale(1); }
+}
+.lightbox-close{
+    position:absolute;top:20px;right:24px;
+    width:44px;height:44px;
+    background:rgba(0,0,0,0.4);
+    border:none;border-radius:50%;
+    color:#fff;font-size:28px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:background 0.2s;line-height:1;
+}
+.lightbox-close:hover{ background:rgba(0,0,0,0.6); }
+.lightbox-prev,.lightbox-next{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:48px;height:48px;
+    background:rgba(0,0,0,0.4);
+    border:none;border-radius:50%;
+    color:#fff;font-size:30px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:background 0.2s;line-height:1;
+}
+.lightbox-prev{ left:16px; }
+.lightbox-next{ right:16px; }
+.lightbox-prev:hover,.lightbox-next:hover{ background:rgba(0,0,0,0.6); }
+.lightbox-counter{
+    display:none;
+}
+/* 갤러리 이미지에 클릭 가능 표시 */
+#galleryOuter img,.gallery-img,.gallery-grid img,.gallery-slide img{
+    cursor:pointer;
+}
+@media(max-width:500px){
+    .lightbox-prev,.lightbox-next{ width:40px;height:40px;font-size:24px; }
+    .lightbox-prev{ left:8px; }
+    .lightbox-next{ right:8px; }
+}
+
+/* ════════════════════════════════════════
+   갤러리 타입별 레이아웃
+   ════════════════════════════════════════ */
+
+/* 슬라이드형 (기본) — 가로 스크롤 */
+.galtype-slide .gallery-track{ display:flex; }
+.galtype-slide .gallery-arrows{ display:flex; }
+
+/* 그리드형 — 3열 균등 격자 */
+.galtype-grid .gallery-track{
+    display:grid !important;
+    grid-template-columns:repeat(3,1fr);
+    gap:6px;
+    transform:none !important;
+}
+.galtype-grid .gallery-cell{
+    aspect-ratio:1;
+    border-radius:8px;
+    overflow:hidden;
+    background:#e8ddd0;
+}
+
+/* 매거진형 — 비대칭 격자 */
+.galtype-masonry .gallery-track{
+    display:grid !important;
+    grid-template-columns:repeat(3,1fr);
+    grid-auto-rows:1fr;
+    gap:6px;
+    transform:none !important;
+}
+.galtype-masonry .gallery-cell{
+    aspect-ratio:1;
+    border-radius:8px;
+    overflow:hidden;
+    background:#e8ddd0;
+}
+.galtype-masonry .gallery-cell:nth-child(6n+1){
+    grid-column:span 2;
+    grid-row:span 2;
+    aspect-ratio:auto;
+}
+
+/* 혼합형 — 큰 사진 + 작은 사진 */
+.galtype-mixed .gallery-track{
+    display:grid !important;
+    grid-template-columns:repeat(2,1fr);
+    gap:6px;
+    transform:none !important;
+}
+.galtype-mixed .gallery-cell{
+    aspect-ratio:1;
+    border-radius:8px;
+    overflow:hidden;
+    background:#e8ddd0;
+}
+.galtype-mixed .gallery-cell:nth-child(3n+1){
+    grid-row:span 2;
+    aspect-ratio:1/2;
+}
+
+/* 격자형 공통 — 화살표 숨김 */
+.galtype-grid .gallery-arrows,
+.galtype-masonry .gallery-arrows,
+.galtype-mixed .gallery-arrows{ display:none !important; }
+
+/* 격자 셀 이미지 */
+.gallery-cell img{
+    width:100%;height:100%;
+    object-fit:cover;
+    transition:transform 0.4s ease;
+}
+.gallery-cell:active img{ transform:scale(1.05); }
+
+/* ════════════════════════════════════════
+   모바일 청첩장 시그니처 스크롤 효과 (강화)
+   ════════════════════════════════════════ */
+
+/* 전체 스크롤 부드럽게 */
+html{ scroll-behavior:smooth; }
+*{ -webkit-tap-highlight-color:transparent; }
+
+/* 1) 섹션 라벨 — 천천히 떠오르며 자간 펼쳐짐 */
+.sec-label.reveal{
+    opacity:0;
+    transform:translateY(20px);
+    letter-spacing:8px;
+    transition:opacity 1.3s cubic-bezier(0.16,1,0.3,1),
+               transform 1.3s cubic-bezier(0.16,1,0.3,1),
+               letter-spacing 1.3s cubic-bezier(0.16,1,0.3,1);
+}
+.sec-label.reveal.on{
+    opacity:1;
+    transform:translateY(0);
+    letter-spacing:5px;
+}
+
+/* 2) 섹션 제목 — 아래서 부드럽게 + 블러 해제 */
+.sec-title.reveal{
+    opacity:0;
+    transform:translateY(28px);
+    filter:blur(4px);
+    transition:opacity 1.2s cubic-bezier(0.16,1,0.3,1),
+               transform 1.2s cubic-bezier(0.16,1,0.3,1),
+               filter 1.2s ease;
+}
+.sec-title.reveal.on{
+    opacity:1;
+    transform:translateY(0);
+    filter:blur(0);
+}
+
+/* 3) 카드류 — 살짝 확대되며 그림자와 함께 등장 */
+.greet-card.reveal-scale,
+.cal-card.reveal-scale,
+.dday-card.reveal-scale,
+.map-card.reveal-scale,
+.info-block.reveal-scale{
+    opacity:0;
+    transform:scale(0.94) translateY(20px);
+    transition:opacity 1.3s cubic-bezier(0.16,1,0.3,1),
+               transform 1.3s cubic-bezier(0.16,1,0.3,1);
+}
+.greet-card.reveal-scale.on,
+.cal-card.reveal-scale.on,
+.dday-card.reveal-scale.on,
+.map-card.reveal-scale.on,
+.info-block.reveal-scale.on{
+    opacity:1;
+    transform:scale(1) translateY(0);
+}
+
+/* 4) 정보 아이템 순차 슬라이드 */
+.info-item{
+    opacity:0;
+    transform:translateX(-16px);
+    transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1),
+               transform 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+.info-item.on{ opacity:1; transform:translateX(0); }
+
+/* 5) 갤러리 — 줌인하며 페이드 */
+.gallery-outer.reveal-zoom{
+    opacity:0;
+    transform:scale(1.08);
+    transition:opacity 1.4s cubic-bezier(0.16,1,0.3,1),
+               transform 1.4s cubic-bezier(0.16,1,0.3,1);
+}
+.gallery-outer.reveal-zoom.on{ opacity:1; transform:scale(1); }
+
+/* 6) 계좌 카드 순차 */
+.acct-card.reveal{
+    opacity:0;
+    transform:translateY(24px);
+    transition:opacity 1.1s cubic-bezier(0.16,1,0.3,1),
+               transform 1.1s cubic-bezier(0.16,1,0.3,1);
+}
+.acct-card.reveal.on{ opacity:1; transform:translateY(0); }
+
+/* 7) 혼주 정보 — 양쪽에서 모임 (hosts-wrap은 트리거만) */
+.hosts-wrap.reveal{ opacity:1 !important; transform:none !important; }
+.host-card:nth-child(1){
+    opacity:0;transform:translateX(-30px);
+    transition:opacity 1.1s cubic-bezier(0.16,1,0.3,1),transform 1.1s cubic-bezier(0.16,1,0.3,1);
+}
+.host-card:nth-child(2){
+    opacity:0;transform:translateX(30px);
+    transition:opacity 1.1s cubic-bezier(0.16,1,0.3,1),transform 1.1s cubic-bezier(0.16,1,0.3,1);
+}
+.hosts-wrap.on .host-card{ opacity:1 !important; transform:translateX(0) !important; }
+
+/* 8) 구분선 — 중앙에서 양옆으로 펼쳐지며 아이콘 회전 */
+.section-divider .div-line{
+    transform:scaleX(0);
+    transform-origin:center;
+    transition:transform 1.4s cubic-bezier(0.16,1,0.3,1);
+}
+.section-divider.on .div-line{ transform:scaleX(1); }
+.section-divider .div-icon{
+    opacity:0;
+    transform:scale(0.3) rotate(-180deg);
+    transition:opacity 0.8s ease 0.4s,
+               transform 0.8s cubic-bezier(0.34,1.56,0.64,1) 0.4s;
+}
+.section-divider.on .div-icon{
+    opacity:0.4;
+    transform:scale(1) rotate(0);
+}
+
+/* 9) 부드러운 모멘텀 (iOS) */
+body{ -webkit-overflow-scrolling:touch; }
+
+/* 접근성 */
+@media (prefers-reduced-motion: reduce){
+    .sec-label, .sec-title, .greet-card, .cal-card, .dday-card,
+    .map-card, .info-block, .info-item, .gallery-outer, .acct-card,
+    .host-card, .section-divider .div-line, .section-divider .div-icon{
+        opacity:1 !important;
+        transform:none !important;
+        filter:none !important;
+        transition:none !important;
+    }
+}
+
+/* ════════════════════════════════════════
+   지도 섹션 (스크린샷 스타일)
+   ════════════════════════════════════════ */
+.map-card{
+    border-radius:16px;
+    overflow:hidden;
+    background:rgba(255,255,255,0.55);
+    border:0.5px solid rgba(180,160,130,0.18);
+}
+.map-info-top{
+    padding:1.2rem 1.4rem 1rem;
+}
+.map-place-name{
+    font-size:16px;font-weight:600;color:#2c2822;
+    margin-bottom:4px;
+    font-family:'Noto Serif KR',serif;
+}
+.map-addr-text{
+    font-size:12px;color:#9a8a74;line-height:1.6;
+}
+.map-wrap{
+    width:100%;height:220px;
+    background:#e8e0d5;
+}
+.map-placeholder{
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+}
+/* "자세히 보기" 배너 — 스크린샷의 핑크 배너 */
+.map-detail-btn{
+    display:block;
+    padding:12px;
+    background:#f5b8c4;
+    color:#2c2822;
+    font-size:13px;
+    text-align:center;
+    text-decoration:none;
+    letter-spacing:0.5px;
+    transition:background .2s;
+}
+.map-detail-btn:hover{ background:#f0a8b5; }
+/* 내비게이션 버튼 */
+.map-navi-btns{
+    display:flex;gap:8px;padding:12px;
+    border-top:0.5px solid rgba(180,160,130,0.15);
+    background:rgba(255,255,255,0.6);
+}
+.map-navi-btn{
+    flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+    padding:9px 4px;border-radius:10px;
+    font-size:12px;font-weight:500;text-decoration:none;
+    border:1.5px solid #e0d8d0;color:#2c2822;
+    transition:all .2s;background:#fff;
+}
+.map-navi-btn:hover{ border-color:#c4748a;color:#c4748a; }
+.navi-t{
+    width:18px;height:18px;border-radius:4px;
+    background:#1a73e8;color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:700;
+}
+.navi-n{
+    width:18px;height:18px;border-radius:4px;
+    background:#03c75a;color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:700;
+}
+.kakao-navi{ border-color:#fee500; }
+.kakao-navi:hover{ background:#fffde7;border-color:#f9a825; }
+
+/* ════════════════════════════════════════
+   지도 섹션 — 스크린샷 스타일
+   ════════════════════════════════════════ */
+
+/* 주소 — 지도 위 중앙 */
+.map-addr-header{
+    text-align:center;
+    padding:0 20px 18px;
+}
+.map-addr-header .map-addr-text{
+    font-family:'Noto Serif KR',serif;
+    font-size:15px;
+    color:#3a3a38;
+    line-height:1.7;
+    font-weight:300;
+    letter-spacing:0.3px;
+}
+
+/* 지도 — full-width, 카드 없이 */
+.map-full{
+    width:100%;
+    position:relative;
+    overflow:hidden;
+}
+
+/* 지도 래퍼 — Static Map img 컨테이너 */
+.map-wrap{
+    width:100%;
+    height:280px;
+    background:#e8e0d5;
+    display:block;
+    position:relative;
+    overflow:hidden;
+}
+.map-wrap img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    cursor:pointer;
+}
+.map-wrap.map-placeholder{
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    gap:8px;
+}
+
+/* 내비게이션 — 지도 밖 별도 섹션 */
+.map-navi-section{
+    padding:20px 16px 8px;
+    background:#fff;
+}
+.map-navi-title{
+    font-family:'Noto Serif KR',serif;
+    font-size:15px;
+    font-weight:500;
+    color:#1a1a1a;
+    margin-bottom:6px;
+}
+.map-navi-desc{
+    font-size:12.5px;
+    color:#888;
+    margin-bottom:14px;
+    line-height:1.6;
+}
+.map-navi-row{
+    display:flex;
+    gap:8px;
+}
+.map-navi-btn{
+    flex:1;
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    padding:11px 4px;
+    border-radius:10px;
+    font-size:12px;font-weight:500;
+    text-decoration:none;color:#2c2822;
+    border:1.5px solid #e8e8e8;
+    background:#fff;
+    transition:all .15s;
+    white-space:nowrap;
+}
+.map-navi-btn:active{ opacity:.75;transform:scale(.97); }
+.kakao-navi{ border-color:#FEE500; }
+.tmap-navi{ border-color:#1a6dd8; color:#1a6dd8; }
+.naver-navi{ border-color:#03c75a; color:#03c75a; }
+
+/* 내비 아이콘 SVG 인라인 대체 */
+.navi-icon-kakao {
+    width:24px;height:24px;border-radius:6px;flex-shrink:0;
+    background:#FEE500;display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:900;color:#3C1E1E;font-family:sans-serif;
+}
+.navi-icon-tmap {
+    width:24px;height:24px;border-radius:6px;flex-shrink:0;overflow:hidden;
+    background:linear-gradient(135deg,#ff5e6d,#9b59b6);
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:900;color:#fff;font-family:sans-serif;
+}
+.navi-icon-naver {
+    width:24px;height:24px;border-radius:6px;flex-shrink:0;
+    background:#03c75a;display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:900;color:#fff;font-family:sans-serif;
+}
+
+/* ── 내비게이션 섹션 (스크린샷 스타일) ── */
+.map-navi-section{
+    padding:20px 16px 4px;
+    background:#fff;
+}
+.map-navi-title{
+    font-size:15px;font-weight:600;
+    color:#1a1a1a;margin-bottom:6px;
+    font-family:'Noto Sans KR',sans-serif;
+}
+.map-navi-desc{
+    font-size:13px;color:#666;
+    margin-bottom:14px;
+    font-family:'Noto Sans KR',sans-serif;
+}
+.map-navi-row{
+    display:flex;gap:10px;
+    padding-bottom:16px;
+}
+.map-navi-btn{
+    flex:1;
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    padding:11px 6px;
+    border-radius:10px;
+    font-size:12px;font-weight:500;
+    text-decoration:none;color:#2c2822;
+    border:1.5px solid #e8e8e8;
+    background:#fff;
+    transition:all .15s;
+    font-family:'Noto Sans KR',sans-serif;
+}
+.map-navi-btn:active{ opacity:.75;transform:scale(.97); }
+
+/* 아이콘 */
+.navi-icon-kakao{
+    width:24px;height:24px;border-radius:6px;flex-shrink:0;
+    background:#FEE500;display:inline-flex;align-items:center;justify-content:center;
+    font-size:0;overflow:hidden;
+    background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="24" height="24" fill="%23FEE500" rx="6"/><text x="12" y="17" text-anchor="middle" font-size="14" font-weight="900" font-family="sans-serif" fill="%233C1E1E">K</text></svg>');
+    background-size:cover;
+}
+.navi-icon-tmap{
+    width:24px;height:24px;border-radius:6px;flex-shrink:0;
+    background:linear-gradient(135deg,#ff5e6d 0%,#9b59b6 100%);
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:900;color:#fff;font-family:sans-serif;
+}
+.navi-icon-naver{
+    width:24px;height:24px;border-radius:6px;flex-shrink:0;
+    background:#03c75a;display:inline-flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:900;color:#fff;font-family:sans-serif;
+    letter-spacing:-1px;
+}
+
+/* kakao-navi 버튼 테두리 */
+.kakao-navi{ border-color:#FEE500; }
+.tmap-navi{ border-color:#d0b8e0; }
+.naver-navi{ border-color:#b8e8cc; }
+
+/* ── 내비 아이콘 정확한 디자인 ── */
+.navi-icon-kakao {
+    width:26px;height:26px;border-radius:7px;flex-shrink:0;
+    background:#FEE500;
+    display:inline-flex;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;
+}
+.navi-icon-kakao::before {
+    content:'';
+    width:14px;height:14px;
+    border:2.5px solid #3C1E1E;
+    border-radius:50%;
+    position:absolute;
+}
+.navi-icon-kakao::after {
+    content:'';
+    width:3px;height:3px;
+    background:#3C1E1E;
+    border-radius:50%;
+    position:absolute;
+}
+
+.navi-icon-tmap {
+    width:26px;height:26px;border-radius:7px;flex-shrink:0;
+    background:#fff;border:1.5px solid #e8d8ee;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:15px;font-weight:900;font-style:italic;
+    font-family:'Arial Black',sans-serif;
+    background:linear-gradient(135deg,#ff4e7e,#a855f7);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;color:transparent;
+    border:1.5px solid #f0d8f8;
+}
+
+.navi-icon-naver {
+    width:26px;height:26px;border-radius:7px;flex-shrink:0;
+    background:#03c75a;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:15px;font-weight:900;color:#fff;
+    font-family:'Arial Black','Noto Sans KR',sans-serif;
+    letter-spacing:-1px;
+}
+
+/* ════════════════════════════════════════
+   신랑/신부 표시 순서 제어
+   data-order="bride" 시 신부 먼저
+   ════════════════════════════════════════ */
+
+/* 히어로 이름 — flex로 순서 전환 */
+.hero-top-names {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 0;
+    white-space: nowrap;
+}
+.hero-top-names .name-sep  { white-space: pre; }
+.hero-top-names .name-marry{ white-space: pre; }
+
+/* 신부 먼저: CSS flex order로 순서 전환 */
+.hero-top-names[data-order="bride"] .name-groom  { order: 3; }
+.hero-top-names[data-order="bride"] .name-sep    { order: 2; }
+.hero-top-names[data-order="bride"] .name-bride  { order: 1; }
+.hero-top-names[data-order="bride"] .name-marry  { order: 4; }
+
+/* 디자인 테마 이름 — & 없이 이름만, flex order (이름 표시 테마만 flex 적용) */
+.hero.design-our_story .hero-design-names,
+.hero.design-our_story_pink .hero-design-names,
+.hero.design-married .hero-design-names { display: flex; align-items: center; justify-content: center; gap: 0; }
+.hero-design-names .hdn-sep  { white-space: pre; }
+.hero-design-names[data-order="bride"] .name-bride { order: 1; }
+.hero-design-names[data-order="bride"] .hdn-sep    { order: 2; }
+.hero-design-names[data-order="bride"] .name-groom { order: 3; }
+
+/* 혼주 카드 — grid order */
+.hosts-wrap[data-order="bride"] [data-side="bride"]  { order: 1; }
+.hosts-wrap[data-order="bride"] .hosts-center         { order: 2; }
+.hosts-wrap[data-order="bride"] [data-side="groom"]  { order: 3; }
+
+/* 계좌 탭 — flex order */
+.acct-tab-wrap { display: flex; }
+.acct-tab-wrap[data-order="bride"] #acctTabBride { order: 1; }
+.acct-tab-wrap[data-order="bride"] #acctTabGroom { order: 2; }
+
+/* ══════════════════════════════════════
+   연락하기 팝업 모달
+   ══════════════════════════════════════ */
+.contact-modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    z-index:9000;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    backdrop-filter:blur(2px);
+}
+.contact-modal-box{
+    width:100%;
+    max-width:480px;
+    background:#fff;
+    border-radius:24px 24px 0 0;
+    padding:2rem 1.6rem 2.4rem;
+    text-align:center;
+}
+.contact-modal-name{
+    font-family:'Noto Serif KR',serif;
+    font-size:18px;
+    font-weight:400;
+    color:#2a2a28;
+    margin-bottom:0.35rem;
+    letter-spacing:0.5px;
+}
+.contact-modal-phone{
+    font-family:'EB Garamond','Cormorant Garamond',serif;
+    font-size:22px;
+    font-weight:400;
+    color:#b89870;
+    letter-spacing:2px;
+    margin-bottom:1.6rem;
+}
+.contact-modal-btns{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    margin-bottom:1rem;
+}
+.contact-modal-btn{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    flex:1;
+    max-width:140px;
+    padding:1rem 0.8rem;
+    border-radius:16px;
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:12px;
+    font-weight:400;
+    letter-spacing:0.5px;
+    text-decoration:none;
+    transition:transform 0.15s, opacity 0.15s;
+}
+.contact-modal-btn:active{transform:scale(0.96);opacity:0.85;}
+.contact-modal-btn i{font-size:22px;}
+.contact-modal-btn.call{
+    background:#f0f4ff;
+    color:#4a6fa5;
+}
+.contact-modal-btn.sms{
+    background:#fff0f5;
+    color:#c4748a;
+}
+.contact-modal-close{
+    display:block;
+    width:100%;
+    padding:0.7rem;
+    background:none;
+    border:none;
+    font-size:13px;
+    color:#bbb;
+    cursor:pointer;
+    font-family:'Noto Sans KR',sans-serif;
+    letter-spacing:1px;
+}
+
+/* ══════════════════════════════════════
+   썸네일 스와이프 갤러리 (thumb_swipe)
+   ══════════════════════════════════════ */
+.galtype-thumb_swipe .gallery-track{
+    display:block !important;
+    width:100%;
+}
+.ts-main-wrap{
+    width:100%;
+    aspect-ratio:4/3;
+    overflow:hidden;
+    background:#f0ece6;
+    position:relative;
+}
+.ts-main-img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    cursor:default;
+    transition:opacity 0.2s ease;
+    display:block;
+}
+.ts-thumb-row{
+    display:flex;
+    gap:5px;
+    padding:8px 6px 4px;
+    overflow-x:auto;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+}
+.ts-thumb-row::-webkit-scrollbar{ display:none; }
+.ts-thumb{
+    flex-shrink:0;
+    width:68px;
+    height:52px;
+    object-fit:cover;
+    border-radius:6px;
+    cursor:pointer;
+    opacity:0.6;
+    transition:opacity 0.2s, outline 0.2s;
+    outline:2px solid transparent;
+    outline-offset:2px;
+}
+.ts-thumb.active{
+    opacity:1;
+    outline-color:#b89870;
+}
+.ts-thumb:hover{ opacity:0.85; }
+
+/* 기본 gallery-arrows는 thumb_swipe에서 숨김 — ts-main-wrap 내부 버튼 사용 */
+.galtype-thumb_swipe .gallery-arrows{ display:none !important; }
+
+/* ts-main-wrap 안에 절대 배치되는 좌/우 내비게이션 버튼 */
+.ts-nav-prev,.ts-nav-next{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:2;
+}
+.ts-nav-prev{ left:6px; }
+.ts-nav-next{ right:6px; }
+
+/* ══════════════════════════════════════
+   갤러리 이미지 팝업 뷰어
+   ══════════════════════════════════════ */
+.gp-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.18);        /* 반투명 */
+    backdrop-filter:blur(0px);
+    z-index:9500;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;                      /* 배경 클릭 시 닫힘 힌트 */
+}
+.gp-img-wrap{
+    position:relative;
+    max-width:92vw;
+    max-height:88vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:default;                      /* 이미지 영역은 기본 커서 */
+}
+.gp-img{
+    max-width:92vw;
+    max-height:88vh;
+    object-fit:contain;
+    border-radius:8px;
+    user-select:none;
+    -webkit-user-drag:none;
+    box-shadow:0 8px 40px rgba(0,0,0,0.35);
+}
+.gp-close{
+    position:fixed;
+    top:14px;
+    right:14px;
+    background:rgba(0,0,0,0.45);
+    border:none;
+    color:#fff;
+    font-size:18px;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9502;
+    transition:background 0.2s;
+    pointer-events:all;
+}
+.gp-close:hover{ background:rgba(0,0,0,0.65); }
+.gp-arrow{
+    position:fixed;
+    top:50%;
+    transform:translateY(-50%);
+    background:rgba(0,0,0,0.32);
+    border:none;
+    color:#fff;
+    font-size:20px;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9502;
+    transition:background 0.2s, opacity 0.2s;
+    pointer-events:all;
+}
+.gp-arrow:hover{ background:rgba(0,0,0,0.55); }
+.gp-prev{ left:10px; }
+.gp-next{ right:10px; }
+
+/* 카운터 — 열릴 때 1회 표시 후 페이드아웃 */
+.gp-counter{
+    position:absolute;
+    bottom:-30px;
+    left:50%;
+    transform:translateX(-50%);
+    background:rgba(0,0,0,0.5);
+    color:#fff;
+    font-size:11px;
+    font-family:'Noto Sans KR',sans-serif;
+    letter-spacing:1px;
+    white-space:nowrap;
+    padding:3px 10px;
+    border-radius:12px;
+    opacity:1;
+    transition:opacity 0.5s ease;
+    pointer-events:none;
+}
+.gp-counter.fade-out{
+    opacity:0;
+}
+
+
+.map-place-name{font-size:30px;font-weight:600;color:#111;margin-bottom:12px;text-align:center;}
+.map-detail-btn{display:block;width:100%;padding:16px;background:#e8b3b3;color:#fff;text-decoration:none;text-align:center;}
+.map-wrap{min-height:380px;}
+
+/* ══ RSVP ══ */
+.rsvp-card{background:#fff;border-radius:16px;padding:1.6rem 1.4rem;margin:0 1rem;}
+.rsvp-row{display:flex;flex-direction:column;gap:6px;margin-bottom:1rem;}
+.rsvp-label{font-size:12px;color:#9a8a74;letter-spacing:0.5px;}
+.rsvp-required{color:#c4748a;}
+.rsvp-optional{color:#bbb;font-size:11px;}
+.rsvp-input{width:100%;padding:10px 12px;border:1px solid #e0d8cf;border-radius:8px;font-size:14px;font-family:'Noto Sans KR',sans-serif;background:#faf8f5;color:#2c2822;outline:none;}
+.rsvp-input:focus{border-color:#c4a882;}
+.rsvp-textarea{width:100%;padding:10px 12px;border:1px solid #e0d8cf;border-radius:8px;font-size:14px;font-family:'Noto Sans KR',sans-serif;background:#faf8f5;color:#2c2822;outline:none;resize:none;height:72px;}
+.rsvp-textarea:focus{border-color:#c4a882;}
+.rsvp-attend-btns{display:flex;gap:8px;}
+.rsvp-attend-btn{flex:1;padding:10px;border:1.5px solid #e0d8cf;border-radius:8px;background:#fff;font-size:13px;font-family:'Noto Sans KR',sans-serif;color:#9a8a74;cursor:pointer;transition:all .2s;}
+.rsvp-attend-btn.active{border-color:#c4748a;background:#fff0f3;color:#c4748a;font-weight:500;}
+.rsvp-count-wrap{display:flex;align-items:center;gap:12px;}
+.rsvp-count-btn{width:32px;height:32px;border:1.5px solid #e0d8cf;border-radius:50%;background:#fff;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#5a4e40;}
+.rsvp-count-btn:active{background:#f5f0ea;}
+#rsvpMealCount{font-size:18px;font-weight:500;color:#2c2822;min-width:24px;text-align:center;}
+.rsvp-count-unit{font-size:13px;color:#9a8a74;}
+.rsvp-err{color:#c4748a;font-size:12px;text-align:center;padding:4px 0;}
+.rsvp-submit-btn{width:100%;padding:14px;background:#2c2822;color:#fff;border:none;border-radius:10px;font-size:14px;font-family:'Noto Sans KR',sans-serif;font-weight:500;cursor:pointer;margin-top:4px;transition:background .2s;}
+.rsvp-submit-btn:hover{background:#5a4e40;}
+.rsvp-submit-btn:disabled{background:#bbb;cursor:default;}
+.rsvp-success-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 0;}
+.rsvp-success-icon{width:52px;height:52px;border-radius:50%;background:#f0f8ee;border:2px solid #8ab88a;display:flex;align-items:center;justify-content:center;font-size:22px;color:#6a9a6a;margin-bottom:1rem;}
+.rsvp-success-msg{font-size:14px;color:#6a8060;text-align:center;line-height:1.8;}
+
+/* ════════════════════════════════════════
+   글꼴 크기 — editor mainFontSize (sm/md/lg)
+   heroSection에 .fs-* 클래스 부여
+   ════════════════════════════════════════ */
+.hero.fs-sm .hero-top-names { font-size: 14px !important; letter-spacing: 1px !important; }
+.hero.fs-sm .hero-top-date  { font-size: 42px !important; }
+.hero.fs-lg .hero-top-names { font-size: 21px !important; letter-spacing: 2px !important; }
+.hero.fs-lg .hero-top-date  { font-size: 64px !important; }
+
+/* design-basic 전용 크기 보정 */
+.hero.design-basic.fs-sm .hbn-name { font-size: 22px !important; }
+.hero.design-basic.fs-lg .hbn-name { font-size: 30px !important; }
+
+
+/* ════════════════════════════════════════
+   효과 레이어 — fog / wave / paper
+   ════════════════════════════════════════ */
+.effect-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;           /* 사진(0) 위, 오버레이 텍스트(3) 아래 */
+    border-radius: inherit;
+}
+
+/* ── 안개 효과 ── transform 미사용 — opacity만 애니메이션 */
+.effect-layer.eff-fog {
+    background:
+        radial-gradient(ellipse 90% 55% at 15% 85%, rgba(255,255,255,0.52) 0%, transparent 68%),
+        radial-gradient(ellipse 75% 50% at 85% 15%, rgba(255,255,255,0.38) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 40% at 50% 55%, rgba(255,255,255,0.22) 0%, transparent 60%);
+    animation: fogDrift 9s ease-in-out infinite alternate;
+}
+@keyframes fogDrift {
+    0%   { opacity: 0.45; }
+    33%  { opacity: 0.85; }
+    66%  { opacity: 0.60; }
+    100% { opacity: 0.75; }
+}
+
+/* ── 물결 효과 ── transform 미사용 — background-position으로 이동 */
+.effect-layer.eff-wave {
+    background: repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        transparent 18px,
+        rgba(255,255,255,0.10) 22px,
+        transparent 26px
+    );
+    background-size: 100% 50px;
+    background-position: 0 0;
+    animation: wavePulse 3.5s ease-in-out infinite;
+}
+@keyframes wavePulse {
+    0%, 100% { background-position: 0 0;    opacity: 0.55; }
+    50%       { background-position: 0 -25px; opacity: 0.90; }
+}
+
+/* ── 페이퍼 효과 ── */
+.effect-layer.eff-paper {
+    background-image:
+        repeating-linear-gradient(
+            0deg,
+            transparent 0px,
+            transparent 3px,
+            rgba(180,160,120,0.04) 3px,
+            rgba(180,160,120,0.04) 4px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent 0px,
+            transparent 5px,
+            rgba(160,140,100,0.03) 5px,
+            rgba(160,140,100,0.03) 6px
+        );
+    mix-blend-mode: multiply;
+}

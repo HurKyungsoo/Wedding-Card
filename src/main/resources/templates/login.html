@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로그인 — WeddingCard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #f5f0eb 0%, #ede8e1 60%, #e4ddd5 100%);
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 3rem 2.5rem;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 48px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.login-logo {
+    font-size: 1.1rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    color: #7a6a58;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+}
+.login-logo strong {
+    font-weight: 500;
+    color: #3a2e26;
+}
+
+.login-tagline {
+    font-size: 0.82rem;
+    color: #a09080;
+    letter-spacing: 0.04em;
+    margin-bottom: 2.4rem;
+}
+
+.login-divider {
+    font-size: 0.75rem;
+    color: #c0b0a0;
+    margin-bottom: 1.6rem;
+    position: relative;
+}
+.login-divider::before,
+.login-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 38%;
+    height: 1px;
+    background: #e8e0d8;
+}
+.login-divider::before { left: 0; }
+.login-divider::after  { right: 0; }
+
+.kakao-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 0.95rem 1.5rem;
+    background: #FEE500;
+    color: #3C1E1E;
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: inherit;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s, transform 0.1s;
+}
+.kakao-btn:hover  { background: #F5DC00; }
+.kakao-btn:active { transform: scale(0.98); }
+
+.kakao-btn svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.login-error {
+    margin-bottom: 1.2rem;
+    padding: 0.75rem 1rem;
+    background: #fff2f2;
+    border: 1px solid #ffd0d0;
+    border-radius: 8px;
+    color: #c05050;
+    font-size: 0.82rem;
+}
+
+.login-notice {
+    margin-top: 2rem;
+    font-size: 0.75rem;
+    color: #b0a090;
+    line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="login-logo"><strong>Wedding</strong>Card</div>
+    <p class="login-tagline">나만의 모바일 청첩장</p>
+
+    <div th:if="${loginError}" class="login-error">
+        로그인에 실패했습니다. 다시 시도해 주세요.
+    </div>
+
+    <div class="login-divider">소셜 계정으로 시작하기</div>
+
+    <a href="/oauth2/authorization/kakao" class="kakao-btn">
+        <!-- 카카오 말풍선 아이콘 -->
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3C6.477 3 2 6.582 2 11c0 2.878 1.697 5.41 4.267 6.962L5.2 21.4a.5.5 0 0 0 .701.594L10.1 19.88A11.48 11.48 0 0 0 12 20c5.523 0 10-3.582 10-8s-4.477-9-10-9z"/>
+        </svg>
+        카카오로 시작하기
+    </a>
+
+    <p class="login-notice">
+        로그인하면 청첩장을 만들고 편집할 수 있습니다.<br>
+        계정 정보는 안전하게 보호됩니다.
+    </p>
+</div>
+
+</body>
+</html>

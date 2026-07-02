@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 — WeddingCard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --rose: #c4748a;
+            --dark: #2d2520;
+            --gray: #7a6a60;
+            --line: #e8e2da;
+            --bg: #f7f4f2;
+        }
+        body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--dark); min-height: 100vh; }
+
+        /* TOPBAR */
+        .topbar {
+            background: #fff; border-bottom: 1px solid var(--line);
+            padding: 0 32px; height: 56px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 10;
+        }
+        .topbar-logo { font-size: 16px; font-weight: 500; color: var(--dark); text-decoration: none; }
+        .topbar-right { display: flex; align-items: center; gap: 16px; }
+        .topbar-right a {
+            font-size: 13px; color: var(--gray); text-decoration: none;
+            display: inline-flex; align-items: center; gap: 5px;
+        }
+        .topbar-right a:hover { color: var(--rose); }
+        .btn-new {
+            background: var(--rose); color: #fff !important;
+            padding: 7px 16px; border-radius: 16px;
+        }
+        .btn-new:hover { background: #b56278 !important; }
+
+        /* CONTENT */
+        .content { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+
+        /* STAT CARDS */
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+        .stat {
+            background: #fff; border: 1px solid var(--line);
+            border-radius: 12px; padding: 20px 20px 18px;
+        }
+        .stat-label { font-size: 12px; color: var(--gray); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+        .stat-label i { font-size: 15px; color: var(--rose); }
+        .stat-val { font-size: 28px; font-weight: 600; color: var(--dark); line-height: 1; }
+
+        /* TABLE CARD */
+        .card {
+            background: #fff; border: 1px solid var(--line);
+            border-radius: 14px; overflow: hidden;
+        }
+        .card-head {
+            padding: 16px 20px; border-bottom: 1px solid var(--line);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .card-head h2 { font-size: 15px; font-weight: 500; }
+        .card-head span { font-size: 12px; color: var(--gray); }
+
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            padding: 10px 16px; font-size: 11px; font-weight: 500;
+            color: var(--gray); text-align: left; text-transform: uppercase;
+            letter-spacing: .5px; background: #faf7f5;
+            border-bottom: 1px solid var(--line);
+        }
+        td { padding: 13px 16px; font-size: 13px; border-bottom: 1px solid #f5f0ec; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fdfbfa; }
+
+        .slug-link { color: var(--rose); text-decoration: none; font-family: monospace; font-size: 12px; }
+        .slug-link:hover { text-decoration: underline; }
+        .view-num { display: inline-flex; align-items: center; gap: 4px; color: var(--gray); font-size: 13px; }
+        .view-num i { font-size: 13px; color: #c0b0a8; }
+
+        .btn-edit {
+            text-decoration: none; color: var(--gray);
+            border: 1px solid var(--line); border-radius: 7px;
+            padding: 4px 10px; font-size: 12px; display: inline-block;
+            transition: border-color .15s;
+        }
+        .btn-edit:hover { border-color: var(--rose); color: var(--rose); }
+        .btn-del {
+            background: none; border: 1px solid #f0d0d0; color: #cc7070;
+            border-radius: 7px; padding: 4px 10px; font-size: 12px;
+            cursor: pointer; transition: background .15s;
+        }
+        .btn-del:hover { background: #fde8e8; }
+        .actions { display: flex; gap: 6px; }
+
+        .empty { text-align: center; padding: 48px 24px; color: #c0b0a8; }
+        .empty i { font-size: 36px; margin-bottom: 10px; display: block; }
+
+        @media (max-width: 720px) {
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .topbar { padding: 0 16px; }
+            .content { padding: 20px 12px; }
+            th, td { padding: 10px 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+    <a href="/" class="topbar-logo">WeddingCard 관리자</a>
+    <div class="topbar-right">
+        <a href="/admin/edit"><i class="ti ti-edit"></i> 편집기</a>
+        <a href="/" ><i class="ti ti-home"></i> 홈</a>
+        <a href="/my/create" class="btn-new"><i class="ti ti-plus"></i> 새 청첩장</a>
+    </div>
+</header>
+
+<div class="content">
+
+    <!-- 통계 -->
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-label"><i class="ti ti-heart"></i> 청첩장</div>
+            <div class="stat-val" th:text="${totalWeddings}">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label"><i class="ti ti-users"></i> 가입자</div>
+            <div class="stat-val" th:text="${totalUsers}">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label"><i class="ti ti-crown"></i> Pro</div>
+            <div class="stat-val" th:text="${proUsers}">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label"><i class="ti ti-eye"></i> 조회수</div>
+            <div class="stat-val" th:text="${totalViews}">0</div>
+        </div>
+    </div>
+
+    <!-- 청첩장 목록 -->
+    <div class="card">
+        <div class="card-head">
+            <h2>청첩장 목록</h2>
+            <span th:text="${totalWeddings} + '개'">0개</span>
+        </div>
+        <div class="empty" th:if="${weddings.isEmpty()}">
+            <i class="ti ti-inbox"></i>
+            등록된 청첩장이 없습니다
+        </div>
+        <table th:if="${!weddings.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>신랑 / 신부</th>
+                    <th>날짜</th>
+                    <th>공개 URL</th>
+                    <th>조회</th>
+                    <th>생성일</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="w : ${weddings}">
+                    <td style="color:#c0b0a8;font-size:11px;" th:text="'#' + ${w.id}"></td>
+                    <td>
+                        <span th:text="${w.groomName ?: '—'}"></span>
+                        <span style="color:#c0b0a8;margin:0 4px;">·</span>
+                        <span th:text="${w.brideName ?: '—'}"></span>
+                    </td>
+                    <td style="color:var(--gray);" th:text="${w.weddingDate ?: '—'}"></td>
+                    <td>
+                        <a th:if="${w.slug != null}" class="slug-link"
+                           th:href="'/w/' + ${w.slug}" th:text="w.slug" target="_blank"></a>
+                        <span th:if="${w.slug == null}" style="color:#ddd;">—</span>
+                    </td>
+                    <td>
+                        <span class="view-num">
+                            <i class="ti ti-eye"></i>
+                            <span th:text="${w.viewCount ?: 0}">0</span>
+                        </span>
+                    </td>
+                    <td style="color:#c0b0a8;font-size:12px;"
+                        th:text="${w.createdAt != null ? #temporals.format(w.createdAt,'MM/dd HH:mm') : '—'}"></td>
+                    <td>
+                        <div class="actions">
+                            <a th:href="'/wedding/' + ${w.id}" class="btn-edit">보기</a>
+                            <form th:action="'/superadmin/wedding/delete/' + ${w.id}"
+                                  method="post" style="display:inline"
+                                  onsubmit="return confirm('삭제하시겠습니까?')">
+                                <button type="submit" class="btn-del"><i class="ti ti-trash"></i></button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

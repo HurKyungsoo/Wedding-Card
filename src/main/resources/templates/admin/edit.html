@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>청첩장 편집</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;1,400&family=Cormorant+Garamond:ital,wght@1,400&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="stylesheet" th:href="@{/css/editor.css}">
+</head>
+<body>
+
+<!-- 전체화면 미리보기 모달 -->
+<div class="fullprev-overlay" id="fullPrevOverlay">
+    <div class="fullprev-phone">
+        <button class="fullprev-close" id="fullPrevClose"><i class="ti ti-x"></i></button>
+        <div class="fullprev-screen">
+            <div class="fullprev-statusbar">
+                <span id="fullPrevTime">9:41</span>
+                <div><i class="ti ti-wifi"></i><i class="ti ti-battery-2"></i></div>
+            </div>
+            <iframe id="fullPrevFrame" src="" title="전체 미리보기"></iframe>
+        </div>
+        <div class="fullprev-bar"></div>
+    </div>
+</div>
+
+<!-- 섹션 순서/바로가기 드로어 -->
+<div class="drawer-overlay" id="drawerOverlay">
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            <span>바로가기 / 순서 변경</span>
+            <button id="drawerClose"><i class="ti ti-x"></i></button>
+        </div>
+        <div class="drawer-list" id="drawerList"></div>
+    </div>
+</div>
+
+<!-- ═══ 헤더 ═══ -->
+<header class="ed-header">
+    <div class="ed-logo">
+        <a href="/" style="text-decoration:none;color:inherit;">
+            <span class="ed-logo-main">Wedding</span><span class="ed-logo-card">Edit</span>
+        </a>
+    </div>
+    <div class="ed-header-right">
+        <a th:if="${wedding.slug != null}"
+           th:href="'/w/' + ${wedding.slug}"
+           target="_blank"
+           class="ed-btn-outline"
+           style="display:inline-flex;align-items:center;gap:5px;text-decoration:none;">
+            <i class="ti ti-external-link" style="font-size:14px;"></i> 청첩장 보기
+        </a>
+        <button class="ed-btn-outline" id="fullPrevBtn" type="button">전체 미리보기</button>
+        <button class="ed-btn-solid" id="topSaveBtn" type="button">저장하기</button>
+        <!-- 로그인 사용자 정보 -->
+        <div th:if="${currentUser != null}" style="display:flex;align-items:center;gap:8px;margin-left:4px;padding-left:12px;border-left:1px solid rgba(0,0,0,0.12);">
+            <span style="font-size:0.78rem;color:#7a6a58;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+                  th:text="${currentUser.name}">사용자</span>
+            <a href="/logout" style="font-size:0.78rem;color:#a09080;text-decoration:none;white-space:nowrap;"
+               title="로그아웃">로그아웃</a>
+        </div>
+    </div>
+</header>
+
+<!-- ═══ 3패널 ═══ -->
+<div class="ed-root">
+
+    <div class="ed-center" id="edCenter">
+
+    <!-- 왼쪽: 실시간 미리보기 -->
+    <aside class="ed-preview">
+        <iframe id="liveFrame"
+                th:src="${wedding.slug != null ? '/w/' + wedding.slug : '/wedding/' + wedding.id}"
+                title="실시간 미리보기"></iframe>
+        <div class="ed-preview-bottom">
+            <label class="ed-scroll-label" id="scrollToggleLabel">
+                <div class="ed-mini-toggle on" id="scrollToggle"></div>
+                <span>편집 시 해당 화면으로 이동</span>
+            </label>
+        </div>
+    </aside>
+
+    <!-- 중앙: 편집 폼 -->
+    <main class="ed-main">
+    <form th:action="@{/admin/edit}" method="post" th:object="${wedding}" id="editForm">
+        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{galleryImages}"   id="galleryImagesInput">
+        <input type="hidden" th:field="*{mainPhotoBase64}" id="mainPhotoBase64">
+        <input type="hidden" th:field="*{photoFilter}"     id="photoFilterInput">
+        <input type="hidden" th:field="*{calendarStyle}"   id="calStyleInput">
+        <input type="hidden" th:field="*{ddayStyle}"       id="ddayStyleInput">
+        <input type="hidden" th:field="*{deceasedDisplayType}" id="deceasedDisplayInput">
+
+        <!-- ━━ 메인테마 ━━ -->
+        <div class="ed-section open" id="sec-main">
+            <div class="ed-sec-hd" data-sec="main">
+                <div class="ed-sec-hd-left">
+                    <span class="ed-sec-icon"><i class="ti ti-palette"></i></span>
+                    <span class="ed-sec-title">메인테마</span>
+                    <span style="color:#c4748a;font-size:10px;font-weight:400;letter-spacing:.2px;">디자인 선택</span>
+                </div>
+                <i class="ti ti-chevron-up ed-chevron"></i>
+            </div>
+            <div class="ed-sec-bd" id="bd-main">
+
+                <!-- 배경음악 -->
+                <div class="ed-row">
+                    <span class="ed-label">배경음악</span>
+                    <div class="ed-ctrl">
+                        <select class="ed-select" id="bgmSelect" name="bgm">
+                            <option value="music1">음원1</option>
+                            <option value="music2">음원2</option>
+                            <option value="music3">음원3</option>
+                            <option value="none">없음</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="ed-hint">
+                    ⓘ 음원 직접 업로드 시 mp3파일과 10MB이하로만 가능합니다.<br>
+                    ⓘ 음원 자동재생은 카카오톡 메신저를 통해서만 확인이 가능합니다.
+                </div>
+
+                <div class="ed-dotted-divider"></div>
+
+                <!-- 메인 사진 -->
+                <div class="ed-row" style="align-items:flex-start">
+                    <span class="ed-label" style="padding-top:10px">메인 사진 ⓘ</span>
+                    <div class="ed-ctrl">
+                        <div class="ed-upload" id="mainPhotoZone" style="min-height:180px;">
+                            <div id="mainUploadHint">
+                                <i class="ti ti-photo" style="font-size:28px;"></i>
+                                <p>클릭 또는 드래그하여<br>이미지를 업로드 해주세요.</p>
+                            </div>
+                            <div id="mainPhotoThumb" style="display:none;position:relative;">
+                                <img id="mainThumbImg" alt="" style="width:100%;border-radius:6px;display:block;max-height:240px;object-fit:cover;">
+                                <button type="button" id="removeMainPhoto" class="ed-thumb-del"><i class="ti ti-x"></i></button>
+                            </div>
+                        </div>
+                        <input type="file" id="mainPhotoFile" accept="image/*" style="display:none">
+                    </div>
+                </div>
+
+                <!-- 메인 사진 필터 -->
+                <div class="ed-row">
+                    <span class="ed-label">메인 사진 필터</span>
+                    <div class="ed-ctrl">
+                        <label class="ed-check" style="margin-bottom:8px;">
+                            <input type="checkbox" id="filterEnable"> 필터를 적용합니다.
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 디자인 템플릿 가로 스크롤 -->
+                <div class="ed-design-scroll" id="designScroll">
+                    <div class="ed-design-card active" data-design="basic" onclick="pickDesign(this,'basic')">
+                        <div class="ed-design-thumb ed-dt-basic">
+                            <div class="ed-dt-photo-ph"><span class="ed-dt-photo-icon">📷</span></div>
+                            <div class="ed-dt-basic-row">
+                                <div class="ed-dt-basic-person">
+                                    <span class="ed-dt-basic-label">Groom</span>
+                                    <span class="ed-dt-basic-name">신랑</span>
+                                </div>
+                                <span class="ed-dt-basic-div"></span>
+                                <div class="ed-dt-basic-person">
+                                    <span class="ed-dt-basic-label">Bride</span>
+                                    <span class="ed-dt-basic-name">신부</span>
+                                </div>
+                            </div>
+                            <div class="ed-dt-basic-date">10 · 24 · 2026</div>
+                            <div class="ed-dt-basic-place">POCKET HALL</div>
+                        </div>
+                        <span class="ed-design-name">기본</span>
+                    </div>
+                    <div class="ed-design-card" data-design="our_story" onclick="pickDesign(this,'our_story')">
+                        <div class="ed-design-thumb ed-dt-fill">
+                            <div class="ed-dt-bigtext ed-dt-bigtext-story">Our story<br>begins</div>
+                            <div class="ed-dt-names-row ed-dt-names-story"><span class="ed-dt-name">신랑</span><span class="ed-dt-amp ed-dt-amp-story">&amp;</span><span class="ed-dt-name">신부</span></div>
+                            <div class="ed-dt-datebar ed-dt-datebar-story">19TH · JUN · 2026</div>
+                        </div>
+                        <span class="ed-design-name">Our story begins</span>
+                    </div>
+                    <div class="ed-design-card" data-design="our_story_pink" onclick="pickDesign(this,'our_story_pink')">
+                        <div class="ed-design-thumb ed-dt-pink">
+                            <div class="ed-dt-script ed-dt-script-bottomleft">Our story<br>begins</div>
+                            <div class="ed-dt-datebar ed-dt-datebar-pink-bottom">2026.07.01 WED 13:00<br>웨딩홀</div>
+                        </div>
+                        <span class="ed-design-name">Our story (핑크)</span>
+                    </div>
+                    <div class="ed-design-card" data-design="married" onclick="pickDesign(this,'married')">
+                        <div class="ed-design-thumb ed-dt-married">
+                            <div class="ed-dt-married-big">Getting<br>Married</div>
+                            <div class="ed-dt-datebar ed-dt-datebar-married">24 · MAY · 2026</div>
+                        </div>
+                        <span class="ed-design-name">Getting Married</span>
+                    </div>
+                    <div class="ed-design-card" data-design="forever" onclick="pickDesign(this,'forever')">
+                        <div class="ed-design-thumb ed-dt-forever">
+                            <span class="ed-dt-forever-heart ed-dt-forever-heart-1">♥</span>
+                            <span class="ed-dt-forever-heart ed-dt-forever-heart-2">♥</span>
+                            <div class="ed-dt-forever-script">We're getting<br>married!</div>
+                            <div class="ed-dt-forever-names"><span class="ed-dt-forever-name">신랑</span><span class="ed-dt-forever-amp">&amp;</span><span class="ed-dt-forever-name">신부</span></div>
+                            <div class="ed-dt-forever-arch"></div>
+                            <div class="ed-dt-forever-date">JUN · 27</div>
+                            <div class="ed-dt-forever-place">POCKET HALL</div>
+                        </div>
+                        <span class="ed-design-name">아치형</span>
+                    </div>
+                </div>
+                <input type="hidden" id="mainDesignVal" name="mainDesign" value="basic">
+
+                <!-- 효과 설정 -->
+                <div class="ed-row">
+                    <span class="ed-label">효과 설정</span>
+                    <div class="ed-ctrl" style="display:flex;gap:8px;">
+                        <select class="ed-select" id="colorEffectSelect" name="colorEffect" style="flex:1;">
+                            <option value="none">유색효과 없음</option>
+                            <option value="warm">웜톤</option>
+                            <option value="cool">쿨톤</option>
+                            <option value="vintage">빈티지</option>
+                        </select>
+                        <select class="ed-select" id="effectSelect" name="mainEffect" style="flex:1;">
+                            <option value="none">효과 사용안함</option>
+                            <option value="fog">안개</option>
+                            <option value="wave">물결</option>
+                            <option value="paper">페이퍼</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 글꼴 선택 -->
+                <div class="ed-row">
+                    <span class="ed-label">글꼴 선택</span>
+                    <div class="ed-ctrl" style="display:flex;gap:8px;">
+                        <select class="ed-select" id="fontSelect" name="mainFont" style="flex:2;">
+                            <option value="noto">기본 (Noto Serif KR)</option>
+                            <option value="playfair">Playfair Display ★ 추천</option>
+                            <option value="eb_garamond">EB Garamond (우아한 세리프)</option>
+                            <option value="cormorant">Cormorant Garamond (이탤릭)</option>
+                            <option value="dancing">Dancing Script (손글씨)</option>
+                            <option value="nanum">나눔명조</option>
+                        </select>
+                        <select class="ed-select" id="fontSizeSelect" name="mainFontSize" style="flex:1;">
+                            <option value="sm">작게</option>
+                            <option value="md" selected>보통</option>
+                            <option value="lg">크게</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 글꼴 색상 -->
+                <div class="ed-row">
+                    <span class="ed-label">글꼴 색상</span>
+                    <div class="ed-ctrl ed-color-row">
+                        <input type="text" class="ed-input ed-color-hex" id="fontColorHex" name="mainFontColor" value="#000000" maxlength="7">
+                        <button type="button" class="ed-color-reset" id="fontColorReset"><i class="ti ti-refresh"></i></button>
+                        <!-- 테마별 추천 색상 (동적 표시) -->
+                        <span id="themeColorPresets" style="display:flex;gap:6px;"></span>
+                        <button type="button" class="ed-color-swatch" data-color="#000000" onclick="pickFontColor('#000000')" style="background:#000;"></button>
+                        <button type="button" class="ed-color-swatch" data-color="#ffffff" onclick="pickFontColor('#ffffff')" style="background:#fff;border:1px solid #ddd;"></button>
+                        <input type="color" class="ed-color-picker" id="fontColorPicker" value="#000000">
+                    </div>
+                </div>
+                <div class="ed-hint">
+                    ⓘ 메인 텍스트 색상을 변경할 수 있습니다.<br>
+                    ⓘ 테마에 따라 일부 영역에만 적용될 수 있습니다.
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ━━ 기본 정보 ━━ -->
+        <div class="ed-section open" id="sec-basic">
+            <div class="ed-sec-hd" data-sec="basic">
+                <div class="ed-sec-hd-left">
+                    <span class="ed-sec-icon"><i class="ti ti-users"></i></span>
+                    <span class="ed-sec-title">기본 정보</span>
+                </div>
+                <i class="ti ti-chevron-up ed-chevron"></i>
+            </div>
+            <div class="ed-sec-bd" id="bd-basic">
+
+                <!-- 신랑/신부 표시 순서 -->
+                <div class="ed-row" style="align-items:flex-start;">
+                    <span class="ed-label" style="padding-top:10px;">신랑/신부 표시순서</span>
+                    <div class="ed-ctrl">
+                        <div class="ed-tabs" id="orderTabs">
+                            <button type="button" class="ed-tab active" data-val="groom" onclick="pickTab(this,'orderTabs','orderVal')">신랑측 먼저</button>
+                            <button type="button" class="ed-tab" data-val="bride" onclick="pickTab(this,'orderTabs','orderVal')">신부측 먼저</button>
+                        </div>
+                        <input type="hidden" id="orderVal" name="displayOrder" value="groom">
+                        <div class="ed-order-notice">
+                            <p><i class="ti ti-info-circle"></i> 순서 변경 시 미리보기 및 청첩장 내에서 확인이 가능합니다.</p>
+                            <p><i class="ti ti-info-circle"></i> 변경항목은 아래와 같습니다.</p>
+                            <div class="ed-order-list">
+                                <div class="ed-order-col">
+                                    <span>- 인트로</span>
+                                    <span>- 메인 타이틀</span>
+                                    <span>- 신랑·신부 부모님</span>
+                                    <span>- 계좌정보</span>
+                                </div>
+                                <div class="ed-order-col">
+                                    <span>- D-day</span>
+                                    <span>- 프로필</span>
+                                    <span>- 연락하기</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 신랑 -->
+                <div class="ed-person-block">
+                    <div class="ed-person-title"><span class="ed-heart blue">♥</span> 신랑정보</div>
+                    <div class="ed-row">
+                        <div class="ed-ctrl ed-inline-inputs">
+                            <input class="ed-input ed-name-input" type="text" th:field="*{groomName}" placeholder="신랑성함">
+                            <input class="ed-input ed-baptism-input" type="text" id="groomBaptism" placeholder="신랑 세례명을 입력해주세요.">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 신부 -->
+                <div class="ed-person-block">
+                    <div class="ed-person-title"><span class="ed-heart pink">♥</span> 신부정보</div>
+                    <div class="ed-row">
+                        <div class="ed-ctrl ed-inline-inputs">
+                            <input class="ed-input ed-name-input" type="text" th:field="*{brideName}" placeholder="신부성함">
+                            <input class="ed-input ed-baptism-input" type="text" id="brideBaptism" placeholder="신부 세례명을 입력해주세요.">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ━━ 예식 정보 ━━ -->
+        <div class="ed-section open" id="sec-wedding">
+            <div class="ed-sec-hd" data-sec="wedding">
+                <div class="ed-sec-hd-left">
+                    <span class="ed-sec-icon"><i class="ti ti-calendar-heart"></i></span>
+                    <span class="ed-sec-title">예식 정보</span>
+                </div>
+                <i class="ti ti-chevron-up ed-chevron"></i>
+            </div>
+            <div class="ed-sec-bd" id="bd-wedding">
+                <div class="ed-row">
+                    <span class="ed-label">날짜</span>
+                    <div class="ed-ctrl">
+                        <input class="ed-input" type="date" th:field="*{weddingDate}">
+                    </div>
+                </div>
+                <div class="ed-row">
+                    <span class="ed-label">시간</span>
+                    <div class="ed-ctrl">
+                        <input class="ed-input" type="time" th:field="*{weddingTime}">
+                    </div>
+                </div>
+                <div class="ed-row">
+                    <span class="ed-label">예식장</span>
+                    <div class="ed-ctrl">
+                        <input class="ed-input" type="text" th:field="*{weddingPlace}" placeholder="예식장 명칭">
+                    </div>
+                </div>
+                <div class="ed-row">
+                    <span class="ed-label">주소</span>
+                    <div class="ed-ctrl">
+                        <input class="ed-input" type="text" th:field="*{weddingAddress}" placeholder="도로명 주소">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ━━ 인사말 ━━ -->
+        <div class="ed-section collapsed" id="sec-greet">
+            <div class="ed-sec-hd" data-sec="greet">
+                <div class="ed-sec-hd-left">
+                    <label class="ed-toggle-wrap" onclick="event.stopPropagation()">
+                        <input type="checkbox" name="greetingVisible" id="chkGreet" th:checked="${wedding.greetingVisible}">
+                        <span class="ed-toggle-slider"></span>
+                    </label>
+                    <span class="ed-sec-icon"><i class="ti ti-message-heart"></i></span>
+                    <span class="ed-sec-title">인사말</span>
+                </div>
+                <i class="ti ti-chevron-down ed-chevron"></i>
+            </div>
+            <div class="ed-sec-bd" id="bd-greet" style="display:none;">
+                <div class="ed-row">
+                    <span class="ed-label">제목</span>
+                    <input class="ed-input" type="text" th:field="*{greetingTitle}" placeholder="초대합니다." style="flex:1;">
+                </div>
+                <div class="ed-row" style="align-items:flex-start;">
+                    <span class="ed-label" style="padding-top:9px;">인사말</span>
+                    <div class="ed-ctrl">
+                        <textarea class="ed-input" style="height:120px;resize:none;line-height:1.8;" th:field="*{greetingText}" placeholder="따뜻한 인사말을 입력해 주세요."></textarea>
+                    </div>
+                </div>
+                <div class="ed-row">
+                    <span class="ed-label">정렬</span>
+                    <div class="ed-ctrl">
+                        <div class="ed-tabs" id="alignTabs">
+                            <button type="button" class="ed-tab" data-val="left"   onclick="pickTab(this,'alignTabs','alignInput')">왼쪽</button>
+                            <button type="button" class="ed-tab active" data-val="center" onclick="pickTab(this,'alignTabs','alignInput')">중앙</button>
+                            <button type="button" class="ed-tab" data-val="right"  onclick="pickTab(this,'alignTabs','alignInput')">오른쪽</button>
+                        </div>
+                        <input type="hidden" th:field="*{greetingAlign}" id="alignInput">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ━━ 혼주정보 & 연락처 ━━ -->
+        <div class="ed-section collapsed" id="sec-hosts">
+            <div class="ed-sec-hd" data-sec="hosts">
+                <div class="ed-sec-hd-left">
+                    <label class="ed-toggle-wrap" onclick="event.stopPropagation()">
+                        <input type="checkbox" name="hostsVisible" id="chkHosts" th:checked="${wedding.hostsVisible}">
+                        <span class="ed-toggle-slider"></span>
+                    </label>
+                    <span class="ed-sec-icon"><i class="ti ti-home-heart"></i></span>
+                    <span class="ed-sec-title">혼주정보 &amp; 연락처</span>
+                </div>
+                <i class="ti ti-chevron-down ed-chevron"></i>
+            </div>
+            <div class="ed-sec-bd" id="bd-hosts" style="display:none;">
+
+                <!-- 고인 표시 -->
+                <div class="ed-row">
+                    <span class="ed-label">고인 표시</span>
+                    <div class="ed-ctrl">
+                        <div class="ed-tabs" id="deceasedTabs">
+                            <button type="button" class="ed-tab active" data-val="hanja" onclick="pickTab(this,'deceasedTabs','deceasedInput')">故 한자 표시</button>
+                            <button type="button" class="ed-tab" data-val="flower" onclick="pickTab(this,'deceasedTabs','deceasedInput')">국화꽃 표시</button>
+                        </div>
+                        <input type="hidden" id="deceasedInput" th:field="*{deceasedDisplayType}">
+                    </div>
+                </div>
+
+                <div class="ed-hosts-divider"></div>
+
+                <!-- ♥ 신랑측 부모님 -->
+                <div class="ed-hosts-group">
+                    <!-- 아버지 -->
+                    <div class="ed-row ed-hosts-row">
+                        <span class="ed-label"><span class="ed-heart blue">♥</span> 아버지</span>
+                        <div class="ed-ctrl" style="flex-direction:column;gap:6px;">
+                            <div class="ed-inline-inputs">
+                                <label class="ed-check-inline"><input type="checkbox" th:field="*{groomFatherDeceased}"> 고인</label>
+                                <input class="ed-input" type="text" th:field="*{groomFatherName}" placeholder="신랑 아버지 성함" style="flex:1;">
+                                <input class="ed-input" type="text" id="groomFatherBaptism" placeholder="신랑 아버지 세례명" style="flex:1.2;">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 어머니 -->
+                    <div class="ed-row ed-hosts-row">
+                        <span class="ed-label"><span class="ed-heart blue">♥</span> 어머니</span>
+                        <div class="ed-ctrl">
+                            <div class="ed-inline-inputs">
+                                <label class="ed-check-inline"><input type="checkbox" th:field="*{groomMotherDeceased}"> 고인</label>
+                                <input class="ed-input" type="text" th:field="*{groomMotherName}" placeholder="신랑 어머니 성함" style="flex:1;">
+                                <input class="ed-input" type="text" id="groomMotherBaptism" placeholder="신랑 어머니 세례명" style="flex:1.2;">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 관계 -->
+                    <div class="ed-row ed-hosts-row">
+                        <span class="ed-label"><span class="ed-heart blue">♥</span> 관계</span>
+                        <div class="ed-ctrl">
+                            <div class="ed-inline-inputs">
+                                <select class="ed-input ed-select" id="groomRelationSelect" style="flex:0 0 90px;" onchange="syncRelation('groom',this.value)">
+                                    <option value="">직접입력</option>
+                                    <option value="장남">장남</option>
+                                    <option value="차남">차남</option>
+                                    <option value="삼남">삼남</option>
+                                    <option value="아들">아들</option>
+                                </select>
+                                <input class="ed-input" type="text" th:field="*{groomRelation}" id="groomRelationInput" placeholder="ex) 장남 차남 아들 등" style="flex:1;">
+                            </div>
+                            <div class="ed-hosts-notice">
+                                <p><i class="ti ti-info-circle"></i> 부모님 성함은 입력하지 않아도 됩니다.</p>
+                                <p><i class="ti ti-info-circle"></i> 세례명은 입력하지 않아도 됩니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ed-hosts-divider"></div>
+
+                <!-- ♥ 신부측 부모님 -->
+                <div class="ed-hosts-group">
+                    <!-- 아버지 -->
+                    <div class="ed-row ed-hosts-row">
+                        <span class="ed-label"><span class="ed-heart pink">♥</span> 아버지</span>
+                        <div class="ed-ctrl">
+                            <div class="ed-inline-inputs">
+                                <label class="ed-check-inline"><input type="checkbox" th:field="*{brideFatherDeceased}"> 고인</label>
+                                <input class="ed-input" type="text" th:field="*{brideFatherName}" placeholder="신부 아버지 성함" style="flex:1;">
+                                <input class="ed-input" type="text" id="brideFatherBaptism" placeholder="신부 아버지 세례명" style="flex:1.2;">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 어머니 -->
+                    <div class="ed-row ed-hosts-row">
+                        <span class="ed-label"><span class="ed-heart pink">♥</span> 어머니</span>
+                        <div class="ed-ctrl">
+                            <div class="ed-inline-inputs">
+                                <label class="ed-check-inline"><input type="checkbox" th:field="*{brideMotherDeceased}"> 고인</label>
+                                <input class="ed-input" type="text" th:field="*{brideMotherName}" placeholder="신부 어머니 성함" style="flex:1;">
+                                <input class="ed-input" type="text" id="brideMotherBaptism" placeholder="신부 어머니 세례명" style="flex:1.2;">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 관계 -->
+                    <div class="ed-row ed-hosts-row">
+                        <span class="ed-label"><span class="ed-heart pink">♥</span> 관계</span>
+                        <div class="ed-ctrl">
+                            <div class="ed-inline-inputs">
+                                <select class="ed-input ed-select" id="brideRelationSelect" style="flex:0 0 90px;" onchange="syncRelation('bride',this.value)">
+                                    <option value="">직접입력</option>
+                                    <option value="장녀">장녀</option>
+                                    <option value="차녀">차녀</option>
+                                    <option value="삼녀">삼녀</option>
+                                    <option value="딸">딸</option>
+                                </select>
+                                <input class="ed-input" type="text" th:field="*{brideRelation}" id="brideRelationInput" placeholder="ex) 장녀 차녀 딸 등" style="flex:1;">
+                            </div>
+                            <div class="ed-hosts-notice">
+                                <p><i class="ti ti-info-circle"></i> 부모님 성함은 입력하지 않아도 됩니다.</p>
+                                <p><i class="ti ti-info-circle"></i> 세례명은 입력하지 않아도 됩니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ed-hosts-divider"></div>
+
+                <!-- 연락하기 팝업 -->
+                <div class="ed-row">
+                    <span class="ed-label">연락하기 팝업</span>
+                    <div class="ed-ctrl">
+                        <div class="ed-tabs" id="contactTabs">
+                            <button type="button" class="ed-tab active" data-val="true"  onclick="pickTab(this,'contactTabs','contactInput')">사용함</button>
+                            <button type="button" class="ed-tab" data-val="false" onclick="pickTab(this,'contactTabs','contactInput')">사용안함</button>
+                        </div>
+                        <input type="hidden" th:field="*{contactPopupEnabled}" id="contactInput">
+                        <div class="ed-hosts-notice" style="margin-top:8px;">
+                            <p><i class="ti ti-info-circle"></i> 연락처는 원하시는 분만 입력하실 수 있습니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 신랑측 전화번호 -->
+                <div class="ed-hosts-group" style="margin-top:4px;">
+                    <div class="ed-row ed-hosts-row">
+                        <span class="ed-label"><span class="ed-heart blue">♥</span> 신랑</span>
+                        <input class="ed-input" type="tel" th:field="*{groomPhone}" placeholder="신랑 전화번호 입력" style="flex:1;">
+                    </div>
+                    <div class="ed-row ed-hosts-row">
+                        <span class="ed-label"><span class="ed-heart blue">♥</span> 신랑 아버지</span>
+                        <input class="ed-input" type="tel" th:field="*{groomFatherPhone}" placeholder="신랑 아버지 전화번호" style="flex:1;">
+                    </div>
+                    <div class="ed-row ed-hosts-row">
+                        <span class="ed-label"><span class="ed-heart blue">♥</span> 신랑 어머니</span>
+                        <input class="ed-input" type="tel" th:field="*{groomMotherPhone}" placeholder="신랑 어머니 전화번호" style="flex:1;">
+                    </div>
+                </div>
+
+                <!-- 신부측 전화번호 -->
+                <div class="ed-hosts-group" style="margin-top:4px;">
+                    <div class="ed-row ed-hosts-row">
+                        <span class="ed-label"><span class="ed-heart pink">♥</span> 신부</span>
+                        <input class="ed-input" type="tel" th:field="*{bridePhone}" placeholder="신부 전화번호 입력" style="flex:1;">
+                    </div>
+                    <div class="ed-row ed-hosts-row">
+                        <span class="ed-label"><span class="ed-heart pink">♥</span> 신부 아버지</span>
+                        <input class="ed-input" type="tel" th:field="*{brideFatherPhone}" placeholder="신부 아버지 전화번호" style="flex:1;">
+                    </div>
+                    <div class="ed-row ed-hosts-row">
+                        <span class="ed-label"><span class="ed-heart pink">♥</span> 신부 어머니</span>
+                        <input class="ed-input" type="tel" th:field="*{brideMotherPhone}" placeholder="신부 어머니 전화번호" style="flex:1;">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ━━ 캘린더 ━━ -->
+        <div class="ed-section collapsed" id="sec-cal">
+            <div class="ed-sec-hd" data-sec="cal">
+                <div class="ed-sec-hd-left">
+                    <label class="ed-toggle-wrap" onclick="event.stopPropagation()">
+                        <input type="checkbox" name="calendarVisible" id="chkCal" th:checked="${wedding.calendarVisible}">
+                        <span class="ed-toggle-slider"></span>
+                    </label>
+                    <span class="ed-sec-icon"><i class="ti ti-calendar-month"></i></span>
+                    <span class="ed-sec-title">캘린더</span>
+                </div>
+                <i class="ti ti-chevron-down ed-chevron"></i>
+            </div>
+            <div class="ed-sec-bd" id="bd-cal" style="display:none;">
+                <div class="ed-row">
+                    <span class="ed-label">스타일</span>
+                    <div class="ed-ctrl">
+                        <div class="cal-style-scroll" id="calStyleGrid">
+                            <div class="cal-style-card active" data-cal="basic" onclick="pickCalStyle(this,'basic')">
+                                <div class="cs-inner"><div class="cs-en-label">Calendar</div><div class="cs-month-ko">7월</div><div class="cs-grid"><span class="cs-dow cs-sun">일</span><span class="cs-dow">월</span><span class="cs-dow">화</span><span class="cs-dow">수</span><span class="cs-dow">목</span><span class="cs-dow">금</span><span class="cs-dow cs-sat">토</span><span class="cs-e"></span><span class="cs-e"></span><span class="cs-sun">1</span><span>2</span><span>3</span><span>4</span><span class="cs-sat">5</span><span class="cs-sun">6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span class="cs-sat">12</span><span class="cs-sun">13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span class="cs-sat">19</span><span class="cs-sun">20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span class="cs-wed">26</span></div></div>
+                                <div class="cs-card-label">기본형</div>
+                            </div>
+                            <div class="cal-style-card" data-cal="date" onclick="pickCalStyle(this,'date')">
+                                <div class="cs-inner"><div class="cs-date-big">0000.00.00</div><div class="cs-date-time">토요일 오후 01:00</div><div class="cs-grid"><span class="cs-dow cs-sun">일</span><span class="cs-dow">월</span><span class="cs-dow">화</span><span class="cs-dow">수</span><span class="cs-dow">목</span><span class="cs-dow">금</span><span class="cs-dow cs-sat">토</span><span class="cs-e"></span><span class="cs-e"></span><span class="cs-sun">1</span><span>2</span><span>3</span><span>4</span><span class="cs-sat">5</span><span class="cs-sun">6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span class="cs-sat">12</span><span class="cs-sun">13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span class="cs-sat">19</span><span class="cs-sun">20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span class="cs-wed">26</span></div></div>
+                                <div class="cs-card-label">날짜형</div>
+                            </div>
+                            <div class="cal-style-card" data-cal="en" onclick="pickCalStyle(this,'en')">
+                                <div class="cs-inner"><div class="cs-en-label">Calendar</div><div class="cs-month-en">JULY</div><div class="cs-grid cs-grid-en"><span class="cs-dow cs-sun">SUN</span><span class="cs-dow">MON</span><span class="cs-dow">TUE</span><span class="cs-dow">WED</span><span class="cs-dow">THU</span><span class="cs-dow">FRI</span><span class="cs-dow cs-sat">SAT</span><span class="cs-e"></span><span class="cs-e"></span><span class="cs-sun">1</span><span>2</span><span>3</span><span>4</span><span class="cs-sat">5</span><span class="cs-sun">6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span class="cs-sat">12</span><span class="cs-sun">13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span class="cs-sat">19</span><span class="cs-sun">20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span class="cs-wed">26</span></div></div>
+                                <div class="cs-card-label">영문형</div>
+                            </div>
+                            <div class="cal-style-card" data-cal="text" onclick="pickCalStyle(this,'text')">
+                                <div class="cs-inner"><div class="cs-text-msg">칠월의<br>여덟번째 날.</div><div class="cs-grid"><span class="cs-dow cs-sun">일</span><span class="cs-dow">월</span><span class="cs-dow">화</span><span class="cs-dow">수</span><span class="cs-dow">목</span><span class="cs-dow">금</span><span class="cs-dow cs-sat">토</span><span class="cs-e"></span><span class="cs-e"></span><span class="cs-sun">1</span><span>2</span><span>3</span><span>4</span><span class="cs-sat">5</span><span class="cs-sun">6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span class="cs-sat">12</span><span class="cs-sun">13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span class="cs-sat">19</span><span class="cs-sun">20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span class="cs-wed">26</span></div></div>
+                                <div class="cs-card-label">텍스트형</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ━━ D-Day ━━ -->
+        <div class="ed-section collapsed" id="sec-dday">
+            <div class="ed-sec-hd" data-sec="dday">
+                <div class="ed-sec-hd-left">
+                    <label class="ed-toggle-wrap" onclick="event.stopPropagation()">
+                        <input type="checkbox" name="ddayVisible" id="chkDday" th:checked="${wedding.ddayVisible}">
+                        <span class="ed-toggle-slider"></span>
+                    </label>
+                    <span class="ed-sec-icon"><i class="ti ti-clock-heart"></i></span>
+                    <span class="ed-sec-title">D-Day</span>
+                </div>
+                <i class="ti ti-chevron-down ed-chevron"></i>
+            </div>
+            <div class="ed-sec-bd" id="bd-dday" style="display:none;">
+                <div class="ed-row">
+                    <span class="ed-label">스타일</span>
+                    <div class="ed-ctrl">
+                        <div class="style-type-grid" id="ddayStyleGrid">
+                            <div class="style-type-item active" data-dday="text" onclick="pickDdayStyle(this,'text')"><div class="style-preview dp-text-wrap"><div class="dp-text"><span class="dp-names">신랑 ♥ 신부 예식일까지, <b>80일</b></span></div></div><div class="style-type-label">텍스트형</div></div>
+                            <div class="style-type-item" data-dday="clock" onclick="pickDdayStyle(this,'clock')"><div class="style-preview dp-clock-wrap"><div class="dp-clock-row"><div class="dp-unit"><span class="dp-num">81</span><span class="dp-lbl">Days</span></div><span class="dp-colon">:</span><div class="dp-unit"><span class="dp-num">24</span><span class="dp-lbl">Hour</span></div><span class="dp-colon">:</span><div class="dp-unit"><span class="dp-num">32</span><span class="dp-lbl">Min</span></div><span class="dp-colon">:</span><div class="dp-unit"><span class="dp-num">50</span><span class="dp-lbl">Sec</span></div></div></div><div class="style-type-label">시계형</div></div>
+                            <div class="style-type-item" data-dday="clock_bottom" onclick="pickDdayStyle(this,'clock_bottom')"><div class="style-preview dp-clock-bottom-wrap"><div class="dp-clock-bottom"><div class="dp-clock-row"><div class="dp-unit"><span class="dp-num">81</span><span class="dp-lbl">Days</span></div><span class="dp-colon">:</span><div class="dp-unit"><span class="dp-num">24</span><span class="dp-lbl">Hour</span></div><span class="dp-colon">:</span><div class="dp-unit"><span class="dp-num">32</span><span class="dp-lbl">Min</span></div><span class="dp-colon">:</span><div class="dp-unit"><span class="dp-num">50</span><span class="dp-lbl">Sec</span></div></div><div class="dp-sub-text">예식일까지, <b>80일</b></div></div></div><div class="style-type-label">시계+텍스트</div></div>
+                            <div class="style-type-item" data-dday="clock_inline" onclick="pickDdayStyle(this,'clock_inline')"><div class="style-preview dp-inline-wrap"><div class="dp-inline"><div class="dp-inline-row"><b class="dp-in">81</b><small>Days</small><b class="dp-in">24</b><small>Hour</small><b class="dp-in">32</b><small>Min</small><b class="dp-in">50</b><small>Sec</small></div><div class="dp-sub-text">예식일까지, <b>80일</b></div></div></div><div class="style-type-label">인라인형</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ━━ 갤러리 ━━ -->
+        <div class="ed-section collapsed" id="sec-gal">
+            <div class="ed-sec-hd" data-sec="gal">
+                <div class="ed-sec-hd-left">
+                    <label class="ed-toggle-wrap" onclick="event.stopPropagation()">
+                        <input type="checkbox" name="galleryVisible" id="chkGal" th:checked="${wedding.galleryVisible}">
+                        <span class="ed-toggle-slider"></span>
+                    </label>
+                    <span class="ed-sec-icon"><i class="ti ti-photo-heart"></i></span>
+                    <span class="ed-sec-title">이미지 갤러리</span>
+                </div>
+                <i class="ti ti-chevron-down ed-chevron"></i>
+            </div>
+            <div class="ed-sec-bd" id="bd-gal" style="display:none;">
+                <!-- 갤러리 타입 -->
+                <div class="ed-row" style="align-items:flex-start;">
+                    <span class="ed-label" style="padding-top:9px;">갤러리 타입</span>
+                    <div class="ed-ctrl">
+                        <div class="gal-type-scroll" id="galTypeScroll">
+                            <div class="gal-type-card active" data-galtype="slide" onclick="pickGalType(this,'slide')">
+                                <div class="gtc-preview gtc-slide">
+                                    <div class="gtc-label">Gallery</div>
+                                    <div class="gtc-slide-img"><span class="gtc-arrow">›</span></div>
+                                    <div class="gtc-page">1/8</div>
+                                </div>
+                                <div class="gtc-name">슬라이드형</div>
+                            </div>
+                            <div class="gal-type-card" data-galtype="grid" onclick="pickGalType(this,'grid')">
+                                <div class="gtc-preview">
+                                    <div class="gtc-label">Gallery</div>
+                                    <div class="gtc-grid3">
+                                        <span></span><span></span><span></span>
+                                        <span></span><span></span><span></span>
+                                        <span></span><span></span><span></span>
+                                    </div>
+                                    <div class="gtc-more">+클릭하기로</div>
+                                </div>
+                                <div class="gtc-name">그리드형</div>
+                            </div>
+                            <div class="gal-type-card" data-galtype="masonry" onclick="pickGalType(this,'masonry')">
+                                <div class="gtc-preview">
+                                    <div class="gtc-label">Gallery</div>
+                                    <div class="gtc-masonry">
+                                        <span class="gtc-big"></span><span></span><span></span>
+                                        <span></span><span class="gtc-wide"></span>
+                                    </div>
+                                </div>
+                                <div class="gtc-name">매거진형</div>
+                            </div>
+                            <div class="gal-type-card" data-galtype="thumb_swipe" onclick="pickGalType(this,'thumb_swipe')">
+                                <div class="gtc-preview">
+                                    <div class="gtc-label">Gallery</div>
+                                    <div class="gtc-thumb-swipe">
+                                        <div class="gtc-main-img"></div>
+                                        <div class="gtc-thumbs-row">
+                                            <span></span><span class="active"></span><span></span><span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="gtc-name">썸네일 스와이프</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="galTypeVal" name="galleryType" value="slide">
+                    </div>
+                </div>
+
+                <!-- 이미지 첨부 -->
+                <div class="ed-row">
+                    <span class="ed-label">이미지 첨부</span>
+                    <div class="ed-ctrl">
+                        <button type="button" class="gal-upload-btn" id="galZone">
+                            <i class="ti ti-cloud-upload"></i> 이미지 첨부하기
+                        </button>
+                        <input type="file" id="galFile" accept="image/*" multiple style="display:none;">
+                    </div>
+                </div>
+                <div class="ed-hint">
+                    ⓘ 최소 1장, 최대 60장 업로드 가능합니다.<br>
+                    ⓘ PC, 모바일 등 사용환경에 따라 미리보기와 다르게 보여질 수 있습니다.
+                </div>
+
+                <!-- 업로드된 썸네일 -->
+                <div class="ed-row" id="galThumbsRow" style="display:none;align-items:flex-start;">
+                    <span class="ed-label" style="padding-top:9px;">첨부된 사진</span>
+                    <div class="ed-ctrl">
+                        <div class="ed-thumbs" id="galThumbs"></div>
+                    </div>
+                </div>
+
+                <!-- 스크롤 안내 -->
+                <div class="ed-row">
+                    <span class="ed-label">스크롤 안내</span>
+                    <div class="ed-ctrl">
+                        <div class="ed-tabs" id="galScrollTabs">
+                            <button type="button" class="ed-tab active" data-val="true" onclick="pickTab(this,'galScrollTabs','galScrollVal')">사용함</button>
+                            <button type="button" class="ed-tab" data-val="false" onclick="pickTab(this,'galScrollTabs','galScrollVal')">사용안함</button>
+                        </div>
+                        <input type="hidden" id="galScrollVal" name="galleryScrollGuide" value="true">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ━━ 지도 ━━ -->
+        <div class="ed-section collapsed" id="sec-map">
+            <div class="ed-sec-hd" data-sec="map">
+                <div class="ed-sec-hd-left">
+                    <label class="ed-toggle-wrap" onclick="event.stopPropagation()">
+                        <input type="checkbox" name="mapVisible" id="chkMap" th:checked="${wedding.mapVisible}">
+                        <span class="ed-toggle-slider"></span>
+                    </label>
+                    <span class="ed-sec-icon"><i class="ti ti-map-pin"></i></span>
+                    <span class="ed-sec-title">지도</span>
+                </div>
+                <i class="ti ti-chevron-down ed-chevron"></i>
+            </div>
+            <div class="ed-sec-bd" id="bd-map" style="display:none;">
+
+                <!-- 지도 잠금 -->
+                <div class="ed-row">
+                    <span class="ed-label">지도 잠금</span>
+                    <div class="ed-ctrl">
+                        <div class="ed-tabs" id="mapLockTabs">
+                            <button type="button" class="ed-tab" data-val="true" onclick="pickTab(this,'mapLockTabs','mapLockVal')">사용함</button>
+                            <button type="button" class="ed-tab active" data-val="false" onclick="pickTab(this,'mapLockTabs','mapLockVal')">사용안함</button>
+                        </div>
+                        <input type="hidden" id="mapLockVal" name="mapLocked" value="false">
+                    </div>
+                </div>
+
+                <!-- 예식장 주소 -->
+                <div class="ed-row">
+                    <span class="ed-label">예식장 주소</span>
+                    <div class="ed-ctrl" style="display:flex;gap:8px;">
+                        <input class="ed-input" type="text" id="mapSearchInput" th:value="${wedding.mapAddressRoad}"
+                               placeholder="검색 후 선택이 완료되면 자동으로 입력됩니다." style="flex:1;" readonly>
+                        <button type="button" class="ed-map-search-btn" onclick="openMapSearchModal()">
+                            <i class="ti ti-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 지도 미리보기 (인라인) -->
+                <div class="ed-map-preview-wrap">
+                    <div id="adminMap" class="ed-map-area" style="display:none;overflow:hidden;border-radius:10px;"></div>
+                    <div class="ed-map-placeholder" id="adminMapPlaceholder">
+                        <i class="ti ti-map-pin" style="font-size:28px;color:#c4a882;opacity:0.5;"></i>
+                        <p style="font-size:12px;color:#9a8a74;margin-top:8px;">주소를 검색하면 지도가 표시됩니다</p>
+                    </div>
+                </div>
+                <input type="hidden" th:field="*{mapPlaceName}" id="mapPlaceNameInput">
+                <input type="hidden" th:field="*{mapAddressRoad}" id="mapAddressRoadInput">
+                <input type="hidden" th:field="*{mapAddress}"     id="mapAddressInput">
+                <input type="hidden" th:field="*{mapLat}"         id="mapLatInput">
+                <input type="hidden" th:field="*{mapLng}"         id="mapLngInput">
+
+                <!-- 지도 줌 -->
+                <div class="ed-row">
+                    <span class="ed-label">지도 줌</span>
+                    <div class="ed-ctrl">
+                        <div class="ed-zoom-tabs" id="mapZoomTabs">
+                            <button type="button" class="ed-zoom-btn" data-val="20M"  onclick="pickZoom(this,'20M')">20M</button>
+                            <button type="button" class="ed-zoom-btn" data-val="30M"  onclick="pickZoom(this,'30M')">30M</button>
+                            <button type="button" class="ed-zoom-btn active" data-val="50M"  onclick="pickZoom(this,'50M')">50M</button>
+                            <button type="button" class="ed-zoom-btn" data-val="100M" onclick="pickZoom(this,'100M')">100M</button>
+                            <button type="button" class="ed-zoom-btn" data-val="250M" onclick="pickZoom(this,'250M')">250M</button>
+                            <button type="button" class="ed-zoom-btn" data-val="500M" onclick="pickZoom(this,'500M')">500M</button>
+                        </div>
+                        <input type="hidden" th:field="*{mapZoomLevel}" id="mapZoomInput">
+                    </div>
+                </div>
+
+                <!-- 자세히보기 -->
+                <div class="ed-row">
+                    <span class="ed-label">자세히보기</span>
+                    <div class="ed-ctrl">
+                        <div class="ed-tabs" id="mapDetailTabs">
+                            <button type="button" class="ed-tab active" data-val="true" onclick="pickTab(this,'mapDetailTabs','mapDetailVal')">사용함</button>
+                            <button type="button" class="ed-tab" data-val="false" onclick="pickTab(this,'mapDetailTabs','mapDetailVal')">사용안함</button>
+                        </div>
+                        <input type="hidden" id="mapDetailVal" name="mapDetailView" value="true">
+                    </div>
+                </div>
+
+                <!-- 내비게이션 -->
+                <div class="ed-row">
+                    <span class="ed-label">내비게이션</span>
+                    <div class="ed-ctrl" style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <label class="ed-navi-chip">
+                            <input type="checkbox" th:field="*{mapNaviKakao}">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iMTAiIGZpbGw9IiNGRUU1MDAiLz48dGV4dCB4PSIyNCIgeT0iMzQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjM0MxRTFFIj5LPC90ZXh0Pjwvc3ZnPg=="
+                                 style="width:22px;height:22px;border-radius:5px;flex-shrink:0;" alt="">
+                            카카오내비
+                        </label>
+                        <label class="ed-navi-chip">
+                            <input type="checkbox" th:field="*{mapNaviTmap}">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iMTAiIGZpbGw9IiMxYTZkZDgiLz48dGV4dCB4PSIyNCIgeT0iMzQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjZmZmIj5UPC90ZXh0Pjwvc3ZnPg=="
+                                 style="width:22px;height:22px;border-radius:5px;flex-shrink:0;object-fit:cover;" alt="">
+                            티맵
+                        </label>
+                        <label class="ed-navi-chip">
+                            <input type="checkbox" th:field="*{mapNaviNaver}">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iMTAiIGZpbGw9IiMwM0M3NUEiLz48dGV4dCB4PSIyNCIgeT0iMzQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxBcmlhbCxzYW5zLXNlcmlmIiBmaWxsPSIjZmZmIj5OPC90ZXh0Pjwvc3ZnPg=="
+                                 style="width:22px;height:22px;border-radius:5px;flex-shrink:0;object-fit:cover;" alt="">
+                            네이버지도
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 약도 사용 -->
+                <div class="ed-hint">ⓘ 약도를 사용합니다.</div>
+            </div>
+        </div>
+
+                <!-- 주소 검색 모달 -->
+                <div class="map-search-modal" id="mapSearchModal">
+                    <div class="map-search-box">
+                        <div class="map-search-hd">
+                            <span class="map-search-title">주소검색</span>
+                            <button type="button" class="map-search-close" onclick="closeMapSearchModal()">&times;</button>
+                        </div>
+                        <div class="map-search-input-row">
+                            <input type="text" id="mapModalInput" class="map-search-input"
+                                   placeholder="장소명, 도로명, 지번으로 검색"
+                                   onkeydown="if(event.key==='Enter') doMapSearch()">
+                            <button type="button" class="map-search-btn-submit" onclick="doMapSearch()">검색</button>
+                        </div>
+                        <!-- 지도 영역 (iframe) -->
+                        <div id="mapSearchModalMap" class="map-search-map">
+                            <div id="mapSearchModalMapEmpty" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
+                                <i class="ti ti-map-2" style="font-size:32px;color:#c4a882;opacity:0.4;"></i>
+                                <p style="font-size:12px;color:#9a8a74;margin:0;">검색하면 지도가 표시됩니다</p>
+                            </div>
+                        </div>
+                        <!-- 결과 목록 -->
+                        <div id="mapSearchResultList" class="map-search-results"></div>
+                        <!-- 페이지네이션 -->
+                        <div id="mapSearchPagination" class="map-search-pagination"></div>
+                    </div>
+                </div>
+
+        <!-- ━━ 계좌 송금 ━━ -->
+        <div class="ed-section collapsed" id="sec-acct">
+            <div class="ed-sec-hd" data-sec="acct">
+                <div class="ed-sec-hd-left">
+                    <label class="ed-toggle-wrap" onclick="event.stopPropagation()">
+                        <input type="checkbox" name="accountVisible" id="chkAcct" th:checked="${wedding.accountVisible}">
+                        <span class="ed-toggle-slider"></span>
+                    </label>
+                    <span class="ed-sec-icon"><i class="ti ti-credit-card"></i></span>
+                    <span class="ed-sec-title">계좌 송금</span>
+                </div>
+                <i class="ti ti-chevron-down ed-chevron"></i>
+            </div>
+            <div class="ed-sec-bd" id="bd-acct" style="display:none;">
+                <div class="ed-acct-tabs">
+                    <button type="button" class="ed-tab active" id="acctTabGroom" onclick="switchAcctTab('groom')">신랑측</button>
+                    <button type="button" class="ed-tab" id="acctTabBride" onclick="switchAcctTab('bride')">신부측</button>
+                </div>
+                <div id="acctPanelGroom"></div>
+                <div id="acctPanelBride" style="display:none;"></div>
+                <button type="button" class="ed-btn-ghost" id="acctAddBtnGroom" onclick="addAcctRow('groom')"><i class="ti ti-plus"></i> 신랑측 계좌 추가</button>
+                <button type="button" class="ed-btn-ghost" id="acctAddBtnBride" onclick="addAcctRow('bride')" style="display:none;"><i class="ti ti-plus"></i> 신부측 계좌 추가</button>
+                <button type="button" class="ed-btn-save-acct" onclick="saveAllAccounts()"><i class="ti ti-device-floppy"></i> 계좌 저장</button>
+                <div id="acctSaveMsg" class="ed-save-msg"></div>
+            </div>
+        </div>
+
+        <!-- ━━ 참석 응답 현황 ━━ -->
+        <div class="ed-section collapsed" id="sec-rsvp">
+            <div class="ed-sec-hd" data-sec="rsvp">
+                <div class="ed-sec-hd-left">
+                    <label class="ed-toggle-wrap" onclick="event.stopPropagation()">
+                        <input type="checkbox" name="rsvpEnabled" id="chkRsvp" th:checked="${wedding.rsvpEnabled == null or wedding.rsvpEnabled}">
+                        <span class="ed-toggle-slider"></span>
+                    </label>
+                    <span class="ed-sec-icon"><i class="ti ti-checkbox"></i></span>
+                    <span class="ed-sec-title">참석 응답 현황</span>
+                </div>
+                <i class="ti ti-chevron-down ed-chevron"></i>
+            </div>
+            <div id="bd-rsvp" style="display:none;padding:0 0 1.2rem;">
+                <div class="rsvp-stats" id="rsvpStats">
+                    <div class="rsvp-stat-item">
+                        <i class="ti ti-list rsvp-stat-icon"></i>
+                        <span class="rsvp-stat-num" id="statTotal">0</span>
+                        <span class="rsvp-stat-label">총 응답</span>
+                    </div>
+                    <div class="rsvp-stat-item attend">
+                        <i class="ti ti-check rsvp-stat-icon"></i>
+                        <span class="rsvp-stat-num" id="statAttend">0</span>
+                        <span class="rsvp-stat-label">참석</span>
+                    </div>
+                    <div class="rsvp-stat-item decline">
+                        <i class="ti ti-x rsvp-stat-icon"></i>
+                        <span class="rsvp-stat-num" id="statDecline">0</span>
+                        <span class="rsvp-stat-label">불참</span>
+                    </div>
+                    <div class="rsvp-stat-item meal">
+                        <i class="ti ti-users rsvp-stat-icon"></i>
+                        <span class="rsvp-stat-num" id="statMeal">0</span>
+                        <span class="rsvp-stat-label">총 인원</span>
+                    </div>
+                </div>
+                <div id="rsvpList" class="rsvp-list"></div>
+                <button type="button" class="rsvp-refresh-btn" onclick="loadRsvpList()"><i class="ti ti-refresh"></i> 새로고침</button>
+            </div>
+        </div>
+
+        <!-- 저장 버튼 -->
+        <div class="ed-bottom-btns">
+            <a th:href="@{/}" class="ed-btn-cancel">취소</a>
+            <button type="button" class="ed-btn-solid" style="flex:2;" id="bottomSaveBtn">
+                <i class="ti ti-external-link" style="font-size:14px;"></i> 저장하기
+            </button>
+        </div>
+
+    </form>
+
+    </main>
+
+    <!-- 오른쪽: 섹션 네비 (숨김 — 햄버거로 대체) -->
+    <nav class="ed-nav" id="edNav" style="display:none;"></nav>
+
+    </div><!-- ed-center -->
+
+</div><!-- ed-root -->
+
+<!-- ── 슬라이드 메뉴 패널 ── -->
+<div class="nav-panel-overlay" id="navPanelOverlay"></div>
+<div class="nav-panel" id="navPanel">
+    <div class="nav-panel-header">
+        <span>Menu</span>
+        <button class="nav-panel-close" id="navPanelClose"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="nav-panel-body">
+        <!-- 섹션 이동 목록 -->
+        <div class="nav-panel-section-list">
+            <div class="nav-panel-sec-item active" data-sec="main">메인 화면</div>
+            <div class="nav-panel-sec-item" data-sec="basic">기본 정보</div>
+            <div class="nav-panel-sec-item" data-sec="wedding">예식 정보</div>
+        </div>
+        <!-- 토글 가능 섹션 목록 -->
+        <div class="nav-panel-toggles" id="navPanelToggles"></div>
+    </div>
+</div>
+
+<!-- 우하단 햄버거 버튼 -->
+<div class="ed-float">
+    <button type="button" class="ed-float-icon" id="floatIconBtn" title="메뉴">
+        <i class="ti ti-menu-2"></i>
+    </button>
+</div>
+
+<!-- 카카오 JS SDK 제거됨 — 정적 이미지 방식 사용 -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+var WEDDING = {
+    groomName:   /*[[${wedding.groomName}]]*/ '',
+    brideName:   /*[[${wedding.brideName}]]*/ '',
+    weddingDate: /*[[${wedding.weddingDate}]]*/ '',
+    weddingTime: /*[[${wedding.weddingTime}]]*/ '',
+    weddingPlace:/*[[${wedding.weddingPlace}]]*/ '',
+    calStyle:    /*[[${wedding.calendarStyle ?: 'basic'}]]*/ 'basic',
+    ddayStyle:   /*[[${wedding.ddayStyle ?: 'text'}]]*/ 'text',
+    photoFilter: /*[[${wedding.photoFilter ?: 'none'}]]*/ 'none',
+    mainDesign:  /*[[${wedding.mainDesign ?: 'basic'}]]*/ 'basic',
+    displayOrder: /*[[${wedding.displayOrder ?: 'groom'}]]*/ 'groom',
+    hasPhoto:    /*[[${wedding.mainPhotoBase64 != null and !#strings.isEmpty(wedding.mainPhotoBase64)}]]*/ false,
+    kakaoAppKey: /*[[${kakaoAppKey}]]*/ ''
+};
+/*]]>*/
+</script>
+<!-- 카카오맵 SDK (모달 지도용, 브라우저에서 로드) -->
+<script>
+(function() {
+    var s = document.createElement('script');
+    s.src = '//dapi.kakao.com/v2/maps/sdk.js?appkey=' + WEDDING.kakaoAppKey + '&libraries=services&autoload=false';
+    s.onload = function() {
+        kakao.maps.load(function() {
+            window._kakaoReady = true;
+        });
+    };
+    document.head.appendChild(s);
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script th:src="@{/js/editor.js}"></script>
+<script>
+/* ── RSVP 관리 ── */
+function loadRsvpList() {
+    var list = document.getElementById('rsvpList');
+    if (!list) return;
+    list.innerHTML = '<div style="text-align:center;color:#bbb;padding:1rem;font-size:13px;">불러오는 중...</div>';
+    fetch('/api/rsvp')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            var attend  = data.filter(function(r) { return r.attendance; });
+            var decline = data.filter(function(r) { return !r.attendance; });
+            var totalMeal = attend.reduce(function(s, r) { return s + (r.mealCount || 0); }, 0);
+
+            document.getElementById('statTotal').textContent   = data.length;
+            document.getElementById('statAttend').textContent  = attend.length;
+            document.getElementById('statDecline').textContent = decline.length;
+            document.getElementById('statMeal').textContent    = totalMeal;
+
+            if (!data.length) {
+                list.innerHTML = '<div style="text-align:center;color:#bbb;padding:1.5rem;font-size:13px;">아직 응답이 없습니다</div>';
+                return;
+            }
+            list.innerHTML = '';
+            data.forEach(function(r) {
+                var row = document.createElement('div');
+                row.className = 'rsvp-mgmt-row';
+                var dt = r.createdAt ? r.createdAt.substring(0,10) : '';
+                row.innerHTML =
+                    '<div class="rsvp-mgmt-left">' +
+                        '<span class="rsvp-mgmt-badge ' + (r.attendance ? 'attend' : 'decline') + '">' + (r.attendance ? '참석' : '불참') + '</span>' +
+                        '<span class="rsvp-mgmt-name">' + esc(r.name) + '</span>' +
+                        (r.mealCount ? '<span class="rsvp-mgmt-meal">' + r.mealCount + '명</span>' : '') +
+                    '</div>' +
+                    '<div class="rsvp-mgmt-right">' +
+                        (r.phone ? '<span class="rsvp-mgmt-phone">' + esc(r.phone) + '</span>' : '') +
+                        '<span class="rsvp-mgmt-date">' + dt + '</span>' +
+                        '<button type="button" class="rsvp-mgmt-del" data-id="' + r.id + '"><i class="ti ti-trash"></i></button>' +
+                    '</div>';
+                if (r.message) {
+                    var msgDiv = document.createElement('div');
+                    msgDiv.className = 'rsvp-mgmt-msg';
+                    msgDiv.textContent = r.message;
+                    row.appendChild(msgDiv);
+                }
+                row.querySelector('.rsvp-mgmt-del').addEventListener('click', function() {
+                    if (!confirm('삭제하시겠습니까?')) return;
+                    fetch('/api/rsvp/' + this.dataset.id, {method:'DELETE'})
+                        .then(function() { loadRsvpList(); });
+                });
+                list.appendChild(row);
+            });
+        })
+        .catch(function() {
+            list.innerHTML = '<div style="text-align:center;color:#c4748a;padding:1rem;font-size:13px;">불러오기 실패</div>';
+        });
+}
+
+function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
