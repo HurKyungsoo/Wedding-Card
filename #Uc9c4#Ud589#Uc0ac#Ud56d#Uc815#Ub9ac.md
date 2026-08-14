@@ -7,12 +7,14 @@
 ## 서버 정보
 - **플랫폼**: AWS Lightsail (서울 ap-northeast-2a)
 - **사양**: Ubuntu 22.04, 2GB RAM, 2vCPU, 60GB SSD
-- **IP**: 3.36.205.135 (2026-08-14 확인 — 이전 43.203.255.195에서 변경됨. 고정 IP 미할당 상태라 인스턴스 재시작 시 바뀔 수 있음)
+- **IP**: 3.36.205.135 (2026-08-14 확인 — 이전 43.203.255.195에서 변경됨. Lightsail 콘솔상 "고정 IP"로 표시되어 재시작해도 안 바뀔 가능성이 높지만 미확정)
 - **접속 URL**: http://3.36.205.135:8080
 - **앱 경로**: /home/ubuntu/Wedding-Card
-- **로그**: /home/ubuntu/Wedding-Card/app.log
-- **Java**: /usr/lib/jvm/java-21-openjdk-amd64
-- **⚠️ SSH 접속 수단 미확보** — 서버 재배포가 계속 막혀있는 원인. 키/비밀번호 찾으면 최우선으로 재배포 진행할 것. (Lightsail 콘솔에 브라우저 기반 SSH 터미널 아이콘이 있음 — 별도 키 없이 접속 가능할 수 있으니 확인할 것)
+- **환경변수 파일**: /home/ubuntu/Wedding-Card/app.env (KAKAO_CLIENT_SECRET 등, git 대상 아님)
+- **실행 방식**: systemd (`weddingcard.service`) — 2026-08-14부터 전환, 이전엔 nohup으로 떠 있었음
+- **Java**: /usr/bin/java (JDK 21)
+- **SSH 접속**: `~/.ssh/lightsail_gaeseok` 키로 `ssh -i ~/.ssh/lightsail_gaeseok ubuntu@3.36.205.135` (2026-08-14 확보 — 이전 세션이 다른 프로젝트용으로 이미 만들어둔 키가 이 서버에도 등록되어 있었음)
+- **⚠️ 이 서버는 다른 프로젝트 2개와 공유 중** — gaeseok(객석, 포트 8082, systemd `gaeseok.service`), libre-community(포트 8081, caddy 유저로 실행). 2GB RAM에 스왑까지 쓰는 빠듯한 상태라 서버에서 무거운 작업(빌드 등) 돌릴 때 메모리 주의. 우선순위: 객석 ≈ WeddingCard > libre-community
 - **GitHub**: https://github.com/HurKyungsoo/Wedding-Card (Public)
 
 ---
@@ -59,10 +61,12 @@
 - 이전까지 0개 → `@DataJpaTest` 기반 14개 추가 (RsvpServiceTest, ViewLogServiceTest, WeddingServiceTest)
 - `CommandLineRunner`를 메인 앱 클래스에서 `config/DemoDataInitializer`로 분리 (테스트 슬라이스 격리 때문에 필요했음)
 
-### CI/CD
+### CI/CD (2026-08-14 완료)
 - `.github/workflows/ci.yml` — main push/PR마다 Java 21 + `mvn clean verify` 자동 실행, jar 아티팩트 업로드
-- 실제 GitHub Actions 실행 성공 확인 (약 36초)
-- **CD(서버 자동 배포)는 아직 없음** — SSH 키 확보되면 GitHub Secrets 등록 후 진행
+- **CD 파이프라인 구축 완료**: main push 시 build → self-hosted runner가 jar 다운로드 → `weddingcard.service` 재시작 → 헬스체크. SSH 키를 GitHub Secrets에 등록하는 방식이 아니라, 서버에 **self-hosted runner를 설치**해서 서버가 GitHub 쪽으로 아웃바운드 연결만 하는 방식 채택 (인바운드 SSH 포트 개방 불필요, 시크릿 유출 리스크 없음)
+- runner는 `/home/ubuntu/actions-runner-weddingcard`에 설치, systemd 서비스(`actions.runner.HurKyungsoo-Wedding-Card.spring-server-weddingcard.service`)로 상시 대기 (유휴 시 메모리 ~13MB)
+- WeddingCard 앱도 nohup → systemd(`weddingcard.service`)로 전환. `MemoryMax=600M`, `OOMScoreAdjust=500`으로 다른 서비스 보호 (gaeseok.service 패턴 참고)
+- 실제 배포 테스트 완료: 서버가 9개 커밋 뒤처진 채(2026-07-02 버전, 카카오 로그인 깨진 상태) 방치돼 있던 걸 최신 버전으로 실제 전환 성공
 
 ### 문서화
 - 프로젝트 진행 과정을 Notion 개발일지 형식으로 정리해서 사용자에게 전달함 (2주 분량 서사로 재구성한 버전 — **실제 git 커밋은 전부 2026-07-02 하루에 몰려있으므로, 날짜별 세부 내용은 포트폴리오 제시용으로 재구성한 것이며 실제 작업 이력과 다름**. 참고용으로만 활용할 것)
@@ -72,13 +76,10 @@
 ## 남은 작업
 
 ### 최우선
-- [ ] SSH 키/접속 수단 확보 → 확보되는 즉시 서버 재배포 (아래 명령어 참고)
-- [ ] 서버 환경변수에 새 `KAKAO_CLIENT_SECRET`, `KAKAO_MAP_APPKEY`, `KAKAO_REST_API_KEY` 반영
+- [ ] **`/home/ubuntu/Wedding-Card/app.env`의 `KAKAO_CLIENT_SECRET` 값 채우기** — 현재 빈 값이라 카카오 로그인 안 됨. 브라우저 SSH 터미널(Lightsail 콘솔)에서 `nano ~/Wedding-Card/app.env` 로 직접 입력할 것 (채팅에 값 붙여넣지 말 것), 넣은 뒤 `sudo systemctl restart weddingcard.service`
 - [ ] 서버 DB에서 관리자 계정 별도 ADMIN 승격 (로컬과 별개)
 
 ### 선택사항
-- [ ] CD 파이프라인 (SSH 키 확보 후 GitHub Actions에 배포 스텝 추가)
-- [ ] systemd 서비스 등록 (서버 재부팅 시 자동 실행)
 - [ ] 카카오 개발자 콘솔에 서버 도메인 등록 (Redirect URI: `http://3.36.205.135:8080/login/oauth2/code/kakao`) — IP 유동적이므로 고정 IP나 도메인 연결 후 등록 권장
 - [ ] HTTPS 적용 및 커스텀 도메인 연결
 - [ ] 모바일 편집기 UX 개선
@@ -88,32 +89,26 @@
 
 ---
 
-## 서버 재배포 명령어 (SSH 접속 확보 후)
+## 배포 (2026-08-14부터 자동화됨)
+
+**main에 push하면 자동으로 배포된다.** `.github/workflows/ci.yml`이 build → self-hosted runner가 서버에서 jar 교체 → `weddingcard.service` 재시작 → 헬스체크까지 처리함. 수동 개입 불필요.
+
+### 수동으로 서버 상태 확인/조작해야 할 때
 
 ```bash
-# 1. 기존 앱 종료
-pkill -f "java -jar"
+ssh -i ~/.ssh/lightsail_gaeseok ubuntu@3.36.205.135
 
-# 2. 최신 코드 받기
-cd Wedding-Card
-git pull
-
-# 3. 환경변수 설정 (최초 1회, ~/.bashrc에 등록 권장)
-export KAKAO_MAP_APPKEY="502b99c57514360a34fdf5b9181ed284"
-export KAKAO_REST_API_KEY="03a041000c72178b476cbb6e29431e81"
-export KAKAO_CLIENT_SECRET="<카카오 콘솔에서 재발급한 새 값으로 교체>"
-
-# 4. 빌드
-mvn clean package -DskipTests
-
-# 5. 앱 실행
-nohup java -jar target/*.jar > app.log 2>&1 &
-
-# 6. 로그 확인
-tail -f app.log
+sudo systemctl status weddingcard.service        # 상태
+sudo journalctl -u weddingcard.service -n 100 -f # 로그
+sudo systemctl restart weddingcard.service       # 수동 재시작
 ```
 
-> **주의**: 터미널 재접속 시 JAVA_HOME이 초기화될 수 있음. ~/.bashrc에 이미 추가되어 있어 자동 적용됨. 위 카카오 환경변수도 ~/.bashrc에 함께 등록해두면 재부팅 후에도 유지됨.
+### 배포 자체가 안 될 때 (runner 문제 등)
+
+```bash
+ssh -i ~/.ssh/lightsail_gaeseok ubuntu@3.36.205.135
+sudo systemctl status actions.runner.HurKyungsoo-Wedding-Card.spring-server-weddingcard.service
+```
 
 ---
 
@@ -132,4 +127,6 @@ tail -f app.log
 | `src/main/resources/application-secret.properties` | 로컬 전용 실제 시크릿 값 (git ignore) |
 | `src/main/java/com/example/weddingexam/config/DemoDataInitializer.java` | 샘플 데이터 시딩 (최초 1회만 실행되도록 가드 있음) |
 | `src/test/java/...` | 테스트 코드 (RsvpServiceTest, ViewLogServiceTest, WeddingServiceTest) |
-| `.github/workflows/ci.yml` | CI 파이프라인 |
+| `.github/workflows/ci.yml` | CI/CD 파이프라인 (build + deploy) |
+| `/etc/systemd/system/weddingcard.service` (서버) | 앱 systemd 유닛 |
+| `/home/ubuntu/Wedding-Card/app.env` (서버) | 서버 전용 환경변수 (카카오 시크릿 등) |
