@@ -164,7 +164,7 @@
                  th:data-date="${wedding.weddingDate}"
                  th:data-time="${wedding.weddingTime}">2026. 10. 24. Saturday 12:30 PM</div>
             <div class="hero-bottom-place"
-                 th:text="${wedding.weddingPlace + ', ' + wedding.mapPlaceName}">더채플앳청담 커티지홀, 3층</div>
+                 th:text="${(wedding.mapPlaceName != null and !wedding.mapPlaceName.isEmpty() and !wedding.mapPlaceName.equals(wedding.weddingPlace)) ? wedding.weddingPlace + ', ' + wedding.mapPlaceName : wedding.weddingPlace}">더채플앳청담 커티지홀, 3층</div>
         </div>
 
     </div>
@@ -1098,7 +1098,7 @@
         var placeEl = q('.hero-bottom-place');
         if (placeEl && (d.weddingPlace !== undefined || d.mapPlaceName !== undefined)) {
             var wp = d.weddingPlace || '';
-            var mn = d.mapPlaceName || '';
+            var mn = (d.mapPlaceName && d.mapPlaceName !== wp) ? d.mapPlaceName : '';
             placeEl.textContent = wp + (wp && mn ? ', ' : '') + mn;
         }
 
