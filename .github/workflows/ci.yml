@@ -31,3 +31,35 @@ jobs:
           name: weddingexam-jar
           path: target/*.jar
           retention-days: 7
+
+  deploy:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: [self-hosted, wedding-card-deploy]
+
+    steps:
+      - name: Download jar
+        uses: actions/download-artifact@v4
+        with:
+          name: weddingexam-jar
+          path: /home/ubuntu/Wedding-Card/target
+
+      - name: Restart service
+        run: |
+          sudo systemctl stop weddingcard.service 2>/dev/null || true
+          pkill -f 'java -jar target/weddingexam' 2>/dev/null || true
+          sleep 2
+          sudo systemctl start weddingcard.service
+
+      - name: Health check
+        run: |
+          for i in $(seq 1 15); do
+            if curl -sf http://localhost:8080/ > /dev/null; then
+              echo "Service is up"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Service failed to start" >&2
+          sudo journalctl -u weddingcard.service -n 50 --no-pager
+          exit 1

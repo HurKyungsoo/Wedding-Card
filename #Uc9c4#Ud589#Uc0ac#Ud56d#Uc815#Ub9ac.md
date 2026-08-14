@@ -7,12 +7,12 @@
 ## 서버 정보
 - **플랫폼**: AWS Lightsail (서울 ap-northeast-2a)
 - **사양**: Ubuntu 22.04, 2GB RAM, 2vCPU, 60GB SSD
-- **IP**: 43.203.255.195
-- **접속 URL**: http://43.203.255.195:8080
+- **IP**: 3.36.205.135 (2026-08-14 확인 — 이전 43.203.255.195에서 변경됨. 고정 IP 미할당 상태라 인스턴스 재시작 시 바뀔 수 있음)
+- **접속 URL**: http://3.36.205.135:8080
 - **앱 경로**: /home/ubuntu/Wedding-Card
 - **로그**: /home/ubuntu/Wedding-Card/app.log
 - **Java**: /usr/lib/jvm/java-21-openjdk-amd64
-- **⚠️ SSH 접속 수단 미확보** — 서버 재배포가 계속 막혀있는 원인. 키/비밀번호 찾으면 최우선으로 재배포 진행할 것.
+- **⚠️ SSH 접속 수단 미확보** — 서버 재배포가 계속 막혀있는 원인. 키/비밀번호 찾으면 최우선으로 재배포 진행할 것. (Lightsail 콘솔에 브라우저 기반 SSH 터미널 아이콘이 있음 — 별도 키 없이 접속 가능할 수 있으니 확인할 것)
 - **GitHub**: https://github.com/HurKyungsoo/Wedding-Card (Public)
 
 ---
@@ -79,7 +79,7 @@
 ### 선택사항
 - [ ] CD 파이프라인 (SSH 키 확보 후 GitHub Actions에 배포 스텝 추가)
 - [ ] systemd 서비스 등록 (서버 재부팅 시 자동 실행)
-- [ ] 카카오 개발자 콘솔에 서버 도메인 등록 (Redirect URI: `http://43.203.255.195:8080/login/oauth2/code/kakao`)
+- [ ] 카카오 개발자 콘솔에 서버 도메인 등록 (Redirect URI: `http://3.36.205.135:8080/login/oauth2/code/kakao`) — IP 유동적이므로 고정 IP나 도메인 연결 후 등록 권장
 - [ ] HTTPS 적용 및 커스텀 도메인 연결
 - [ ] 모바일 편집기 UX 개선
 - [ ] 메인 사진 base64 저장 → 오브젝트 스토리지(S3 호환)로 이전 (포트폴리오 어필 포인트)
