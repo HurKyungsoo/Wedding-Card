@@ -695,6 +695,7 @@ document.getElementById('topSaveBtn').addEventListener('click', function() {
     btn.disabled = true;
     btn.textContent = '저장 중...';
 
+    saveAllAccounts();
     var data = collectData();
 
     fetch('/api/admin/autosave', {
@@ -728,6 +729,7 @@ if (bottomSaveBtn) {
         btn.disabled = true;
         btn.innerHTML = '<i class="ti ti-loader-2" style="font-size:14px;animation:spin 1s linear infinite;"></i> 저장 중...';
 
+        saveAllAccounts();
         var data = collectData();
 
         fetch('/api/admin/autosave', {
@@ -743,7 +745,8 @@ if (bottomSaveBtn) {
                 showEditorToast('✓ 저장 완료! 청첩장을 엽니다.');
                 /* 저장 완료 후 새 창으로 청첩장 열기 */
                 setTimeout(function() {
-                    window.open('/', '_blank');
+                    var viewLink = document.getElementById('viewInviteLink');
+                    window.open(viewLink ? viewLink.href : '/', '_blank');
                 }, 400);
             } else {
                 showEditorToast('저장 실패: ' + (res.error || ''), 'error');

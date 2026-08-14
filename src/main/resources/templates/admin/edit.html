@@ -46,6 +46,7 @@
     </div>
     <div class="ed-header-right">
         <a th:if="${wedding.slug != null}"
+           id="viewInviteLink"
            th:href="'/w/' + ${wedding.slug}"
            target="_blank"
            class="ed-btn-outline"
