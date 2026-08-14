@@ -815,7 +815,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-design-card.active .ed-design-name{color:#2c2822;font-weight:500;}
 
 /* 템플릿 썸네일 미리보기 스타일 */
-.ed-dt-photo-ph{width:82px;height:52px;background:#d8d2ca;border-radius:3px;margin-bottom:6px;display:flex;align-items:center;justify-content:center;}
+.ed-dt-photo-ph{width:82px;height:56px;background:#d8d2ca;border-radius:3px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;}
 .ed-dt-photo-icon{font-size:14px;opacity:0.55;}
 .ed-dt-bigtext{font-family:'Cormorant Garamond',serif;font-size:15px;color:#2c2822;line-height:1.1;text-align:center;font-weight:600;}
 .ed-dt-datebar{position:absolute;bottom:10px;font-size:6px;color:#8a7a64;letter-spacing:1px;}
@@ -826,18 +826,16 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-fill{background:#e8e4de;}
 .ed-dt-pink{background:#f5e6e8;}
 .ed-dt-script{font-family:'Dancing Script',cursive;font-size:16px;color:#ff9a9a;text-align:center;line-height:1.1;}
-.ed-dt-married{background:linear-gradient(180deg,#cfc6b8 0%,#8f8371 55%,#5c5346 100%);overflow:hidden;}
+.ed-dt-married{background:linear-gradient(180deg,#dfe3d6 0%,#94a08a 55%,#4a5548 100%);overflow:hidden;}
 .ed-dt-married-big{font-family:'Great Vibes','Dancing Script',cursive;font-size:19px;color:#fff;position:absolute;bottom:22px;left:8px;line-height:0.95;text-align:left;font-weight:400;}
 .ed-dt-forever{background:#F5F2EC;flex-direction:column;justify-content:center;align-items:center;gap:2px;}
 
-/* 기본 — Groom·Bride 라벨/이름 + 날짜 + 장소 (하단 흰 배경, 실제 hero-bottom 구성 반영) */
-.ed-dt-basic-row{display:flex;align-items:center;justify-content:center;gap:6px;}
-.ed-dt-basic-person{display:flex;flex-direction:column;align-items:center;gap:1px;}
-.ed-dt-basic-label{font-family:'Cormorant Garamond','EB Garamond',serif;font-size:4.5px;letter-spacing:1px;text-transform:uppercase;color:#C4956A;}
-.ed-dt-basic-name{font-family:'Noto Serif KR',serif;font-size:9px;color:#1a1a1a;letter-spacing:1px;}
-.ed-dt-basic-div{width:1px;height:16px;background:#C4956A;}
-.ed-dt-basic-date{font-family:'EB Garamond','Cormorant Garamond',serif;font-size:6px;color:#2a2a28;letter-spacing:0.5px;margin-top:5px;}
-.ed-dt-basic-place{font-family:'Noto Serif KR',serif;font-size:5.5px;font-weight:300;color:#5a5a58;letter-spacing:0.3px;margin-top:2px;}
+/* 기본 — 이름 + 날짜 + 장소 (여백 위주, 실제 hero-bottom 구성 반영) */
+.ed-dt-basic-row{display:flex;align-items:center;justify-content:center;gap:10px;}
+.ed-dt-basic-name{font-family:'Noto Serif KR',serif;font-size:10px;color:#1a1a1a;letter-spacing:1.5px;}
+.ed-dt-basic-div{width:1px;height:14px;background:#C4956A;}
+.ed-dt-basic-date{font-family:'EB Garamond','Cormorant Garamond',serif;font-size:6.5px;color:#2a2a28;letter-spacing:1px;margin-top:11px;}
+.ed-dt-basic-place{font-family:'Noto Serif KR',serif;font-size:5.5px;font-weight:300;color:#8a7a64;letter-spacing:0.5px;margin-top:3px;text-transform:uppercase;}
 
 /* Our story begins (2번째) — 손글씨 타이틀 + 산세리프 이름, 블랙 톤 */
 .ed-dt-bigtext-story{font-family:'Great Vibes','Dancing Script',cursive;font-size:22px;color:#000;text-align:center;line-height:1.0;position:absolute;bottom:28px;left:4px;right:4px;}
