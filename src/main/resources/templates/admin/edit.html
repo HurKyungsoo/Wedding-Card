@@ -137,6 +137,7 @@
                 </div>
 
                 <!-- 디자인 템플릿 가로 스크롤 -->
+                <div style="font-size:11.5px;font-weight:500;color:#6a5a50;letter-spacing:.1px;margin:2px 0 8px;">테마 디자인 선택</div>
                 <div class="ed-design-scroll" id="designScroll">
                     <div class="ed-design-card active" data-design="basic" onclick="pickDesign(this,'basic')">
                         <div class="ed-design-thumb ed-dt-basic">
@@ -239,10 +240,8 @@
                     <div class="ed-ctrl ed-color-row">
                         <input type="text" class="ed-input ed-color-hex" id="fontColorHex" name="mainFontColor" value="#000000" maxlength="7">
                         <button type="button" class="ed-color-reset" id="fontColorReset"><i class="ti ti-refresh"></i></button>
-                        <!-- 테마별 추천 색상 (동적 표시) -->
+                        <!-- 테마별 추천 색상 (검정/흰색 포함, 동적 표시) -->
                         <span id="themeColorPresets" style="display:flex;gap:6px;"></span>
-                        <button type="button" class="ed-color-swatch" data-color="#000000" onclick="pickFontColor('#000000')" style="background:#000;"></button>
-                        <button type="button" class="ed-color-swatch" data-color="#ffffff" onclick="pickFontColor('#ffffff')" style="background:#fff;border:1px solid #ddd;"></button>
                         <input type="color" class="ed-color-picker" id="fontColorPicker" value="#000000">
                     </div>
                 </div>

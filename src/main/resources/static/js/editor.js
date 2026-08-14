@@ -180,7 +180,11 @@ var THEME_COLORS = {
 function updateThemeColorPresets(design) {
     var container = document.getElementById('themeColorPresets');
     if (!container) return;
-    var colors = THEME_COLORS[design] || THEME_COLORS.basic;
+    var colors = (THEME_COLORS[design] || THEME_COLORS.basic).slice();
+    /* 항상 검정/흰색을 보장하되, 테마 추천색에 이미 있으면 중복 표시하지 않음 */
+    ['#000000', '#ffffff'].forEach(function(fallback) {
+        if (colors.map(function(c){ return c.toLowerCase(); }).indexOf(fallback) === -1) colors.push(fallback);
+    });
     container.innerHTML = '';
     colors.forEach(function(color) {
         var btn = document.createElement('button');
