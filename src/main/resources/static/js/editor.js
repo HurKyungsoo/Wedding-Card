@@ -232,20 +232,6 @@ function pickFontColor(color) {
     }
 })();
 
-/* 필터 적용 체크박스 */
-(function bindFilterToggle() {
-    var chk = document.getElementById('filterEnable');
-    if (!chk) return;
-    chk.addEventListener('change', function() {
-        if (!this.checked) {
-            document.getElementById('photoFilterInput').value = 'none';
-            var img = document.getElementById('dcImg');
-            if (img) img.style.filter = '';
-        }
-        scheduleLive(100);
-    });
-})();
-
 /* 디자인 스크롤 드래그 */
 /* 가로 드래그 스크롤 — 여러 컨테이너에 적용 */
 function enableDragScroll(el) {
