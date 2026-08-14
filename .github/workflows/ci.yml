@@ -48,17 +48,17 @@ jobs:
         run: |
           sudo systemctl stop weddingcard.service 2>/dev/null || true
           pkill -f 'java -jar target/weddingexam' 2>/dev/null || true
-          sleep 2
+          sleep 5
           sudo systemctl start weddingcard.service
 
       - name: Health check
         run: |
-          for i in $(seq 1 15); do
+          for i in $(seq 1 30); do
             if curl -sf http://localhost:8080/ > /dev/null; then
               echo "Service is up"
               exit 0
             fi
-            sleep 2
+            sleep 3
           done
           echo "Service failed to start" >&2
           sudo journalctl -u weddingcard.service -n 50 --no-pager
