@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500&family=Noto+Sans+KR:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Pinyon+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500&family=Noto+Sans+KR:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Pinyon+Script&family=Sacramento&display=swap');
 
 /* ── 전역 스크롤바 숨김 + 풀화면 레이아웃 ── */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -1350,10 +1350,10 @@ body{
     overflow: hidden;
 }
 
-/* 손글씨 — 테마 고유 서체 고정, 글꼴 선택 영향 없음 */
+/* 손글씨 — 테마 고유 서체 고정, 글꼴 선택 영향 없음 (2번=Dancing Script와 구분되는 독자 서체) */
 .forever-script{
-    font-family: 'Brittany Signature', 'Dancing Script', cursive !important;
-    font-size: 38px;
+    font-family: 'Sacramento', cursive !important;
+    font-size: 42px;
     color: #2a2a28;
     margin-bottom: 1.2rem;
     text-align: center;
