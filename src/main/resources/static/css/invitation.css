@@ -1133,8 +1133,8 @@ body{
     height:55% !important;
 }
 .hero.design-our_story_pink .hero-design-title{
-    font-family:'Dancing Script',cursive !important; /* 영어 폰트 고정 */
-    font-size:min(19cqw, 90px);                      /* 크게 */
+    font-family:'Pinyon Script',cursive !important;  /* 2번(Dancing Script)·married(Great Vibes)와 구분되는 독자 서체 */
+    font-size:min(24cqw, 110px);                     /* Pinyon Script는 획이 가늘어 더 크게 */
     color:#d9527a;                                   /* 대비 확보를 위해 진한 로즈톤으로 */
     line-height:0.92;
     padding:0 1rem;

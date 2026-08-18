@@ -1438,8 +1438,8 @@
                     var isOurStory = heroEl2 && heroEl2.classList.contains('design-our_story');
 
                     if (isPink) {
-                        /* our_story_pink — 영어 타이틀 Dancing Script 고정, 한글 날짜/장소는 우아한 세리프로 고정 (글꼴 선택 무시) */
-                        dTitle.style.fontFamily = "'Dancing Script', cursive";
+                        /* our_story_pink — 영어 타이틀 Pinyon Script 고정(2번·married와 구분), 한글 날짜/장소는 우아한 세리프로 고정 (글꼴 선택 무시) */
+                        dTitle.style.fontFamily = "'Pinyon Script', cursive";
                         dTitle.style.fontSize   = '';
                         var dDate  = document.getElementById('hdciDate');
                         var dPlace = document.getElementById('hdciPlace');
@@ -1514,7 +1514,7 @@
                     dTitleDesign.style.color = d.mainFontColor || '#000000';
                 } else if (d.mainDesign === 'our_story_pink') {
                     dTitleDesign.style.fontSize = '';
-                    dTitleDesign.style.color = '#ff9a9a';
+                    dTitleDesign.style.color = '#d9527a';
                 } else {
                     dTitleDesign.style.fontSize = '';
                     dTitleDesign.style.color = '';
