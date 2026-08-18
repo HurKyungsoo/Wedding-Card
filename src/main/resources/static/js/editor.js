@@ -128,17 +128,6 @@ function pickDesign(el, val) {
             colorHex.value    = defaultColor;
             colorPicker.value = defaultColor;
             colorHex.dispatchEvent(new Event('input', { bubbles: true }));
-
-            /* 테마별 디폴트 글꼴 자동 설정 */
-            var designDefaultFonts = { married: 'dancing' };
-            var defaultFont = designDefaultFonts[val];
-            if (defaultFont) {
-                var fontSel = document.getElementById('fontSelect');
-                if (fontSel) {
-                    fontSel.value = defaultFont;
-                    fontSel.dispatchEvent(new Event('change', { bubbles: true }));
-                }
-            }
         }
     }
     if (input) input.dataset.prevDesign = val;

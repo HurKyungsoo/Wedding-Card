@@ -55,7 +55,7 @@
 <div class="toast" id="toast">복사되었습니다 ✓</div>
 
 
-<div class="wc">
+<div class="wc" th:style="|--main-font: ${wedding.mainFontCss};|">
 
     <!-- ① HERO -->
     <div class="hero" id="heroSection" th:classappend="${wedding.mainDesign != null} ? 'design-' + ${wedding.mainDesign} : 'design-basic'">
@@ -1404,7 +1404,9 @@
             }
         }
 
-        /* ── 12. 메인 글꼴 ── */
+        /* ── 12. 메인 글꼴 ──
+           전역 CSS 변수(--main-font) 하나로 일괄 적용. 테마 고유 타이틀(2번/핑크/married/아치형 손글씨)은
+           invitation.css에서 font-family !important로 개별 고정되어 있어 이 변수의 영향을 받지 않는다. */
         if (d.mainFont !== undefined && d.mainFont) {
             var fontMap = {
                 noto:       "'Noto Serif KR', serif",
@@ -1414,51 +1416,10 @@
                 dancing:    "'Dancing Script', cursive",
                 nanum:      "'Nanum Myeongjo', serif"
             };
-            /* our_story 타이틀 폰트별 크기 보정 — 손글씨/세리프마다 글자 너비가 달라 넘침 방지 */
-            var titleSizeMap = {
-                noto:       'min(13cqw, 62px)',
-                playfair:   'min(11cqw, 54px)',
-                eb_garamond:'min(12cqw, 58px)',
-                cormorant:  'min(12cqw, 58px)',
-                dancing:    'min(11cqw, 52px)',
-                nanum:      'min(12cqw, 58px)'
-            };
             var ff = fontMap[d.mainFont];
             if (ff) {
-                ['.hero-top-names', '.hero-top-date', '#heroDateShort',
-                 '.hero-script', '.hero-bottom-date', '.hero-bottom-place'].forEach(function(sel) {
-                    var el = q(sel); if (el) el.style.fontFamily = ff;
-                });
-                var dTitle = document.getElementById('heroDesignTitle');
-                var dNames = document.getElementById('heroDesignNames');
-                var dTitleBottom = document.getElementById('heroDesignTitleBottom');
-                if (dTitle) {
-                    var heroEl2 = document.getElementById('heroSection');
-                    var isPink     = heroEl2 && heroEl2.classList.contains('design-our_story_pink');
-                    var isOurStory = heroEl2 && heroEl2.classList.contains('design-our_story');
-
-                    if (isPink) {
-                        /* our_story_pink — 영어 타이틀 Pinyon Script 고정(2번·married와 구분), 한글 날짜/장소는 우아한 세리프로 고정 (글꼴 선택 무시) */
-                        dTitle.style.fontFamily = "'Pinyon Script', cursive";
-                        dTitle.style.fontSize   = '';
-                        var dDate  = document.getElementById('hdciDate');
-                        var dPlace = document.getElementById('hdciPlace');
-                        if (dDate)  dDate.style.fontFamily  = "'Noto Serif KR', serif";
-                        if (dPlace) dPlace.style.fontFamily = "'Noto Serif KR', serif";
-                    } else if (isOurStory) {
-                        /* our_story — 영어 타이틀 Dancing Script 고정, 한글 날짜/장소도 테마 고정 폰트 유지 */
-                        dTitle.style.fontFamily = "'Dancing Script', cursive";
-                        dTitle.style.fontSize   = 'min(21cqw, 100px)';
-                    } else {
-                        dTitle.style.fontFamily = ff;
-                    }
-                }
-                if (dTitleBottom) dTitleBottom.style.fontFamily = ff;
-                if (dNames) {
-                    dNames.style.fontFamily = ff;
-                    qa('#heroDesignNames span').forEach(function(s){ s.style.fontFamily = ff; });
-                }
-                qa('.hdci-date, .hdci-place').forEach(function(el) { el.style.fontFamily = ff; });
+                var wc = document.querySelector('.wc');
+                if (wc) wc.style.setProperty('--main-font', ff);
             }
         }
 

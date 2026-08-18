@@ -116,6 +116,17 @@ public class WeddingDto {
     public String getMainPhotoBase64() { return mainPhotoBase64; } public void setMainPhotoBase64(String v) { this.mainPhotoBase64 = v; }
     public String getMainDesign() { return mainDesign; } public void setMainDesign(String v) { this.mainDesign = v; }
     public String getMainFont() { return mainFont; } public void setMainFont(String v) { this.mainFont = v; }
+
+    private static final java.util.Map<String, String> MAIN_FONT_CSS = java.util.Map.of(
+        "noto",        "'Noto Serif KR', serif",
+        "playfair",    "'Playfair Display', 'Noto Serif KR', serif",
+        "eb_garamond", "'EB Garamond', 'Cormorant Garamond', serif",
+        "cormorant",   "'Cormorant Garamond', serif",
+        "dancing",     "'Dancing Script', cursive",
+        "nanum",       "'Nanum Myeongjo', serif"
+    );
+    /** 청첩장 전역 글꼴(mainFont) 선택값을 실제 CSS font-family 스택으로 변환 — 테마 고유 타이틀 서체는 이 값과 무관하게 고정 */
+    public String getMainFontCss() { return MAIN_FONT_CSS.getOrDefault(mainFont, MAIN_FONT_CSS.get("noto")); }
     public String getMainFontSize() { return mainFontSize; } public void setMainFontSize(String v) { this.mainFontSize = v; }
     public String getMainFontColor() { return mainFontColor; } public void setMainFontColor(String v) { this.mainFontColor = v; }
     public String getColorEffect() { return colorEffect; } public void setColorEffect(String v) { this.colorEffect = v; }

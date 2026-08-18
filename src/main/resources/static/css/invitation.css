@@ -912,9 +912,9 @@ body{
 
 
 
-/* ★ 하단 날짜 — EB Garamond, 세련된 영문 날짜 */
+/* ★ 하단 날짜 — 전역 글꼴 선택을 따름 */
 .hero.design-basic .hero-bottom-date{
-    font-family: 'EB Garamond', 'Cormorant Garamond', serif;
+    font-family: var(--main-font, 'Noto Serif KR', serif);
     font-size: 14.5px;
     font-weight: 400;
     color: #2a2a28;
@@ -923,9 +923,9 @@ body{
     line-height: 1.7;
 }
 
-/* ★ 하단 장소 — Noto Serif KR, 단아한 한글 */
+/* ★ 하단 장소 — 전역 글꼴 선택을 따름 */
 .hero.design-basic .hero-bottom-place{
-    font-family: 'Noto Serif KR', serif;
+    font-family: var(--main-font, 'Noto Serif KR', serif);
     font-size: 13px;
     font-weight: 300;
     color: #5a5a58;
@@ -1024,9 +1024,9 @@ body{
     font-family:'Cormorant Garamond',serif;
     font-weight:500;
 }
-/* Getting Married 테마 — 날짜 흰색 + Patrick Hand */
+/* Getting Married 테마 — 날짜는 전역 글꼴 선택을 따름, 흰색 유지 */
 .hero.design-married .hero-design-date span{
-    font-family:'Patrick Hand', sans-serif;
+    font-family:var(--main-font, 'Noto Serif KR', serif);
     color:#fff;
     font-size:14px;
     font-weight:400;
@@ -1098,7 +1098,7 @@ body{
     text-align:center;
 }
 .hero.design-our_story .hdci-date{
-    font-family:'Noto Sans KR',sans-serif !important;
+    font-family:var(--main-font, 'Noto Serif KR', serif);
     font-size:15px;
     color:#111;
     letter-spacing:0.5px;
@@ -1106,7 +1106,7 @@ body{
     text-shadow:0 1px 8px rgba(255,255,255,0.95);
 }
 .hero.design-our_story .hdci-place{
-    font-family:'Noto Serif KR',serif !important;
+    font-family:var(--main-font, 'Noto Serif KR', serif);
     font-size:13px;
     color:#111;
     letter-spacing:0.5px;
@@ -1174,7 +1174,7 @@ body{
     text-align:center;
 }
 .hero.design-our_story_pink .hdci-date{
-    font-family:'Noto Serif KR',serif !important;
+    font-family:var(--main-font, 'Noto Serif KR', serif);
     font-size:12px;
     color:#d9527a;
     letter-spacing:1px;
@@ -1184,7 +1184,7 @@ body{
     text-shadow:0 1px 6px rgba(255,255,255,0.6);
 }
 .hero.design-our_story_pink .hdci-place{
-    font-family:'Noto Serif KR',serif !important;
+    font-family:var(--main-font, 'Noto Serif KR', serif);
     font-size:11px;
     color:#d9527a;
     letter-spacing:0.5px;
@@ -1207,7 +1207,7 @@ body{
 
 /* 타이틀 위치: 하단 좌측, 글자 크게 */
 .hero.design-married .hero-design-title{
-    font-family:'Great Vibes','Pinyon Script','Dancing Script',cursive;
+    font-family:'Great Vibes','Pinyon Script','Dancing Script',cursive !important; /* 테마 고유 서체 고정 — 글꼴 선택 영향 없음 */
     line-height:0.88;
     color:#fff;
     white-space:normal;
@@ -1350,9 +1350,9 @@ body{
     overflow: hidden;
 }
 
-/* 손글씨 — Brittany Signature */
+/* 손글씨 — 테마 고유 서체 고정, 글꼴 선택 영향 없음 */
 .forever-script{
-    font-family: 'Brittany Signature', 'Dancing Script', cursive;
+    font-family: 'Brittany Signature', 'Dancing Script', cursive !important;
     font-size: 38px;
     color: #2a2a28;
     margin-bottom: 1.2rem;
@@ -1370,7 +1370,7 @@ body{
 }
 .forever-name-groom,
 .forever-name-bride{
-    font-family: 'Noto Serif KR', serif;
+    font-family: var(--main-font, 'Noto Serif KR', serif);
     font-size: 22px;
     font-weight: 400;
     color: #2a2a28;
@@ -1419,9 +1419,9 @@ body{
     color: #b0a898;
 }
 
-/* 날짜 — 민트/그린 큰 폰트 */
+/* 날짜 — 민트/그린 큰 폰트, 전역 글꼴 선택을 따름 */
 .forever-date{
-    font-family: 'Cormorant Garamond', serif;
+    font-family: var(--main-font, 'Noto Serif KR', serif);
     font-size: 30px;
     font-weight: 500;
     color: #6FAF8A;
@@ -1439,7 +1439,7 @@ body{
 }
 .forever-place1,
 .forever-place2{
-    font-family: 'Cormorant Garamond', 'EB Garamond', serif;
+    font-family: var(--main-font, 'Noto Serif KR', serif);
     font-size: 12px;
     font-weight: 400;
     color: #5a5a58;
@@ -1488,11 +1488,11 @@ body{
     bottom: 2.5% !important;
     padding: 0 1.4rem;
     align-items: center;
-    font-family: 'Patrick Hand', sans-serif !important;
+    font-family: var(--main-font, 'Noto Serif KR', serif);
 }
-/* married 날짜 안의 span도 Patrick Hand */
+/* married 날짜 — 전역 글꼴 선택을 따름 (타이틀만 테마 고정) */
 .hero.design-married .hero-design-date span{
-    font-family: 'Patrick Hand', sans-serif !important;
+    font-family: var(--main-font, 'Noto Serif KR', serif);
 }
 
 /* ── design-married 한글 Pretendard 디폴트 적용 ── */
