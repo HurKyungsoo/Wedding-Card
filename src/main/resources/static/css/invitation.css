@@ -1061,10 +1061,24 @@ body{
     right:0 !important;
     transform:none;
     z-index:4;
+    text-shadow:0 2px 16px rgba(255,255,255,0.9);
 }
 .hero.design-our_story .hero-design-title::after{
     content:'Our story begins';
     display:block;
+}
+/* 검은 타이틀이 어두운 사진 영역(정장 등) 위에서 뭉개지지 않도록
+   공용 흰색 스크림보다 조금 더 밝고 높게 깐다 (married 테마와 반대 방향) */
+.hero.design-our_story .hero-fullphoto::after{
+    height:50% !important;
+    background:linear-gradient(180deg,
+        transparent 0%,
+        rgba(255,255,255,0.35) 50%,
+        rgba(255,255,255,0.6) 78%,
+        rgba(255,255,255,0.7) 100%) !important;
+}
+.hero.design-our_story .hero-design-date span{
+    text-shadow:0 1px 8px rgba(255,255,255,0.95);
 }
 
 /* ─────────────────────────────────────
