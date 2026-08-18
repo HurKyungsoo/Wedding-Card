@@ -1436,14 +1436,13 @@
                     var isOurStory = heroEl2 && heroEl2.classList.contains('design-our_story');
 
                     if (isPink) {
-                        /* our_story_pink — 영어 타이틀 Dancing Script 고정 */
+                        /* our_story_pink — 영어 타이틀 Dancing Script 고정, 한글 날짜/장소는 우아한 세리프로 고정 (글꼴 선택 무시) */
                         dTitle.style.fontFamily = "'Dancing Script', cursive";
                         dTitle.style.fontSize   = '';
-                        /* 한글 날짜/장소만 선택 폰트 */
                         var dDate  = document.getElementById('hdciDate');
                         var dPlace = document.getElementById('hdciPlace');
-                        if (dDate)  dDate.style.fontFamily  = ff;
-                        if (dPlace) dPlace.style.fontFamily = ff;
+                        if (dDate)  dDate.style.fontFamily  = "'Noto Serif KR', serif";
+                        if (dPlace) dPlace.style.fontFamily = "'Noto Serif KR', serif";
                     } else if (isOurStory) {
                         /* our_story — 영어 타이틀 Playfair Display 고정 (이름은 숨김 처리라 폰트 적용 불필요) */
                         dTitle.style.fontFamily = "'Playfair Display', 'Noto Serif KR', serif";

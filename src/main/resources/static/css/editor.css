@@ -861,6 +861,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
     position:absolute;
     bottom:8px;
     left:8px;
+    font-family:'Noto Serif KR',serif;
     font-size:5.5px;
     color:#ff9a9a;
     letter-spacing:0.5px;
