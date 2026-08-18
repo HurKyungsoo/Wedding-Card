@@ -1044,18 +1044,18 @@ body{
    Our story begins — 세리프 오버레이
 ───────────────────────────────────── */
 .hero.design-our_story .hero-design-title{
-    font-family:'Playfair Display','Noto Serif KR',serif !important;
-    font-size:min(19cqw, 90px) !important;
+    font-family:'Dancing Script',cursive !important;
+    font-size:min(21cqw, 100px) !important;
     font-weight:600;
     line-height:0.92;
     color:#000000;
-    letter-spacing:-1px;
+    letter-spacing:0;
     mix-blend-mode:normal;
     text-align:center;
     padding:0 1rem;
     white-space:normal;
     word-break:break-word;
-    bottom:22% !important;
+    bottom:20% !important;
     top:auto !important;
     left:0 !important;
     right:0 !important;
@@ -1078,6 +1078,39 @@ body{
         rgba(255,255,255,0.7) 100%) !important;
 }
 .hero.design-our_story .hero-design-date span{
+    text-shadow:0 1px 8px rgba(255,255,255,0.95);
+}
+/* 레퍼런스 레이아웃 — 하단 3분할 날짜 대신 타이틀 아래 중앙 정렬 날짜/장소 */
+.hero.design-our_story .hero-design-date{
+    display:none !important;
+}
+.hero.design-our_story .hero-design-center-info{
+    display:flex !important;
+    flex-direction:column;
+    align-items:center;
+    gap:0.2rem;
+    position:absolute;
+    bottom:7%;
+    left:0;
+    right:0;
+    z-index:4;
+    pointer-events:none;
+    text-align:center;
+}
+.hero.design-our_story .hdci-date{
+    font-family:'Noto Sans KR',sans-serif !important;
+    font-size:15px;
+    color:#111;
+    letter-spacing:0.5px;
+    font-weight:400;
+    text-shadow:0 1px 8px rgba(255,255,255,0.95);
+}
+.hero.design-our_story .hdci-place{
+    font-family:'Noto Serif KR',serif !important;
+    font-size:13px;
+    color:#111;
+    letter-spacing:0.5px;
+    font-weight:400;
     text-shadow:0 1px 8px rgba(255,255,255,0.95);
 }
 

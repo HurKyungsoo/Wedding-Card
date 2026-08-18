@@ -1377,7 +1377,7 @@
                         el.style.color = d.mainFontColor;
                     });
                 } else {
-                    /* our_story — 타이틀 색상 적용, 폰트는 Playfair Display 유지 */
+                    /* our_story — 타이틀 색상 적용, 폰트는 Dancing Script 유지 */
                     dTitle.style.color = d.mainFontColor;
                     dTitle.style.mixBlendMode = 'normal';
                 }
@@ -1446,10 +1446,9 @@
                         if (dDate)  dDate.style.fontFamily  = "'Noto Serif KR', serif";
                         if (dPlace) dPlace.style.fontFamily = "'Noto Serif KR', serif";
                     } else if (isOurStory) {
-                        /* our_story — 영어 타이틀 Playfair Display 고정 (이름은 숨김 처리라 폰트 적용 불필요) */
-                        dTitle.style.fontFamily = "'Playfair Display', 'Noto Serif KR', serif";
-                        dTitle.style.fontSize   = 'min(19cqw, 90px)';
-                        qa('#heroDesignDate span').forEach(function(el) { el.style.fontFamily = ff; });
+                        /* our_story — 영어 타이틀 Dancing Script 고정, 한글 날짜/장소도 테마 고정 폰트 유지 */
+                        dTitle.style.fontFamily = "'Dancing Script', cursive";
+                        dTitle.style.fontSize   = 'min(21cqw, 100px)';
                     } else {
                         dTitle.style.fontFamily = ff;
                     }
