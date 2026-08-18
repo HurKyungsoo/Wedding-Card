@@ -1250,16 +1250,13 @@ body{
 
 /* 사진 없어도 타이틀/날짜/장소는 그대로 노출 — 기본/아치형처럼 사진 업로드 전에도
    테마 구조(타이틀 서체·레이아웃)를 미리 볼 수 있게 한다 */
-/* married만 흰 글씨라 사진 없는 밝은 플레이스홀더 위에서는 안 보이므로 어두운 톤으로 전환 */
-.hero.design-married .hero-fullphoto:not(.has-photo) .hero-design-title,
-.hero.design-married .hero-fullphoto:not(.has-photo) .hero-design-title::before,
-.hero.design-married .hero-fullphoto:not(.has-photo) .hero-design-title::after{
-    color:#2c2822;
-    text-shadow:none;
+/* married는 흰 글씨 콘셉트를 유지하기 위해, 사진 없을 때 플레이스홀더 배경 자체를 어둡게 전환 */
+.hero.design-married .hero-fullphoto-placeholder{
+    background:#282c26;
 }
-.hero.design-married .hero-fullphoto:not(.has-photo) .hero-design-date span{
-    color:#2c2822;
-    text-shadow:none;
+.hero.design-married .hero-fullphoto-placeholder i,
+.hero.design-married .hero-fullphoto-placeholder span{
+    color:#d8dcd0;
 }
 
 /* 디자인 적용 시 이름 표시 — 타이틀 아래 */
