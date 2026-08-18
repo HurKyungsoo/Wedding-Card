@@ -819,10 +819,6 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-photo-icon{font-size:14px;opacity:0.55;}
 .ed-dt-bigtext{font-family:'Cormorant Garamond',serif;font-size:15px;color:#2c2822;line-height:1.1;text-align:center;font-weight:600;}
 .ed-dt-datebar{position:absolute;bottom:10px;font-size:6px;color:#8a7a64;letter-spacing:1px;}
-.ed-dt-amp{font-family:'Cormorant Garamond',serif;font-size:11px;color:#8a7a64;font-style:italic;margin:0 2px;}
-.ed-dt-heart{color:#e8a0b0;font-size:10px;margin:0 2px;}
-.ed-dt-names-row{display:flex;align-items:center;justify-content:center;gap:1px;margin-top:4px;font-size:8.5px;color:#7a6a54;letter-spacing:0.5px;}
-.ed-dt-name{font-family:'Noto Serif KR',serif;font-size:8.5px;}
 .ed-dt-fill{background:#e8e4de;}
 .ed-dt-pink{background:#f5e6e8;}
 .ed-dt-script{font-family:'Pinyon Script',cursive;font-size:16px;color:#d9527a;text-align:center;line-height:1.1;}
@@ -841,32 +837,29 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-bigtext-story{font-family:'Dancing Script',cursive;font-weight:600;font-size:23px;color:#000;text-align:center;line-height:1.0;position:absolute;bottom:22px;left:4px;right:4px;}
 .ed-dt-datebar-story{font-family:'Noto Sans KR',sans-serif;color:#000;position:absolute;bottom:6px;left:0;right:0;text-align:center;letter-spacing:0.2px;line-height:1.5;}
 
-/* Our story (핑크, 3번째) — 핑크 톤 */
-.ed-dt-names-pink{color:#e68a9a;}
-.ed-dt-names-pink .ed-dt-name{color:#e68a9a;}
-.ed-dt-datebar-pink{color:#e68a9a;}
-/* our_story_pink 리뉴얼 — 타이틀 하단 좌측, 날짜/장소 그 아래 */
-.ed-dt-script-bottomleft{
+/* our_story_pink — 실제 테마와 동일하게 타이틀·날짜/장소 모두 가운데 정렬 */
+.ed-dt-script-center{
     font-family:'Pinyon Script',cursive;
-    font-size:16px;
+    font-size:17px;
     color:#d9527a;
-    text-align:left;
+    text-align:center;
     line-height:1.0;
     position:absolute;
-    bottom:28px;
-    left:8px;
+    bottom:32px;
+    left:4px;
     right:4px;
 }
-.ed-dt-datebar-pink-bottom{
+.ed-dt-datebar-pink-center{
     position:absolute;
     bottom:8px;
-    left:8px;
+    left:4px;
+    right:4px;
     font-family:'Noto Serif KR',serif;
     font-size:5.5px;
     color:#d9527a;
     letter-spacing:0.5px;
     line-height:1.6;
-    text-align:left;
+    text-align:center;
 }
 
 /* Getting Married (4번째) — 사진 위 흰 날짜 */
