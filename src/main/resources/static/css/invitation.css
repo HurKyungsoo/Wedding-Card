@@ -1076,19 +1076,19 @@ body{
 .hero.design-our_story_pink .hero-fullphoto-img{
     object-position:center 18%;
 }
-/* 핑크 테마 하단 그라데이션 — 더 핑크하게 */
+/* 핑크 테마 하단 그라데이션 — 더 핑크하게 (대비 확보를 위해 중간 지점부터 더 진하게) */
 .hero.design-our_story_pink .hero-fullphoto::after{
     background:linear-gradient(180deg,
         transparent 0%,
-        rgba(253,240,243,0.4) 50%,
-        rgba(253,240,243,0.85) 80%,
+        rgba(253,240,243,0.6) 50%,
+        rgba(253,240,243,0.9) 80%,
         rgba(253,240,243,0.98) 100%) !important;
     height:55% !important;
 }
 .hero.design-our_story_pink .hero-design-title{
     font-family:'Dancing Script',cursive !important; /* 영어 폰트 고정 */
     font-size:min(19cqw, 90px);                      /* 크게 */
-    color:#ff9a9a;
+    color:#d9527a;                                   /* 대비 확보를 위해 진한 로즈톤으로 */
     line-height:0.92;
     padding:0 1rem;
     white-space:normal;
@@ -1099,7 +1099,7 @@ body{
     right:0 !important;
     transform:none;
     mix-blend-mode:normal !important;
-    text-shadow:0 1px 8px rgba(255,255,255,0.3);
+    text-shadow:0 2px 10px rgba(255,255,255,0.55);
     z-index:4;
 }
 .hero.design-our_story_pink .hero-design-title::after{
@@ -1129,19 +1129,21 @@ body{
 .hero.design-our_story_pink .hdci-date{
     font-family:'Noto Serif KR',serif !important;
     font-size:12px;
-    color:#ff9a9a;
+    color:#d9527a;
     letter-spacing:1px;
     font-weight:400;
     line-height:1.5;
     text-align:center;
+    text-shadow:0 1px 6px rgba(255,255,255,0.6);
 }
 .hero.design-our_story_pink .hdci-place{
     font-family:'Noto Serif KR',serif !important;
     font-size:11px;
-    color:#ff9a9a;
+    color:#d9527a;
     letter-spacing:0.5px;
     font-weight:400;
     line-height:1.5;
+    text-shadow:0 1px 6px rgba(255,255,255,0.6);
     text-align:center;
 }
 /* 이름 숨김 */

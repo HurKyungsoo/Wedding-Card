@@ -825,7 +825,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-name{font-family:'Noto Serif KR',serif;font-size:8.5px;}
 .ed-dt-fill{background:#e8e4de;}
 .ed-dt-pink{background:#f5e6e8;}
-.ed-dt-script{font-family:'Dancing Script',cursive;font-size:16px;color:#ff9a9a;text-align:center;line-height:1.1;}
+.ed-dt-script{font-family:'Dancing Script',cursive;font-size:16px;color:#d9527a;text-align:center;line-height:1.1;}
 .ed-dt-married{background:linear-gradient(180deg,#dfe3d6 0%,#94a08a 55%,#4a5548 100%);overflow:hidden;}
 .ed-dt-married-big{font-family:'Great Vibes','Dancing Script',cursive;font-size:19px;color:#fff;position:absolute;bottom:22px;left:8px;line-height:0.95;text-align:left;font-weight:400;}
 .ed-dt-forever{background:#F5F2EC;flex-direction:column;justify-content:center;align-items:center;gap:2px;}
@@ -849,7 +849,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-script-bottomleft{
     font-family:'Dancing Script',cursive;
     font-size:16px;
-    color:#ff9a9a;
+    color:#d9527a;
     text-align:left;
     line-height:1.0;
     position:absolute;
@@ -863,7 +863,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
     left:8px;
     font-family:'Noto Serif KR',serif;
     font-size:5.5px;
-    color:#ff9a9a;
+    color:#d9527a;
     letter-spacing:0.5px;
     line-height:1.6;
     text-align:left;

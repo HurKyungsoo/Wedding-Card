@@ -118,7 +118,7 @@ function pickDesign(el, val) {
         var designDefaultColors = {
             basic:          '#2c2822',
             our_story:      '#000000',
-            our_story_pink: '#ff9a9a',
+            our_story_pink: '#d9527a',
             married:        '#ffffff',
             forever:        '#2c2822'
         };
@@ -172,7 +172,7 @@ function pickDesign(el, val) {
 var THEME_COLORS = {
     basic:           ['#2c2822', '#c4748a', '#7a6a54'],
     our_story:       ['#000000', '#2c2822', '#5a4e40'],
-    our_story_pink:  ['#ff9a9a', '#e68a9a', '#c4748a'],
+    our_story_pink:  ['#d9527a', '#e68a9a', '#c4748a'],
     married:         ['#ffffff', '#f0ece6', '#e8e0d0'],
     forever:         ['#2c2822', '#5a4e40', '#8a7a64']
 };
