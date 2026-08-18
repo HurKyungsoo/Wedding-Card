@@ -139,10 +139,12 @@
             </div>
             <div class="forever-date" id="foreverDate"
                  th:data-date="${wedding.weddingDate}"
-                 th:data-time="${wedding.weddingTime}">2026. 06. 27</div>
+                 th:data-time="${wedding.weddingTime}"
+                 th:text="${!#strings.isEmpty(wedding.weddingDate) ? #strings.replace(wedding.weddingDate, '-', '. ') : ''}">2026. 06. 27</div>
             <div class="forever-place-wrap">
                 <div class="forever-place1" th:text="${wedding.weddingPlace}">MARRIAGE WEDDING HALL</div>
-                <div class="forever-place2" th:text="${wedding.mapPlaceName}">POCKET HALL</div>
+                <div class="forever-place2"
+                     th:text="${(wedding.mapPlaceName != null and !wedding.mapPlaceName.isEmpty() and wedding.weddingPlace != null and !wedding.weddingPlace.contains(wedding.mapPlaceName)) ? wedding.mapPlaceName : ''}">POCKET HALL</div>
             </div>
         </div>
 
