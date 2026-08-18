@@ -816,7 +816,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
 
 /* 템플릿 썸네일 미리보기 스타일 */
 .ed-dt-photo-ph{width:82px;height:56px;background:#d8d2ca;border-radius:3px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;}
-.ed-dt-photo-icon{font-size:14px;opacity:0.55;}
+.ed-dt-photo-icon{font-size:22px;color:#8a7a64;opacity:0.55;}
 .ed-dt-bigtext{font-family:'Cormorant Garamond',serif;font-size:15px;color:#2c2822;line-height:1.1;text-align:center;font-weight:600;}
 .ed-dt-datebar{position:absolute;bottom:10px;font-size:6px;color:#8a7a64;letter-spacing:1px;}
 .ed-dt-fill{background:#e8e4de;}
