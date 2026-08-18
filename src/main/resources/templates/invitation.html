@@ -1375,7 +1375,7 @@
                         el.style.color = d.mainFontColor;
                     });
                 } else {
-                    /* our_story — 타이틀 색상 적용, 폰트는 Great Vibes 유지 */
+                    /* our_story — 타이틀 색상 적용, 폰트는 Playfair Display 유지 */
                     dTitle.style.color = d.mainFontColor;
                     dTitle.style.mixBlendMode = 'normal';
                 }
@@ -1445,14 +1445,9 @@
                         if (dDate)  dDate.style.fontFamily  = ff;
                         if (dPlace) dPlace.style.fontFamily = ff;
                     } else if (isOurStory) {
-                        /* our_story — 영어 타이틀 Great Vibes 고정 */
-                        dTitle.style.fontFamily = "'Great Vibes', 'Dancing Script', cursive";
+                        /* our_story — 영어 타이틀 Playfair Display 고정 (이름은 숨김 처리라 폰트 적용 불필요) */
+                        dTitle.style.fontFamily = "'Playfair Display', 'Noto Serif KR', serif";
                         dTitle.style.fontSize   = 'min(19cqw, 90px)';
-                        /* 이름/날짜만 선택 폰트 */
-                        if (dNames) {
-                            dNames.style.fontFamily = ff;
-                            qa('#heroDesignNames span').forEach(function(s){ s.style.fontFamily = ff; });
-                        }
                         qa('#heroDesignDate span').forEach(function(el) { el.style.fontFamily = ff; });
                     } else {
                         dTitle.style.fontFamily = ff;
