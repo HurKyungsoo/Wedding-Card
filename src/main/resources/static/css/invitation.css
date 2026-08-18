@@ -912,9 +912,9 @@ body{
 
 
 
-/* ★ 하단 날짜 — 전역 글꼴 선택을 따름 */
+/* ★ 하단 날짜 — 기본 테마 고유 서체 고정(Noto Serif KR), 글꼴 선택 영향 없음 */
 .hero.design-basic .hero-bottom-date{
-    font-family: var(--main-font, 'Noto Serif KR', serif);
+    font-family: 'Noto Serif KR', serif !important;
     font-size: 14.5px;
     font-weight: 400;
     color: #2a2a28;
@@ -923,9 +923,9 @@ body{
     line-height: 1.7;
 }
 
-/* ★ 하단 장소 — 전역 글꼴 선택을 따름 */
+/* ★ 하단 장소 — 기본 테마 고유 서체 고정(Noto Serif KR), 글꼴 선택 영향 없음 */
 .hero.design-basic .hero-bottom-place{
-    font-family: var(--main-font, 'Noto Serif KR', serif);
+    font-family: 'Noto Serif KR', serif !important;
     font-size: 13px;
     font-weight: 300;
     color: #5a5a58;
