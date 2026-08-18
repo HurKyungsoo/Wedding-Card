@@ -834,7 +834,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-basic-place{font-family:'Noto Serif KR',serif;font-size:5.5px;font-weight:300;color:#8a7a64;letter-spacing:0.5px;margin-top:3px;text-transform:uppercase;}
 
 /* Our story begins (2번째) — 손글씨 타이틀 + 중앙 날짜/장소, 블랙 톤 (이름 없음) */
-.ed-dt-bigtext-story{font-family:'Dancing Script',cursive;font-weight:600;font-size:23px;color:#000;text-align:center;line-height:1.0;position:absolute;bottom:22px;left:4px;right:4px;}
+.ed-dt-bigtext-story{font-family:'Dancing Script',cursive;font-weight:600;font-size:23px;color:#000;text-align:center;line-height:1.0;position:absolute;bottom:32px;left:4px;right:4px;}
 .ed-dt-datebar-story{font-family:'Noto Sans KR',sans-serif;color:#000;position:absolute;bottom:6px;left:0;right:0;text-align:center;letter-spacing:0.2px;line-height:1.5;}
 
 /* our_story_pink — 실제 테마와 동일하게 타이틀·날짜/장소 모두 가운데 정렬 */
