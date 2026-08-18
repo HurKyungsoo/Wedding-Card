@@ -1506,20 +1506,9 @@ body{
     object-position: center top !important;
 }
 
-/* Getting Married — 흰 타이틀이 밝은 사진 위에서 묻히지 않도록 어두운 스크림을 깐다
-   (다른 테마는 어두운 글씨라 흰색 그라데이션을 쓰지만 이 테마만 반대) */
+/* Getting Married — 그라디언트 없이 사진 원본 그대로 (가독성은 text-shadow로만 확보) */
 .hero.design-married .hero-fullphoto::after{
-    content:'';
-    position:absolute;
-    left:0;right:0;bottom:0;
-    height:58%;
-    background:linear-gradient(180deg,
-        transparent 0%,
-        rgba(40,44,38,0.28) 45%,
-        rgba(40,44,38,0.52) 75%,
-        rgba(40,44,38,0.62) 100%);
-    z-index:2;
-    pointer-events:none;
+    display:none;
 }
 
 /* ════════════════════════════════════════
