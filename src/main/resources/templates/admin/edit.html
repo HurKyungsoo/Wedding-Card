@@ -210,17 +210,19 @@
                 <div class="ed-row">
                     <span class="ed-label">사진 효과</span>
                     <div class="ed-ctrl" style="display:flex;gap:8px;">
-                        <select class="ed-select" id="colorEffectSelect" name="colorEffect" style="flex:1;">
-                            <option value="none">색감 보정 없음</option>
-                            <option value="warm">웜톤</option>
-                            <option value="cool">쿨톤</option>
-                            <option value="vintage">빈티지</option>
+                        <select class="ed-select" id="colorEffectSelect" name="colorEffect" style="flex:1;"
+                                th:with="cur=${wedding.colorEffect ?: 'none'}">
+                            <option value="none"    th:selected="${cur == 'none'}">색감 보정 없음</option>
+                            <option value="warm"    th:selected="${cur == 'warm'}">웜톤</option>
+                            <option value="cool"    th:selected="${cur == 'cool'}">쿨톤</option>
+                            <option value="vintage" th:selected="${cur == 'vintage'}">빈티지</option>
                         </select>
-                        <select class="ed-select" id="effectSelect" name="mainEffect" style="flex:1;">
-                            <option value="none">연출 효과 없음</option>
-                            <option value="fog">안개</option>
-                            <option value="wave">물결</option>
-                            <option value="paper">페이퍼</option>
+                        <select class="ed-select" id="effectSelect" name="mainEffect" style="flex:1;"
+                                th:with="cur=${wedding.mainEffect ?: 'none'}">
+                            <option value="none"  th:selected="${cur == 'none'}">연출 효과 없음</option>
+                            <option value="fog"   th:selected="${cur == 'fog'}">안개</option>
+                            <option value="wave"  th:selected="${cur == 'wave'}">물결</option>
+                            <option value="paper" th:selected="${cur == 'paper'}">페이퍼</option>
                         </select>
                     </div>
                 </div>
@@ -229,18 +231,20 @@
                 <div class="ed-row">
                     <span class="ed-label">글꼴 선택</span>
                     <div class="ed-ctrl" style="display:flex;gap:8px;">
-                        <select class="ed-select" id="fontSelect" name="mainFont" style="flex:2;">
-                            <option value="noto">기본 (Noto Serif KR)</option>
-                            <option value="playfair">Playfair Display ★ 추천</option>
-                            <option value="eb_garamond">EB Garamond (우아한 세리프)</option>
-                            <option value="cormorant">Cormorant Garamond (이탤릭)</option>
-                            <option value="dancing">Dancing Script (손글씨)</option>
-                            <option value="nanum">나눔명조</option>
+                        <select class="ed-select" id="fontSelect" name="mainFont" style="flex:2;"
+                                th:with="cur=${wedding.mainFont ?: 'noto'}">
+                            <option value="noto"        th:selected="${cur == 'noto'}">기본 (Noto Serif KR)</option>
+                            <option value="playfair"    th:selected="${cur == 'playfair'}">Playfair Display ★ 추천</option>
+                            <option value="eb_garamond" th:selected="${cur == 'eb_garamond'}">EB Garamond (우아한 세리프)</option>
+                            <option value="cormorant"   th:selected="${cur == 'cormorant'}">Cormorant Garamond (이탤릭)</option>
+                            <option value="dancing"     th:selected="${cur == 'dancing'}">Dancing Script (손글씨)</option>
+                            <option value="nanum"       th:selected="${cur == 'nanum'}">나눔명조</option>
                         </select>
-                        <select class="ed-select" id="fontSizeSelect" name="mainFontSize" style="flex:1;">
-                            <option value="sm">작게</option>
-                            <option value="md" selected>보통</option>
-                            <option value="lg">크게</option>
+                        <select class="ed-select" id="fontSizeSelect" name="mainFontSize" style="flex:1;"
+                                th:with="cur=${wedding.mainFontSize ?: 'md'}">
+                            <option value="sm" th:selected="${cur == 'sm'}">작게</option>
+                            <option value="md" th:selected="${cur == 'md'}" selected>보통</option>
+                            <option value="lg" th:selected="${cur == 'lg'}">크게</option>
                         </select>
                     </div>
                 </div>
@@ -249,11 +253,12 @@
                 <div class="ed-row">
                     <span class="ed-label">글꼴 색상</span>
                     <div class="ed-ctrl ed-color-row">
-                        <input type="text" class="ed-input ed-color-hex" id="fontColorHex" name="mainFontColor" value="#000000" maxlength="7">
+                        <!-- 저장된 색상이 없으면 빈 값 — JS가 테마 기본색을 채운다 -->
+                        <input type="text" class="ed-input ed-color-hex" id="fontColorHex" name="mainFontColor" th:value="${wedding.mainFontColor}" value="#000000" maxlength="7">
                         <button type="button" class="ed-color-reset" id="fontColorReset"><i class="ti ti-refresh"></i></button>
                         <!-- 테마별 추천 색상 (검정/흰색 포함, 동적 표시) -->
                         <span id="themeColorPresets" style="display:flex;gap:6px;"></span>
-                        <input type="color" class="ed-color-picker" id="fontColorPicker" value="#000000">
+                        <input type="color" class="ed-color-picker" id="fontColorPicker" th:value="${wedding.mainFontColor ?: '#000000'}" value="#000000">
                     </div>
                 </div>
                 <div class="ed-hint">

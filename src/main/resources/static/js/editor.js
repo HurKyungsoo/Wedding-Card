@@ -282,33 +282,42 @@ function pickFilter(el) {
    메인 화면 — 디자인/효과/글꼴/색상
 ────────────────────────────────────── */
 
-/* 디자인 템플릿 선택 */
-function pickDesign(el, val) {
+/* 테마별 디폴트 글자색 — THEME_COLORS 첫 번째 값과 일치 */
+var DESIGN_DEFAULT_COLORS = {
+    basic:          '#2c2822',
+    our_story:      '#000000',
+    our_story_pink: '#d9527a',
+    married:        '#ffffff',
+    forever:        '#2c2822'
+};
+
+/** 해당 테마의 기본 글자색을 색상 입력에 적용 */
+function applyDesignDefaultColor(design) {
+    var colorHex    = document.getElementById('fontColorHex');
+    var colorPicker = document.getElementById('fontColorPicker');
+    if (!colorHex || !colorPicker) return;
+    var defaultColor = DESIGN_DEFAULT_COLORS[design] || '#2c2822';
+    colorHex.value    = defaultColor;
+    colorPicker.value = defaultColor;
+    colorHex.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+/**
+ * 테마 선택.
+ * opts.preserveColor = true 이면 테마 기본색으로 덮어쓰지 않는다
+ * (페이지 로드 시 저장된 사용자 색상을 복원할 때 사용).
+ */
+function pickDesign(el, val, opts) {
     document.querySelectorAll('.ed-design-card').forEach(function(c){ c.classList.remove('active'); });
     el.classList.add('active');
     el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
     var input = document.getElementById('mainDesignVal');
     if (input) input.value = val;
 
-    /* 테마별 디폴트 글자색 자동 설정 (테마 전환 시마다 적용) */
-    var colorHex    = document.getElementById('fontColorHex');
-    var colorPicker = document.getElementById('fontColorPicker');
-    if (colorHex && colorPicker) {
-        /* 테마별 디폴트 색상 — THEME_COLORS 첫 번째 값과 일치 */
-        var designDefaultColors = {
-            basic:          '#2c2822',
-            our_story:      '#000000',
-            our_story_pink: '#d9527a',
-            married:        '#ffffff',
-            forever:        '#2c2822'
-        };
+    /* 테마를 실제로 "전환"할 때만 기본 글자색 자동 적용 */
+    if (!(opts && opts.preserveColor)) {
         var prevDesign = (input && input.dataset.prevDesign) || 'basic';
-        if (prevDesign !== val) {
-            var defaultColor = designDefaultColors[val] || '#2c2822';
-            colorHex.value    = defaultColor;
-            colorPicker.value = defaultColor;
-            colorHex.dispatchEvent(new Event('input', { bubbles: true }));
-        }
+        if (prevDesign !== val) applyDesignDefaultColor(val);
     }
     if (input) input.dataset.prevDesign = val;
 
@@ -1859,16 +1868,15 @@ window.addEventListener('load', function() {
         if (orderBrideBtn) pickTab(orderBrideBtn, 'orderTabs', 'orderVal');
     }
 
-    /* 저장된 메인 디자인 복원 */
-    if (WEDDING.mainDesign) {
-        var designEl = document.querySelector('.ed-design-card[data-design="'+WEDDING.mainDesign+'"]');
-        if (designEl) {
-            /* prevDesign을 non-married로 초기화해서 married 선택 시 색상 자동 전환 트리거 */
-            var mainDesignInput = document.getElementById('mainDesignVal');
-            if (mainDesignInput) mainDesignInput.dataset.prevDesign = 'basic';
-            pickDesign(designEl, WEDDING.mainDesign);
-        }
-    }
+    /* 저장된 메인 디자인 복원 — 저장된 글자색이 있으면 테마 기본색으로 덮어쓰지 않는다 */
+    var savedDesign = WEDDING.mainDesign || 'basic';
+    var savedColorEl = document.getElementById('fontColorHex');
+    var hasSavedColor = !!(savedColorEl && savedColorEl.value.trim());
+
+    var designEl = document.querySelector('.ed-design-card[data-design="'+savedDesign+'"]');
+    if (designEl) pickDesign(designEl, savedDesign, { preserveColor: hasSavedColor });
+    /* 아직 색상을 고른 적이 없으면 해당 테마의 기본색으로 시작 */
+    if (!hasSavedColor) applyDesignDefaultColor(savedDesign);
     if (WEDDING.photoFilter && WEDDING.photoFilter !== 'none') {
         var fEl = document.querySelector('#filterTabs [data-val="'+WEDDING.photoFilter+'"]');
         if (fEl) pickFilter(fEl);
