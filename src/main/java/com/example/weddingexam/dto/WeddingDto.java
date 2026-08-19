@@ -49,6 +49,7 @@ public class WeddingDto {
     private Boolean galleryScrollGuide;
 
     private String photoFilter, mainPhotoBase64;
+    private Double mainPhotoPosX, mainPhotoPosY;
     private String mainDesign, mainFont, mainFontSize, mainFontColor, colorEffect, mainEffect, bgm;
     private Boolean rsvpEnabled;
 
@@ -117,6 +118,17 @@ public class WeddingDto {
     public Boolean getGalleryScrollGuide() { return galleryScrollGuide; } public void setGalleryScrollGuide(Boolean v) { this.galleryScrollGuide = v; }
     public String getPhotoFilter() { return photoFilter; } public void setPhotoFilter(String v) { this.photoFilter = v; }
     public String getMainPhotoBase64() { return mainPhotoBase64; } public void setMainPhotoBase64(String v) { this.mainPhotoBase64 = v; }
+    public Double getMainPhotoPosX() { return mainPhotoPosX; } public void setMainPhotoPosX(Double v) { this.mainPhotoPosX = v; }
+    public Double getMainPhotoPosY() { return mainPhotoPosY; } public void setMainPhotoPosY(Double v) { this.mainPhotoPosY = v; }
+
+    /** 메인 사진 img 태그용 style 값 — 필터 + (드래그로 지정한) 초점 위치. 위치 미지정 시 테마 기본 CSS를 따름 */
+    public String getMainPhotoImgStyle() {
+        StringBuilder sb = new StringBuilder();
+        if (photoFilter != null && !photoFilter.equals("none")) sb.append("filter:").append(photoFilter).append(";");
+        if (mainPhotoPosX != null && mainPhotoPosY != null)
+            sb.append("object-position:").append(mainPhotoPosX).append("% ").append(mainPhotoPosY).append("% !important;");
+        return sb.toString();
+    }
     public String getMainDesign() { return mainDesign; } public void setMainDesign(String v) { this.mainDesign = v; }
     public String getMainFont() { return mainFont; } public void setMainFont(String v) { this.mainFont = v; }
 
@@ -129,7 +141,7 @@ public class WeddingDto {
         "nanum",       "'Nanum Myeongjo', serif"
     );
     /** 청첩장 전역 글꼴(mainFont) 선택값을 실제 CSS font-family 스택으로 변환 — 테마 고유 타이틀 서체는 이 값과 무관하게 고정 */
-    public String getMainFontCss() { return MAIN_FONT_CSS.getOrDefault(mainFont, MAIN_FONT_CSS.get("noto")); }
+    public String getMainFontCss() { return MAIN_FONT_CSS.getOrDefault(mainFont != null ? mainFont : "noto", MAIN_FONT_CSS.get("noto")); }
     public String getMainFontSize() { return mainFontSize; } public void setMainFontSize(String v) { this.mainFontSize = v; }
     public String getMainFontColor() { return mainFontColor; } public void setMainFontColor(String v) { this.mainFontColor = v; }
     public String getColorEffect() { return colorEffect; } public void setColorEffect(String v) { this.colorEffect = v; }
@@ -207,6 +219,8 @@ public class WeddingDto {
         public Builder mainEffect(String v) { d.mainEffect=v; return this; }
         public Builder bgm(String v) { d.bgm=v; return this; }
         public Builder mainPhotoBase64(String v) { d.mainPhotoBase64=v; return this; }
+        public Builder mainPhotoPosX(Double v) { d.mainPhotoPosX=v; return this; }
+        public Builder mainPhotoPosY(Double v) { d.mainPhotoPosY=v; return this; }
         public Builder rsvpEnabled(Boolean v) { d.rsvpEnabled=v; return this; }
         public WeddingDto build() { return d; }
     }

@@ -345,7 +345,12 @@ document.getElementById('mainPhotoFile').addEventListener('change', function() {
         var b64 = document.getElementById('mainPhotoBase64');
         if (b64) b64.value = dataUrl.split(',')[1];
         var thumb = document.getElementById('mainThumbImg');
-        if (thumb) thumb.src = dataUrl;
+        if (thumb) { thumb.src = dataUrl; thumb.style.objectPosition = ''; }
+        /* 새 사진이므로 이전 위치(초점) 조정값 초기화 */
+        var posXEl = document.getElementById('mainPhotoPosXInput');
+        var posYEl = document.getElementById('mainPhotoPosYInput');
+        if (posXEl) posXEl.value = '';
+        if (posYEl) posYEl.value = '';
         var hint = document.getElementById('mainUploadHint');
         if (hint) hint.style.display = 'none';
         var thumbWrap = document.getElementById('mainPhotoThumb');
@@ -373,8 +378,85 @@ document.getElementById('removeMainPhoto').addEventListener('click', function(e)
     var dcPh  = document.getElementById('dcPlaceholder');
     if (dcImg) dcImg.style.display = 'none';
     if (dcPh)  dcPh.style.display = '';
+    var posXEl = document.getElementById('mainPhotoPosXInput');
+    var posYEl = document.getElementById('mainPhotoPosYInput');
+    if (posXEl) posXEl.value = '';
+    if (posYEl) posYEl.value = '';
     scheduleLive(200);
 });
+
+/* ──────────────────────────────────────
+   메인 사진 위치(초점) 드래그 조정 — object-position을 드래그로 지정
+────────────────────────────────────── */
+(function() {
+    var thumbImg  = document.getElementById('mainThumbImg');
+    var posXInput = document.getElementById('mainPhotoPosXInput');
+    var posYInput = document.getElementById('mainPhotoPosYInput');
+    if (!thumbImg || !posXInput || !posYInput) return;
+
+    var dragging = false;
+    var wasDragged = false;
+    var startClientX, startClientY, startPosX, startPosY;
+
+    function currentPos() {
+        var x = parseFloat(posXInput.value);
+        var y = parseFloat(posYInput.value);
+        return { x: isNaN(x) ? 50 : x, y: isNaN(y) ? 50 : y };
+    }
+
+    function applyPos(x, y) {
+        x = Math.max(0, Math.min(100, x));
+        y = Math.max(0, Math.min(100, y));
+        thumbImg.style.objectPosition = x + '% ' + y + '%';
+        posXInput.value = x.toFixed(1);
+        posYInput.value = y.toFixed(1);
+    }
+
+    /* 저장된 위치가 있으면 썸네일에도 반영 */
+    if (posXInput.value !== '' && posYInput.value !== '') {
+        var initial = currentPos();
+        thumbImg.style.objectPosition = initial.x + '% ' + initial.y + '%';
+    }
+
+    thumbImg.style.cursor = 'move';
+    thumbImg.title = '드래그하여 사진 위치를 조정하세요';
+
+    thumbImg.addEventListener('pointerdown', function(e) {
+        dragging = true;
+        wasDragged = false;
+        startClientX = e.clientX; startClientY = e.clientY;
+        var p = currentPos();
+        startPosX = p.x; startPosY = p.y;
+        try { thumbImg.setPointerCapture(e.pointerId); } catch (err) {}
+        e.preventDefault();
+    });
+
+    thumbImg.addEventListener('pointermove', function(e) {
+        if (!dragging) return;
+        var dx = e.clientX - startClientX;
+        var dy = e.clientY - startClientY;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) wasDragged = true;
+        var rect = thumbImg.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        /* 커서를 따라 사진이 움직이는 것처럼 보이도록 초점은 반대 방향으로 이동 */
+        var newX = startPosX - (dx / rect.width) * 100;
+        var newY = startPosY - (dy / rect.height) * 100;
+        applyPos(newX, newY);
+    });
+
+    function endDrag() {
+        if (!dragging) return;
+        dragging = false;
+        if (wasDragged) scheduleLive(150);
+    }
+    thumbImg.addEventListener('pointerup', endDrag);
+    thumbImg.addEventListener('pointercancel', endDrag);
+
+    /* 드래그 직후 발생하는 click이 업로드 창을 다시 여는 것을 방지 */
+    thumbImg.addEventListener('click', function(e) {
+        if (wasDragged) { e.stopPropagation(); wasDragged = false; }
+    });
+})();
 
 /* ──────────────────────────────────────
    갤러리 업로드
@@ -607,17 +689,19 @@ function sendLive() {
     /* base64 사진은 payload 크기 문제로 별도 메시지로 전송 */
     var photoB64 = data.mainPhotoBase64 || '';
     var photoFilter = data.photoFilter || 'none';
+    var photoPosX = data.mainPhotoPosX !== undefined && data.mainPhotoPosX !== '' ? parseFloat(data.mainPhotoPosX) : null;
+    var photoPosY = data.mainPhotoPosY !== undefined && data.mainPhotoPosY !== '' ? parseFloat(data.mainPhotoPosY) : null;
     delete data.mainPhotoBase64;  /* 메인 payload에서 제거 */
 
     try {
         /* 1) 일반 데이터 먼저 전송 */
         liveFrame.contentWindow.postMessage({type:'WEDDING_LIVE_UPDATE', payload:data}, window.location.origin);
-        /* 2) 사진 + 필터는 별도 메시지로 전송 (약간 딜레이로 순서 보장) */
+        /* 2) 사진 + 필터 + 위치는 별도 메시지로 전송 (약간 딜레이로 순서 보장) */
         setTimeout(function() {
             try {
                 liveFrame.contentWindow.postMessage({
                     type: 'WEDDING_PHOTO_UPDATE',
-                    payload: { mainPhotoBase64: photoB64, photoFilter: photoFilter }
+                    payload: { mainPhotoBase64: photoB64, photoFilter: photoFilter, mainPhotoPosX: photoPosX, mainPhotoPosY: photoPosY }
                 }, window.location.origin);
             } catch(e2) {}
         }, 50);
@@ -815,6 +899,8 @@ document.getElementById('fullPrevBtn').addEventListener('click', function() {
             var data = collectData();
             var photoB64 = data.mainPhotoBase64 || '';
             var photoFilter = data.photoFilter || 'none';
+            var photoPosX = data.mainPhotoPosX !== undefined && data.mainPhotoPosX !== '' ? parseFloat(data.mainPhotoPosX) : null;
+            var photoPosY = data.mainPhotoPosY !== undefined && data.mainPhotoPosY !== '' ? parseFloat(data.mainPhotoPosY) : null;
             delete data.mainPhotoBase64;
             try {
                 frame.contentWindow.postMessage({type:'WEDDING_LIVE_UPDATE', payload:data}, window.location.origin);
@@ -822,7 +908,7 @@ document.getElementById('fullPrevBtn').addEventListener('click', function() {
                     try {
                         frame.contentWindow.postMessage({
                             type:'WEDDING_PHOTO_UPDATE',
-                            payload:{mainPhotoBase64:photoB64, photoFilter:photoFilter}
+                            payload:{mainPhotoBase64:photoB64, photoFilter:photoFilter, mainPhotoPosX:photoPosX, mainPhotoPosY:photoPosY}
                         }, window.location.origin);
                     } catch(e2) {}
                 }, 60);
@@ -1648,12 +1734,15 @@ window.addEventListener('load', function() {
         if (hint) hint.style.display = 'none';
         var thumbWrap = document.getElementById('mainPhotoThumb');
         if (thumbWrap) thumbWrap.style.display = 'block';
+        /* /api/admin/photo는 청첩장별로 스코프되지 않으므로 이미 폼에 있는 base64 값을 사용 */
+        var b64Input = document.getElementById('mainPhotoBase64');
+        var photoDataUrl = (b64Input && b64Input.value) ? 'data:image/jpeg;base64,' + b64Input.value : '/api/admin/photo';
         var thumb = document.getElementById('mainThumbImg');
-        if (thumb) thumb.src = '/api/admin/photo';
+        if (thumb) thumb.src = photoDataUrl;
         var dcPh  = document.getElementById('dcPlaceholder');
         var dcImg = document.getElementById('dcImg');
         if (dcPh)  dcPh.style.display = 'none';
-        if (dcImg) { dcImg.style.display = 'block'; dcImg.src = '/api/admin/photo'; }
+        if (dcImg) { dcImg.style.display = 'block'; dcImg.src = photoDataUrl; }
     }
 
     /* 토글 상태에 따라 섹션 제목 색상 + 즉시 반영 */

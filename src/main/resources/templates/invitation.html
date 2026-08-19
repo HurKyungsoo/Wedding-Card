@@ -81,7 +81,7 @@
                  th:src="|data:image/jpeg;base64,${wedding.mainPhotoBase64}|"
                  alt="메인 사진"
                  class="hero-fullphoto-img"
-                 th:style="${wedding.photoFilter != null and wedding.photoFilter != 'none'} ? 'filter:' + ${wedding.photoFilter} : ''">
+                 th:style="${wedding.mainPhotoImgStyle}">
             <div class="hero-fullphoto-placeholder"
                  th:if="${wedding.mainPhotoBase64 == null or #strings.isEmpty(wedding.mainPhotoBase64)}">
                 <i class="ti ti-camera"></i>
@@ -131,7 +131,7 @@
                      th:src="|data:image/jpeg;base64,${wedding.mainPhotoBase64}|"
                      class="forever-arch-img"
                      alt="메인 사진"
-                     th:style="${wedding.photoFilter != null and wedding.photoFilter != 'none'} ? 'filter:' + ${wedding.photoFilter} : ''">
+                     th:style="${wedding.mainPhotoImgStyle}">
                 <div class="forever-arch-placeholder"
                      th:if="${wedding.mainPhotoBase64 == null or #strings.isEmpty(wedding.mainPhotoBase64)}">
                     <span>📷</span>
@@ -1791,6 +1791,20 @@
         if (d.photoFilter !== undefined) {
             window._livePhotoFilter = d.photoFilter;
             applyPhotoFilter();
+        }
+
+        /* 사진 위치(초점) 실시간 반영 — 편집기에서 드래그하는 동안 미리보기에 표시 */
+        if (d.mainPhotoPosX !== undefined && d.mainPhotoPosY !== undefined) {
+            var posImg  = document.querySelector('.hero-fullphoto-img');
+            var posArch = document.querySelector('.forever-arch-img');
+            [posImg, posArch].forEach(function(el) {
+                if (!el) return;
+                if (d.mainPhotoPosX != null && d.mainPhotoPosY != null) {
+                    el.style.setProperty('object-position', d.mainPhotoPosX + '% ' + d.mainPhotoPosY + '%', 'important');
+                } else {
+                    el.style.removeProperty('object-position');
+                }
+            });
         }
     });
 
