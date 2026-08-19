@@ -222,6 +222,16 @@
                 </div>
             </div>
         </div>
+        <div class="cal-add-row"
+             th:if="${wedding.weddingDate != null and !#strings.isEmpty(wedding.weddingDate) and wedding.weddingTime != null and !#strings.isEmpty(wedding.weddingTime)}">
+            <a class="cal-add-btn" th:href="@{'/api/wedding/' + ${wedding.id} + '/calendar.ics'}">
+                <i class="ti ti-calendar-plus"></i> 캘린더에 담기
+            </a>
+            <a class="cal-add-btn" th:if="${!#strings.isEmpty(wedding.googleCalendarUrl)}"
+               th:href="${wedding.googleCalendarUrl}" target="_blank" rel="noopener">
+                <i class="ti ti-brand-google"></i> Google 캘린더
+            </a>
+        </div>
     </div>
 
     <!-- ④ 달력 -->

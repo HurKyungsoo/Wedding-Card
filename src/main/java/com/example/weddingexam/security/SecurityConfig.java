@@ -36,6 +36,7 @@ public class SecurityConfig {
                     "/w/**", "/wedding/**",
                     "/css/**", "/js/**", "/images/**", "/fonts/**",
                     "/api/map/**",
+                    "/api/wedding/*/calendar.ics",
                     "/h2-console/**",
                     "/error"
                 ).permitAll()

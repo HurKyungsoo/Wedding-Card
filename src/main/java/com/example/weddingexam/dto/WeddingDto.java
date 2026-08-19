@@ -1,7 +1,13 @@
 package com.example.weddingexam.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 /** 임시저장 스냅샷을 JSON으로 저장/복원하므로, 파생 getter(mainFontCss 등)는 역직렬화 시 무시 */
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -128,6 +134,26 @@ public class WeddingDto {
         if (mainPhotoPosX != null && mainPhotoPosY != null)
             sb.append("object-position:").append(mainPhotoPosX).append("% ").append(mainPhotoPosY).append("% !important;");
         return sb.toString();
+    }
+
+    /** "Google 캘린더에 추가" 링크 — 날짜/시간이 없으면 빈 문자열 */
+    public String getGoogleCalendarUrl() {
+        if (weddingDate == null || weddingDate.isBlank() || weddingTime == null || weddingTime.isBlank()) return "";
+        try {
+            LocalDateTime startKst = LocalDateTime.parse(weddingDate + "T" + weddingTime);
+            ZonedDateTime startUtc = startKst.atZone(ZoneId.of("Asia/Seoul")).withZoneSameInstant(ZoneOffset.UTC);
+            ZonedDateTime endUtc = startUtc.plusHours(1);
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'");
+            String text = (groomName != null ? groomName : "신랑") + " ♥ " + (brideName != null ? brideName : "신부") + " 결혼식";
+            String location = (weddingAddress != null && !weddingAddress.isBlank()) ? weddingAddress : (weddingPlace != null ? weddingPlace : "");
+            return "https://calendar.google.com/calendar/render?action=TEMPLATE"
+                + "&text=" + URLEncoder.encode(text, StandardCharsets.UTF_8)
+                + "&dates=" + startUtc.format(fmt) + "/" + endUtc.format(fmt)
+                + "&details=" + URLEncoder.encode(weddingPlace != null ? weddingPlace : "", StandardCharsets.UTF_8)
+                + "&location=" + URLEncoder.encode(location, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            return "";
+        }
     }
     public String getMainDesign() { return mainDesign; } public void setMainDesign(String v) { this.mainDesign = v; }
     public String getMainFont() { return mainFont; } public void setMainFont(String v) { this.mainFont = v; }

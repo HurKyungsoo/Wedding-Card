@@ -19,6 +19,10 @@ import org.springframework.web.util.HtmlUtils;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -155,6 +159,78 @@ public class WeddingController {
         model.addAttribute("accounts", accounts);
         model.addAttribute("kakaoAppKey", kakaoAppKey);
         return "invitation";
+    }
+
+    /* ── 캘린더 담기 (.ics 다운로드) — 하객이 예식 일정을 본인 캘린더에 추가 ── */
+    @GetMapping("/api/wedding/{id}/calendar.ics")
+    public ResponseEntity<byte[]> calendarIcs(@PathVariable Long id) {
+        WeddingDto dto;
+        try {
+            dto = weddingService.findById(id);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+        String ics = buildIcs(dto);
+        if (ics == null) return ResponseEntity.badRequest().build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("text/calendar;charset=UTF-8"));
+        headers.setContentDisposition(ContentDisposition.attachment().filename("wedding.ics", StandardCharsets.UTF_8).build());
+        return new ResponseEntity<>(ics.getBytes(StandardCharsets.UTF_8), headers, HttpStatus.OK);
+    }
+
+    private String buildIcs(WeddingDto dto) {
+        if (dto.getWeddingDate() == null || dto.getWeddingDate().isBlank()
+                || dto.getWeddingTime() == null || dto.getWeddingTime().isBlank()) {
+            return null;
+        }
+        LocalDateTime startKst;
+        try {
+            startKst = LocalDateTime.parse(dto.getWeddingDate() + "T" + dto.getWeddingTime());
+        } catch (Exception e) {
+            return null;
+        }
+        ZonedDateTime startUtc = startKst.atZone(ZoneId.of("Asia/Seoul")).withZoneSameInstant(ZoneOffset.UTC);
+        ZonedDateTime endUtc = startUtc.plusHours(1);
+        DateTimeFormatter icsFmt = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'");
+
+        String summary = icsEscape(
+            (dto.getGroomName() != null ? dto.getGroomName() : "신랑") + " ♥ " +
+            (dto.getBrideName() != null ? dto.getBrideName() : "신부") + " 결혼식");
+        String location = icsEscape(joinNonBlank(", ", dto.getWeddingPlace(), dto.getMapAddressRoad()));
+        String description = icsEscape(joinNonBlank(" ", dto.getWeddingPlace(), dto.getMapAddress()));
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("BEGIN:VCALENDAR\r\n");
+        sb.append("VERSION:2.0\r\n");
+        sb.append("PRODID:-//WeddingCard//KO\r\n");
+        sb.append("CALSCALE:GREGORIAN\r\n");
+        sb.append("BEGIN:VEVENT\r\n");
+        sb.append("UID:wedding-").append(dto.getId()).append("@weddingcard\r\n");
+        sb.append("DTSTAMP:").append(ZonedDateTime.now(ZoneOffset.UTC).format(icsFmt)).append("\r\n");
+        sb.append("DTSTART:").append(startUtc.format(icsFmt)).append("\r\n");
+        sb.append("DTEND:").append(endUtc.format(icsFmt)).append("\r\n");
+        sb.append("SUMMARY:").append(summary).append("\r\n");
+        if (!location.isEmpty()) sb.append("LOCATION:").append(location).append("\r\n");
+        if (!description.isEmpty()) sb.append("DESCRIPTION:").append(description).append("\r\n");
+        sb.append("END:VEVENT\r\n");
+        sb.append("END:VCALENDAR\r\n");
+        return sb.toString();
+    }
+
+    private static String icsEscape(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,").replace("\n", "\\n");
+    }
+
+    private static String joinNonBlank(String sep, String... parts) {
+        StringBuilder sb = new StringBuilder();
+        for (String p : parts) {
+            if (p == null || p.isBlank()) continue;
+            if (sb.length() > 0) sb.append(sep);
+            sb.append(p);
+        }
+        return sb.toString();
     }
 
     /* ── 카카오맵 Static Map 프록시 ── */
