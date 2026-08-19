@@ -60,6 +60,10 @@ public class WeddingEntity {
     private String mainDesign, mainFont, mainFontSize, mainFontColor, colorEffect, mainEffect, bgm;
     private Boolean rsvpEnabled;
 
+    /** 게시되지 않은 편집 중 내용 — 게스트 화면에는 반영되지 않음 */
+    @Column(columnDefinition = "TEXT") private String draftData;
+    private LocalDateTime draftSavedAt;
+
     @PrePersist
     public void prePersist() {
         if (createdAt == null) createdAt = LocalDateTime.now();
@@ -145,6 +149,8 @@ public class WeddingEntity {
     public String getBgm() { return bgm; } public void setBgm(String v) { this.bgm=v; }
     public String getDisplayOrder() { return displayOrder; } public void setDisplayOrder(String v) { this.displayOrder=v; }
     public Boolean getRsvpEnabled() { return rsvpEnabled; } public void setRsvpEnabled(Boolean v) { this.rsvpEnabled=v; }
+    public String getDraftData() { return draftData; } public void setDraftData(String v) { this.draftData=v; }
+    public LocalDateTime getDraftSavedAt() { return draftSavedAt; } public void setDraftSavedAt(LocalDateTime v) { this.draftSavedAt=v; }
 
     public WeddingDto toDto() {
         return WeddingDto.builder()

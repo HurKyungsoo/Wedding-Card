@@ -18,6 +18,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -81,21 +82,25 @@ public class WeddingController {
         Long userId = principal.getUserId();
 
         List<WeddingDto> weddings = weddingService.findByUserId(userId);
-        WeddingDto dto;
+        WeddingDto published;
         if (weddings.isEmpty()) {
             // 청첩장이 없으면 자동 생성
             WeddingDto newDto = weddingService.getDefaultDto();
             newDto.setUserId(userId);
-            dto = weddingService.save(newDto);
+            published = weddingService.save(newDto);
         } else {
-            dto = weddings.get(0);
+            published = weddings.get(0);
         }
 
-        session.setAttribute("myWeddingId", dto.getId());
-        model.addAttribute("wedding", dto);
+        session.setAttribute("myWeddingId", published.getId());
+
+        WeddingService.EditableWedding editable = weddingService.getEditable(published.getId());
+        model.addAttribute("wedding", editable.dto());
+        model.addAttribute("hasDraft", editable.hasDraft());
+        model.addAttribute("draftSavedAt", editable.draftSavedAt() != null ? editable.draftSavedAt().toString() : null);
         model.addAttribute("currentUser", principal.getEntity());
 
-        List<AccountDto> accounts = accountService.findByWeddingId(dto.getId());
+        List<AccountDto> accounts = accountService.findByWeddingId(published.getId());
         model.addAttribute("accounts", accounts);
         model.addAttribute("kakaoAppKey", kakaoAppKey);
         return "admin/edit";
@@ -118,7 +123,17 @@ public class WeddingController {
     /* ── 기존 단일 청첩장 어드민 (하위 호환) ── */
     @GetMapping("/admin/edit")
     public String editForm(Model model) {
-        model.addAttribute("wedding", weddingService.findFirst());
+        WeddingDto published = weddingService.findFirst();
+        if (published.getId() != null) {
+            WeddingService.EditableWedding editable = weddingService.getEditable(published.getId());
+            model.addAttribute("wedding", editable.dto());
+            model.addAttribute("hasDraft", editable.hasDraft());
+            model.addAttribute("draftSavedAt", editable.draftSavedAt() != null ? editable.draftSavedAt().toString() : null);
+        } else {
+            model.addAttribute("wedding", published);
+            model.addAttribute("hasDraft", false);
+            model.addAttribute("draftSavedAt", null);
+        }
         model.addAttribute("accounts", accountService.findAll());
         model.addAttribute("kakaoAppKey", kakaoAppKey);
         return "admin/edit";
@@ -210,7 +225,7 @@ public class WeddingController {
         }
     }
 
-    /* ── AJAX 자동저장 ── */
+    /* ── AJAX 임시저장 — 게스트 화면(게시본)에는 반영되지 않음 ── */
     @PostMapping("/api/admin/autosave")
     @ResponseBody
     public ResponseEntity<Map<String,Object>> autoSave(
@@ -218,34 +233,38 @@ public class WeddingController {
             @AuthenticationPrincipal CustomOAuth2User principal,
             HttpSession session) {
         try {
-            if (dto.getMapNaviKakao() == null) dto.setMapNaviKakao(false);
-            if (dto.getMapNaviTmap()  == null) dto.setMapNaviTmap(false);
-            if (dto.getMapNaviNaver() == null) dto.setMapNaviNaver(false);
-            if (dto.getAccountVisible()  == null) dto.setAccountVisible(false);
-            if (dto.getGalleryVisible()  == null) dto.setGalleryVisible(false);
-            if (dto.getMapVisible()      == null) dto.setMapVisible(false);
-            if (dto.getGreetingVisible() == null) dto.setGreetingVisible(false);
-            if (dto.getHostsVisible()    == null) dto.setHostsVisible(false);
-            if (dto.getCalendarVisible() == null) dto.setCalendarVisible(false);
-            if (dto.getDdayVisible()     == null) dto.setDdayVisible(false);
-            if (dto.getDisplayOrder()    == null) dto.setDisplayOrder("groom");
-            if (dto.getContactPopupEnabled() == null) dto.setContactPopupEnabled(true);
-
-            // 인증된 사용자의 청첩장 ID로 저장
-            Long weddingId = dto.getId();
-            if (weddingId == null && principal != null) {
-                List<WeddingDto> weddings = weddingService.findByUserId(principal.getUserId());
-                if (!weddings.isEmpty()) weddingId = weddings.get(0).getId();
-            }
-            if (weddingId == null) {
-                Long sessionId = (Long) session.getAttribute("myWeddingId");
-                if (sessionId != null) weddingId = sessionId;
-            }
+            normalizeToggleDefaults(dto);
+            Long weddingId = resolveWeddingId(dto, principal, session);
 
             if (weddingId != null) {
                 dto.setId(weddingId);
                 if (principal != null) dto.setUserId(principal.getUserId());
-                weddingService.update(weddingId, dto);
+                weddingService.saveDraft(weddingId, dto);
+                return ResponseEntity.ok(Map.of("success", true, "draftSavedAt", LocalDateTime.now().toString()));
+            } else {
+                weddingService.save(dto);
+                return ResponseEntity.ok(Map.of("success", true));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.ok(Map.of("success", false, "error", e.getMessage()));
+        }
+    }
+
+    /* ── AJAX 게시 — 임시저장된 내용을 게스트 화면에 실제로 반영 ── */
+    @PostMapping("/api/admin/publish")
+    @ResponseBody
+    public ResponseEntity<Map<String,Object>> publish(
+            @RequestBody WeddingDto dto,
+            @AuthenticationPrincipal CustomOAuth2User principal,
+            HttpSession session) {
+        try {
+            normalizeToggleDefaults(dto);
+            Long weddingId = resolveWeddingId(dto, principal, session);
+
+            if (weddingId != null) {
+                dto.setId(weddingId);
+                if (principal != null) dto.setUserId(principal.getUserId());
+                weddingService.publish(weddingId, dto);
             } else {
                 weddingService.save(dto);
             }
@@ -253,6 +272,39 @@ public class WeddingController {
         } catch (Exception e) {
             return ResponseEntity.ok(Map.of("success", false, "error", e.getMessage()));
         }
+    }
+
+    /** 폼에서 체크박스가 빠져 null로 들어오는 토글 필드의 기본값 보정 */
+    private void normalizeToggleDefaults(WeddingDto dto) {
+        if (dto.getMapNaviKakao() == null) dto.setMapNaviKakao(false);
+        if (dto.getMapNaviTmap()  == null) dto.setMapNaviTmap(false);
+        if (dto.getMapNaviNaver() == null) dto.setMapNaviNaver(false);
+        if (dto.getAccountVisible()  == null) dto.setAccountVisible(false);
+        if (dto.getGalleryVisible()  == null) dto.setGalleryVisible(false);
+        if (dto.getMapVisible()      == null) dto.setMapVisible(false);
+        if (dto.getGreetingVisible() == null) dto.setGreetingVisible(false);
+        if (dto.getHostsVisible()    == null) dto.setHostsVisible(false);
+        if (dto.getCalendarVisible() == null) dto.setCalendarVisible(false);
+        if (dto.getDdayVisible()     == null) dto.setDdayVisible(false);
+        if (dto.getDisplayOrder()    == null) dto.setDisplayOrder("groom");
+        if (dto.getContactPopupEnabled() == null) dto.setContactPopupEnabled(true);
+    }
+
+    /**
+     * 현재 편집 중인 청첩장 ID를 확인 — 로그인한 사용자의 소유 청첩장을 최우선으로 사용해
+     * 요청 본문의 id를 신뢰해 다른 사용자의 청첩장을 덮어쓰는 것을 방지한다.
+     */
+    private Long resolveWeddingId(WeddingDto dto, CustomOAuth2User principal, HttpSession session) {
+        if (principal != null) {
+            List<WeddingDto> weddings = weddingService.findByUserId(principal.getUserId());
+            if (!weddings.isEmpty()) return weddings.get(0).getId();
+        }
+        Long weddingId = dto.getId();
+        if (weddingId == null) {
+            Long sessionId = (Long) session.getAttribute("myWeddingId");
+            if (sessionId != null) weddingId = sessionId;
+        }
+        return weddingId;
     }
 
     /* ── REST API (하위 호환) ── */

@@ -2,8 +2,11 @@ package com.example.weddingexam.service;
 
 import com.example.weddingexam.dto.WeddingDto;
 import com.example.weddingexam.dto.WeddingEntity;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -11,7 +14,12 @@ import java.util.stream.Collectors;
 @Service
 public class WeddingService {
     private final WeddingRepository repo;
-    public WeddingService(WeddingRepository repo) { this.repo = repo; }
+    private final ObjectMapper objectMapper;
+
+    public WeddingService(WeddingRepository repo, ObjectMapper objectMapper) {
+        this.repo = repo;
+        this.objectMapper = objectMapper;
+    }
 
     @Transactional(readOnly = true)
     public WeddingDto findById(Long id) {
@@ -67,6 +75,58 @@ public class WeddingService {
         if (dto.getUserId() == null) dto.setUserId(existing.getUserId());
         return repo.save(WeddingEntity.fromDto(dto)).toDto();
     }
+
+    /** 편집기에 보여줄 내용 — 임시저장본이 있으면 그것을, 없으면 게시본을 반환 */
+    @Transactional(readOnly = true)
+    public EditableWedding getEditable(Long id) {
+        WeddingEntity entity = repo.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("없음 id=" + id));
+        WeddingDto published = entity.toDto();
+        if (entity.getDraftData() == null || entity.getDraftData().isBlank())
+            return new EditableWedding(published, false, null);
+        try {
+            WeddingDto draft = objectMapper.readValue(entity.getDraftData(), WeddingDto.class);
+            // 소유권/메타 필드는 항상 게시본 기준으로 고정 (임시저장 스냅샷이 덮어쓰지 못하게)
+            draft.setId(published.getId());
+            draft.setSlug(published.getSlug());
+            draft.setCreatedAt(published.getCreatedAt());
+            draft.setViewCount(published.getViewCount());
+            draft.setUserId(published.getUserId());
+            return new EditableWedding(draft, true, entity.getDraftSavedAt());
+        } catch (Exception e) {
+            return new EditableWedding(published, false, null);
+        }
+    }
+
+    /** 편집 중인 내용을 임시저장 — 게스트 화면(게시본)에는 영향 없음 */
+    @Transactional
+    public void saveDraft(Long id, WeddingDto dto) {
+        WeddingEntity existing = repo.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("없음 id=" + id));
+        dto.setId(id);
+        try {
+            existing.setDraftData(objectMapper.writeValueAsString(dto));
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("임시저장 데이터 직렬화 실패", e);
+        }
+        existing.setDraftSavedAt(LocalDateTime.now());
+        repo.save(existing);
+    }
+
+    /** 편집 중인 내용을 게스트 화면에 실제로 반영하고 임시저장본은 비움 */
+    @Transactional
+    public WeddingDto publish(Long id, WeddingDto dto) {
+        WeddingDto updated = update(id, dto);
+        WeddingEntity entity = repo.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("없음 id=" + id));
+        entity.setDraftData(null);
+        entity.setDraftSavedAt(null);
+        repo.save(entity);
+        return updated;
+    }
+
+    /** 편집기에서 사용할 청첩장 내용과 임시저장 상태 */
+    public record EditableWedding(WeddingDto dto, boolean hasDraft, LocalDateTime draftSavedAt) {}
 
     @Transactional
     public void delete(Long id) { repo.deleteById(id); }

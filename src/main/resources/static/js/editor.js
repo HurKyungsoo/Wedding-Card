@@ -15,6 +15,42 @@ var BANKS = ['은행 선택','국민은행','신한은행','우리은행','하�
              '씨티은행','대구은행','부산은행','광주은행','전북은행','경남은행','제주은행'];
 
 /* ──────────────────────────────────────
+   임시저장/게시 상태 표시
+   — "게시하기"를 눌러야만 게스트 화면에 반영됨
+────────────────────────────────────── */
+var lastDraftSavedAt = (WEDDING.hasDraft && WEDDING.draftSavedAt) ? new Date(WEDDING.draftSavedAt) : null;
+
+function relativeTimeFrom(date) {
+    var diffSec = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
+    if (diffSec < 60) return '방금 전';
+    var diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return diffMin + '분 전';
+    var diffHour = Math.floor(diffMin / 60);
+    return diffHour + '시간 전';
+}
+
+function renderDraftStatus() {
+    var label = document.getElementById('draftStatusLabel');
+    if (!label) return;
+    label.textContent = lastDraftSavedAt
+        ? '임시저장됨 · ' + relativeTimeFrom(lastDraftSavedAt)
+        : '게시됨';
+}
+
+function markDraftSaved() {
+    lastDraftSavedAt = new Date();
+    renderDraftStatus();
+}
+
+function markPublished() {
+    lastDraftSavedAt = null;
+    renderDraftStatus();
+}
+
+renderDraftStatus();
+setInterval(renderDraftStatus, 30000);
+
+/* ──────────────────────────────────────
    섹션 접기/펼치기
 ────────────────────────────────────── */
 document.querySelectorAll('.ed-sec-hd').forEach(function(hd) {
@@ -597,17 +633,23 @@ function scheduleLive(ms) {
 }
 
 function autoSave() {
-    fetch('/api/admin/autosave', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(collectData())}).catch(function(){});
+    fetch('/api/admin/autosave', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(collectData())})
+        .then(function(r){ return r.json(); })
+        .then(function(res){ if (res && res.success) markDraftSaved(); })
+        .catch(function(){});
 }
 
-/* 백그라운드 자동저장 — iframe 새로고침 없이 조용히 저장만 */
+/* 백그라운드 자동저장 — iframe 새로고침 없이 조용히 임시저장만 (게스트 화면에는 반영되지 않음) */
 function autoSaveAndRefresh() {
     var data = collectData();
     fetch('/api/admin/autosave', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify(data)
-    }).catch(function(){});
+    })
+        .then(function(r){ return r.json(); })
+        .then(function(res){ if (res && res.success) markDraftSaved(); })
+        .catch(function(){});
     /* iframe 리로드 제거 — postMessage로 미리보기는 이미 갱신됨 (깜빡임 방지) */
 }
 
@@ -667,17 +709,17 @@ document.getElementById('editForm').addEventListener('change', function() { sche
 });
 
 /* ──────────────────────────────────────
-   저장 버튼 → 즉시 저장 + 미리보기 반영
+   게시 버튼 → 임시저장 내용을 게스트 화면에 실제로 반영
 ────────────────────────────────────── */
 document.getElementById('topSaveBtn').addEventListener('click', function() {
     var btn = this;
     btn.disabled = true;
-    btn.textContent = '저장 중...';
+    btn.textContent = '게시 중...';
 
     saveAllAccounts();
     var data = collectData();
 
-    fetch('/api/admin/autosave', {
+    fetch('/api/admin/publish', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify(data)
@@ -685,33 +727,34 @@ document.getElementById('topSaveBtn').addEventListener('click', function() {
     .then(function(r){ return r.json(); })
     .then(function(res) {
         btn.disabled = false;
-        btn.textContent = '저장하기';
+        btn.textContent = '게시하기';
         if (res.success) {
-            showEditorToast('✓ 저장되었습니다');
+            showEditorToast('✓ 게시되었습니다');
+            markPublished();
             sendLive();
         } else {
-            showEditorToast('저장 실패: ' + (res.error || ''), 'error');
+            showEditorToast('게시 실패: ' + (res.error || ''), 'error');
         }
     })
     .catch(function() {
         btn.disabled = false;
-        btn.textContent = '저장하기';
-        showEditorToast('저장 실패. 다시 시도해 주세요.', 'error');
+        btn.textContent = '게시하기';
+        showEditorToast('게시 실패. 다시 시도해 주세요.', 'error');
     });
 });
 
-/* ── 하단 저장하기 — 저장 후 새 창으로 청첩장 열기 ── */
+/* ── 하단 게시하기 — 게시 후 새 창으로 청첩장 열기 ── */
 var bottomSaveBtn = document.getElementById('bottomSaveBtn');
 if (bottomSaveBtn) {
     bottomSaveBtn.addEventListener('click', function() {
         var btn = this;
         btn.disabled = true;
-        btn.innerHTML = '<i class="ti ti-loader-2" style="font-size:14px;animation:spin 1s linear infinite;"></i> 저장 중...';
+        btn.innerHTML = '<i class="ti ti-loader-2" style="font-size:14px;animation:spin 1s linear infinite;"></i> 게시 중...';
 
         saveAllAccounts();
         var data = collectData();
 
-        fetch('/api/admin/autosave', {
+        fetch('/api/admin/publish', {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify(data)
@@ -719,22 +762,23 @@ if (bottomSaveBtn) {
         .then(function(r){ return r.json(); })
         .then(function(res) {
             btn.disabled = false;
-            btn.innerHTML = '<i class="ti ti-external-link" style="font-size:14px;"></i> 저장하기';
+            btn.innerHTML = '<i class="ti ti-external-link" style="font-size:14px;"></i> 게시하기';
             if (res.success) {
-                showEditorToast('✓ 저장 완료! 청첩장을 엽니다.');
+                markPublished();
+                showEditorToast('✓ 게시 완료! 청첩장을 엽니다.');
                 /* 저장 완료 후 새 창으로 청첩장 열기 */
                 setTimeout(function() {
                     var viewLink = document.getElementById('viewInviteLink');
                     window.open(viewLink ? viewLink.href : '/', '_blank');
                 }, 400);
             } else {
-                showEditorToast('저장 실패: ' + (res.error || ''), 'error');
+                showEditorToast('게시 실패: ' + (res.error || ''), 'error');
             }
         })
         .catch(function() {
             btn.disabled = false;
-            btn.innerHTML = '<i class="ti ti-external-link" style="font-size:14px;"></i> 저장하기';
-            showEditorToast('저장 실패. 다시 시도해 주세요.', 'error');
+            btn.innerHTML = '<i class="ti ti-external-link" style="font-size:14px;"></i> 게시하기';
+            showEditorToast('게시 실패. 다시 시도해 주세요.', 'error');
         });
     });
 }

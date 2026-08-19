@@ -1,7 +1,10 @@
 package com.example.weddingexam.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 
+/** 임시저장 스냅샷을 JSON으로 저장/복원하므로, 파생 getter(mainFontCss 등)는 역직렬화 시 무시 */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WeddingDto {
 
     private Long id;

@@ -1,6 +1,7 @@
 package com.example.weddingexam.service;
 
 import com.example.weddingexam.dto.WeddingDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ class WeddingServiceTest {
 
     @BeforeEach
     void setUp() {
-        weddingService = new WeddingService(weddingRepository);
+        weddingService = new WeddingService(weddingRepository, new ObjectMapper());
     }
 
     @Test
