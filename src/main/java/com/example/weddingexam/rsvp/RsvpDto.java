@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class RsvpDto {
 
     private Long id;
+    private Long weddingId;
     private String name;
     private String phone;
     private Boolean attendance;
@@ -16,6 +17,8 @@ public class RsvpDto {
 
     public Long getId() { return id; }
     public void setId(Long v) { this.id = v; }
+    public Long getWeddingId() { return weddingId; }
+    public void setWeddingId(Long v) { this.weddingId = v; }
     public String getName() { return name; }
     public void setName(String v) { this.name = v; }
     public String getPhone() { return phone; }
@@ -32,6 +35,7 @@ public class RsvpDto {
     public static RsvpDto from(RsvpEntity e) {
         RsvpDto dto = new RsvpDto();
         dto.setId(e.getId());
+        dto.setWeddingId(e.getWeddingId());
         dto.setName(e.getName());
         dto.setPhone(e.getPhone());
         dto.setAttendance(e.getAttendance());

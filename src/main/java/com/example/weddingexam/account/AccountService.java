@@ -21,12 +21,6 @@ public class AccountService {
     }
 
     @Transactional(readOnly = true)
-    public List<AccountDto> findBySide(String side) {
-        return accountRepository.findBySideOrderBySortOrderAsc(side)
-                .stream().map(AccountDto::from).collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
     public List<AccountDto> findByWeddingId(Long weddingId) {
         return accountRepository.findByWeddingIdOrderBySortOrderAsc(weddingId)
                 .stream().map(AccountDto::from).collect(Collectors.toList());
@@ -50,6 +44,14 @@ public class AccountService {
     @Transactional
     public void delete(Long id) {
         accountRepository.deleteById(id);
+    }
+
+    /** 요청한 청첩장 소유의 계좌일 때만 삭제 */
+    @Transactional
+    public void deleteForWedding(Long id, Long weddingId) {
+        accountRepository.findById(id).ifPresent(e -> {
+            if (weddingId.equals(e.getWeddingId())) accountRepository.deleteById(id);
+        });
     }
 
     @Transactional

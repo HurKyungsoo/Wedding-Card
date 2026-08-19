@@ -15,6 +15,7 @@ public class RsvpService {
     @Transactional
     public RsvpDto save(RsvpDto dto) {
         RsvpEntity entity = new RsvpEntity();
+        entity.setWeddingId(dto.getWeddingId());
         entity.setName(dto.getName());
         entity.setPhone(dto.getPhone());
         entity.setAttendance(dto.getAttendance());
@@ -29,8 +30,22 @@ public class RsvpService {
                 .stream().map(RsvpDto::from).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<RsvpDto> findByWeddingId(Long weddingId) {
+        return repo.findByWeddingIdOrderByCreatedAtDesc(weddingId)
+                .stream().map(RsvpDto::from).collect(Collectors.toList());
+    }
+
     @Transactional
     public void delete(Long id) { repo.deleteById(id); }
+
+    /** 요청한 청첩장 소유의 응답일 때만 삭제 */
+    @Transactional
+    public void deleteForWedding(Long id, Long weddingId) {
+        repo.findById(id).ifPresent(e -> {
+            if (weddingId.equals(e.getWeddingId())) repo.deleteById(id);
+        });
+    }
 
     /** 어드민 대시보드용 참석 응답 집계 */
     @Transactional(readOnly = true)

@@ -2019,8 +2019,9 @@
     </div>
 
     <!-- ══ RSVP 스크립트 ══ -->
-<script>
+<script th:inline="javascript">
 (function() {
+    var WEDDING_ID = /*[[${wedding.id}]]*/ null;
     var attendance = null;
     var mealCount  = 1;
 
@@ -2070,6 +2071,7 @@
         submitBtn.textContent = '전송 중...';
 
         var payload = {
+            weddingId: WEDDING_ID,
             name: name,
             phone: phone || null,
             attendance: attendance,

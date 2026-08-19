@@ -475,7 +475,7 @@ function saveAllAccounts() {
     var btn = document.querySelector('.ed-btn-save-acct');
     var msg = document.getElementById('acctSaveMsg');
     btn.disabled = true; btn.textContent = '저장 중...';
-    fetch('/api/account/bulk', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(all)})
+    fetch('/api/account/bulk?weddingId=' + WEDDING.id, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(all)})
         .then(function(r){ return r.json(); })
         .then(function(d) {
             if (d.success) { msg.textContent='✓ 저장되었습니다'; msg.style.color='#6a8a5a'; setTimeout(function(){ msg.textContent=''; },3000); }
@@ -483,7 +483,7 @@ function saveAllAccounts() {
         })
         .finally(function() { btn.disabled=false; btn.innerHTML='<i class="ti ti-device-floppy"></i> 계좌 저장'; });
 }
-fetch('/api/account').then(function(r){ return r.json(); }).then(function(data) {
+fetch('/api/account?weddingId=' + WEDDING.id).then(function(r){ return r.json(); }).then(function(data) {
     acctData.groom = data.filter(function(a){ return a.side==='groom'; });
     acctData.bride = data.filter(function(a){ return a.side==='bride'; });
     renderAcctList('groom'); renderAcctList('bride');

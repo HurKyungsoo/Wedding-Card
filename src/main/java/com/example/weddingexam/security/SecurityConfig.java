@@ -2,6 +2,7 @@ package com.example.weddingexam.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -38,6 +39,8 @@ public class SecurityConfig {
                     "/h2-console/**",
                     "/error"
                 ).permitAll()
+                // 하객 참석 응답 제출 — 비로그인 공개
+                .requestMatchers(HttpMethod.POST, "/api/rsvp").permitAll()
                 // 슈퍼어드민
                 .requestMatchers("/superadmin/**").hasRole("ADMIN")
                 // 그 외는 로그인 필요

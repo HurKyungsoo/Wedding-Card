@@ -977,6 +977,7 @@
 <script th:inline="javascript">
 /*<![CDATA[*/
 var WEDDING = {
+    id:          /*[[${wedding.id}]]*/ null,
     groomName:   /*[[${wedding.groomName}]]*/ '',
     brideName:   /*[[${wedding.brideName}]]*/ '',
     weddingDate: /*[[${wedding.weddingDate}]]*/ '',
@@ -1013,7 +1014,7 @@ function loadRsvpList() {
     var list = document.getElementById('rsvpList');
     if (!list) return;
     list.innerHTML = '<div style="text-align:center;color:#bbb;padding:1rem;font-size:13px;">불러오는 중...</div>';
-    fetch('/api/rsvp')
+    fetch('/api/rsvp?weddingId=' + WEDDING.id)
         .then(function(r) { return r.json(); })
         .then(function(data) {
             var attend  = data.filter(function(r) { return r.attendance; });
@@ -1053,7 +1054,7 @@ function loadRsvpList() {
                 }
                 row.querySelector('.rsvp-mgmt-del').addEventListener('click', function() {
                     if (!confirm('삭제하시겠습니까?')) return;
-                    fetch('/api/rsvp/' + this.dataset.id, {method:'DELETE'})
+                    fetch('/api/rsvp/' + this.dataset.id + '?weddingId=' + WEDDING.id, {method:'DELETE'})
                         .then(function() { loadRsvpList(); });
                 });
                 list.appendChild(row);

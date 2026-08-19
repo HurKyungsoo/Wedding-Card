@@ -41,6 +41,16 @@ public class WeddingService {
             .map(WeddingEntity::toDto).collect(Collectors.toList());
     }
 
+    /** 해당 청첩장이 로그인한 사용자 소유인지 확인 (API 스코핑용) */
+    @Transactional(readOnly = true)
+    public boolean isOwnedByUser(Long weddingId, Long userId) {
+        if (weddingId == null || userId == null) return false;
+        return repo.findById(weddingId)
+            .map(WeddingEntity::getUserId)
+            .map(userId::equals)
+            .orElse(false);
+    }
+
     @Transactional
     public WeddingDto save(WeddingDto dto) {
         return repo.save(WeddingEntity.fromDto(dto)).toDto();

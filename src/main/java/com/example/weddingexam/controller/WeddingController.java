@@ -56,7 +56,6 @@ public class WeddingController {
         viewLogService.recordView(dto.getId());  // 일별 방문 로그 기록
         addFormattedFields(model, dto);
         List<AccountDto> accounts = accountService.findByWeddingId(dto.getId());
-        if (accounts.isEmpty()) accounts = accountService.findAll();
         model.addAttribute("accounts", accounts);
         model.addAttribute("kakaoAppKey", kakaoAppKey);
         return "invitation";
@@ -97,7 +96,6 @@ public class WeddingController {
         model.addAttribute("currentUser", principal.getEntity());
 
         List<AccountDto> accounts = accountService.findByWeddingId(dto.getId());
-        if (accounts.isEmpty()) accounts = accountService.findAll();
         model.addAttribute("accounts", accounts);
         model.addAttribute("kakaoAppKey", kakaoAppKey);
         return "admin/edit";
@@ -139,7 +137,6 @@ public class WeddingController {
         WeddingDto dto = weddingService.findById(id);
         addFormattedFields(model, dto);
         List<AccountDto> accounts = accountService.findByWeddingId(id);
-        if (accounts.isEmpty()) accounts = accountService.findAll();
         model.addAttribute("accounts", accounts);
         model.addAttribute("kakaoAppKey", kakaoAppKey);
         return "invitation";
