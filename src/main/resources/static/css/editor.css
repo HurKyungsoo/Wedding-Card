@@ -861,16 +861,30 @@ textarea.ed-input{resize:none;line-height:1.75;}
 }
 .ed-design-card.active .ed-design-name{color:#2c2822;font-weight:500;}
 
-/* 템플릿 썸네일 미리보기 스타일 */
-.ed-dt-photo-ph{width:82px;height:56px;background:#d8d2ca;border-radius:3px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;}
-.ed-dt-photo-icon{font-size:22px;color:#8a7a64;opacity:0.55;}
+/* 템플릿 썸네일 미리보기 스타일 — 실사진 배경 사용 (index.html 랜딩 카드와 동일 소스) */
+.ed-dt-photo-ph{
+    width:82px;height:56px;border-radius:3px;margin-bottom:10px;
+    background-image:url('/images/theme-basic.png');
+    background-size:cover;background-position:center 22%;
+}
 .ed-dt-bigtext{font-family:'Cormorant Garamond',serif;font-size:15px;color:#2c2822;line-height:1.1;text-align:center;font-weight:600;}
 .ed-dt-datebar{position:absolute;bottom:10px;font-size:6px;color:#8a7a64;letter-spacing:1px;}
-.ed-dt-fill{background:#e8e4de;}
-.ed-dt-pink{background:#f5e6e8;}
+.ed-dt-fill{
+    background-image:url('/images/theme-story.png');
+    background-size:cover;background-position:center 12%;
+}
+.ed-dt-pink{
+    background-image:url('/images/theme-story.png');
+    background-size:cover;background-position:center 10%;
+}
 .ed-dt-script{font-family:'Pinyon Script',cursive;font-size:16px;color:#d9527a;text-align:center;line-height:1.1;}
-.ed-dt-married{background:#d8d2ca;overflow:hidden;}
-.ed-dt-married-big{font-family:'Great Vibes','Dancing Script',cursive;font-size:19px;color:#fff;position:absolute;bottom:22px;left:8px;line-height:0.95;text-align:left;font-weight:400;}
+.ed-dt-married{
+    overflow:hidden;
+    background-image:linear-gradient(rgba(0,0,0,.18),rgba(0,0,0,.18)),url('/images/theme-married.png');
+    background-size:cover;background-position:center 18%;
+}
+.ed-dt-married-big{font-family:'Great Vibes','Dancing Script',cursive;font-size:19px;color:#fff;position:absolute;bottom:22px;left:8px;line-height:0.95;text-align:left;font-weight:400;
+    text-shadow:0 1px 5px rgba(0,0,0,.55),0 0 10px rgba(0,0,0,.3);}
 .ed-dt-forever{background:#F5F2EC;flex-direction:column;justify-content:center;align-items:center;gap:2px;}
 
 /* 기본 — 이름 + 날짜 + 장소 (여백 위주, 실제 hero-bottom 구성 반영) */
@@ -881,8 +895,11 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-basic-place{font-family:'Noto Serif KR',serif;font-size:5.5px;font-weight:300;color:#8a7a64;letter-spacing:0.5px;margin-top:3px;text-transform:uppercase;}
 
 /* Our story begins (2번째) — 손글씨 타이틀 + 중앙 날짜/장소, 블랙 톤 (이름 없음) */
-.ed-dt-bigtext-story{font-family:'Dancing Script',cursive;font-weight:600;font-size:23px;color:#000;text-align:center;line-height:1.0;position:absolute;bottom:32px;left:4px;right:4px;}
-.ed-dt-datebar-story{font-family:'Noto Sans KR',sans-serif;color:#000;position:absolute;bottom:6px;left:0;right:0;text-align:center;letter-spacing:0.2px;line-height:1.5;}
+/* text-shadow: 사진 배경 위에서도 가독성 확보 (실제 테마의 white text-shadow 처리와 동일 원리) */
+.ed-dt-bigtext-story{font-family:'Dancing Script',cursive;font-weight:600;font-size:23px;color:#000;text-align:center;line-height:1.0;position:absolute;bottom:32px;left:4px;right:4px;
+    text-shadow:0 1px 4px rgba(255,255,255,.85),0 0 8px rgba(255,255,255,.6);}
+.ed-dt-datebar-story{font-family:'Noto Sans KR',sans-serif;color:#000;position:absolute;bottom:6px;left:0;right:0;text-align:center;letter-spacing:0.2px;line-height:1.5;
+    text-shadow:0 1px 4px rgba(255,255,255,.85),0 0 8px rgba(255,255,255,.6);}
 
 /* our_story_pink — 실제 테마와 동일하게 타이틀·날짜/장소 모두 가운데 정렬 */
 .ed-dt-script-center{
@@ -895,6 +912,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
     bottom:32px;
     left:4px;
     right:4px;
+    text-shadow:0 1px 4px rgba(255,255,255,.85),0 0 8px rgba(255,255,255,.6);
 }
 .ed-dt-datebar-pink-center{
     position:absolute;
@@ -907,18 +925,19 @@ textarea.ed-input{resize:none;line-height:1.75;}
     letter-spacing:0.5px;
     line-height:1.6;
     text-align:center;
+    text-shadow:0 1px 4px rgba(255,255,255,.85),0 0 8px rgba(255,255,255,.6);
 }
 
 /* Getting Married (4번째) — 사진 위 흰 날짜 */
-.ed-dt-datebar-married{color:#fff;font-family:'Patrick Hand',sans-serif;}
+.ed-dt-datebar-married{color:#fff;font-family:'Patrick Hand',sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.5),0 0 8px rgba(0,0,0,.3);}
 
 /* Together forever (5번째) — 손글씨 + 이름 + 아치 사진 + 날짜 + 장소 (실제 forever-layout 순서 반영) */
 .ed-dt-forever{position:relative;}
 .ed-dt-forever-script{font-family:'Sacramento',cursive;font-size:10px;color:#2a2a28;text-align:center;line-height:1.15;}
 .ed-dt-forever-names{display:flex;align-items:center;gap:3px;font-family:'Noto Serif KR',serif;font-size:8px;color:#2a2a28;letter-spacing:1px;}
 .ed-dt-forever-amp{color:#E8A0B4;font-size:8px;}
-.ed-dt-forever-arch{width:34px;height:40px;border-radius:20px 20px 0 0;background:linear-gradient(180deg,#ffffff 0%,#f0e6d6 100%);border:1.5px solid #c9a876;border-bottom:none;box-shadow:inset 0 0 6px rgba(201,168,118,.18);display:flex;align-items:center;justify-content:center;}
-.ed-dt-forever-arch-icon{font-size:14px;color:#c9a876;opacity:0.7;}
+.ed-dt-forever-arch{width:34px;height:40px;border-radius:20px 20px 0 0;border:1.5px solid #c9a876;border-bottom:none;overflow:hidden;
+    background-image:url('/images/theme-forever.png');background-size:cover;background-position:center 22%;}
 .ed-dt-forever-date{font-family:'Cormorant Garamond',serif;font-size:6.5px;color:#6FAF8A;letter-spacing:1px;}
 .ed-dt-forever-place{font-family:'Cormorant Garamond','EB Garamond',serif;font-size:5px;color:#5a5a58;letter-spacing:0.8px;text-transform:uppercase;}
 .ed-dt-forever-heart{position:absolute;color:#F4A0B4;font-size:7px;opacity:0.8;pointer-events:none;}
