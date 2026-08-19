@@ -614,6 +614,44 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .drawer-overlay{display:none;}
 .drawer{display:none;}
 
+/* ── 첫 방문 온보딩 가이드 ── */
+.onboarding-overlay{
+    display:none;position:fixed;inset:0;
+    background:rgba(0,0,0,.55);z-index:9500;
+    align-items:center;justify-content:center;
+    backdrop-filter:blur(4px);padding:20px;
+}
+.onboarding-overlay.open{display:flex;}
+.onboarding-box{
+    width:100%;max-width:400px;max-height:calc(100vh - 40px);
+    overflow-y:auto;
+    background:#fff;border-radius:18px;
+    padding:26px 24px 22px;
+    box-shadow:0 30px 80px rgba(0,0,0,.35);
+}
+.onboarding-title{font-size:17px;font-weight:700;color:#2c2822;letter-spacing:-.2px;margin-bottom:6px;}
+.onboarding-sub{font-size:12.5px;color:#9a8c7c;line-height:1.5;margin-bottom:18px;}
+.onboarding-steps{display:flex;flex-direction:column;gap:6px;margin-bottom:20px;}
+.onboarding-step{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 12px;border-radius:10px;
+    background:#fbf7f3;cursor:pointer;
+    transition:background .15s;
+}
+.onboarding-step:hover{background:#f5e8ea;}
+.onboarding-step-num{
+    flex-shrink:0;width:22px;height:22px;border-radius:50%;
+    background:#c4748a;color:#fff;font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+}
+.onboarding-step-label{font-size:13px;color:#4a4038;font-weight:500;}
+.onboarding-start-btn{
+    width:100%;padding:13px;border:none;border-radius:10px;
+    background:linear-gradient(135deg,#c4748a,#e07890);color:#fff;
+    font-size:14px;font-weight:700;letter-spacing:.2px;cursor:pointer;
+}
+.onboarding-start-btn:hover{opacity:.92;}
+
 /* ── 전체화면 미리보기 ── */
 .fullprev-overlay{
     display:none;position:fixed;inset:0;

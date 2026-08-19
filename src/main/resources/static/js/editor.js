@@ -157,6 +157,44 @@ function revertSection(evt, sectionKey) {
 }
 
 /* ──────────────────────────────────────
+   첫 방문 온보딩 가이드
+   — 섹션이 한꺼번에 펼쳐져 있어 어디서부터 시작할지 안내가 필요한 문제 대응
+────────────────────────────────────── */
+(function() {
+    var overlay   = document.getElementById('onboardingOverlay');
+    var startBtn  = document.getElementById('onboardingStartBtn');
+    var reopenBtn = document.getElementById('onboardingReopenBtn');
+    if (!overlay) return;
+
+    var storageKey = 'wc_onboarded_' + (WEDDING.id || 'unknown');
+
+    function hasSeenOnboarding() {
+        try { return !!localStorage.getItem(storageKey); } catch (e) { return true; }
+    }
+    function markOnboardingSeen() {
+        try { localStorage.setItem(storageKey, '1'); } catch (e) {}
+    }
+
+    function openOnboarding()  { overlay.classList.add('open'); }
+    function closeOnboarding() { overlay.classList.remove('open'); markOnboardingSeen(); }
+
+    if (!hasSeenOnboarding()) openOnboarding();
+
+    if (startBtn) startBtn.addEventListener('click', closeOnboarding);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) closeOnboarding(); });
+    document.querySelectorAll('.onboarding-step').forEach(function(step) {
+        step.addEventListener('click', function() {
+            var sec = step.dataset.sec;
+            closeOnboarding();
+            if (sec && typeof scrollToSection === 'function') {
+                setTimeout(function() { scrollToSection(sec); }, 200);
+            }
+        });
+    });
+    if (reopenBtn) reopenBtn.addEventListener('click', openOnboarding);
+})();
+
+/* ──────────────────────────────────────
    섹션 접기/펼치기
 ────────────────────────────────────── */
 document.querySelectorAll('.ed-sec-hd').forEach(function(hd) {

@@ -26,6 +26,25 @@
     </div>
 </div>
 
+<!-- 첫 방문 온보딩 가이드 -->
+<div class="onboarding-overlay" id="onboardingOverlay">
+    <div class="onboarding-box">
+        <div class="onboarding-title">청첩장 만들기, 이 순서로 진행해보세요</div>
+        <div class="onboarding-sub">항목을 누르면 해당 섹션으로 바로 이동해요. 언제든 이 가이드를 다시 볼 수 있어요.</div>
+        <div class="onboarding-steps" id="onboardingSteps">
+            <div class="onboarding-step" data-sec="main">   <span class="onboarding-step-num">1</span><span class="onboarding-step-label">메인테마 고르고 사진 올리기</span></div>
+            <div class="onboarding-step" data-sec="basic">  <span class="onboarding-step-num">2</span><span class="onboarding-step-label">신랑 · 신부 기본 정보</span></div>
+            <div class="onboarding-step" data-sec="wedding"><span class="onboarding-step-num">3</span><span class="onboarding-step-label">예식 날짜와 장소</span></div>
+            <div class="onboarding-step" data-sec="greet">  <span class="onboarding-step-num">4</span><span class="onboarding-step-label">인사말 작성</span></div>
+            <div class="onboarding-step" data-sec="hosts">  <span class="onboarding-step-num">5</span><span class="onboarding-step-label">혼주 정보 &amp; 연락처</span></div>
+            <div class="onboarding-step" data-sec="gal">     <span class="onboarding-step-num">6</span><span class="onboarding-step-label">사진 갤러리</span></div>
+            <div class="onboarding-step" data-sec="map">    <span class="onboarding-step-num">7</span><span class="onboarding-step-label">지도 &amp; 오시는 길</span></div>
+            <div class="onboarding-step" data-sec="acct">   <span class="onboarding-step-num">8</span><span class="onboarding-step-label">계좌 정보</span></div>
+        </div>
+        <button type="button" class="onboarding-start-btn" id="onboardingStartBtn">시작하기</button>
+    </div>
+</div>
+
 <!-- 섹션 순서/바로가기 드로어 -->
 <div class="drawer-overlay" id="drawerOverlay">
     <div class="drawer" id="drawer">
@@ -45,6 +64,9 @@
         </a>
     </div>
     <div class="ed-header-right">
+        <button type="button" class="ed-btn-outline" id="onboardingReopenBtn" title="가이드 다시 보기" style="padding:0 10px;">
+            <i class="ti ti-help-hexagon" style="font-size:15px;"></i>
+        </button>
         <span id="draftStatusLabel"
               style="font-size:0.75rem;color:#a09080;white-space:nowrap;margin-right:2px;"
               th:text="${hasDraft} ? '게시되지 않은 변경사항 있음' : '게시됨'">게시됨</span>
