@@ -51,11 +51,117 @@ renderDraftStatus();
 setInterval(renderDraftStatus, 30000);
 
 /* ──────────────────────────────────────
+   섹션별 되돌리기 (마지막 저장 상태로 복원)
+   — 히든 입력의 초기 HTML 기본값이 아니라, 페이지 로드가 끝난 시점의
+     실제 값(서버에서 복원된 값)을 스냅샷으로 저장해 두고 사용한다.
+────────────────────────────────────── */
+
+/* data-* 속성으로 활성 카드를 표시하는 탭/카드형 픽커들 — 히든 입력값 기준으로 active 클래스만 재동기화 */
+var PICKER_GROUPS = [
+    { hiddenId: 'mainDesignVal',    itemSelector: '.ed-design-card',        dataAttr: 'design' },
+    { hiddenId: 'photoFilterInput', itemSelector: '#filterTabs .ed-tab',    dataAttr: 'val' },
+    { hiddenId: 'calStyleInput',    itemSelector: '.cal-style-card',        dataAttr: 'cal' },
+    { hiddenId: 'ddayStyleInput',   itemSelector: '.style-type-item',       dataAttr: 'dday' },
+    { hiddenId: 'orderVal',         itemSelector: '#orderTabs .ed-tab',     dataAttr: 'val' },
+    { hiddenId: 'alignInput',       itemSelector: '#alignTabs .ed-tab',     dataAttr: 'val' },
+    { hiddenId: 'deceasedInput',    itemSelector: '#deceasedTabs .ed-tab',  dataAttr: 'val' },
+    { hiddenId: 'contactInput',     itemSelector: '#contactTabs .ed-tab',   dataAttr: 'val' },
+    { hiddenId: 'mapLockVal',       itemSelector: '#mapLockTabs .ed-tab',   dataAttr: 'val' },
+    { hiddenId: 'mapDetailVal',     itemSelector: '#mapDetailTabs .ed-tab', dataAttr: 'val' },
+    { hiddenId: 'mapZoomInput',     itemSelector: '.ed-zoom-btn',           dataAttr: 'val' }
+];
+
+function resyncPickerVisuals() {
+    PICKER_GROUPS.forEach(function(g) {
+        var hidden = document.getElementById(g.hiddenId);
+        if (!hidden) return;
+        var val = String(hidden.value);
+        document.querySelectorAll(g.itemSelector).forEach(function(el) {
+            el.classList.toggle('active', String(el.dataset[g.dataAttr]) === val);
+        });
+    });
+}
+
+/* 히든 입력값만으로는 갱신되지 않는, 섹션별 추가 시각 동기화 */
+var SECTION_REVERT_HOOKS = {
+    main: function() {
+        var thumbImg  = document.getElementById('mainThumbImg');
+        var posXInput = document.getElementById('mainPhotoPosXInput');
+        var posYInput = document.getElementById('mainPhotoPosYInput');
+        if (thumbImg && posXInput && posYInput) {
+            thumbImg.style.objectPosition = (posXInput.value !== '' && posYInput.value !== '')
+                ? (posXInput.value + '% ' + posYInput.value + '%') : '';
+        }
+        var b64 = document.getElementById('mainPhotoBase64');
+        var thumbWrap = document.getElementById('mainPhotoThumb');
+        var hint = document.getElementById('mainUploadHint');
+        if (b64 && thumbImg) {
+            if (b64.value) {
+                thumbImg.src = 'data:image/jpeg;base64,' + b64.value;
+                if (thumbWrap) thumbWrap.style.display = 'block';
+                if (hint) hint.style.display = 'none';
+            } else {
+                if (thumbWrap) thumbWrap.style.display = 'none';
+                if (hint) hint.style.display = '';
+            }
+        }
+    },
+    map: function() {
+        var lati = document.getElementById('mapLatInput');
+        var lngi = document.getElementById('mapLngInput');
+        var ni   = document.getElementById('mapPlaceNameInput');
+        var lat = lati ? parseFloat(lati.value) : NaN;
+        var lng = lngi ? parseFloat(lngi.value) : NaN;
+        if (lat && lng && typeof showStaticMap === 'function') showStaticMap(lng, lat, ni ? ni.value : '');
+    }
+};
+
+/* 페이지 로드(서버 값 복원)가 모두 끝난 뒤 폼 필드 값을 스냅샷으로 저장 */
+function captureSectionSnapshot() {
+    var form = document.getElementById('editForm');
+    if (!form) return;
+    form.querySelectorAll('input, textarea, select').forEach(function(el) {
+        if (el.type === 'checkbox' || el.type === 'radio') {
+            el._savedChecked = el.checked;
+        } else {
+            el._savedValue = el.value;
+        }
+    });
+}
+
+/** 섹션 헤더의 되돌리기 버튼에서 호출 — 그 섹션만 마지막 저장 상태로 복원 */
+function revertSection(evt, sectionKey) {
+    evt.stopPropagation();
+    var section = document.getElementById('sec-' + sectionKey);
+    if (!section) return;
+    if (!confirm('이 섹션을 마지막 저장 상태로 되돌릴까요? 저장하지 않은 변경사항은 사라집니다.')) return;
+
+    section.querySelectorAll('input, textarea, select').forEach(function(el) {
+        var hasChecked = el._savedChecked !== undefined;
+        var hasValue   = el._savedValue !== undefined;
+        if (!hasChecked && !hasValue) return; /* 스냅샷 이후 새로 생긴 요소(계좌 행 등)는 건드리지 않음 */
+        if (el.type === 'checkbox' || el.type === 'radio') {
+            el.checked = el._savedChecked;
+        } else {
+            el.value = el._savedValue;
+        }
+        el.dispatchEvent(new Event('input',  { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    resyncPickerVisuals();
+    if (SECTION_REVERT_HOOKS[sectionKey]) SECTION_REVERT_HOOKS[sectionKey]();
+
+    scheduleLive(100);
+    showEditorToast('✓ 되돌렸습니다');
+}
+
+/* ──────────────────────────────────────
    섹션 접기/펼치기
 ────────────────────────────────────── */
 document.querySelectorAll('.ed-sec-hd').forEach(function(hd) {
     hd.addEventListener('click', function(e) {
-        if (e.target.closest('.ed-toggle-wrap')) return;
+        if (e.target.closest('.ed-toggle-wrap') || e.target.closest('.ed-sec-undo-btn')) return;
         var sec = this.closest('.ed-section');
         var bdId = 'bd-' + this.dataset.sec;
         var bd   = document.getElementById(bdId);
@@ -1760,4 +1866,7 @@ window.addEventListener('load', function() {
         });
         syncTitle();
     });
+
+    /* 여기까지가 서버 값 복원 — 이제 스냅샷을 떠 두고 이후의 사용자 편집만 되돌리기 대상으로 삼는다 */
+    captureSectionSnapshot();
 });
