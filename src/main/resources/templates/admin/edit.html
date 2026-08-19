@@ -959,7 +959,10 @@
                     </div>
                 </div>
                 <div id="rsvpList" class="rsvp-list"></div>
-                <button type="button" class="rsvp-refresh-btn" onclick="loadRsvpList()"><i class="ti ti-refresh"></i> 새로고침</button>
+                <div class="rsvp-action-row">
+                    <button type="button" class="rsvp-refresh-btn" onclick="loadRsvpList()"><i class="ti ti-refresh"></i> 새로고침</button>
+                    <button type="button" class="rsvp-refresh-btn" onclick="exportRsvpCsv()"><i class="ti ti-file-spreadsheet"></i> 명단 내보내기</button>
+                </div>
             </div>
         </div>
 
@@ -1104,6 +1107,58 @@ function loadRsvpList() {
 
 function esc(s) {
     return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ── 하객 명단 CSV 내보내기 (식수 집계 등 실제 준비에 사용) ── */
+function exportRsvpCsv() {
+    fetch('/api/rsvp?weddingId=' + WEDDING.id)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data || !data.length) {
+                showEditorToast('내보낼 응답이 없습니다', 'error');
+                return;
+            }
+
+            function csvField(v) {
+                var s = String(v == null ? '' : v);
+                if (/[",\r\n]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+                return s;
+            }
+
+            var header = ['이름', '연락처', '참석여부', '식사인원', '메시지', '응답일시'];
+            var rows = data.map(function(r) {
+                return [
+                    r.name || '',
+                    r.phone || '',
+                    r.attendance ? '참석' : '불참',
+                    r.attendance ? (r.mealCount || 0) : 0,
+                    r.message || '',
+                    r.createdAt ? r.createdAt.replace('T', ' ').substring(0, 16) : ''
+                ];
+            });
+            var csv = [header].concat(rows).map(function(row) {
+                return row.map(csvField).join(',');
+            }).join('\r\n');
+
+            /* 엑셀에서 한글이 깨지지 않도록 UTF-8 BOM 포함 */
+            var bom = String.fromCharCode(0xFEFF);
+            var blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            var names = (WEDDING.groomName || '') + (WEDDING.brideName ? '_' + WEDDING.brideName : '');
+            var today = new Date().toISOString().substring(0, 10);
+            a.href = url;
+            a.download = '하객명단_' + (names || 'wedding') + '_' + today + '.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+
+            showEditorToast('✓ 명단을 내보냈습니다 (' + data.length + '건)');
+        })
+        .catch(function() {
+            showEditorToast('명단 내보내기에 실패했습니다', 'error');
+        });
 }
 </script>
 </body>

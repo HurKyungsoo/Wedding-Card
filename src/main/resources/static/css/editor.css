@@ -1373,7 +1373,8 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .rsvp-stat-item.meal .rsvp-stat-icon,.rsvp-stat-item.meal .rsvp-stat-num{color:#7a8aba;}
 
 /* ══ RSVP 새로고침 버튼 ══ */
-.rsvp-refresh-btn{display:flex;align-items:center;gap:6px;margin-top:10px;padding:8px 16px;border:1px solid #e0d8ce;border-radius:8px;background:#faf8f5;color:#9a8a74;font-size:12px;cursor:pointer;transition:all .15s;}
+.rsvp-action-row{display:flex;gap:8px;margin-top:10px;}
+.rsvp-refresh-btn{display:flex;align-items:center;gap:6px;margin-top:0;padding:8px 16px;border:1px solid #e0d8ce;border-radius:8px;background:#faf8f5;color:#9a8a74;font-size:12px;cursor:pointer;transition:all .15s;}
 .rsvp-refresh-btn:hover{background:#f0ebe3;color:#6a5a4a;border-color:#c4a882;}
 
 /* ══ RSVP 목록 행 ══ */
