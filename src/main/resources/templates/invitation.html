@@ -907,6 +907,63 @@
         return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
+    /**
+     * 메인 사진 표시/숨김 — 히어로와 아치형(forever) 양쪽을 함께 처리한다.
+     *
+     * 예전에는 "사진 있음" 분기에서만 아치를 갱신하고 "사진 없음" 분기는 히어로만 숨겨서,
+     * 편집기에서 사진을 지워도 아치형 테마에는 사진이 그대로 남아 있었다.
+     * 플레이스홀더는 서버가 "사진 없음"으로 렌더했을 때만 DOM에 있으므로, 없으면 만들어 준다.
+     */
+    function applyMainPhotoPresence(b64) {
+        var has = !!(b64 && b64.trim());
+        var src = has ? 'data:image/jpeg;base64,' + b64 : '';
+
+        /* 히어로 (기본·Our story·Getting Married·THE MARRIAGE) */
+        var wrap = document.querySelector('.hero-fullphoto');
+        var img  = document.querySelector('.hero-fullphoto-img');
+        if (has && !img && wrap) {
+            img = document.createElement('img');
+            img.className = 'hero-fullphoto-img';
+            img.alt = '메인 사진';
+            wrap.insertBefore(img, wrap.firstChild);
+        }
+        if (img) {
+            if (has && img.src !== src) img.src = src;   /* 같은 사진 재대입 방지(깜빡임) */
+            img.style.display = has ? '' : 'none';
+        }
+        var ph = document.querySelector('.hero-fullphoto-placeholder');
+        if (!has && !ph && wrap) {
+            ph = document.createElement('div');
+            ph.className = 'hero-fullphoto-placeholder';
+            ph.innerHTML = '<i class="ti ti-camera"></i><span>사진을 업로드하세요</span>';
+            wrap.appendChild(ph);
+        }
+        if (ph) ph.style.display = has ? 'none' : '';
+        if (wrap) wrap.classList.toggle('has-photo', has);
+
+        /* 아치형(forever) — 별도 img를 쓰므로 따로 챙겨야 한다 */
+        var arch    = document.querySelector('.forever-arch');
+        var archImg = document.querySelector('.forever-arch-img');
+        if (has && !archImg && arch) {
+            archImg = document.createElement('img');
+            archImg.className = 'forever-arch-img';
+            archImg.alt = '메인 사진';
+            arch.insertBefore(archImg, arch.firstChild);
+        }
+        if (archImg) {
+            if (has && archImg.src !== src) archImg.src = src;
+            archImg.style.display = has ? '' : 'none';
+        }
+        var archPh = document.querySelector('.forever-arch-placeholder');
+        if (!has && !archPh && arch) {
+            archPh = document.createElement('div');
+            archPh.className = 'forever-arch-placeholder';
+            archPh.innerHTML = '<span>📷</span>';
+            arch.appendChild(archPh);
+        }
+        if (archPh) archPh.style.display = has ? 'none' : '';
+    }
+
     /* 계좌 한 건을 DOM으로 조립 — 문자열 연결 대신 textContent/setAttribute를 쓰는 이유는
        예금주·계좌번호가 사용자 입력이라 따옴표까지 escape 해야 하기 때문 */
     function buildAcctItem(a, side) {
@@ -1731,33 +1788,7 @@
 
         /* ── 14. 메인 사진 실시간 반영 ── */
         if (d.mainPhotoBase64 !== undefined) {
-            var photoImg = q('.hero-fullphoto-img');
-            var photoPlaceholder = q('.hero-fullphoto-placeholder');
-            var fullphotoEl = q('.hero-fullphoto');
-            if (d.mainPhotoBase64 && d.mainPhotoBase64.trim()) {
-                /* 사진 있음 — img 표시 */
-                if (!photoImg) {
-                    /* img 태그가 없으면 동적으로 생성 */
-                    var wrap = q('.hero-fullphoto');
-                    if (wrap) {
-                        photoImg = document.createElement('img');
-                        photoImg.className = 'hero-fullphoto-img';
-                        photoImg.alt = '메인 사진';
-                        wrap.insertBefore(photoImg, wrap.firstChild);
-                    }
-                }
-                if (photoImg) {
-                    if (photoImg.src !== 'data:image/jpeg;base64,' + d.mainPhotoBase64) photoImg.src = 'data:image/jpeg;base64,' + d.mainPhotoBase64;
-                    photoImg.style.display = '';
-                }
-                if (photoPlaceholder) photoPlaceholder.style.display = 'none';
-                if (fullphotoEl) fullphotoEl.classList.add('has-photo');
-            } else {
-                /* 사진 없음 — 플레이스홀더 표시 */
-                if (photoImg) photoImg.style.display = 'none';
-                if (photoPlaceholder) photoPlaceholder.style.display = '';
-                if (fullphotoEl) fullphotoEl.classList.remove('has-photo');
-            }
+            applyMainPhotoPresence(d.mainPhotoBase64);
         }
 
         /* ── 15. 사진 필터 실시간 반영 (유색효과와 합산 — applyPhotoFilter 경유) ── */
@@ -1981,49 +2012,9 @@
         var d = e.data.payload;
         if (!d) return;
 
-        var photoImg = document.querySelector('.hero-fullphoto-img');
-        var photoPlaceholder = document.querySelector('.hero-fullphoto-placeholder');
-        var fullphotoEl2 = document.querySelector('.hero-fullphoto');
-
-        /* 사진 표시/숨김 */
+        /* 사진 표시/숨김 — 히어로와 아치형 모두 처리 */
         if (d.mainPhotoBase64 !== undefined) {
-            if (d.mainPhotoBase64 && d.mainPhotoBase64.trim()) {
-                if (!photoImg) {
-                    var wrap = document.querySelector('.hero-fullphoto');
-                    if (wrap) {
-                        photoImg = document.createElement('img');
-                        photoImg.className = 'hero-fullphoto-img';
-                        photoImg.alt = '메인 사진';
-                        wrap.insertBefore(photoImg, wrap.firstChild);
-                    }
-                }
-                if (photoImg) {
-                    /* 같은 사진이면 재대입하지 않는다 — 수 MB data URL을 다시 넣으면 이미지가 깜빡인다 */
-                    if (photoImg.src !== 'data:image/jpeg;base64,' + d.mainPhotoBase64) photoImg.src = 'data:image/jpeg;base64,' + d.mainPhotoBase64;
-                    photoImg.style.display = '';
-                }
-                if (photoPlaceholder) photoPlaceholder.style.display = 'none';
-                if (fullphotoEl2) fullphotoEl2.classList.add('has-photo');
-
-                /* forever-arch 사진도 업데이트 */
-                var archImg = document.querySelector('.forever-arch-img');
-                var archPlaceholder = document.querySelector('.forever-arch-placeholder');
-                if (!archImg) {
-                    var arch = document.querySelector('.forever-arch');
-                    if (arch) {
-                        archImg = document.createElement('img');
-                        archImg.className = 'forever-arch-img';
-                        archImg.alt = '메인 사진';
-                        arch.insertBefore(archImg, arch.firstChild);
-                    }
-                }
-                if (archImg) { if (archImg.src !== 'data:image/jpeg;base64,' + d.mainPhotoBase64) archImg.src = 'data:image/jpeg;base64,' + d.mainPhotoBase64; archImg.style.display = ''; }
-                if (archPlaceholder) archPlaceholder.style.display = 'none';
-            } else {
-                if (photoImg) photoImg.style.display = 'none';
-                if (photoPlaceholder) photoPlaceholder.style.display = '';
-                if (fullphotoEl2) fullphotoEl2.classList.remove('has-photo');
-            }
+            applyMainPhotoPresence(d.mainPhotoBase64);
         }
 
         /* 필터 적용 (유색효과와 합산) */
