@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -144,6 +144,11 @@
         <div data-reveal data-delay="3" class="lp-hero-ctas">
           <a href="/my/create" class="lp-primary" style="display:inline-flex;align-items:center;gap:8px;background:#c4748a;color:#fff;text-decoration:none;padding:15px 36px;border-radius:40px;font-size:15px;font-weight:500;letter-spacing:0.3px;white-space:nowrap;transition:background 0.2s,transform 0.15s;">
             <i class="ti ti-edit" style="font-size:15px;"></i>무료로 만들기
+          </a>
+          <!-- 로그인 없이 실제 완성된 청첩장을 바로 볼 수 있는 링크 — 데모 데이터가 없으면(청첩장이 하나도 없는 상태) 숨김 -->
+          <a th:if="${sampleSlug != null}" th:href="@{'/w/' + ${sampleSlug}}" target="_blank" rel="noopener"
+             class="nav-link" style="color:#7a6a60;text-decoration:none;font-size:14px;font-weight:300;display:inline-flex;align-items:center;gap:6px;letter-spacing:0.3px;white-space:nowrap;transition:color 0.2s;">
+            <i class="ti ti-eye" style="font-size:14px;"></i>샘플 보기
           </a>
           <a href="#themes" class="nav-link" style="color:#7a6a60;text-decoration:none;font-size:14px;font-weight:300;display:inline-flex;align-items:center;gap:6px;letter-spacing:0.3px;white-space:nowrap;transition:color 0.2s;">
             테마 보기 <i class="ti ti-arrow-right" style="font-size:14px;"></i>

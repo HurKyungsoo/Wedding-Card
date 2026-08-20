@@ -48,7 +48,10 @@ public class WeddingController {
 
     /* ── 랜딩 페이지 ── */
     @GetMapping("/")
-    public String landing() {
+    public String landing(Model model) {
+        // "샘플 보기" 링크용 — 가장 먼저 생성된(데모) 청첩장의 slug. 청첩장이 하나도 없으면 null.
+        String sampleSlug = weddingService.findFirst().getSlug();
+        model.addAttribute("sampleSlug", sampleSlug);
         return "index";
     }
 
