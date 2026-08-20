@@ -1193,16 +1193,37 @@ document.querySelectorAll('.ed-sec-hd').forEach(function(hd) {
 /* ──────────────────────────────────────
    슬라이드 메뉴 패널
 ────────────────────────────────────── */
+/* 순서는 청첩장(invitation.html)의 실제 렌더 순서와 일치시킨다 —
+   여기가 sectionOrder가 비어 있을 때의 기본값이 된다 */
 var NAV_SECTIONS = [
     {id:'greet',  label:'인사말',            chk:'chkGreet'},
-    {id:'hosts',  label:'혼주정보 & 연락처', chk:'chkHosts'},
     {id:'cal',    label:'캘린더',            chk:'chkCal'},
     {id:'dday',   label:'D-Day',             chk:'chkDday'},
+    {id:'hosts',  label:'혼주정보 & 연락처', chk:'chkHosts'},
     {id:'gal',    label:'이미지 갤러리',     chk:'chkGal'},
     {id:'map',    label:'지도',              chk:'chkMap'},
-    {id:'acct',   label:'계좌 송금',         chk:null},
+    {id:'acct',   label:'계좌 송금',         chk:'chkAcct'},
     {id:'rsvp',   label:'참석 여부',         chk:'chkRsvp'},
 ];
+
+/* 저장된 sectionOrder를 NAV_SECTIONS에 적용한 목록.
+   저장값에 없는 섹션은 원래 순서를 유지하며 뒤에 붙는다(섹션이 추가돼도 유실되지 않도록). */
+function orderedNavSections() {
+    var input = document.getElementById('sectionOrderInput');
+    var saved = (input && input.value ? input.value.split(',') : [])
+                .map(function(s) { return s.trim(); }).filter(Boolean);
+    if (!saved.length) return NAV_SECTIONS.slice();
+
+    var byId = {};
+    NAV_SECTIONS.forEach(function(def) { byId[def.id] = def; });
+
+    var out = [];
+    saved.forEach(function(id) {
+        if (byId[id]) { out.push(byId[id]); delete byId[id]; }
+    });
+    NAV_SECTIONS.forEach(function(def) { if (byId[def.id]) out.push(def); });
+    return out;
+}
 
 /* 패널 열기/닫기 */
 function openNavPanel() {
@@ -1242,8 +1263,8 @@ function buildNavPanel() {
         });
     });
 
-    /* 토글 가능 섹션 목록 */
-    NAV_SECTIONS.forEach(function(def) {
+    /* 토글 가능 섹션 목록 — 저장된 순서가 있으면 그 순서로 (없으면 NAV_SECTIONS 기본 순서) */
+    orderedNavSections().forEach(function(def) {
         var chk = def.chk ? document.getElementById(def.chk) : null;
         var row = document.createElement('div');
         row.className = 'nav-panel-toggle-row';
@@ -1310,8 +1331,12 @@ function initNavPanelDrag() {
             anchor = sec;
         });
 
-        /* 라이브 프리뷰(청첩장 iframe)에도 순서 전달 */
+        /* 순서를 폼에 기록 — 저장/게시 시 sectionOrder로 넘어가 게시본에도 반영된다 */
         var order = rows.map(function(r) { return r.dataset.secId; }).filter(Boolean);
+        var orderInput = document.getElementById('sectionOrderInput');
+        if (orderInput) orderInput.value = order.join(',');
+
+        /* 라이브 프리뷰(청첩장 iframe)에도 순서 전달 */
         try {
             if (liveFrame && previewReady) {
                 liveFrame.contentWindow.postMessage(
@@ -1370,6 +1395,8 @@ function initNavPanelDrag() {
                 container.insertBefore(dragEl, row.nextElementSibling);
             }
             reorderEditorSections();
+            /* 바뀐 순서를 임시저장에 반영 (hidden input은 프로그램으로 바꿔서 change 이벤트가 안 뜸) */
+            scheduleLive(150);
         });
 
         row.addEventListener('dragend', function() {
@@ -1379,6 +1406,10 @@ function initNavPanelDrag() {
             clearIndicators();
         });
     });
+
+    /* 편집기 폼의 섹션 순서를 패널(=저장된 순서)에 맞춰 한 번 정렬 —
+       편집 순서와 하객이 보는 순서가 어긋나지 않도록 */
+    reorderEditorSections();
 }
 
 /* 섹션으로 스크롤 */
@@ -1420,6 +1451,8 @@ document.getElementById('floatIconBtn').addEventListener('click', function() {
     }
 });
 document.getElementById('navPanelClose').addEventListener('click', closeNavPanel);
+/* 메뉴를 열지 않아도 저장된 섹션 순서가 편집기에 반영되도록 로드 시 한 번 구성 */
+buildNavPanel();
 /* ESC 키 */
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeNavPanel();
@@ -1898,9 +1931,13 @@ window.addEventListener('load', function() {
     }
 
     /* 토글 상태에 따라 섹션 제목 색상 + 즉시 반영 */
-    document.querySelectorAll('.ed-toggle-wrap input').forEach(function(chk) {
+    /* 섹션 헤더의 토글만 대상 — 슬라이드 메뉴 미러 토글은 buildNavPanel()이 따로 배선한다 */
+    document.querySelectorAll('.ed-sec-hd .ed-toggle-wrap input').forEach(function(chk) {
         function syncTitle() {
-            var title = chk.closest('.ed-sec-hd').querySelector('.ed-sec-title');
+            /* 슬라이드 메뉴의 미러 토글은 .ed-sec-hd 밖에 있으므로 제목 동기화 대상이 아니다 */
+            var hd = chk.closest('.ed-sec-hd');
+            if (!hd) return;
+            var title = hd.querySelector('.ed-sec-title');
             if (title) title.style.color = chk.checked ? '#2c2822' : '#bbb';
         }
         chk.addEventListener('change', function() {

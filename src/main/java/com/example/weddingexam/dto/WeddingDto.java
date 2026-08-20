@@ -59,6 +59,9 @@ public class WeddingDto {
     private String mainDesign, mainFont, mainFontSize, mainFontColor, colorEffect, mainEffect, bgm;
     private Boolean rsvpEnabled;
 
+    /** 섹션 표시 순서 — 콤마 구분(예: "greet,cal,dday,hosts,gal,map,acct,rsvp"). 비어 있으면 템플릿 기본 순서 */
+    private String sectionOrder;
+
     public WeddingDto() {}
 
     // Meta getters/setters
@@ -174,6 +177,7 @@ public class WeddingDto {
     public String getMainEffect() { return mainEffect; } public void setMainEffect(String v) { this.mainEffect = v; }
     public String getBgm() { return bgm; } public void setBgm(String v) { this.bgm = v; }
     public Boolean getRsvpEnabled() { return rsvpEnabled; } public void setRsvpEnabled(Boolean v) { this.rsvpEnabled = v; }
+    public String getSectionOrder() { return sectionOrder; } public void setSectionOrder(String v) { this.sectionOrder = v; }
 
     public static Builder builder() { return new Builder(); }
     public static class Builder {
@@ -248,6 +252,7 @@ public class WeddingDto {
         public Builder mainPhotoPosX(Double v) { d.mainPhotoPosX=v; return this; }
         public Builder mainPhotoPosY(Double v) { d.mainPhotoPosY=v; return this; }
         public Builder rsvpEnabled(Boolean v) { d.rsvpEnabled=v; return this; }
+        public Builder sectionOrder(String v) { d.sectionOrder=v; return this; }
         public WeddingDto build() { return d; }
     }
 }

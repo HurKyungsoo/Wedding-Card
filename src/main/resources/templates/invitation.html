@@ -172,10 +172,10 @@
     </div>
 
     <!-- ② 인사말 -->
-    <div th:if="${wedding.greetingVisible}" class="section-divider" data-vis="greeting">
+    <div th:style="${wedding.greetingVisible} ? '' : 'display:none'" class="section-divider" data-vis="greeting">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
-    <div th:if="${wedding.greetingVisible}" class="sec" data-vis="greeting">
+    <div th:style="${wedding.greetingVisible} ? '' : 'display:none'" class="sec" data-vis="greeting">
         <div class="sec-label reveal">Greeting</div>
         <div class="sec-title reveal delay-1">인사말</div>
         <div class="greet-card reveal-scale delay-2">
@@ -235,10 +235,10 @@
     </div>
 
     <!-- ④ 달력 -->
-    <div th:if="${wedding.calendarVisible}" class="section-divider" data-vis="calendar">
+    <div th:style="${wedding.calendarVisible} ? '' : 'display:none'" class="section-divider" data-vis="calendar">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
-    <div th:if="${wedding.calendarVisible}" class="sec" data-vis="calendar">
+    <div th:style="${wedding.calendarVisible} ? '' : 'display:none'" class="sec" data-vis="calendar">
         <div class="sec-label reveal">Calendar</div>
         <div class="sec-title reveal delay-1">달력</div>
         <!-- 캘린더 스타일별 래퍼 — JS가 calendarStyle에 따라 클래스 적용 -->
@@ -275,10 +275,10 @@
     </div>
 
     <!-- D-Day -->
-    <div th:if="${wedding.ddayVisible}" class="section-divider" data-vis="dday">
+    <div th:style="${wedding.ddayVisible} ? '' : 'display:none'" class="section-divider" data-vis="dday">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
-    <div th:if="${wedding.ddayVisible}" class="sec" data-vis="dday">
+    <div th:style="${wedding.ddayVisible} ? '' : 'display:none'" class="sec" data-vis="dday">
         <div class="sec-label reveal">D-Day</div>
         <div class="dday-card reveal-scale delay-1"
              id="ddayCard"
@@ -333,10 +333,10 @@
     </div>
 
     <!-- ⑤ 혼주 -->
-    <div th:if="${wedding.hostsVisible}" class="section-divider" data-vis="hosts">
+    <div th:style="${wedding.hostsVisible} ? '' : 'display:none'" class="section-divider" data-vis="hosts">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
-    <div th:if="${wedding.hostsVisible}" class="sec" data-vis="hosts">
+    <div th:style="${wedding.hostsVisible} ? '' : 'display:none'" class="sec" data-vis="hosts">
         <div class="sec-label reveal">Family</div>
         <div class="sec-title reveal delay-1">혼주</div>
         <div class="hosts-wrap reveal delay-1" th:attr="data-order=${wedding.displayOrder != null ? wedding.displayOrder : 'groom'}">
@@ -453,10 +453,10 @@
     </div>
 
     <!-- ⑥ 갤러리 -->
-    <div th:if="${wedding.galleryVisible}" class="section-divider" data-vis="gallery">
+    <div th:style="${wedding.galleryVisible} ? '' : 'display:none'" class="section-divider" data-vis="gallery">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
-    <div th:if="${wedding.galleryVisible}" class="sec" data-vis="gallery">
+    <div th:style="${wedding.galleryVisible} ? '' : 'display:none'" class="sec" data-vis="gallery">
         <div class="sec-label reveal">Gallery</div>
         <div class="sec-title reveal delay-1">갤러리</div>
         <div class="gallery-outer reveal-zoom delay-2" id="galleryOuter"
@@ -482,10 +482,10 @@
     </div>
 
     <!-- ⑦ 지도 -->
-    <div th:if="${wedding.mapVisible}" class="section-divider" data-vis="map">
+    <div th:style="${wedding.mapVisible} ? '' : 'display:none'" class="section-divider" data-vis="map">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
-    <div th:if="${wedding.mapVisible}" class="sec" data-vis="map">
+    <div th:style="${wedding.mapVisible} ? '' : 'display:none'" class="sec" data-vis="map">
         <div class="sec-label reveal">LOCATION</div>
         <div class="sec-title reveal delay-1">오시는 길</div>
 
@@ -551,10 +551,15 @@
     </div>
 
     <!-- ⑧ 마음 전하실 곳 -->
-    <div class="section-divider" data-vis="acct" th:if="${accounts != null and !accounts.isEmpty()}">
+    <!-- 계좌가 하나도 없으면 섹션 자체를 렌더하지 않고(th:if), 토글은 다른 섹션과 동일하게 th:style로 처리 -->
+    <div class="section-divider" data-vis="acct"
+         th:if="${accounts != null and !accounts.isEmpty()}"
+         th:style="${wedding.accountVisible == false} ? 'display:none' : ''">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
-    <div class="sec" data-vis="acct" th:if="${wedding.accountVisible != false and accounts != null and !accounts.isEmpty()}">
+    <div class="sec" data-vis="acct"
+         th:if="${accounts != null and !accounts.isEmpty()}"
+         th:style="${wedding.accountVisible == false} ? 'display:none' : ''">
         <div class="sec-label reveal">Account</div>
         <div class="sec-title reveal delay-1">마음 전하실 곳</div>
 
@@ -740,7 +745,16 @@
         <div class="footer-msg">
             두 사람이 하나 되는 길에<br>함께해 주셔서 감사합니다<br><br>행복하게 살겠습니다
         </div>
-        <div class="footer-copy" th:text="|${wedding.weddingDate} — ${wedding.mapPlaceName}|">날짜 — 장소</div>
+        <!-- 이름/장소를 각각 span으로 분리 — 라이브 프리뷰가 문자열 파싱 없이 해당 span만 갱신한다 -->
+        <div class="footer-copy">
+            <span class="footer-copy-names"
+                  th:text="${(wedding.displayOrder == 'bride')
+                             ? (wedding.brideName + ' ♥ ' + wedding.groomName)
+                             : (wedding.groomName + ' ♥ ' + wedding.brideName)}">신랑 ♥ 신부</span><span
+                  class="footer-copy-place"
+                  th:style="${#strings.isEmpty(wedding.mapPlaceName)} ? 'display:none' : ''"
+                  th:text="${#strings.isEmpty(wedding.mapPlaceName) ? '' : ' — ' + wedding.mapPlaceName}"> — 장소</span>
+        </div>
     </div>
 </div>
 
@@ -752,6 +766,12 @@
 </script>
 <script th:src="@{/js/invitation.js(v=20260629)}"></script>
 <script th:inline="javascript">
+    /* 저장된 섹션 순서 — 편집기에서 드래그한 결과. 비어 있으면 템플릿 기본 순서를 그대로 쓴다 */
+    window._savedSectionOrder = (function() {
+        var raw = /*[[${wedding.sectionOrder}]]*/ '';
+        return raw ? String(raw).split(',').map(function(s){ return s.trim(); }).filter(Boolean) : [];
+    })();
+
     initPage({
         weddingDate:     /*[[${wedding.weddingDate}]]*/ '2025-10-25',
         weddingTime:     /*[[${wedding.weddingTime}]]*/ '13:00',
@@ -949,6 +969,10 @@
             var greetSignEl = q('.greet-sign');
             if (greetSignEl) greetSignEl.textContent = first + ' & ' + second;
 
+            /* 푸터 이름 — 순서 반영 */
+            var footerNamesEl = q('.footer-copy-names');
+            if (footerNamesEl) footerNamesEl.textContent = first + ' ♥ ' + second;
+
             /* D-Day 텍스트형 */
             var ddayTextMsgEl = document.getElementById('ddayTextMsg');
             if (ddayTextMsgEl) {
@@ -1079,12 +1103,9 @@
                 if (txt.indexOf('신부') !== -1 && bn) el.textContent = '신부 ' + bn;
             });
 
-            /* 푸터 */
-            var footerCopy = q('.footer-copy');
-            if (footerCopy) {
-                var datePart = footerCopy.textContent.split('—')[1] || '';
-                footerCopy.textContent = (gn && bn ? gn + ' ♥ ' + bn + '  ' : '') + '—' + datePart;
-            }
+            /* 푸터 이름 — 표시 순서 반영, 장소 span은 건드리지 않음 */
+            var footerNames = q('.footer-copy-names');
+            if (footerNames && (first || second)) footerNames.textContent = first + ' ♥ ' + second;
         }
 
         /* ── 3. 히어로 하단 날짜 ── */
@@ -1117,6 +1138,15 @@
         /* ── 4-1. 지도 섹션 장소명/주소/지도 실시간 반영 ── */
         var mapAddrHeader = q('.map-addr-header .map-addr-text');
         if (mapAddrHeader && d.mapAddressRoad !== undefined) setText(mapAddrHeader, d.mapAddressRoad || '');
+
+        /* 푸터 장소 — 장소명 변경 시 반영 (빈 값이면 구분자까지 숨김) */
+        if (d.mapPlaceName !== undefined) {
+            var footerPlace = q('.footer-copy-place');
+            if (footerPlace) {
+                footerPlace.textContent = d.mapPlaceName ? ' — ' + d.mapPlaceName : '';
+                footerPlace.style.display = d.mapPlaceName ? '' : 'none';
+            }
+        }
 
         /* 지도 장소명/주소만 업데이트 — iframe src 교체는 하지 않음 (스크롤 방지) */
 
@@ -1529,13 +1559,10 @@
             }
         }
 
-        /* ── 15. 사진 필터 실시간 반영 ── */
+        /* ── 15. 사진 필터 실시간 반영 (유색효과와 합산 — applyPhotoFilter 경유) ── */
         if (d.photoFilter !== undefined) {
-            var filterImg = q('.hero-fullphoto-img');
-            if (filterImg) {
-                filterImg.style.filter = (d.photoFilter && d.photoFilter !== 'none')
-                    ? d.photoFilter : '';
-            }
+            window._livePhotoFilter = d.photoFilter;
+            applyPhotoFilter();
         }
     });
 
@@ -1818,11 +1845,8 @@
         }
     });
 
-    /* ── 편집 패널 섹션 클릭 → 청첩장 스크롤 연동 ── */
-    /* ── 섹션 순서 변경 ── */
-    window.addEventListener('message', function(e) {
-        if (!e.data || e.data.type !== 'WEDDING_SECTION_ORDER') return;
-        var order = e.data.order;
+    /* ── 섹션 순서 적용 ── 편집기 postMessage와 페이지 로드(저장된 sectionOrder) 양쪽에서 사용 */
+    function applySectionOrder(order) {
         if (!order || !order.length) return;
 
         var idToVis = {
@@ -1840,11 +1864,11 @@
             var vis = idToVis[sid];
             if (!vis) return;
 
-            /* 섹션 본체 — 없으면(th:if false) 스킵 */
+            /* 섹션 본체 — 계좌처럼 데이터가 없어 아예 렌더되지 않는 경우만 스킵 */
             var sec = document.querySelector('.sec[data-vis="' + vis + '"]');
             if (!sec) return;
 
-            /* 구분선 — 없으면 새로 생성 (acct 등 원래 없는 경우) */
+            /* 구분선 — 없으면 새로 생성 */
             var divider = document.querySelector('.section-divider[data-vis="' + vis + '"]');
             if (!divider) {
                 divider = document.createElement('div');
@@ -1868,7 +1892,16 @@
             }
             anchor = sec;
         });
+    }
+
+    /* 편집기에서 드래그로 순서를 바꾸는 동안 실시간 반영 */
+    window.addEventListener('message', function(e) {
+        if (!e.data || e.data.type !== 'WEDDING_SECTION_ORDER') return;
+        applySectionOrder(e.data.order);
     });
+
+    /* 저장된 순서를 게시본에도 적용 — 편집기 없이 하객이 여는 경우 */
+    applySectionOrder(window._savedSectionOrder || []);
 
     window.addEventListener('message', function(e) {
         /* 스크롤 위치 복원 (새로고침 후 위치 유지) */
@@ -1894,6 +1927,7 @@
             'gal':     '#galleryOuter',
             'map':     '.map-full',
             'acct':    '.acct-tab-wrap',
+            'rsvp':    '#rsvpCard',
         };
 
         var selector = targetMap[sec];

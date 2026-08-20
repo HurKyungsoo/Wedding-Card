@@ -122,6 +122,8 @@
         <input type="hidden" th:field="*{calendarStyle}"   id="calStyleInput">
         <input type="hidden" th:field="*{ddayStyle}"       id="ddayStyleInput">
         <input type="hidden" th:field="*{deceasedDisplayType}" id="deceasedDisplayInput">
+        <!-- 슬라이드 메뉴에서 드래그한 섹션 순서 — reorderEditorSections()가 갱신 -->
+        <input type="hidden" th:field="*{sectionOrder}"    id="sectionOrderInput">
 
         <!-- ━━ 메인테마 ━━ -->
         <div class="ed-section open" id="sec-main">
