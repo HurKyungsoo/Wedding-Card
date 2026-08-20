@@ -289,10 +289,17 @@ body{
 @keyframes pillIn{from{opacity:0;transform:scale(0.7);}to{opacity:1;transform:scale(1);}}
 
 /* ── 혼주 ── */
-.hosts-wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:10px;}
-.host-card{text-align:center;}
-.host-badge{font-size:10px;letter-spacing:2px;color:#b89870;margin-bottom:0.7rem;}
-.host-main-name{font-family:var(--main-font, 'Noto Serif KR', serif);font-size:17px;color:#3a2e22;font-weight:300;margin-bottom:5px;}
+.hosts-wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:12px;}
+/* 다른 섹션(달력/D-Day/계좌 등)과 같은 유리질감 카드 — 배경·둥근모서리는 공용 규칙(아래)에서 오지만
+   테두리·여백이 빠져 있어 텍스트가 배경 위에 그냥 떠 있는 것처럼 보였다 */
+.host-card{
+    text-align:center;
+    padding:1.5rem 0.9rem 1.3rem;
+    border:0.5px solid rgba(180,160,130,0.18);
+    backdrop-filter:blur(4px);
+}
+.host-badge{font-size:10px;letter-spacing:2px;color:#b89870;margin-bottom:0.8rem;}
+.host-main-name{font-family:var(--main-font, 'Noto Serif KR', serif);font-size:17px;color:#3a2e22;font-weight:300;margin-bottom:9px;}
 .host-family{font-size:11px;color:#7a6a54;line-height:2;font-weight:300;}
 .hosts-center{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:1.8rem;}
 .hosts-center-line{width:0.5px;height:26px;background:#d4bfa0;}
@@ -360,6 +367,7 @@ body{
   .hero-names{font-size:24px;}
   .hero-photo{width:160px;height:210px;border-radius:80px 80px 0 0;}
   .hosts-wrap{gap:6px;}
+  .host-card{padding:1.3rem 0.6rem 1.1rem;}
   .host-main-name{font-size:15px;}
 }
 
