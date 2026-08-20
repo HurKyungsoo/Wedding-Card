@@ -33,6 +33,10 @@ public class WeddingDto {
     private Boolean brideFatherDeceased, brideMotherDeceased;
     private String deceasedDisplayType;
     private String groomRelation, brideRelation;
+    /** 세례명 — 성당 예식에서 이름 옆에 괄호로 표기. 미입력이면 표시하지 않음 */
+    private String groomBaptism, brideBaptism;
+    private String groomFatherBaptism, groomMotherBaptism;
+    private String brideFatherBaptism, brideMotherBaptism;
     private String displayOrder;
     private Boolean contactPopupEnabled;
 
@@ -61,6 +65,13 @@ public class WeddingDto {
 
     /** 섹션 표시 순서 — 콤마 구분(예: "greet,cal,dday,hosts,gal,map,acct,rsvp"). 비어 있으면 템플릿 기본 순서 */
     private String sectionOrder;
+
+    /**
+     * 계좌 목록 — wedding 테이블이 아니라 account 테이블에 저장되므로
+     * WeddingEntity와는 주고받지 않는다. 임시저장 스냅샷(draftData)과 게시 페이로드에만 실려서,
+     * 다른 섹션과 똑같이 "게시해야 하객 화면에 반영"되도록 만드는 용도.
+     */
+    private java.util.List<com.example.weddingexam.account.AccountDto> accounts;
 
     public WeddingDto() {}
 
@@ -100,6 +111,12 @@ public class WeddingDto {
     public String getDeceasedDisplayType() { return deceasedDisplayType; } public void setDeceasedDisplayType(String v) { this.deceasedDisplayType = v; }
     public String getGroomRelation() { return groomRelation; } public void setGroomRelation(String v) { this.groomRelation = v; }
     public String getBrideRelation() { return brideRelation; } public void setBrideRelation(String v) { this.brideRelation = v; }
+    public String getGroomBaptism() { return groomBaptism; } public void setGroomBaptism(String v) { this.groomBaptism = v; }
+    public String getBrideBaptism() { return brideBaptism; } public void setBrideBaptism(String v) { this.brideBaptism = v; }
+    public String getGroomFatherBaptism() { return groomFatherBaptism; } public void setGroomFatherBaptism(String v) { this.groomFatherBaptism = v; }
+    public String getGroomMotherBaptism() { return groomMotherBaptism; } public void setGroomMotherBaptism(String v) { this.groomMotherBaptism = v; }
+    public String getBrideFatherBaptism() { return brideFatherBaptism; } public void setBrideFatherBaptism(String v) { this.brideFatherBaptism = v; }
+    public String getBrideMotherBaptism() { return brideMotherBaptism; } public void setBrideMotherBaptism(String v) { this.brideMotherBaptism = v; }
     public String getDisplayOrder() { return displayOrder; } public void setDisplayOrder(String v) { this.displayOrder = v; }
     public Boolean getContactPopupEnabled() { return contactPopupEnabled; } public void setContactPopupEnabled(Boolean v) { this.contactPopupEnabled = v; }
     public Boolean getCalendarVisible() { return calendarVisible; } public void setCalendarVisible(Boolean v) { this.calendarVisible = v; }
@@ -179,6 +196,8 @@ public class WeddingDto {
     public String getBgm() { return bgm; } public void setBgm(String v) { this.bgm = v; }
     public Boolean getRsvpEnabled() { return rsvpEnabled; } public void setRsvpEnabled(Boolean v) { this.rsvpEnabled = v; }
     public String getSectionOrder() { return sectionOrder; } public void setSectionOrder(String v) { this.sectionOrder = v; }
+    public java.util.List<com.example.weddingexam.account.AccountDto> getAccounts() { return accounts; }
+    public void setAccounts(java.util.List<com.example.weddingexam.account.AccountDto> v) { this.accounts = v; }
 
     public static Builder builder() { return new Builder(); }
     public static class Builder {
@@ -216,6 +235,12 @@ public class WeddingDto {
         public Builder deceasedDisplayType(String v) { d.deceasedDisplayType=v; return this; }
         public Builder groomRelation(String v) { d.groomRelation=v; return this; }
         public Builder brideRelation(String v) { d.brideRelation=v; return this; }
+        public Builder groomBaptism(String v) { d.groomBaptism=v; return this; }
+        public Builder brideBaptism(String v) { d.brideBaptism=v; return this; }
+        public Builder groomFatherBaptism(String v) { d.groomFatherBaptism=v; return this; }
+        public Builder groomMotherBaptism(String v) { d.groomMotherBaptism=v; return this; }
+        public Builder brideFatherBaptism(String v) { d.brideFatherBaptism=v; return this; }
+        public Builder brideMotherBaptism(String v) { d.brideMotherBaptism=v; return this; }
         public Builder displayOrder(String v) { d.displayOrder=v; return this; }
         public Builder contactPopupEnabled(Boolean v) { d.contactPopupEnabled=v; return this; }
         public Builder calendarVisible(Boolean v) { d.calendarVisible=v; return this; }

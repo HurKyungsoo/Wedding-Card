@@ -343,7 +343,12 @@
             <!-- 신랑측 -->
             <div class="host-card reveal-left delay-2" data-side="groom">
                 <div class="host-badge">신 랑 측</div>
-                <div class="host-main-name" th:text="${wedding.groomName}">신랑</div>
+                <!-- 관계(장남/장녀) + 세례명 — 빈 값이면 CSS :empty 로 숨겨진다 -->
+                <div class="host-main-name">
+                    <span class="host-relation" data-relation="groom" th:text="${wedding.groomRelation}">장남</span>
+                    <span class="host-name-txt" th:text="${wedding.groomName}">신랑</span>
+                    <span class="host-baptism" data-baptism="groom" th:text="${wedding.groomBaptism}">세례명</span>
+                </div>
                 <div class="host-family">
                     <!-- 아버지 -->
                     <span class="host-parent-row" data-person="groomFather"
@@ -357,6 +362,7 @@
                             <span class="deceased-flower" th:if="${wedding.deceasedDisplayType == 'flower'}"><svg class="deceased-flower-svg" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><g opacity="0.65"><ellipse cx="10" cy="5.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="10" cy="14.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="5.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="14.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="6.8" cy="6.8" rx="1.5" ry="3" transform="rotate(45 6.8 6.8)" fill="#888"/><ellipse cx="13.2" cy="13.2" rx="1.5" ry="3" transform="rotate(45 13.2 13.2)" fill="#888"/><ellipse cx="13.2" cy="6.8" rx="1.5" ry="3" transform="rotate(-45 13.2 6.8)" fill="#888"/><ellipse cx="6.8" cy="13.2" rx="1.5" ry="3" transform="rotate(-45 6.8 13.2)" fill="#888"/><circle cx="10" cy="10" r="2.2" fill="#bbb"/></g></svg></span>
                         </span>
                         <strong th:text="${wedding.groomFatherName}">부친</strong>
+                        <span class="host-baptism" data-baptism="groomFather" th:text="${wedding.groomFatherBaptism}">세례명</span>
                     </span>
                     <br>
                     <!-- 어머니 -->
@@ -371,6 +377,7 @@
                             <span class="deceased-flower" th:if="${wedding.deceasedDisplayType == 'flower'}"><svg class="deceased-flower-svg" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><g opacity="0.65"><ellipse cx="10" cy="5.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="10" cy="14.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="5.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="14.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="6.8" cy="6.8" rx="1.5" ry="3" transform="rotate(45 6.8 6.8)" fill="#888"/><ellipse cx="13.2" cy="13.2" rx="1.5" ry="3" transform="rotate(45 13.2 13.2)" fill="#888"/><ellipse cx="13.2" cy="6.8" rx="1.5" ry="3" transform="rotate(-45 13.2 6.8)" fill="#888"/><ellipse cx="6.8" cy="13.2" rx="1.5" ry="3" transform="rotate(-45 6.8 13.2)" fill="#888"/><circle cx="10" cy="10" r="2.2" fill="#bbb"/></g></svg></span>
                         </span>
                         <strong th:text="${wedding.groomMotherName}">모친</strong>
+                        <span class="host-baptism" data-baptism="groomMother" th:text="${wedding.groomMotherBaptism}">세례명</span>
                     </span>
                 </div>
                 <div class="contact-row" data-contact-row
@@ -400,7 +407,12 @@
             <!-- 신부측 -->
             <div class="host-card reveal-right delay-2" data-side="bride">
                 <div class="host-badge">신 부 측</div>
-                <div class="host-main-name" th:text="${wedding.brideName}">신부</div>
+                <!-- 관계(장남/장녀) + 세례명 — 빈 값이면 CSS :empty 로 숨겨진다 -->
+                <div class="host-main-name">
+                    <span class="host-relation" data-relation="bride" th:text="${wedding.brideRelation}">장녀</span>
+                    <span class="host-name-txt" th:text="${wedding.brideName}">신부</span>
+                    <span class="host-baptism" data-baptism="bride" th:text="${wedding.brideBaptism}">세례명</span>
+                </div>
                 <div class="host-family">
                     <!-- 아버지 -->
                     <span class="host-parent-row" data-person="brideFather"
@@ -414,6 +426,7 @@
                             <span class="deceased-flower" th:if="${wedding.deceasedDisplayType == 'flower'}"><svg class="deceased-flower-svg" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><g opacity="0.65"><ellipse cx="10" cy="5.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="10" cy="14.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="5.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="14.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="6.8" cy="6.8" rx="1.5" ry="3" transform="rotate(45 6.8 6.8)" fill="#888"/><ellipse cx="13.2" cy="13.2" rx="1.5" ry="3" transform="rotate(45 13.2 13.2)" fill="#888"/><ellipse cx="13.2" cy="6.8" rx="1.5" ry="3" transform="rotate(-45 13.2 6.8)" fill="#888"/><ellipse cx="6.8" cy="13.2" rx="1.5" ry="3" transform="rotate(-45 6.8 13.2)" fill="#888"/><circle cx="10" cy="10" r="2.2" fill="#bbb"/></g></svg></span>
                         </span>
                         <strong th:text="${wedding.brideFatherName}">부친</strong>
+                        <span class="host-baptism" data-baptism="brideFather" th:text="${wedding.brideFatherBaptism}">세례명</span>
                     </span>
                     <br>
                     <!-- 어머니 -->
@@ -428,6 +441,7 @@
                             <span class="deceased-flower" th:if="${wedding.deceasedDisplayType == 'flower'}"><svg class="deceased-flower-svg" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><g opacity="0.65"><ellipse cx="10" cy="5.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="10" cy="14.5" rx="1.5" ry="3" fill="#888"/><ellipse cx="5.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="14.5" cy="10" rx="3" ry="1.5" fill="#888"/><ellipse cx="6.8" cy="6.8" rx="1.5" ry="3" transform="rotate(45 6.8 6.8)" fill="#888"/><ellipse cx="13.2" cy="13.2" rx="1.5" ry="3" transform="rotate(45 13.2 13.2)" fill="#888"/><ellipse cx="13.2" cy="6.8" rx="1.5" ry="3" transform="rotate(-45 13.2 6.8)" fill="#888"/><ellipse cx="6.8" cy="13.2" rx="1.5" ry="3" transform="rotate(-45 6.8 13.2)" fill="#888"/><circle cx="10" cy="10" r="2.2" fill="#bbb"/></g></svg></span>
                         </span>
                         <strong th:text="${wedding.brideMotherName}">모친</strong>
+                        <span class="host-baptism" data-baptism="brideMother" th:text="${wedding.brideMotherBaptism}">세례명</span>
                     </span>
                 </div>
                 <div class="contact-row" data-contact-row
@@ -560,14 +574,16 @@
 
     <!-- ⑧ 마음 전하실 곳 -->
     <!-- 계좌가 하나도 없으면 섹션 자체를 렌더하지 않고(th:if), 토글은 다른 섹션과 동일하게 th:style로 처리 -->
+    <!-- th:if 로 통째로 빼면 편집기에서 계좌를 추가해도 미리보기에 나타날 DOM이 없다
+         (2026-08-20에 다른 섹션에서 고쳤던 것과 같은 문제). 항상 렌더하되
+         "계좌 없음"과 "토글 꺼짐"을 모두 display:none 으로 처리한다 —
+         하객이 보는 결과는 종전과 동일하다. -->
     <div class="section-divider" data-vis="acct"
-         th:if="${accounts != null and !accounts.isEmpty()}"
-         th:style="${wedding.accountVisible == false} ? 'display:none' : ''">
+         th:style="${(accounts == null or accounts.isEmpty()) or wedding.accountVisible == false} ? 'display:none' : ''">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
     <div class="sec" data-vis="acct"
-         th:if="${accounts != null and !accounts.isEmpty()}"
-         th:style="${wedding.accountVisible == false} ? 'display:none' : ''">
+         th:style="${(accounts == null or accounts.isEmpty()) or wedding.accountVisible == false} ? 'display:none' : ''">
         <div class="sec-label reveal">Account</div>
         <div class="sec-title reveal delay-1">마음 전하실 곳</div>
 
@@ -859,6 +875,104 @@
     function esc(s) {
         return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
+
+    /* 계좌 한 건을 DOM으로 조립 — 문자열 연결 대신 textContent/setAttribute를 쓰는 이유는
+       예금주·계좌번호가 사용자 입력이라 따옴표까지 escape 해야 하기 때문 */
+    function buildAcctItem(a, side) {
+        var item = document.createElement('div');
+        item.className = 'acct-item';
+
+        var left = document.createElement('div');
+        left.className = 'acct-left';
+        var dot = document.createElement('div');
+        dot.className = 'acct-side-dot ' + side;
+        var info = document.createElement('div');
+
+        var who = document.createElement('div');
+        who.className = 'acct-who';
+        who.textContent = a.owner || '';
+
+        var bankWrap = document.createElement('div');
+        bankWrap.className = 'acct-bank-wrap';
+        var bank = document.createElement('span');
+        bank.className = 'acct-bank-badge';
+        bank.textContent = a.bank || '';
+        var num = document.createElement('span');
+        num.className = 'acct-num';
+        num.textContent = a.accountNumber || '';
+        bankWrap.appendChild(bank);
+        bankWrap.appendChild(num);
+
+        info.appendChild(who);
+        info.appendChild(bankWrap);
+        left.appendChild(dot);
+        left.appendChild(info);
+
+        var btns = document.createElement('div');
+        btns.className = 'acct-btns';
+        var copy = document.createElement('button');
+        copy.className = 'copy-btn';
+        copy.setAttribute('data-copy', a.accountNumber || '');
+        copy.innerHTML = '<i class="ti ti-copy"></i>복사';
+        btns.appendChild(copy);
+
+        /* 카카오페이 링크는 사용자가 붙여넣는 값 — http(s)만 허용 */
+        var pay = String(a.kakaoPayUrl || '').trim();
+        if (/^https?:\/\//i.test(pay)) {
+            var link = document.createElement('a');
+            link.className = 'kakao-pay-btn';
+            link.href = pay;
+            link.target = '_blank';
+            link.rel = 'noopener';
+            link.innerHTML = '<span class="kakao-icon">K</span>송금';
+            btns.appendChild(link);
+        }
+
+        item.appendChild(left);
+        item.appendChild(btns);
+        return item;
+    }
+
+    function renderLiveAccounts(list, accountVisible) {
+        ['groom', 'bride'].forEach(function(side) {
+            var panel = document.getElementById(side === 'groom' ? 'acctPanelGroom' : 'acctPanelBride');
+            if (!panel) return;
+
+            var rows = list.filter(function(a) { return a.side === side; });
+            var card = document.createElement('div');
+            card.className = 'acct-card reveal delay-3 on';
+
+            if (rows.length) {
+                rows.forEach(function(a) { card.appendChild(buildAcctItem(a, side)); });
+            } else {
+                var empty = document.createElement('div');
+                empty.className = 'acct-empty';
+                empty.innerHTML = '<i class="ti ti-credit-card-off"></i><p>등록된 계좌가 없습니다</p>';
+                card.appendChild(empty);
+            }
+
+            /* 탭으로 숨겨져 있던 패널의 display는 유지 */
+            var wasHidden = panel.style.display === 'none';
+            panel.innerHTML = '';
+            panel.appendChild(card);
+            panel.style.display = wasHidden ? 'none' : '';
+
+            /* 새로 만든 복사 버튼 재배선 — 원래 핸들러는 최초 1회만 걸린다 */
+            card.querySelectorAll('[data-copy]').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var v = btn.getAttribute('data-copy') || '';
+                    if (navigator.clipboard) navigator.clipboard.writeText(v);
+                    btn.classList.add('copied');
+                    setTimeout(function() { btn.classList.remove('copied'); }, 1500);
+                });
+            });
+        });
+
+        var show = accountVisible && list.length > 0;
+        qa('[data-vis="acct"]').forEach(function(el) {
+            el.style.display = show ? '' : 'none';
+        });
+    }
     function fmtDate(s) {
         if (!s) return '';
         var d = new Date(s);
@@ -1088,9 +1202,11 @@
             var greetSign = q('.greet-sign');
             if (greetSign) greetSign.textContent = first + ' & ' + second;
 
-            /* 혼주 메인 이름 — data-side 기준으로 업데이트 */
-            var hostCardGroom = q('.host-card[data-side="groom"] .host-main-name');
-            var hostCardBride = q('.host-card[data-side="bride"] .host-main-name');
+            /* 혼주 메인 이름 — data-side 기준으로 업데이트.
+               .host-main-name 자체가 아니라 .host-name-txt 만 갈아끼운다 —
+               같은 칸에 관계(장남/장녀)·세례명 span이 함께 들어있어서 통째로 덮으면 지워진다. */
+            var hostCardGroom = q('.host-card[data-side="groom"] .host-name-txt');
+            var hostCardBride = q('.host-card[data-side="bride"] .host-name-txt');
             if (hostCardGroom) hostCardGroom.textContent = gn;
             if (hostCardBride) hostCardBride.textContent = bn;
 
@@ -1244,6 +1360,15 @@
             });
         });
 
+        /* ── 7-1. 계좌 목록 실시간 반영 ──
+           계좌는 편집기 페이로드에 목록째로 실려 오므로 패널을 다시 그린다.
+           계좌가 하나도 없으면 토글이 켜져 있어도 섹션을 숨긴다(위 visMap 결과를 덮어씀) —
+           안 그러면 "등록된 계좌가 없습니다" 카드가 하객에게 노출된다. */
+        if (d.accounts !== undefined) {
+            renderLiveAccounts(d.accounts || [],
+                d.accountVisible === true || d.accountVisible === 'true' || d.accountVisible === 1);
+        }
+
         /* ── 8. 내비게이션 버튼 실시간 표시/숨김 ── */
         var naviKakao = document.getElementById('naviKakao');
         var naviTmap  = document.getElementById('naviTmap');
@@ -1266,6 +1391,23 @@
                 var el = q(personMap[key]);
                 if (el) el.textContent = d[key];
             }
+        });
+
+        /* 관계(장남/장녀) 실시간 반영 — 빈 값이면 CSS :empty 가 숨긴다.
+           (중첩 배열 리터럴 '[[' 는 Thymeleaf가 인라인 표현식으로 파싱하므로 쓰지 않는다) */
+        ['groom', 'bride'].forEach(function(side) {
+            var key = side + 'Relation';
+            if (d[key] === undefined) return;
+            var el = q('.host-relation[data-relation="' + side + '"]');
+            if (el) el.textContent = d[key] || '';
+        });
+
+        /* 세례명 실시간 반영 — 괄호는 CSS(::before/::after)가 붙이므로 값만 넣는다 */
+        ['groom', 'bride', 'groomFather', 'groomMother', 'brideFather', 'brideMother'].forEach(function(who) {
+            var key = who + 'Baptism';
+            if (d[key] === undefined) return;
+            var el = q('.host-baptism[data-baptism="' + who + '"]');
+            if (el) el.textContent = d[key] || '';
         });
 
         /* 고인 체크 여부 실시간 반영 */

@@ -301,6 +301,19 @@ body{
 .host-badge{font-size:10px;letter-spacing:2px;color:#b89870;margin-bottom:0.8rem;}
 .host-main-name{font-family:var(--main-font, 'Noto Serif KR', serif);font-size:17px;color:#3a2e22;font-weight:300;margin-bottom:9px;}
 .host-family{font-size:11px;color:#7a6a54;line-height:2;font-weight:300;}
+/* 관계(장남/장녀) — 이름 앞에 작게. 미입력이면 :empty 로 통째로 숨긴다 */
+.host-relation{font-size:0.72em;color:#8a7a64;margin-right:4px;letter-spacing:0.5px;}
+/* 세례명 — 이름 뒤 괄호. 괄호를 CSS로 붙여야 값이 비었을 때 "()"만 남는 일이 없다 */
+.host-baptism{font-size:0.72em;color:#8a7a64;margin-left:3px;letter-spacing:0.3px;}
+/* 좁은 폭에서 "(바오/로)"처럼 단어 중간이나 닫는 괄호 앞에서 끊기지 않도록
+   각 토큰을 한 덩어리로 묶는다 — 줄바꿈은 토큰 사이에서만 일어난다 */
+.host-relation,
+.host-baptism{display:inline-block;white-space:nowrap;}
+.host-main-name{word-break:keep-all;}
+.host-baptism::before{content:'(';}
+.host-baptism::after{content:')';}
+.host-relation:empty,
+.host-baptism:empty{display:none;}
 .hosts-center{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:1.8rem;}
 .hosts-center-line{width:0.5px;height:26px;background:#d4bfa0;}
 .contact-row{display:flex;gap:4px;justify-content:center;margin-top:0.7rem;flex-wrap:wrap;}

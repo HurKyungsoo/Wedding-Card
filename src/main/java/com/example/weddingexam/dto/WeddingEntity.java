@@ -32,6 +32,10 @@ public class WeddingEntity {
     private Boolean brideFatherDeceased, brideMotherDeceased;
     private String deceasedDisplayType;
     private String groomRelation, brideRelation;
+    /** 세례명 — 성당 예식에서 이름 옆에 괄호로 표기. 미입력이면 표시하지 않음 */
+    private String groomBaptism, brideBaptism;
+    private String groomFatherBaptism, groomMotherBaptism;
+    private String brideFatherBaptism, brideMotherBaptism;
 
     @Column(name="display_order")
     private String displayOrder = "groom";
@@ -120,6 +124,12 @@ public class WeddingEntity {
     public String getDeceasedDisplayType() { return deceasedDisplayType; } public void setDeceasedDisplayType(String v) { this.deceasedDisplayType=v; }
     public String getGroomRelation() { return groomRelation; } public void setGroomRelation(String v) { this.groomRelation=v; }
     public String getBrideRelation() { return brideRelation; } public void setBrideRelation(String v) { this.brideRelation=v; }
+    public String getGroomBaptism() { return groomBaptism; } public void setGroomBaptism(String v) { this.groomBaptism=v; }
+    public String getBrideBaptism() { return brideBaptism; } public void setBrideBaptism(String v) { this.brideBaptism=v; }
+    public String getGroomFatherBaptism() { return groomFatherBaptism; } public void setGroomFatherBaptism(String v) { this.groomFatherBaptism=v; }
+    public String getGroomMotherBaptism() { return groomMotherBaptism; } public void setGroomMotherBaptism(String v) { this.groomMotherBaptism=v; }
+    public String getBrideFatherBaptism() { return brideFatherBaptism; } public void setBrideFatherBaptism(String v) { this.brideFatherBaptism=v; }
+    public String getBrideMotherBaptism() { return brideMotherBaptism; } public void setBrideMotherBaptism(String v) { this.brideMotherBaptism=v; }
     public Boolean getContactPopupEnabled() { return contactPopupEnabled; } public void setContactPopupEnabled(Boolean v) { this.contactPopupEnabled=v; }
     public Boolean getCalendarVisible() { return calendarVisible; } public void setCalendarVisible(Boolean v) { this.calendarVisible=v; }
     public Boolean getDdayVisible() { return ddayVisible; } public void setDdayVisible(Boolean v) { this.ddayVisible=v; }
@@ -172,6 +182,9 @@ public class WeddingEntity {
             .groomFatherDeceased(groomFatherDeceased).groomMotherDeceased(groomMotherDeceased)
             .brideFatherDeceased(brideFatherDeceased).brideMotherDeceased(brideMotherDeceased)
             .deceasedDisplayType(deceasedDisplayType).groomRelation(groomRelation).brideRelation(brideRelation)
+            .groomBaptism(groomBaptism).brideBaptism(brideBaptism)
+            .groomFatherBaptism(groomFatherBaptism).groomMotherBaptism(groomMotherBaptism)
+            .brideFatherBaptism(brideFatherBaptism).brideMotherBaptism(brideMotherBaptism)
             .contactPopupEnabled(contactPopupEnabled)
             .calendarVisible(calendarVisible).ddayVisible(ddayVisible).calendarStyle(calendarStyle).ddayStyle(ddayStyle)
             .mapPlaceName(mapPlaceName).mapAddressRoad(mapAddressRoad).mapAddress(mapAddress)
@@ -209,6 +222,9 @@ public class WeddingEntity {
         e.setGroomFatherDeceased(d.getGroomFatherDeceased()); e.setGroomMotherDeceased(d.getGroomMotherDeceased());
         e.setBrideFatherDeceased(d.getBrideFatherDeceased()); e.setBrideMotherDeceased(d.getBrideMotherDeceased());
         e.setDeceasedDisplayType(d.getDeceasedDisplayType()); e.setGroomRelation(d.getGroomRelation()); e.setBrideRelation(d.getBrideRelation());
+        e.setGroomBaptism(d.getGroomBaptism()); e.setBrideBaptism(d.getBrideBaptism());
+        e.setGroomFatherBaptism(d.getGroomFatherBaptism()); e.setGroomMotherBaptism(d.getGroomMotherBaptism());
+        e.setBrideFatherBaptism(d.getBrideFatherBaptism()); e.setBrideMotherBaptism(d.getBrideMotherBaptism());
         e.setContactPopupEnabled(d.getContactPopupEnabled());
         e.setCalendarVisible(d.getCalendarVisible()); e.setDdayVisible(d.getDdayVisible());
         e.setCalendarStyle(d.getCalendarStyle()); e.setDdayStyle(d.getDdayStyle());

@@ -62,7 +62,6 @@ var PICKER_GROUPS = [
     { hiddenId: 'calStyleInput',    itemSelector: '.cal-style-card',        dataAttr: 'cal' },
     { hiddenId: 'ddayStyleInput',   itemSelector: '.style-type-item',       dataAttr: 'dday' },
     { hiddenId: 'orderVal',         itemSelector: '#orderTabs .ed-tab',     dataAttr: 'val' },
-    { hiddenId: 'alignInput',       itemSelector: '#alignTabs .ed-tab',     dataAttr: 'val' },
     { hiddenId: 'deceasedInput',    itemSelector: '#deceasedTabs .ed-tab',  dataAttr: 'val' },
     { hiddenId: 'contactInput',     itemSelector: '#contactTabs .ed-tab',   dataAttr: 'val' },
     { hiddenId: 'mapLockVal',       itemSelector: '#mapLockTabs .ed-tab',   dataAttr: 'val' },
@@ -93,18 +92,35 @@ var SECTION_REVERT_HOOKS = {
             thumbImg.style.objectPosition = (posXInput.value !== '' && posYInput.value !== '')
                 ? (posXInput.value + '% ' + posYInput.value + '%') : '';
         }
+        /* 확대 배율 — 되돌아간 히든 값에 슬라이더와 썸네일 transform을 다시 맞춘다.
+           안 하면 슬라이더는 옛 값을 가리키는데 실제 배율은 그대로인 상태가 된다. */
+        var scaleInput = document.getElementById('mainPhotoScaleInput');
+        var savedScale = (scaleInput && scaleInput.value) ? parseFloat(scaleInput.value) : 1;
+        applyMainPhotoZoom(isNaN(savedScale) ? 1 : savedScale);
+
         var b64 = document.getElementById('mainPhotoBase64');
         var thumbWrap = document.getElementById('mainPhotoThumb');
         var hint = document.getElementById('mainUploadHint');
+        var zoomRow = document.getElementById('mainPhotoZoomRow');
         if (b64 && thumbImg) {
             if (b64.value) {
                 thumbImg.src = 'data:image/jpeg;base64,' + b64.value;
                 if (thumbWrap) thumbWrap.style.display = 'block';
                 if (hint) hint.style.display = 'none';
+                if (zoomRow) zoomRow.style.display = 'flex';
             } else {
                 if (thumbWrap) thumbWrap.style.display = 'none';
                 if (hint) hint.style.display = '';
+                if (zoomRow) zoomRow.style.display = 'none';
             }
+        }
+
+        /* 테마가 되돌아갔으면 추천 색상 스와치도 그 테마 것으로 다시 그린다 */
+        var designInput = document.getElementById('mainDesignVal');
+        if (designInput) {
+            var design = designInput.value || 'basic';
+            designInput.dataset.prevDesign = design;
+            updateThemeColorPresets(design);
         }
     },
     map: function() {
@@ -235,6 +251,19 @@ function syncRelation(side, val) {
         input.dispatchEvent(new Event('input', {bubbles:true}));
     }
     scheduleLive(100);
+}
+
+/* 저장된 관계 값을 드롭다운에도 반영 — 안 하면 입력칸엔 "장남"이 있는데
+   드롭다운은 "직접입력"으로 보여서 저장이 안 된 것처럼 읽힌다 */
+function syncRelationSelects() {
+    ['groom', 'bride'].forEach(function(side) {
+        var input  = document.getElementById(side + 'RelationInput');
+        var select = document.getElementById(side + 'RelationSelect');
+        if (!input || !select) return;
+        var val = (input.value || '').trim();
+        var match = Array.prototype.some.call(select.options, function(o) { return o.value === val; });
+        select.value = match ? val : '';
+    });
 }
 
 function pickTab(el, tabGroupId, hiddenId) {
@@ -664,8 +693,25 @@ document.getElementById('removeMainPhoto').addEventListener('click', function(e)
 document.getElementById('galZone').addEventListener('click', function() {
     document.getElementById('galFile').click();
 });
+/* 안내문구("최대 60장")만 있고 실제 제한이 없어서, 넣는 대로 다 들어갔다.
+   갤러리는 base64로 한 컬럼에 통째로 저장되고 2.5초마다 도는 자동저장 POST에
+   매번 전부 실려 나가므로, 장수를 넘기면 편집기가 눈에 띄게 느려진다. */
+var MAX_GAL_IMAGES = 60;
+
 document.getElementById('galFile').addEventListener('change', function() {
     var files = Array.from(this.files);
+    var room  = MAX_GAL_IMAGES - galImages.length;
+
+    if (room <= 0) {
+        showEditorToast('사진은 최대 ' + MAX_GAL_IMAGES + '장까지 첨부할 수 있습니다', 'error');
+        this.value = '';
+        return;
+    }
+    if (files.length > room) {
+        showEditorToast(room + '장만 추가했습니다 (최대 ' + MAX_GAL_IMAGES + '장)', 'error');
+        files = files.slice(0, room);
+    }
+
     files.forEach(function(file) {
         resizeImage(file, 1200, 0.82, function(dataUrl) {
             addGalThumb(dataUrl);
@@ -705,6 +751,23 @@ function addGalThumb(dataUrl) {
     document.getElementById('galleryImagesInput').value = galImages.join('|||');
     scheduleLive(300);
 }
+
+/** 첨부 장수와 대략적인 저장 용량 표시 — 용량이 커지면 편집기가 느려지므로 미리 보이게 */
+function updateGalCounter() {
+    var el = document.getElementById('galCounter');
+    if (!el) return;
+    if (!galImages.length) { el.textContent = ''; return; }
+
+    /* base64 문자 수 → 실제 바이트(≈ 3/4) */
+    var bytes = galImages.reduce(function(sum, u) { return sum + u.length; }, 0) * 0.75;
+    var mb    = bytes / (1024 * 1024);
+    var heavy = mb >= 5;
+
+    el.textContent = galImages.length + ' / ' + MAX_GAL_IMAGES + '장 · 약 ' + mb.toFixed(1) + 'MB'
+                   + (heavy ? ' — 용량이 커서 저장이 느려질 수 있어요' : '');
+    el.style.color = heavy ? '#c4748a' : '#a09080';
+}
+
 function renderGalThumbs() {
     var c = document.getElementById('galThumbs');
     if (!c) return;
@@ -715,6 +778,7 @@ function renderGalThumbs() {
     c.innerHTML = '';
     var row = document.getElementById('galThumbsRow');
     if (row) row.style.display = galImages.length ? 'flex' : 'none';
+    updateGalCounter();
 
     galImages.forEach(function(url) {
         var wrap = document.createElement('div');
@@ -788,24 +852,58 @@ function renderAcctList(side) {
     });
 }
 
+/** 편집기가 다루는 계좌 전체를 한 배열로 — 임시저장/게시 페이로드에 그대로 실린다 */
+function collectAccounts() {
+    return acctData.groom.concat(acctData.bride);
+}
+
+/**
+ * "계좌 저장" 버튼 — 예전에는 /api/account/bulk 로 실데이터를 즉시 덮어썼다.
+ * 그래서 계좌만 게시 전인데 하객 화면에 이미 반영되고, 반대로 미리보기에는
+ * 게시 후 새로고침 전까지 안 보이는 (다른 섹션과 정반대인) 동작이었다.
+ * 이제는 다른 섹션과 똑같이 임시저장만 하고, 실제 반영은 "게시하기"가 담당한다.
+ */
 function saveAllAccounts() {
-    var all = acctData.groom.concat(acctData.bride);
     var btn = document.querySelector('.ed-btn-save-acct');
     var msg = document.getElementById('acctSaveMsg');
-    btn.disabled = true; btn.textContent = '저장 중...';
-    fetch('/api/account/bulk?weddingId=' + WEDDING.id, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(all)})
+    if (btn) { btn.disabled = true; btn.textContent = '저장 중...'; }
+
+    fetch('/api/admin/autosave', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(collectData())
+    })
         .then(function(r){ return r.json(); })
         .then(function(d) {
-            if (d.success) { msg.textContent='✓ 저장되었습니다'; msg.style.color='#6a8a5a'; setTimeout(function(){ msg.textContent=''; },3000); }
-            else { msg.textContent=d.error||'저장 실패'; msg.style.color='#c4748a'; }
+            if (d && d.success) {
+                markDraftSaved();
+                if (msg) {
+                    msg.textContent = '✓ 임시저장했습니다 — "게시하기"를 눌러야 하객 화면에 반영됩니다';
+                    msg.style.color = '#6a8a5a';
+                    setTimeout(function(){ msg.textContent = ''; }, 4000);
+                }
+            } else if (msg) {
+                msg.textContent = (d && d.error) || '저장 실패';
+                msg.style.color = '#c4748a';
+            }
         })
-        .finally(function() { btn.disabled=false; btn.innerHTML='<i class="ti ti-device-floppy"></i> 계좌 저장'; });
+        .catch(function() {
+            if (msg) { msg.textContent = '저장 실패'; msg.style.color = '#c4748a'; }
+        })
+        .finally(function() {
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-device-floppy"></i> 계좌 저장'; }
+        });
 }
-fetch('/api/account?weddingId=' + WEDDING.id).then(function(r){ return r.json(); }).then(function(data) {
-    acctData.groom = data.filter(function(a){ return a.side==='groom'; });
-    acctData.bride = data.filter(function(a){ return a.side==='bride'; });
-    renderAcctList('groom'); renderAcctList('bride');
-});
+
+/* 계좌 초기값 — 서버가 넘겨준 값(임시저장본이 있으면 그것)을 쓴다.
+   별도 fetch로 게시본을 가져오면 편집 중이던 계좌가 매번 게시본으로 되돌아간다. */
+(function initAccounts() {
+    var data = (WEDDING.accounts || []);
+    acctData.groom = data.filter(function(a){ return a.side === 'groom'; });
+    acctData.bride = data.filter(function(a){ return a.side === 'bride'; });
+    renderAcctList('groom');
+    renderAcctList('bride');
+})();
 
 /* ──────────────────────────────────────
    실시간 미리보기 — postMessage
@@ -878,6 +976,9 @@ function collectData() {
     /* deceasedDisplayType — 혼주섹션 탭 값 명시 읽기 */
     var ddEl = document.getElementById('deceasedInput');
     if (ddEl) data.deceasedDisplayType = ddEl.value || 'hanja';
+
+    /* 계좌 — account 테이블에 따로 저장되지만, 임시저장/게시는 이 페이로드로 함께 넘긴다 */
+    data.accounts = collectAccounts();
 
     return data;
 }
@@ -1001,7 +1102,7 @@ document.getElementById('topSaveBtn').addEventListener('click', function() {
     btn.disabled = true;
     btn.textContent = '게시 중...';
 
-    saveAllAccounts();
+    /* 계좌는 collectData()에 함께 실려 게시 요청 한 번으로 반영된다 (별도 저장 호출 불필요) */
     var data = collectData();
 
     fetch('/api/admin/publish', {
@@ -1036,7 +1137,7 @@ if (bottomSaveBtn) {
         btn.disabled = true;
         btn.innerHTML = '<i class="ti ti-loader-2" style="font-size:14px;animation:spin 1s linear infinite;"></i> 게시 중...';
 
-        saveAllAccounts();
+        /* 계좌는 collectData()에 함께 실려 게시 요청 한 번으로 반영된다 (별도 저장 호출 불필요) */
         var data = collectData();
 
         fetch('/api/admin/publish', {
@@ -1589,22 +1690,15 @@ function doMapSearch() {
     var btn = document.querySelector('.map-search-btn-submit');
     if (btn) { btn.disabled = true; btn.textContent = '검색 중...'; }
 
-    /* 카카오 REST API 브라우저 직접 호출 */
-    fetch('https://dapi.kakao.com/v2/local/search/keyword.json?query=' + encodeURIComponent(q) + '&size=15', {
-        method: 'GET',
-        headers: {
-            'Authorization': 'KakaoAK 03a041000c72178b476cbb6e29431e81'
-        }
-    })
+    /* 서버 프록시(/api/map/*) 경유 — REST 키를 브라우저에 노출하지 않기 위해 */
+    fetch('/api/map/search?query=' + encodeURIComponent(q))
     .then(function(r) { return r.json(); })
     .then(function(data) {
         if (btn) { btn.disabled = false; btn.textContent = '검색'; }
         var docs = data.documents || [];
         if (docs.length === 0) {
             /* 키워드 검색 결과 없으면 주소 검색 시도 */
-            return fetch('https://dapi.kakao.com/v2/local/search/address.json?query=' + encodeURIComponent(q), {
-                headers: { 'Authorization': 'KakaoAK 03a041000c72178b476cbb6e29431e81' }
-            })
+            return fetch('/api/map/address?query=' + encodeURIComponent(q))
             .then(function(r) { return r.json(); })
             .then(function(d) {
                 renderMapResults((d.documents || []).map(function(r) {
@@ -2015,6 +2109,7 @@ window.addEventListener('load', function() {
        (되돌리기 버튼에서만 호출되던 것을 최초 로드 시에도 실행 — 안 하면 저장된 값과 무관하게
        템플릿에 하드코딩된 기본 탭이 항상 활성으로 보임: 지도 잠금/자세히보기가 대표적 사례) */
     resyncPickerVisuals();
+    syncRelationSelects();
 
     /* 여기까지가 서버 값 복원 — 이제 스냅샷을 떠 두고 이후의 사용자 편집만 되돌리기 대상으로 삼는다 */
     captureSectionSnapshot();

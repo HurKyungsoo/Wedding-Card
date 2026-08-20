@@ -57,11 +57,21 @@ public class WeddingController {
 
     /* ── slug 기반 공개 청첩장 ── */
     @GetMapping("/w/{slug}")
-    public String invitationBySlug(@PathVariable String slug, Model model) {
+    public String invitationBySlug(@PathVariable String slug,
+                                   @RequestParam(name = "preview", required = false) String preview,
+                                   @AuthenticationPrincipal CustomOAuth2User principal,
+                                   Model model) {
         WeddingDto dto = weddingService.findBySlug(slug)
             .orElseThrow(() -> new IllegalArgumentException("청첩장을 찾을 수 없습니다: " + slug));
-        weddingService.incrementViewCount(dto.getId());
-        viewLogService.recordView(dto.getId());  // 일별 방문 로그 기록
+
+        // 편집기 미리보기(iframe·전체 미리보기)는 조회수/방문로그에서 제외한다.
+        // 편집기를 열거나 미리보기를 새로고침할 때마다 본인 트래픽이 통계에 쌓이던 문제.
+        // 로그인 상태에서만 제외 — 하객이 URL에 ?preview=1을 붙여 집계를 피하지 못하게.
+        boolean editorPreview = "1".equals(preview) && principal != null;
+        if (!editorPreview) {
+            weddingService.incrementViewCount(dto.getId());
+            viewLogService.recordView(dto.getId());  // 일별 방문 로그 기록
+        }
         addFormattedFields(model, dto);
         List<AccountDto> accounts = accountService.findByWeddingId(dto.getId());
         model.addAttribute("accounts", accounts);
@@ -106,11 +116,21 @@ public class WeddingController {
         model.addAttribute("hasDraft", editable.hasDraft());
         model.addAttribute("draftSavedAt", editable.draftSavedAt() != null ? editable.draftSavedAt().toString() : null);
         model.addAttribute("currentUser", principal.getEntity());
-
-        List<AccountDto> accounts = accountService.findByWeddingId(published.getId());
-        model.addAttribute("accounts", accounts);
+        model.addAttribute("accounts", editableAccounts(editable, published.getId()));
         model.addAttribute("kakaoAppKey", kakaoAppKey);
         return "admin/edit";
+    }
+
+    /**
+     * 편집기에 보여줄 계좌 목록 — 임시저장본에 계좌가 들어 있으면 그것을, 없으면 게시본을 쓴다.
+     * 계좌도 다른 섹션처럼 초안 상태를 유지해야 하므로, 편집기를 다시 열었을 때
+     * 게시된 계좌가 아니라 편집 중이던 계좌가 보여야 한다.
+     */
+    private List<AccountDto> editableAccounts(WeddingService.EditableWedding editable, Long weddingId) {
+        if (editable != null && editable.hasDraft() && editable.dto().getAccounts() != null) {
+            return editable.dto().getAccounts();
+        }
+        return accountService.findByWeddingId(weddingId);
     }
 
     /* ── 내 청첩장 저장 (POST) ── */
@@ -131,8 +151,9 @@ public class WeddingController {
     @GetMapping("/admin/edit")
     public String editForm(Model model) {
         WeddingDto published = weddingService.findFirst();
+        WeddingService.EditableWedding editable = null;
         if (published.getId() != null) {
-            WeddingService.EditableWedding editable = weddingService.getEditable(published.getId());
+            editable = weddingService.getEditable(published.getId());
             model.addAttribute("wedding", editable.dto());
             model.addAttribute("hasDraft", editable.hasDraft());
             model.addAttribute("draftSavedAt", editable.draftSavedAt() != null ? editable.draftSavedAt().toString() : null);
@@ -141,7 +162,9 @@ public class WeddingController {
             model.addAttribute("hasDraft", false);
             model.addAttribute("draftSavedAt", null);
         }
-        model.addAttribute("accounts", accountService.findAll());
+        model.addAttribute("accounts", published.getId() != null
+                ? editableAccounts(editable, published.getId())
+                : accountService.findAll());
         model.addAttribute("kakaoAppKey", kakaoAppKey);
         return "admin/edit";
     }
@@ -263,16 +286,36 @@ public class WeddingController {
         }
     }
 
-    /* ── 카카오맵 키워드 검색 프록시 ── */
+    /* ── 카카오맵 키워드 검색 프록시 ──
+       편집기가 브라우저에서 dapi.kakao.com을 직접 호출하면 REST 키를 JS에 박아야 하고
+       (= public 레포에 그대로 노출) 서버가 대신 호출해 결과만 넘겨준다. */
     @GetMapping("/api/map/search")
     @ResponseBody
     public ResponseEntity<String> searchPlace(@RequestParam String query) {
+        return proxyKakaoLocal("keyword", query);
+    }
+
+    /* ── 카카오맵 주소 검색 프록시 — 키워드 검색 결과가 없을 때의 폴백 ── */
+    @GetMapping("/api/map/address")
+    @ResponseBody
+    public ResponseEntity<String> searchAddressProxy(@RequestParam String query) {
+        return proxyKakaoLocal("address", query);
+    }
+
+    /** 카카오 로컬 API(keyword/address) 호출 — 실패해도 편집기가 깨지지 않도록 빈 결과를 반환 */
+    private ResponseEntity<String> proxyKakaoLocal(String kind, String query) {
         String key = (kakaoRestKey != null && !kakaoRestKey.isEmpty()) ? kakaoRestKey : kakaoAppKey;
+        String empty = "{\"documents\":[],\"meta\":{\"total_count\":0}}";
+        if (key == null || key.isEmpty()) {
+            return ResponseEntity.ok()
+                .header("Content-Type", "application/json; charset=UTF-8")
+                .body(empty);
+        }
         try {
             RestTemplate rt = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "KakaoAK " + key);
-            String url = "https://dapi.kakao.com/v2/local/search/keyword.json?query="
+            String url = "https://dapi.kakao.com/v2/local/search/" + kind + ".json?query="
                        + URLEncoder.encode(query, StandardCharsets.UTF_8) + "&size=15";
             ResponseEntity<String> resp = rt.exchange(url, HttpMethod.GET,
                     new HttpEntity<>(headers), String.class);
@@ -282,7 +325,7 @@ public class WeddingController {
         } catch (Exception e) {
             return ResponseEntity.ok()
                 .header("Content-Type", "application/json; charset=UTF-8")
-                .body("{\"documents\":[],\"meta\":{\"total_count\":0}}");
+                .body(empty);
         }
     }
 
@@ -344,6 +387,10 @@ public class WeddingController {
                 dto.setId(weddingId);
                 if (principal != null) dto.setUserId(principal.getUserId());
                 weddingService.publish(weddingId, dto);
+                // 계좌도 이 시점에 반영 — 다른 섹션과 동일하게 "게시해야 하객 화면에 보인다"
+                if (dto.getAccounts() != null) {
+                    accountService.saveAllForWedding(weddingId, dto.getAccounts());
+                }
             } else {
                 weddingService.save(dto);
             }

@@ -35,7 +35,8 @@ public class SecurityConfig {
                     "/", "/login", "/login/**",
                     "/w/**", "/wedding/**",
                     "/css/**", "/js/**", "/images/**", "/fonts/**",
-                    "/api/map/**",
+                    // /api/map/** 은 공개하지 않는다 — 편집기(로그인 필수)만 쓰는 카카오 API
+                    // 프록시라, 열어두면 누구나 우리 REST 키 할당량을 소진시킬 수 있다.
                     "/api/wedding/*/calendar.ics",
                     "/h2-console/**",
                     "/error"

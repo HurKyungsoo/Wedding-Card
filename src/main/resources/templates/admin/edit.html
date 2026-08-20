@@ -99,8 +99,10 @@
 
     <!-- 왼쪽: 실시간 미리보기 -->
     <aside class="ed-preview">
+        <!-- preview=1 — 편집기 미리보기는 조회수/방문로그에 집계하지 않는다.
+             전체 미리보기와 refreshPreview()도 이 주소(INVITATION_URL)를 그대로 물려받는다. -->
         <iframe id="liveFrame"
-                th:src="${wedding.slug != null ? '/w/' + wedding.slug : '/wedding/' + wedding.id}"
+                th:src="${wedding.slug != null ? '/w/' + wedding.slug + '?preview=1' : '/wedding/' + wedding.id + '?preview=1'}"
                 title="실시간 미리보기"></iframe>
         <div class="ed-preview-bottom">
             <label class="ed-scroll-label" id="scrollToggleLabel">
@@ -114,17 +116,12 @@
     <main class="ed-main">
     <form th:action="@{/admin/edit}" method="post" th:object="${wedding}" id="editForm">
         <input type="hidden" th:field="*{id}">
-        <input type="hidden" th:field="*{galleryImages}"   id="galleryImagesInput">
-        <input type="hidden" th:field="*{mainPhotoBase64}" id="mainPhotoBase64">
-        <input type="hidden" th:field="*{photoFilter}"     id="photoFilterInput">
-        <input type="hidden" th:field="*{mainPhotoPosX}"   id="mainPhotoPosXInput">
-        <input type="hidden" th:field="*{mainPhotoPosY}"   id="mainPhotoPosYInput">
-        <input type="hidden" th:field="*{mainPhotoScale}"  id="mainPhotoScaleInput">
-        <input type="hidden" th:field="*{calendarStyle}"   id="calStyleInput">
-        <input type="hidden" th:field="*{ddayStyle}"       id="ddayStyleInput">
-        <input type="hidden" th:field="*{deceasedDisplayType}" id="deceasedDisplayInput">
-        <!-- 슬라이드 메뉴에서 드래그한 섹션 순서 — reorderEditorSections()가 갱신 -->
+        <!-- 슬라이드 메뉴에서 드래그한 섹션 순서 — reorderEditorSections()가 갱신.
+             특정 섹션에 속하지 않는 값이라 여기(폼 최상단)에 둔다. -->
         <input type="hidden" th:field="*{sectionOrder}"    id="sectionOrderInput">
+        <!-- ⚠ 그 외 히든 입력은 각자 해당 섹션(.ed-section) 안에 둘 것.
+             revertSection()이 #sec-xxx 안쪽만 훑기 때문에, 여기에 두면
+             해당 섹션의 "되돌리기"가 그 값을 되돌리지 못한다. -->
 
         <!-- ━━ 메인테마 ━━ -->
         <div class="ed-section open" id="sec-main">
@@ -138,6 +135,13 @@
                 <i class="ti ti-chevron-up ed-chevron"></i>
             </div>
             <div class="ed-sec-bd" id="bd-main">
+
+                <!-- 메인 사진 관련 히든 값 — 이 섹션의 "되돌리기"가 함께 복원할 수 있도록 섹션 안에 둔다 -->
+                <input type="hidden" th:field="*{mainPhotoBase64}" id="mainPhotoBase64">
+                <input type="hidden" th:field="*{photoFilter}"     id="photoFilterInput">
+                <input type="hidden" th:field="*{mainPhotoPosX}"   id="mainPhotoPosXInput">
+                <input type="hidden" th:field="*{mainPhotoPosY}"   id="mainPhotoPosYInput">
+                <input type="hidden" th:field="*{mainPhotoScale}"  id="mainPhotoScaleInput">
 
                 <!-- 메인 사진 -->
                 <div class="ed-row" style="align-items:flex-start">
@@ -326,7 +330,7 @@
                     <div class="ed-row">
                         <div class="ed-ctrl ed-inline-inputs">
                             <input class="ed-input ed-name-input" type="text" th:field="*{groomName}" placeholder="신랑성함">
-                            <input class="ed-input ed-baptism-input" type="text" id="groomBaptism" placeholder="신랑 세례명을 입력해주세요.">
+                            <input class="ed-input ed-baptism-input" type="text" th:field="*{groomBaptism}" placeholder="신랑 세례명을 입력해주세요.">
                         </div>
                     </div>
                 </div>
@@ -337,7 +341,7 @@
                     <div class="ed-row">
                         <div class="ed-ctrl ed-inline-inputs">
                             <input class="ed-input ed-name-input" type="text" th:field="*{brideName}" placeholder="신부성함">
-                            <input class="ed-input ed-baptism-input" type="text" id="brideBaptism" placeholder="신부 세례명을 입력해주세요.">
+                            <input class="ed-input ed-baptism-input" type="text" th:field="*{brideBaptism}" placeholder="신부 세례명을 입력해주세요.">
                         </div>
                     </div>
                 </div>
@@ -408,17 +412,13 @@
                         <textarea class="ed-input" style="height:120px;resize:none;line-height:1.8;" th:field="*{greetingText}" placeholder="따뜻한 인사말을 입력해 주세요."></textarea>
                     </div>
                 </div>
-                <div class="ed-row">
-                    <span class="ed-label">정렬</span>
-                    <div class="ed-ctrl">
-                        <div class="ed-tabs" id="alignTabs">
-                            <button type="button" class="ed-tab" data-val="left"   onclick="pickTab(this,'alignTabs','alignInput')">왼쪽</button>
-                            <button type="button" class="ed-tab active" data-val="center" onclick="pickTab(this,'alignTabs','alignInput')">중앙</button>
-                            <button type="button" class="ed-tab" data-val="right"  onclick="pickTab(this,'alignTabs','alignInput')">오른쪽</button>
-                        </div>
-                        <input type="hidden" th:field="*{greetingAlign}" id="alignInput">
-                    </div>
-                </div>
+                <!-- "정렬"(왼쪽/중앙/오른쪽) 탭 제거 (2026-08-20).
+                     greetingAlign은 저장까지 됐지만 청첩장 쪽 .greet-title/.greet-text가
+                     text-align:center 하드코딩이라 어느 값을 골라도 화면이 그대로였다.
+                     청첩장 인사말은 중앙정렬이 사실상 표준이라 기능 구현 대신 UI를 걷어냄.
+                     엔티티/DTO의 greetingAlign 필드는 남겨둔다 — ddl-auto=update로는 컬럼이
+                     어차피 안 지워지고, 필드를 빼봐야 얻는 게 없다. 나중에 정렬을 정말 지원하려면
+                     .greet-card에 data-align을 달고 CSS만 붙이면 되는 상태로 남겨둔 것이기도 하다. -->
             </div>
         </div>
 
@@ -461,7 +461,7 @@
                             <div class="ed-inline-inputs">
                                 <label class="ed-check-inline"><input type="checkbox" th:field="*{groomFatherDeceased}"> 고인</label>
                                 <input class="ed-input" type="text" th:field="*{groomFatherName}" placeholder="신랑 아버지 성함" style="flex:1;">
-                                <input class="ed-input" type="text" id="groomFatherBaptism" placeholder="신랑 아버지 세례명" style="flex:1.2;">
+                                <input class="ed-input" type="text" th:field="*{groomFatherBaptism}" placeholder="신랑 아버지 세례명" style="flex:1.2;">
                             </div>
                         </div>
                     </div>
@@ -472,7 +472,7 @@
                             <div class="ed-inline-inputs">
                                 <label class="ed-check-inline"><input type="checkbox" th:field="*{groomMotherDeceased}"> 고인</label>
                                 <input class="ed-input" type="text" th:field="*{groomMotherName}" placeholder="신랑 어머니 성함" style="flex:1;">
-                                <input class="ed-input" type="text" id="groomMotherBaptism" placeholder="신랑 어머니 세례명" style="flex:1.2;">
+                                <input class="ed-input" type="text" th:field="*{groomMotherBaptism}" placeholder="신랑 어머니 세례명" style="flex:1.2;">
                             </div>
                         </div>
                     </div>
@@ -509,7 +509,7 @@
                             <div class="ed-inline-inputs">
                                 <label class="ed-check-inline"><input type="checkbox" th:field="*{brideFatherDeceased}"> 고인</label>
                                 <input class="ed-input" type="text" th:field="*{brideFatherName}" placeholder="신부 아버지 성함" style="flex:1;">
-                                <input class="ed-input" type="text" id="brideFatherBaptism" placeholder="신부 아버지 세례명" style="flex:1.2;">
+                                <input class="ed-input" type="text" th:field="*{brideFatherBaptism}" placeholder="신부 아버지 세례명" style="flex:1.2;">
                             </div>
                         </div>
                     </div>
@@ -520,7 +520,7 @@
                             <div class="ed-inline-inputs">
                                 <label class="ed-check-inline"><input type="checkbox" th:field="*{brideMotherDeceased}"> 고인</label>
                                 <input class="ed-input" type="text" th:field="*{brideMotherName}" placeholder="신부 어머니 성함" style="flex:1;">
-                                <input class="ed-input" type="text" id="brideMotherBaptism" placeholder="신부 어머니 세례명" style="flex:1.2;">
+                                <input class="ed-input" type="text" th:field="*{brideMotherBaptism}" placeholder="신부 어머니 세례명" style="flex:1.2;">
                             </div>
                         </div>
                     </div>
@@ -613,6 +613,8 @@
                 <i class="ti ti-chevron-down ed-chevron"></i>
             </div>
             <div class="ed-sec-bd" id="bd-cal" style="display:none;">
+                <!-- 이 섹션의 유일한 값 — 밖에 두면 "되돌리기"가 아무것도 되돌리지 못한다 -->
+                <input type="hidden" th:field="*{calendarStyle}" id="calStyleInput">
                 <div class="ed-row">
                     <span class="ed-label">스타일</span>
                     <div class="ed-ctrl">
@@ -654,6 +656,8 @@
                 <i class="ti ti-chevron-down ed-chevron"></i>
             </div>
             <div class="ed-sec-bd" id="bd-dday" style="display:none;">
+                <!-- 이 섹션의 유일한 값 — 밖에 두면 "되돌리기"가 아무것도 되돌리지 못한다 -->
+                <input type="hidden" th:field="*{ddayStyle}" id="ddayStyleInput">
                 <div class="ed-row">
                     <span class="ed-label">스타일</span>
                     <div class="ed-ctrl">
@@ -682,6 +686,7 @@
                 <i class="ti ti-chevron-down ed-chevron"></i>
             </div>
             <div class="ed-sec-bd" id="bd-gal" style="display:none;">
+                <input type="hidden" th:field="*{galleryImages}" id="galleryImagesInput">
                 <!-- 갤러리 타입 -->
                 <div class="ed-row" style="align-items:flex-start;">
                     <span class="ed-label" style="padding-top:9px;">갤러리 타입</span>
@@ -755,6 +760,8 @@
                     <span class="ed-label" style="padding-top:9px;">첨부된 사진</span>
                     <div class="ed-ctrl">
                         <div class="ed-thumbs" id="galThumbs"></div>
+                        <!-- 장수 / 대략적인 저장 용량 — updateGalCounter()가 갱신 -->
+                        <div id="galCounter" style="font-size:11px;color:#a09080;margin-top:6px;letter-spacing:.1px;"></div>
                     </div>
                 </div>
 
@@ -1046,6 +1053,8 @@ var WEDDING = {
     mainDesign:  /*[[${wedding.mainDesign ?: 'basic'}]]*/ 'basic',
     displayOrder: /*[[${wedding.displayOrder ?: 'groom'}]]*/ 'groom',
     hasPhoto:    /*[[${wedding.mainPhotoBase64 != null and !#strings.isEmpty(wedding.mainPhotoBase64)}]]*/ false,
+    /* 계좌 초기값 — 임시저장본이 있으면 그 계좌, 없으면 게시본 (컨트롤러의 editableAccounts) */
+    accounts:    /*[[${accounts}]]*/ [],
     hasDraft:    /*[[${hasDraft}]]*/ false,
     draftSavedAt:/*[[${draftSavedAt}]]*/ null,
     kakaoAppKey: /*[[${kakaoAppKey}]]*/ ''
