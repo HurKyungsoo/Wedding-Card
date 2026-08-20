@@ -210,7 +210,7 @@ function revertSection(evt, sectionKey) {
         'm-dot-d-dot-y':  m2 + ' · ' + d2 + ' · ' + y,          /* 기본 */
         'ymd-dow-time':   y + '.' + m2 + '.' + d2 + ' ' + DOW[d.getDay()] + ' 13:00',
         'd-mon-y':        d2 + ' · ' + MON[d.getMonth()] + ' · ' + y,  /* Getting Married */
-        'mon-d':          MON[d.getMonth()] + ' · ' + d2,        /* 아치형 */
+        'y-m-d-plain':    y + '. ' + m2 + '. ' + d2,             /* 아치형 — 실제 forever-date와 동일 */
         'm-d':            (d.getMonth() + 1) + '.' + d2,         /* THE MARRIAGE 큰 날짜 */
         'y-m-d':          y + '. ' + m2 + '. ' + d2 + '.'
     };

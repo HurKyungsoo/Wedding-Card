@@ -925,14 +925,17 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-married-big{font-family:'Great Vibes','Dancing Script',cursive;font-size:18px;color:#3a3a3a;position:absolute;bottom:20px;left:8px;line-height:0.95;text-align:left;font-weight:400;}
 .ed-dt-datebar-married{color:#6a6a6a;font-family:'Noto Sans KR',sans-serif;}
 
-/* 5. 아치형 — 흰 배경 + 손글씨 + 이름 + 아치 사진 + 날짜 + 장소 */
-.ed-dt-forever{background:#fff;position:relative;flex-direction:column;justify-content:center;align-items:center;gap:3px;}
-.ed-dt-forever-script{font-family:'Sacramento',cursive;font-size:10px;color:#3a3a3a;text-align:center;line-height:1.15;}
-.ed-dt-forever-names{display:flex;align-items:center;gap:3px;font-family:'Noto Serif KR',serif;font-size:6.5px;color:#3a3a3a;letter-spacing:0.5px;}
-.ed-dt-forever-amp{color:#9a9a9a;font-size:6.5px;}
-.ed-dt-forever-arch{width:36px;height:44px;border-radius:18px 18px 0 0;background:#ececec;border:none;}
-.ed-dt-forever-date{font-family:'Noto Serif KR',serif;font-size:5px;color:#7a7a7a;letter-spacing:0.3px;}
-.ed-dt-forever-place{font-family:'Noto Serif KR',serif;font-size:4.5px;color:#9a9a9a;letter-spacing:0.3px;}
+/* 5. 아치형 — 실제 forever-layout을 그대로 축소.
+   배경 베이지(#F5F2EC), 이름은 세로로 쌓임, 날짜는 민트그린 — 이 세 가지가
+   이 테마의 정체성이라 다른 썸네일처럼 단색 흰색으로 만들면 실제와 딴판이 된다. */
+.ed-dt-forever{background:#F5F2EC;position:relative;flex-direction:column;justify-content:center;align-items:center;gap:0;padding:8px 6px;}
+.ed-dt-forever-script{font-family:'Sacramento',cursive;font-size:11px;color:#2a2a28;text-align:center;line-height:1.15;margin-bottom:4px;}
+/* 실제와 동일하게 세로 배치 (신랑 / & / 신부) */
+.ed-dt-forever-names{display:flex;flex-direction:column;align-items:center;gap:0;font-family:'Noto Serif KR',serif;font-size:6px;color:#2a2a28;letter-spacing:0.5px;line-height:1.35;margin-bottom:5px;}
+.ed-dt-forever-amp{color:#2a2a28;font-size:5.5px;}
+.ed-dt-forever-arch{width:38px;aspect-ratio:3/4;border-radius:999px 999px 0 0;background:#ddd;border:none;margin-bottom:5px;}
+.ed-dt-forever-date{font-family:'Noto Serif KR',serif;font-size:6px;font-weight:500;color:#6FAF8A;letter-spacing:0.6px;margin-bottom:2px;}
+.ed-dt-forever-place{font-family:'Noto Serif KR',serif;font-size:4.5px;color:#5a5a58;letter-spacing:0.8px;}
 
 /* 6. THE MARRIAGE — 라벨 + 큰 날짜 + 이름 + 사진 + 일시·장소 */
 .ed-dt-marriage{background:#fff;flex-direction:column;justify-content:flex-start;align-items:center;padding:9px 6px 6px;gap:0;}
