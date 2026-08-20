@@ -72,9 +72,42 @@ public class WeddingService {
     public WeddingDto createForUser(Long userId) {
         if (repo.countByUserId(userId) >= MAX_WEDDINGS_PER_USER)
             throw new IllegalStateException("청첩장은 최대 " + MAX_WEDDINGS_PER_USER + "개까지 만들 수 있습니다.");
-        WeddingDto dto = getDefaultDto();
+        WeddingDto dto = blankDto();
         dto.setUserId(userId);
         return save(dto);
+    }
+
+    /**
+     * 새 청첩장의 시작 상태 — 설정(테마·스타일·섹션 on/off)은 기본값을 쓰고
+     * "내용"만 비운다.
+     *
+     * getDefaultDto()의 데모 데이터(박지훈·이수아, 그랜드 웨딩홀, 부모님 성함과 전화번호,
+     * 강남 좌표…)를 그대로 두면 두 가지가 문제다.
+     *  ① 마이페이지에서 새로 만든 청첩장이 전부 같은 이름으로 보여 구분이 안 된다
+     *  ② 채우지 않은 채 게시하면 남의 이름·전화번호가 하객에게 그대로 나간다
+     * getDefaultDto()는 데모/샘플 청첩장에도 쓰이므로 그쪽은 건드리지 않는다.
+     */
+    private WeddingDto blankDto() {
+        WeddingDto d = getDefaultDto();
+
+        d.setGroomName(null);        d.setBrideName(null);
+        d.setWeddingDate(null);      d.setWeddingTime(null);
+        d.setWeddingPlace(null);     d.setWeddingAddress(null);
+
+        d.setGroomFatherName(null);  d.setGroomMotherName(null);
+        d.setBrideFatherName(null);  d.setBrideMotherName(null);
+        d.setGroomFatherPhone(null); d.setGroomMotherPhone(null);
+        d.setBrideFatherPhone(null); d.setBrideMotherPhone(null);
+        d.setGroomPhone(null);       d.setBridePhone(null);
+        d.setGroomRelation(null);    d.setBrideRelation(null);
+
+        /* 지도 — 데모 좌표를 남기면 엉뚱한 장소가 표시된다 */
+        d.setMapPlaceName(null);     d.setMapAddressRoad(null);  d.setMapAddress(null);
+        d.setMapLat(null);           d.setMapLng(null);
+
+        /* 인사말 문구는 그대로 둔다 — 직접 쓰기 어려운 부분이라 예시가 도움이 되고,
+           이름·날짜와 달리 남의 개인정보가 아니다 */
+        return d;
     }
 
     /** 소유자일 때만 삭제 */

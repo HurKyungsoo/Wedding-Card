@@ -351,23 +351,10 @@ function pickDesign(el, val, opts) {
     }
     if (input) input.dataset.prevDesign = val;
 
-    /* 테마 선택 시 폼에 값이 없으면 샘플 데이터로 미리보기 채우기 */
-    var groomInput = document.querySelector('[name="groomName"]');
-    var brideInput = document.querySelector('[name="brideName"]');
-    var isEmpty = !groomInput || !groomInput.value.trim();
-    if (isEmpty) {
-        /* 폼 입력값 임시 채우기 */
-        var sampleData = {
-            groomName: '이준서', brideName: '김은재',
-            weddingDate: '2025-10-18', weddingTime: '14:00',
-            weddingPlace: 'MARRIAGE WEDDING HALL', mapPlaceName: 'POCKET HALL',
-            weddingAddress: '서울특별시 강남구 테헤란로 123'
-        };
-        Object.keys(sampleData).forEach(function(k) {
-            var el = document.querySelector('[name="' + k + '"]');
-            if (el && !el.value.trim()) el.value = sampleData[k];
-        });
-    }
+    /* 예전에는 이름이 비어 있으면 테마를 고를 때 폼에 샘플 데이터(이준서·김은재,
+       MARRIAGE WEDDING HALL …)를 직접 써넣었다. 새 청첩장이 데모 데이터로 시작하던
+       시절엔 발동하지 않던 코드지만, 지금은 빈 상태로 시작하므로 테마만 골라도
+       가짜 이름이 폼에 들어가고 그대로 자동저장된다. 폼을 건드리지 않는다. */
 
     /* 디자인 변경 즉시 미리보기 갱신 */
     /* 디자인별 추천 색상 프리셋 표시 */

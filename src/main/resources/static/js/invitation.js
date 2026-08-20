@@ -607,16 +607,23 @@ window.initPage = function(data) {
     var timeStr = data.weddingTime;
 
     // 상단 큰 날짜 (M.DD 형식)
+    // 날짜가 비어 있으면 반드시 지운다 — 안 그러면 템플릿의 자리표시 값(10.24)이
+    // 실제 예식일인 것처럼 하객에게 그대로 보인다
     var heroDateShort = document.getElementById('heroDateShort');
-    if (heroDateShort && dateStr) {
-        var d = new Date(dateStr);
-        var m = d.getMonth() + 1;
-        var day = String(d.getDate()).padStart(2, '0');
-        heroDateShort.textContent = m + '.' + day;
+    if (heroDateShort) {
+        if (dateStr) {
+            var d = new Date(dateStr);
+            var m = d.getMonth() + 1;
+            var day = String(d.getDate()).padStart(2, '0');
+            heroDateShort.textContent = m + '.' + day;
+        } else {
+            heroDateShort.textContent = '';
+        }
     }
 
     // 하단 풀 날짜 (2026. 10. 24. Saturday 12:30 PM)
     var heroDate = document.getElementById('heroDate');
+    if (heroDate && !dateStr) heroDate.textContent = '';   // 자리표시 값이 남지 않도록
     if (heroDate && dateStr) {
         var d2 = new Date(dateStr);
         var daysEn = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];

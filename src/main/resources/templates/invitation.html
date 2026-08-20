@@ -6,7 +6,10 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <title th:text="|${wedding.groomName} ♥ ${wedding.brideName} 결혼합니다|">결혼합니다</title>
+    <!-- 이름을 아직 안 채운 청첩장에서 "null ♥ null"이 탭 제목·공유 미리보기에 나가지 않도록 -->
+    <title th:text="${#strings.isEmpty(wedding.groomName) and #strings.isEmpty(wedding.brideName)
+                     ? '모바일 청첩장'
+                     : (wedding.groomName ?: '신랑') + ' ♥ ' + (wedding.brideName ?: '신부') + ' 결혼합니다'}">결혼합니다</title>
     <style>
         /* 스크롤바 완전 제거 - 인라인으로 최우선 적용 */
         *,*::before,*::after{scrollbar-width:none!important;-ms-overflow-style:none!important;}
