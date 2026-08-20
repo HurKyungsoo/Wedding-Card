@@ -435,6 +435,10 @@ textarea.ed-input{resize:none;line-height:1.75;}
     min-height:100px;
 }
 .ed-upload:hover,.ed-upload.drag-over{border-color:#c4748a;background:#fff5f7;}
+/* 확대(줌) 적용 시 썸네일 박스 밖으로 사진이 삐져나오지 않도록 */
+#mainPhotoThumb{overflow:hidden;border-radius:6px;}
+.ed-photo-zoom-row{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.ed-zoom-slider{flex:1;accent-color:#c4748a;cursor:pointer;}
 .ed-upload i{font-size:24px;color:#c4bea0;}
 .ed-upload p{font-size:12px;color:#9a8a74;margin:0;}
 .ed-thumb-del{

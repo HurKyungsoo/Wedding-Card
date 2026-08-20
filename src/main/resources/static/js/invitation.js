@@ -370,12 +370,17 @@ function initAdvancedScrollEffects() {
             /* 사진이 화면에 있을 때만 */
             if (rect.bottom > 0 && rect.top < window.innerHeight) {
                 var offset = (rect.top) * 0.10;
-                heroImg.style.transform = 'translateY(' + offset + 'px) scale(1.15)';
+                /* 사용자가 편집기에서 지정한 확대 배율이 있으면 그 값을, 없으면 기존 기본 연출(1.15배)을 사용.
+                   여기서 매번 덮어쓰기 때문에 mainPhotoScale을 그냥 무시하고 늘 1.15로 고정해버리던 문제 방지 */
+                var zoom = (window._mainPhotoZoom != null && window._mainPhotoZoom !== 1) ? window._mainPhotoZoom : 1.15;
+                heroImg.style.transform = 'translateY(' + offset + 'px) scale(' + zoom + ')';
             }
         }
     }
     window.addEventListener('scroll', parallaxScroll, { passive: true });
     parallaxScroll();
+    /* 편집기 미리보기에서 확대 슬라이더를 움직였을 때 스크롤 없이도 즉시 반영하기 위해 외부에 노출 */
+    window._invitationParallaxScroll = parallaxScroll;
 
     /* 2) 단어별 순차 등장 — .reveal-words 요소 */
     document.querySelectorAll('.reveal-words').forEach(function(el) {

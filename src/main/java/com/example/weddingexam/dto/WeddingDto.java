@@ -55,6 +55,7 @@ public class WeddingDto {
 
     private String photoFilter, mainPhotoBase64;
     private Double mainPhotoPosX, mainPhotoPosY;
+    private Double mainPhotoScale;
     private String mainDesign, mainFont, mainFontSize, mainFontColor, colorEffect, mainEffect, bgm;
     private Boolean rsvpEnabled;
 
@@ -126,13 +127,16 @@ public class WeddingDto {
     public String getMainPhotoBase64() { return mainPhotoBase64; } public void setMainPhotoBase64(String v) { this.mainPhotoBase64 = v; }
     public Double getMainPhotoPosX() { return mainPhotoPosX; } public void setMainPhotoPosX(Double v) { this.mainPhotoPosX = v; }
     public Double getMainPhotoPosY() { return mainPhotoPosY; } public void setMainPhotoPosY(Double v) { this.mainPhotoPosY = v; }
+    public Double getMainPhotoScale() { return mainPhotoScale; } public void setMainPhotoScale(Double v) { this.mainPhotoScale = v; }
 
-    /** 메인 사진 img 태그용 style 값 — 필터 + (드래그로 지정한) 초점 위치. 위치 미지정 시 테마 기본 CSS를 따름 */
+    /** 메인 사진 img 태그용 style 값 — 필터 + (드래그로 지정한) 초점 위치 + 확대 배율. 미지정 시 테마 기본 CSS를 따름 */
     public String getMainPhotoImgStyle() {
         StringBuilder sb = new StringBuilder();
         if (photoFilter != null && !photoFilter.equals("none")) sb.append("filter:").append(photoFilter).append(";");
         if (mainPhotoPosX != null && mainPhotoPosY != null)
             sb.append("object-position:").append(mainPhotoPosX).append("% ").append(mainPhotoPosY).append("% !important;");
+        if (mainPhotoScale != null && mainPhotoScale != 1.0)
+            sb.append("transform:scale(").append(mainPhotoScale).append(") !important;");
         return sb.toString();
     }
 
@@ -246,6 +250,7 @@ public class WeddingDto {
         public Builder mainPhotoBase64(String v) { d.mainPhotoBase64=v; return this; }
         public Builder mainPhotoPosX(Double v) { d.mainPhotoPosX=v; return this; }
         public Builder mainPhotoPosY(Double v) { d.mainPhotoPosY=v; return this; }
+        public Builder mainPhotoScale(Double v) { d.mainPhotoScale=v; return this; }
         public Builder rsvpEnabled(Boolean v) { d.rsvpEnabled=v; return this; }
         public Builder sectionOrder(String v) { d.sectionOrder=v; return this; }
         public WeddingDto build() { return d; }

@@ -780,6 +780,11 @@
         return raw ? String(raw).split(',').map(function(s){ return s.trim(); }).filter(Boolean) : [];
     })();
 
+    /* 사용자가 지정한 메인 사진 확대 배율 — parallaxScroll()의 기본 1.15배와 합쳐 쓴다.
+       미설정(null)이면 기존처럼 1.15 고정, 지정했으면 그 값이 곧 실제 배율(슬라이더 값 = 화면 배율)이 되도록
+       parallaxScroll() 쪽에서 이 값이 있을 때는 1.15 대신 이 값을 쓴다 */
+    window._mainPhotoZoom = /*[[${wedding.mainPhotoScale}]]*/ null;
+
     initPage({
         weddingDate:     /*[[${wedding.weddingDate}]]*/ '2025-10-25',
         weddingTime:     /*[[${wedding.weddingTime}]]*/ '13:00',
@@ -1864,6 +1869,25 @@
                     el.style.removeProperty('object-position');
                 }
             });
+        }
+
+        /* 사진 확대(줌) 실시간 반영 — 편집기에서 슬라이더를 움직이는 동안 미리보기에 표시.
+           window._mainPhotoZoom도 같이 갱신 — 안 하면 슬라이더 조작 후 미리보기를 스크롤하는 순간
+           parallaxScroll()이 예전 값(또는 기본 1.15배)으로 되돌려버린다 */
+        if (d.mainPhotoScale !== undefined) {
+            window._mainPhotoZoom = d.mainPhotoScale;
+            var scaleImg  = document.querySelector('.hero-fullphoto-img');
+            var scaleArch = document.querySelector('.forever-arch-img');
+            [scaleArch].forEach(function(el) {
+                if (!el) return;
+                if (d.mainPhotoScale != null && d.mainPhotoScale !== 1) {
+                    el.style.setProperty('transform', 'scale(' + d.mainPhotoScale + ')', 'important');
+                } else {
+                    el.style.removeProperty('transform');
+                }
+            });
+            /* hero-fullphoto-img는 parallaxScroll()이 transform을 전담하므로 그쪽을 즉시 한 번 더 실행 */
+            if (scaleImg && typeof window._invitationParallaxScroll === 'function') window._invitationParallaxScroll();
         }
     });
 

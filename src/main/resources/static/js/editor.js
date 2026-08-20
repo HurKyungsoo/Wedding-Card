@@ -481,6 +481,17 @@ updateDateCard();
 /* 갤러리와 같은 리사이즈 적용 — 원본을 그대로 base64로 저장하면 이 청첩장에서
    가장 자주(전체 화면 히어로) 로드되는 사진이 제일 큰 용량으로 남는 문제 방지.
    히어로 사진은 갤러리 썸네일보다 크게 표시되므로 폭을 조금 더 넉넉히 잡는다. */
+/* 사진 확대(줌) 배율 적용 — 슬라이더, 새 업로드, 사진 제거, 페이지 로드 복원에서 공통으로 사용 */
+function applyMainPhotoZoom(scale) {
+    scale = Math.max(1, Math.min(2.5, scale || 1));
+    var scaleInput = document.getElementById('mainPhotoScaleInput');
+    var slider = document.getElementById('mainPhotoZoomSlider');
+    var thumb = document.getElementById('mainThumbImg');
+    if (scaleInput) scaleInput.value = scale === 1 ? '' : scale.toFixed(2);
+    if (slider) slider.value = scale;
+    if (thumb) thumb.style.transform = scale === 1 ? '' : 'scale(' + scale + ')';
+}
+
 function handleMainPhotoFile(file) {
     if (!file) return;
     resizeImage(file, 1440, 0.85, function(dataUrl) {
@@ -488,15 +499,18 @@ function handleMainPhotoFile(file) {
         if (b64) b64.value = dataUrl.split(',')[1];
         var thumb = document.getElementById('mainThumbImg');
         if (thumb) { thumb.src = dataUrl; thumb.style.objectPosition = ''; }
-        /* 새 사진이므로 이전 위치(초점) 조정값 초기화 */
+        /* 새 사진이므로 이전 위치(초점)·확대 조정값 초기화 */
         var posXEl = document.getElementById('mainPhotoPosXInput');
         var posYEl = document.getElementById('mainPhotoPosYInput');
         if (posXEl) posXEl.value = '';
         if (posYEl) posYEl.value = '';
+        applyMainPhotoZoom(1);
         var hint = document.getElementById('mainUploadHint');
         if (hint) hint.style.display = 'none';
         var thumbWrap = document.getElementById('mainPhotoThumb');
         if (thumbWrap) thumbWrap.style.display = 'block';
+        var zoomRow = document.getElementById('mainPhotoZoomRow');
+        if (zoomRow) zoomRow.style.display = 'flex';
         /* 날짜 카드 사진 (있을 때만) */
         var dcImg = document.getElementById('dcImg');
         var dcPh  = document.getElementById('dcPlaceholder');
@@ -555,8 +569,21 @@ document.getElementById('removeMainPhoto').addEventListener('click', function(e)
     var posYEl = document.getElementById('mainPhotoPosYInput');
     if (posXEl) posXEl.value = '';
     if (posYEl) posYEl.value = '';
+    applyMainPhotoZoom(1);
+    var zoomRow = document.getElementById('mainPhotoZoomRow');
+    if (zoomRow) zoomRow.style.display = 'none';
     scheduleLive(200);
 });
+
+/* 사진 확대(줌) 슬라이더 */
+(function() {
+    var slider = document.getElementById('mainPhotoZoomSlider');
+    if (!slider) return;
+    slider.addEventListener('input', function() {
+        applyMainPhotoZoom(parseFloat(this.value));
+        scheduleLive(100);
+    });
+})();
 
 /* ──────────────────────────────────────
    메인 사진 위치(초점) 드래그 조정 — object-position을 드래그로 지정
@@ -864,6 +891,7 @@ function sendLive() {
     var photoFilter = data.photoFilter || 'none';
     var photoPosX = data.mainPhotoPosX !== undefined && data.mainPhotoPosX !== '' ? parseFloat(data.mainPhotoPosX) : null;
     var photoPosY = data.mainPhotoPosY !== undefined && data.mainPhotoPosY !== '' ? parseFloat(data.mainPhotoPosY) : null;
+    var photoScale = data.mainPhotoScale !== undefined && data.mainPhotoScale !== '' ? parseFloat(data.mainPhotoScale) : null;
     delete data.mainPhotoBase64;  /* 메인 payload에서 제거 */
 
     try {
@@ -874,7 +902,7 @@ function sendLive() {
             try {
                 liveFrame.contentWindow.postMessage({
                     type: 'WEDDING_PHOTO_UPDATE',
-                    payload: { mainPhotoBase64: photoB64, photoFilter: photoFilter, mainPhotoPosX: photoPosX, mainPhotoPosY: photoPosY }
+                    payload: { mainPhotoBase64: photoB64, photoFilter: photoFilter, mainPhotoPosX: photoPosX, mainPhotoPosY: photoPosY, mainPhotoScale: photoScale }
                 }, window.location.origin);
             } catch(e2) {}
         }, 50);
@@ -1074,6 +1102,7 @@ document.getElementById('fullPrevBtn').addEventListener('click', function() {
             var photoFilter = data.photoFilter || 'none';
             var photoPosX = data.mainPhotoPosX !== undefined && data.mainPhotoPosX !== '' ? parseFloat(data.mainPhotoPosX) : null;
             var photoPosY = data.mainPhotoPosY !== undefined && data.mainPhotoPosY !== '' ? parseFloat(data.mainPhotoPosY) : null;
+            var photoScale = data.mainPhotoScale !== undefined && data.mainPhotoScale !== '' ? parseFloat(data.mainPhotoScale) : null;
             delete data.mainPhotoBase64;
             try {
                 frame.contentWindow.postMessage({type:'WEDDING_LIVE_UPDATE', payload:data}, window.location.origin);
@@ -1081,7 +1110,7 @@ document.getElementById('fullPrevBtn').addEventListener('click', function() {
                     try {
                         frame.contentWindow.postMessage({
                             type:'WEDDING_PHOTO_UPDATE',
-                            payload:{mainPhotoBase64:photoB64, photoFilter:photoFilter, mainPhotoPosX:photoPosX, mainPhotoPosY:photoPosY}
+                            payload:{mainPhotoBase64:photoB64, photoFilter:photoFilter, mainPhotoPosX:photoPosX, mainPhotoPosY:photoPosY, mainPhotoScale:photoScale}
                         }, window.location.origin);
                     } catch(e2) {}
                 }, 60);
@@ -1944,6 +1973,13 @@ window.addEventListener('load', function() {
         var dcImg = document.getElementById('dcImg');
         if (dcPh)  dcPh.style.display = 'none';
         if (dcImg) { dcImg.style.display = 'block'; dcImg.src = photoDataUrl; }
+
+        /* 저장된 확대(줌) 배율 복원 */
+        var zoomRow = document.getElementById('mainPhotoZoomRow');
+        if (zoomRow) zoomRow.style.display = 'flex';
+        var scaleInput = document.getElementById('mainPhotoScaleInput');
+        var savedScale = scaleInput && scaleInput.value ? parseFloat(scaleInput.value) : 1;
+        applyMainPhotoZoom(isNaN(savedScale) ? 1 : savedScale);
     }
 
     /* 토글 상태에 따라 섹션 제목 색상 + 즉시 반영 */

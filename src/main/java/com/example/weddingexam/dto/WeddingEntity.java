@@ -58,6 +58,8 @@ public class WeddingEntity {
     @Column(columnDefinition = "TEXT") private String mainPhotoBase64;
     /** 메인 사진 초점 위치 — CSS object-position 값(%), 미설정 시 테마 기본값 사용 */
     private Double mainPhotoPosX, mainPhotoPosY;
+    /** 메인 사진 확대 배율 — CSS transform:scale() 값(1.0 = 원본), 미설정/1.0이면 확대 없음 */
+    private Double mainPhotoScale;
     private String mainDesign, mainFont, mainFontSize, mainFontColor, colorEffect, mainEffect, bgm;
     private Boolean rsvpEnabled;
 
@@ -144,6 +146,7 @@ public class WeddingEntity {
     public String getMainPhotoBase64() { return mainPhotoBase64; } public void setMainPhotoBase64(String v) { this.mainPhotoBase64=v; }
     public Double getMainPhotoPosX() { return mainPhotoPosX; } public void setMainPhotoPosX(Double v) { this.mainPhotoPosX=v; }
     public Double getMainPhotoPosY() { return mainPhotoPosY; } public void setMainPhotoPosY(Double v) { this.mainPhotoPosY=v; }
+    public Double getMainPhotoScale() { return mainPhotoScale; } public void setMainPhotoScale(Double v) { this.mainPhotoScale=v; }
     public String getMainDesign() { return mainDesign; } public void setMainDesign(String v) { this.mainDesign=v; }
     public String getMainFont() { return mainFont; } public void setMainFont(String v) { this.mainFont=v; }
     public String getMainFontSize() { return mainFontSize; } public void setMainFontSize(String v) { this.mainFontSize=v; }
@@ -177,7 +180,7 @@ public class WeddingEntity {
             .mapNaviKakao(mapNaviKakao).mapNaviTmap(mapNaviTmap).mapNaviNaver(mapNaviNaver)
             .galleryVisible(galleryVisible).accountVisible(accountVisible).galleryImages(galleryImages).galleryType(galleryType).galleryScrollGuide(galleryScrollGuide)
             .photoFilter(photoFilter).mainPhotoBase64(mainPhotoBase64)
-            .mainPhotoPosX(mainPhotoPosX).mainPhotoPosY(mainPhotoPosY)
+            .mainPhotoPosX(mainPhotoPosX).mainPhotoPosY(mainPhotoPosY).mainPhotoScale(mainPhotoScale)
             .mainDesign(mainDesign).mainFont(mainFont).mainFontSize(mainFontSize).mainFontColor(mainFontColor)
             .colorEffect(colorEffect).mainEffect(mainEffect).bgm(bgm)
             .displayOrder(displayOrder)
@@ -217,6 +220,7 @@ public class WeddingEntity {
         e.setGalleryType(d.getGalleryType()); e.setGalleryScrollGuide(d.getGalleryScrollGuide());
         e.setPhotoFilter(d.getPhotoFilter()); e.setMainPhotoBase64(d.getMainPhotoBase64());
         e.setMainPhotoPosX(d.getMainPhotoPosX()); e.setMainPhotoPosY(d.getMainPhotoPosY());
+        e.setMainPhotoScale(d.getMainPhotoScale());
         e.setMainDesign(d.getMainDesign()); e.setMainFont(d.getMainFont()); e.setMainFontSize(d.getMainFontSize());
         e.setMainFontColor(d.getMainFontColor()); e.setColorEffect(d.getColorEffect());
         e.setMainEffect(d.getMainEffect()); e.setBgm(d.getBgm());

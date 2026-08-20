@@ -119,6 +119,7 @@
         <input type="hidden" th:field="*{photoFilter}"     id="photoFilterInput">
         <input type="hidden" th:field="*{mainPhotoPosX}"   id="mainPhotoPosXInput">
         <input type="hidden" th:field="*{mainPhotoPosY}"   id="mainPhotoPosYInput">
+        <input type="hidden" th:field="*{mainPhotoScale}"  id="mainPhotoScaleInput">
         <input type="hidden" th:field="*{calendarStyle}"   id="calStyleInput">
         <input type="hidden" th:field="*{ddayStyle}"       id="ddayStyleInput">
         <input type="hidden" th:field="*{deceasedDisplayType}" id="deceasedDisplayInput">
@@ -151,6 +152,13 @@
                                 <img id="mainThumbImg" alt="" style="width:100%;border-radius:6px;display:block;max-height:240px;object-fit:cover;">
                                 <button type="button" id="removeMainPhoto" class="ed-thumb-del"><i class="ti ti-x"></i></button>
                             </div>
+                        </div>
+                        <!-- 사진 확대(줌) — 사진이 있을 때만 표시. 드래그 위치조정과 함께 써서
+                             인스타그램 프로필 사진 편집처럼 확대 후 원하는 부분으로 밀 수 있게 함 -->
+                        <div class="ed-photo-zoom-row" id="mainPhotoZoomRow" style="display:none;">
+                            <i class="ti ti-zoom-out"></i>
+                            <input type="range" id="mainPhotoZoomSlider" class="ed-zoom-slider" min="1" max="2.5" step="0.02" value="1">
+                            <i class="ti ti-zoom-in"></i>
                         </div>
                         <input type="file" id="mainPhotoFile" accept="image/*" style="display:none">
                     </div>
