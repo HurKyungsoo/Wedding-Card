@@ -45,6 +45,9 @@ public class SecurityConfig {
                     "/", "/login", "/login/**",
                     "/w/**", "/wedding/**",
                     "/css/**", "/js/**", "/images/**", "/fonts/**",
+                    // 파비콘류는 루트 경로라 위 정적 패턴에 안 걸린다 — 따로 열어줘야
+                    // 브라우저가 탭 아이콘을 못 받고 로그인 페이지로 튕긴다
+                    "/favicon.svg", "/favicon-32.png", "/favicon.ico", "/apple-touch-icon.png",
                     // /api/map/** 은 공개하지 않는다 — 편집기(로그인 필수)만 쓰는 카카오 API
                     // 프록시라, 열어두면 누구나 우리 REST 키 할당량을 소진시킬 수 있다.
                     "/api/wedding/*/calendar.ics",
