@@ -49,6 +49,43 @@ public class WeddingService {
             .map(WeddingEntity::toDto).collect(Collectors.toList());
     }
 
+    /** 한 사용자가 만들 수 있는 청첩장 수 상한 */
+    public static final int MAX_WEDDINGS_PER_USER = 10;
+
+    /** 마이페이지 목록 — 최근에 만든 것부터 */
+    @Transactional(readOnly = true)
+    public List<WeddingDto> findByUserIdOrderByCreatedAtDesc(Long userId) {
+        return repo.findByUserIdOrderByCreatedAtDesc(userId).stream()
+            .map(WeddingEntity::toDto).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public long countByUserId(Long userId) {
+        return repo.countByUserId(userId);
+    }
+
+    /**
+     * 새 청첩장 생성 — 마이페이지 "새로 만들기".
+     * 사용자당 상한을 두지 않으면 새로고침 한 번에 계속 쌓인다.
+     */
+    @Transactional
+    public WeddingDto createForUser(Long userId) {
+        if (repo.countByUserId(userId) >= MAX_WEDDINGS_PER_USER)
+            throw new IllegalStateException("청첩장은 최대 " + MAX_WEDDINGS_PER_USER + "개까지 만들 수 있습니다.");
+        WeddingDto dto = getDefaultDto();
+        dto.setUserId(userId);
+        return save(dto);
+    }
+
+    /** 소유자일 때만 삭제 */
+    @Transactional
+    public boolean deleteForUser(Long weddingId, Long userId) {
+        return repo.findById(weddingId)
+            .filter(e -> userId != null && userId.equals(e.getUserId()))
+            .map(e -> { repo.delete(e); return true; })
+            .orElse(false);
+    }
+
     /** 해당 청첩장이 로그인한 사용자 소유인지 확인 (API 스코핑용) */
     @Transactional(readOnly = true)
     public boolean isOwnedByUser(Long weddingId, Long userId) {

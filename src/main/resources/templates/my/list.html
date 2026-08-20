@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>내 청첩장 — WeddingCard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:#fdfaf7;font-family:'Noto Sans KR',sans-serif;color:#1c1814;min-height:100dvh;}
+
+.mp-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 24px;background:#fff;border-bottom:1px solid #eee7df;
+    position:sticky;top:0;z-index:10;
+}
+.mp-logo{font-family:'Noto Serif KR',serif;font-size:17px;font-weight:600;letter-spacing:1.2px;color:#1c1814;text-decoration:none;}
+.mp-header-right{display:flex;align-items:center;gap:12px;}
+.mp-user{font-size:13px;color:#7a6a58;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mp-logout{font:inherit;font-size:13px;color:#a09080;background:none;border:none;cursor:pointer;padding:0;}
+.mp-logout:hover{color:#6a5a4a;}
+
+.mp-wrap{max-width:900px;margin:0 auto;padding:40px 24px 80px;}
+.mp-title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap;}
+.mp-title{font-family:'Noto Serif KR',serif;font-size:28px;font-weight:300;letter-spacing:-0.3px;}
+.mp-sub{font-size:13px;color:#8a7a68;margin-top:6px;}
+.mp-new-btn{
+    display:inline-flex;align-items:center;gap:7px;
+    background:#1c1814;color:#fff;text-decoration:none;
+    padding:11px 20px;border-radius:10px;font-size:14px;font-weight:500;
+    transition:opacity .15s;white-space:nowrap;
+}
+.mp-new-btn:hover{opacity:.85;}
+.mp-new-btn.disabled{background:#d8d0c6;pointer-events:none;}
+
+.mp-error{
+    background:#fdf0f2;border:1px solid #f0d4da;color:#b4566e;
+    padding:11px 15px;border-radius:10px;font-size:13px;margin-bottom:20px;
+}
+
+.mp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:16px;}
+.mp-card{
+    background:#fff;border:1px solid #eee7df;border-radius:14px;
+    padding:20px;display:flex;flex-direction:column;gap:14px;
+    transition:box-shadow .18s,transform .18s;
+}
+.mp-card:hover{box-shadow:0 6px 20px rgba(90,70,50,.09);transform:translateY(-2px);}
+
+.mp-card-top{display:flex;align-items:center;gap:8px;}
+.mp-badge{
+    display:inline-flex;align-items:center;gap:5px;align-self:flex-start;
+    font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;letter-spacing:.2px;
+}
+.mp-badge.draft{background:#fdf3e3;color:#a97b34;}
+.mp-badge.live{background:#eaf3ec;color:#4a7d5b;}
+
+.mp-names{font-family:'Noto Serif KR',serif;font-size:19px;font-weight:400;line-height:1.4;word-break:keep-all;}
+.mp-names.empty{color:#b0a496;font-weight:300;}
+.mp-meta{font-size:12.5px;color:#8a7a68;line-height:1.9;}
+.mp-meta i{font-size:13px;margin-right:5px;color:#c0b3a4;vertical-align:-1px;}
+
+.mp-actions{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:4px;flex-wrap:wrap;}
+.mp-btn{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:13px;padding:8px 14px;border-radius:8px;text-decoration:none;cursor:pointer;
+    border:1px solid #e0d8ce;background:#fff;color:#5a4e40;font-family:inherit;
+    transition:background .15s,border-color .15s;
+}
+.mp-btn:hover{background:#faf6f1;border-color:#c4a882;}
+.mp-btn.primary{background:#1c1814;border-color:#1c1814;color:#fff;}
+.mp-btn.primary:hover{opacity:.85;background:#1c1814;}
+.mp-btn.danger{border-color:transparent;color:#b8909a;padding:8px 10px;}
+.mp-btn.danger:hover{background:#fdf0f2;color:#c4748a;border-color:transparent;}
+
+.mp-empty{
+    text-align:center;padding:72px 24px;background:#fff;
+    border:1px dashed #e0d8ce;border-radius:16px;
+}
+.mp-empty i{font-size:42px;color:#d8cfc2;}
+.mp-empty-title{font-family:'Noto Serif KR',serif;font-size:19px;font-weight:300;margin:16px 0 8px;}
+.mp-empty-sub{font-size:13.5px;color:#8a7a68;line-height:1.8;margin-bottom:24px;}
+
+@media (max-width:520px){
+    .mp-wrap{padding:28px 16px 60px;}
+    .mp-title{font-size:23px;}
+    .mp-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<header class="mp-header">
+    <a href="/" class="mp-logo">WeddingCard</a>
+    <div class="mp-header-right">
+        <span class="mp-user" th:if="${currentUser != null}" th:text="${currentUser.name}">사용자</span>
+        <form th:action="@{/logout}" method="post" style="margin:0;">
+            <button type="submit" class="mp-logout">로그아웃</button>
+        </form>
+    </div>
+</header>
+
+<div class="mp-wrap">
+
+    <div class="mp-title-row">
+        <div>
+            <h1 class="mp-title">내 청첩장</h1>
+            <p class="mp-sub">
+                <span th:text="${#lists.size(rows)}">0</span>개 ·
+                최대 <span th:text="${maxWeddings}">10</span>개까지 만들 수 있어요
+            </p>
+        </div>
+        <a th:if="${canCreate}" href="/my/create" class="mp-new-btn">
+            <i class="ti ti-plus"></i> 새 청첩장 만들기
+        </a>
+        <span th:unless="${canCreate}" class="mp-new-btn disabled">
+            <i class="ti ti-plus"></i> 새 청첩장 만들기
+        </span>
+    </div>
+
+    <div class="mp-error" th:if="${errorMessage != null}" th:text="${errorMessage}"></div>
+
+    <!-- 청첩장이 하나도 없을 때 -->
+    <div class="mp-empty" th:if="${#lists.isEmpty(rows)}">
+        <i class="ti ti-mail-heart"></i>
+        <div class="mp-empty-title">아직 만든 청첩장이 없어요</div>
+        <p class="mp-empty-sub">
+            5분이면 첫 청첩장을 만들 수 있어요.<br>
+            만들다 멈춰도 저장되니 편하게 시작해 보세요.
+        </p>
+        <a href="/my/create" class="mp-new-btn"><i class="ti ti-edit"></i> 청첩장 만들기</a>
+    </div>
+
+    <!-- 목록 -->
+    <div class="mp-grid" th:unless="${#lists.isEmpty(rows)}">
+        <div class="mp-card" th:each="row : ${rows}">
+
+            <!-- 상태 뱃지 + 삭제를 한 줄에 — 삭제를 액션 줄에 두면 버튼 3개가 안 맞아
+                 줄바꿈되면서 혼자 떠 보인다 -->
+            <div class="mp-card-top">
+                <span class="mp-badge draft" th:if="${row.hasDraft}">
+                    <i class="ti ti-pencil"></i> 작성 중
+                </span>
+                <span class="mp-badge live" th:unless="${row.hasDraft}">
+                    <i class="ti ti-check"></i> 게시됨
+                </span>
+                <form th:action="@{'/my/' + ${row.wedding.id} + '/delete'}" method="post"
+                      style="margin:0 0 0 auto;"
+                      onsubmit="return confirm('이 청첩장을 삭제할까요? 되돌릴 수 없습니다.');">
+                    <button type="submit" class="mp-btn danger" title="삭제"><i class="ti ti-trash"></i></button>
+                </form>
+            </div>
+
+            <div class="mp-names"
+                 th:classappend="${#strings.isEmpty(row.wedding.groomName) and #strings.isEmpty(row.wedding.brideName)} ? 'empty' : ''"
+                 th:text="${#strings.isEmpty(row.wedding.groomName) and #strings.isEmpty(row.wedding.brideName)
+                            ? '제목 없는 청첩장'
+                            : (row.wedding.groomName ?: '신랑') + ' ♥ ' + (row.wedding.brideName ?: '신부')}">
+                신랑 ♥ 신부
+            </div>
+
+            <div class="mp-meta">
+                <div th:if="${!#strings.isEmpty(row.wedding.weddingDate)}">
+                    <i class="ti ti-calendar-event"></i><span th:text="${row.wedding.weddingDate}">2026-10-24</span>
+                </div>
+                <div th:if="${!#strings.isEmpty(row.wedding.weddingPlace)}">
+                    <i class="ti ti-map-pin"></i><span th:text="${row.wedding.weddingPlace}">웨딩홀</span>
+                </div>
+                <div th:if="${row.hasDraft and row.draftSavedAt != null}">
+                    <i class="ti ti-clock"></i>
+                    <span th:text="${#temporals.format(row.draftSavedAt, 'yyyy.MM.dd HH:mm')} + ' 임시저장'">임시저장</span>
+                </div>
+            </div>
+
+            <div class="mp-actions">
+                <a class="mp-btn primary" th:href="@{/my/edit(id=${row.wedding.id})}">
+                    <i class="ti ti-edit"></i>
+                    <span th:text="${row.hasDraft} ? '이어서 만들기' : '편집하기'">편집하기</span>
+                </a>
+                <a class="mp-btn" th:if="${row.wedding.slug != null}"
+                   th:href="@{'/w/' + ${row.wedding.slug}}" target="_blank" rel="noopener">
+                    <i class="ti ti-external-link"></i> 보기
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

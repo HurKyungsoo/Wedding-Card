@@ -79,34 +79,69 @@ public class WeddingController {
         return "invitation";
     }
 
-    /* ── 내 청첩장 생성 ── */
+    /* ── 마이페이지 — 내 청첩장 목록 ── */
+    @GetMapping("/my")
+    public String myPage(@AuthenticationPrincipal CustomOAuth2User principal,
+                         @RequestParam(name = "error", required = false) String error,
+                         Model model) {
+        Long userId = principal.getUserId();
+        List<WeddingDto> weddings = weddingService.findByUserIdOrderByCreatedAtDesc(userId);
+
+        // 목록에 "작성 중 / 게시됨"을 보여주기 위해 청첩장별 임시저장 상태를 함께 넘긴다
+        List<MyWeddingRow> rows = weddings.stream().map(w -> {
+            WeddingService.EditableWedding editable = weddingService.getEditable(w.getId());
+            return new MyWeddingRow(editable.dto(), editable.hasDraft(), editable.draftSavedAt());
+        }).toList();
+
+        model.addAttribute("rows", rows);
+        model.addAttribute("currentUser", principal.getEntity());
+        model.addAttribute("canCreate", weddings.size() < WeddingService.MAX_WEDDINGS_PER_USER);
+        model.addAttribute("maxWeddings", WeddingService.MAX_WEDDINGS_PER_USER);
+        model.addAttribute("errorMessage", error);
+        return "my/list";
+    }
+
+    /** 마이페이지 목록 한 줄 — 청첩장 내용 + 임시저장 상태 */
+    public record MyWeddingRow(WeddingDto wedding, boolean hasDraft, LocalDateTime draftSavedAt) {}
+
+    /* ── 새 청첩장 만들기 ── */
     @GetMapping("/my/create")
     public String createWedding(@AuthenticationPrincipal CustomOAuth2User principal) {
-        // 이미 청첩장이 있으면 편집기로 이동
-        List<WeddingDto> existing = weddingService.findByUserId(principal.getUserId());
-        if (!existing.isEmpty()) return "redirect:/my/edit";
+        try {
+            WeddingDto created = weddingService.createForUser(principal.getUserId());
+            return "redirect:/my/edit?id=" + created.getId();
+        } catch (IllegalStateException e) {
+            return "redirect:/my?error=" + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
+        }
+    }
 
-        WeddingDto dto = weddingService.getDefaultDto();
-        dto.setUserId(principal.getUserId());
-        weddingService.save(dto);
-        return "redirect:/my/edit";
+    /* ── 내 청첩장 삭제 ── */
+    @PostMapping("/my/{id}/delete")
+    public String deleteMyWedding(@PathVariable Long id,
+                                  @AuthenticationPrincipal CustomOAuth2User principal) {
+        weddingService.deleteForUser(id, principal.getUserId());
+        return "redirect:/my";
     }
 
     /* ── 내 청첩장 편집 (GET) ── */
     @GetMapping("/my/edit")
     public String myEdit(@AuthenticationPrincipal CustomOAuth2User principal,
+                         @RequestParam(name = "id", required = false) Long id,
                          HttpSession session, Model model) {
         Long userId = principal.getUserId();
+        List<WeddingDto> weddings = weddingService.findByUserIdOrderByCreatedAtDesc(userId);
 
-        List<WeddingDto> weddings = weddingService.findByUserId(userId);
         WeddingDto published;
-        if (weddings.isEmpty()) {
-            // 청첩장이 없으면 자동 생성
-            WeddingDto newDto = weddingService.getDefaultDto();
-            newDto.setUserId(userId);
-            published = weddingService.save(newDto);
+        if (id != null) {
+            // 남의 청첩장을 id로 열지 못하게 소유 확인
+            if (!weddingService.isOwnedByUser(id, userId)) return "redirect:/my";
+            published = weddingService.findById(id);
+        } else if (weddings.size() == 1) {
+            published = weddings.get(0);            // 하나뿐이면 바로 연다
+        } else if (weddings.isEmpty()) {
+            published = weddingService.createForUser(userId);
         } else {
-            published = weddings.get(0);
+            return "redirect:/my";                  // 여러 개면 어느 것인지 고르게 한다
         }
 
         session.setAttribute("myWeddingId", published.getId());
@@ -136,15 +171,17 @@ public class WeddingController {
     /* ── 내 청첩장 저장 (POST) ── */
     @PostMapping("/my/edit")
     public String myUpdate(@ModelAttribute WeddingDto dto,
-                           @AuthenticationPrincipal CustomOAuth2User principal) {
+                           @AuthenticationPrincipal CustomOAuth2User principal,
+                           HttpSession session) {
         Long userId = principal.getUserId();
-        List<WeddingDto> weddings = weddingService.findByUserId(userId);
-        if (weddings.isEmpty()) return "redirect:/my/edit";
+        // 폼의 id를 쓰되 소유 확인을 거친다 — "첫 번째 청첩장"으로 고정하면
+        // 여러 개일 때 엉뚱한 청첩장을 덮어쓴다
+        Long weddingId = resolveWeddingId(dto, principal, session);
+        if (weddingId == null) return "redirect:/my";
 
-        Long weddingId = weddings.get(0).getId();
         dto.setUserId(userId);
         weddingService.update(weddingId, dto);
-        return "redirect:/my/edit?saved=true";
+        return "redirect:/my/edit?id=" + weddingId + "&saved=true";
     }
 
     /* ── 기존 단일 청첩장 어드민 (하위 호환) ── */
@@ -420,20 +457,31 @@ public class WeddingController {
     }
 
     /**
-     * 현재 편집 중인 청첩장 ID를 확인 — 로그인한 사용자의 소유 청첩장을 최우선으로 사용해
-     * 요청 본문의 id를 신뢰해 다른 사용자의 청첩장을 덮어쓰는 것을 방지한다.
+     * 지금 편집 중인 청첩장 ID를 확인한다.
+     *
+     * 요청 본문의 id를 쓰되 "그 청첩장이 요청자 소유인지"를 반드시 확인한다 —
+     * 확인 없이 쓰면 남의 청첩장을 덮어쓸 수 있다.
+     *
+     * 예전에는 로그인 사용자면 본문 id를 무시하고 무조건 첫 번째 청첩장을 돌려줬다.
+     * 청첩장이 하나뿐일 땐 문제가 없었지만, 여러 개를 만들 수 있게 되면
+     * 두 번째 청첩장을 편집해도 첫 번째에 저장되는 심각한 버그가 된다.
      */
     private Long resolveWeddingId(WeddingDto dto, CustomOAuth2User principal, HttpSession session) {
-        if (principal != null) {
-            List<WeddingDto> weddings = weddingService.findByUserId(principal.getUserId());
-            if (!weddings.isEmpty()) return weddings.get(0).getId();
-        }
-        Long weddingId = dto.getId();
-        if (weddingId == null) {
-            Long sessionId = (Long) session.getAttribute("myWeddingId");
-            if (sessionId != null) weddingId = sessionId;
-        }
-        return weddingId;
+        if (principal == null) return dto.getId();   // 로그인 전 레거시 경로
+
+        Long userId = principal.getUserId();
+
+        Long requested = dto.getId();
+        if (requested != null && weddingService.isOwnedByUser(requested, userId)) return requested;
+
+        Long sessionId = (Long) session.getAttribute("myWeddingId");
+        if (sessionId != null && weddingService.isOwnedByUser(sessionId, userId)) return sessionId;
+
+        // 마지막 안전망 — 소유한 청첩장이 하나뿐이면 그것으로 본다
+        List<WeddingDto> weddings = weddingService.findByUserId(userId);
+        if (weddings.size() == 1) return weddings.get(0).getId();
+
+        return null;
     }
 
     /* ── REST API (하위 호환) ── */

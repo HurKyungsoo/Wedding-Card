@@ -12,6 +12,9 @@ import java.util.Optional;
 public interface WeddingRepository extends JpaRepository<WeddingEntity, Long> {
     Optional<WeddingEntity> findBySlug(String slug);
     List<WeddingEntity> findByUserId(Long userId);
+    /** 마이페이지 목록 — 최근에 만든 것부터 */
+    List<WeddingEntity> findByUserIdOrderByCreatedAtDesc(Long userId);
+    long countByUserId(Long userId);
     List<WeddingEntity> findAllByOrderByCreatedAtDesc();
 
     // clearAutomatically: 벌크 업데이트 후 영속성 컨텍스트를 비워 같은 트랜잭션 내 재조회 시 stale 값을 방지
