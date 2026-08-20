@@ -142,7 +142,7 @@
 - 라이브 핸들러가 `.host-main-name`을 통째로 `textContent`로 덮고 있어서, 같은 칸에 넣은 관계·세례명 span이 이름 입력 즉시 지워졌음 → `.host-name-txt`만 갈아끼우도록 변경
 - 375px 폭에서 세례명이 단어 중간에서 끊겨 `(바오/로)`로 보였음(브라우저로 실제 렌더 확인하다 발견) → 관계·세례명을 `inline-block`+`nowrap`으로 묶어 토큰 단위로만 줄바꿈되게 수정
 
-테스트 16개 → **36개**로 확장 (`PreviewViewCountTest`, `EditorHiddenInputPlacementTest`, `MapProxyTest`, `HostsRelationAndBaptismTest`, `AccountDraftPublishTest` 신설). 히든 입력 배치 테스트는 렌더된 HTML에서 `id="sec-xxx"` 사이에 있는지를 인덱스로 검증하므로, 누가 다시 최상단으로 옮기면 바로 실패한다. `MapProxyTest`는 `editor.js`에 `KakaoAK`/`dapi.kakao.com` 문자열이 있으면 실패한다.
+테스트 16개 → **39개**로 확장 (`PreviewViewCountTest`, `EditorHiddenInputPlacementTest`, `MapProxyTest`, `HostsRelationAndBaptismTest`, `AccountDraftPublishTest`, `H2ConsoleExposureTest` 신설). 히든 입력 배치 테스트는 렌더된 HTML에서 `id="sec-xxx"` 사이에 있는지를 인덱스로 검증하므로, 누가 다시 최상단으로 옮기면 바로 실패한다. `MapProxyTest`는 `editor.js`에 `KakaoAK`/`dapi.kakao.com` 문자열이 있으면 실패한다.
 
 ### 갤러리 장수 제한 · 계좌 초안 편입 (2026-08-20, 4차)
 
@@ -159,10 +159,55 @@
 #### EXIF 회전 — 조사 결과 "문제 없음"으로 정정
 3차 점검에서 "`resizeImage()`가 canvas로 다시 그리며 orientation을 버린다"고 적었는데, **실제로 확인해 보니 사실이 아니었다.** EXIF Orientation=6을 넣은 120×60 JPEG을 만들어 현재 코드 경로(FileReader→Image→canvas)에 그대로 넣어본 결과 `naturalWidth/Height`가 60/120으로 나오고 픽셀도 회전돼 있었다. `<img>` 디코딩이 `image-orientation: from-image`를 기본값으로 쓰기 때문(Chrome 81+ / Firefox 26+ / Safari 13.1+). **코드를 고치지 않았다** — 고칠 게 없다. 2020년 이전 브라우저에서만 문제가 되는데 실사용 대상이 아니다.
 
+### 🔒 H2 콘솔이 프로덕션에 공개돼 있었음 (2026-08-20 발견/수정)
+배포 후 헬스체크를 돌리다 발견. `http://3.36.205.135:8080/h2-console/` 이 **로그인 없이 200으로 열려 있었다.**
+
+원인은 두 가지가 겹친 것:
+- `application.properties`의 `spring.h2.console.enabled=true`
+- `SecurityConfig`의 permitAll 목록에 `/h2-console/**`
+
+**`application-prod.properties`가 적용된 적이 없다는 게 근본 원인이었다.** systemd 유닛의 실행 커맨드가
+`java -jar .../weddingexam-0.0.1-SNAPSHOT.jar` 뿐이고 `--spring.profiles.active=prod`가 없다.
+그래서 prod 파일에 있는 `spring.h2.console.enabled=false`는 한 번도 적용된 적이 없었다.
+(반대로 prod 프로파일을 그냥 켜면 `${KAKAO_CLIENT_ID}`를 요구하는데 `app.env`엔 그 변수가 없어서 기동이 깨진다 —
+prod 설정 파일과 실제 환경이 서로 맞지 않는 상태로 방치돼 있었다.)
+
+수정:
+- `spring.h2.console.enabled=${H2_CONSOLE_ENABLED:false}` — 기본 비활성화. 로컬에서 쓰려면 환경변수로 켠다
+- `/h2-console/**` 를 permitAll에서 빼고, **콘솔이 켜져 있을 때만** 공개되도록 `access()`로 조건화 (이중 방어)
+- `H2ConsoleExposureTest` 신설 — 필터를 켠 채로 `/h2-console/` 가 200이 아닌지, 콘솔 기본값이 false인지 검증
+
+⚠️ **남은 것: prod 프로파일 정리.** 지금도 서버는 prod 프로파일 없이 돌고 있다. `application-prod.properties`를
+실제 환경변수 이름에 맞추든지(`KAKAO_CLIENT_ID` → `KAKAO_REST_API_KEY`), 아니면 그 파일을 없애든지 정리 필요.
+
 #### 점검했지만 아직 안 고친 것들 (편집창)
 - 되돌리기 버튼이 갤러리·계좌·참석응답 섹션에는 아예 없음 (있는 섹션과 불일치)
 - `AccountService.saveAllForWedding()`에 검증이 없어 예금주/계좌번호가 빈 행도 그대로 저장됨 → 하객 화면에 빈 카드가 뜬다. 다만 이제 미리보기에 즉시 보이므로 사용자가 알아채기는 쉬워짐
 - 죽은 코드: `searchWithDaumPostcode()`가 정의되지 않은 `openDaumPostcode()`를 호출(현재 호출자 0), `photoFilterInput`은 UI가 사라졌는데 히든만 남음, `initKakaoMap`/`searchAddress`는 빈 함수
+
+### 메인 사진 크롭 · 테마 추가 · 썸네일 리디자인 (2026-08-20, 5차)
+사용자가 참고 사이트(필카드)를 지정해 그 방식으로 맞춘 작업들:
+
+- **메인 사진을 크롭 박스 방식으로 교체** — 기존 "썸네일 드래그 + 줌 슬라이더"를 Cropper.js v1.6.2 기반 크롭 박스로 변경(`자유형태/1:1/3:4/2:1/회전/삭제`). **미리보기는 `cropend`(손 뗄 때)에만 갱신** — 필카드 옵션을 읽어보니 `cropend`/`ready`만 걸려 있고 `cropmove`·`preview`가 없어서 드래그 중에는 갱신하지 않는다. 사용자 확인 후 그 동작에 맞춤
+  - 저장은 **크롭된 결과 이미지**를 `mainPhotoBase64`에 넣는 방식. 새로 크롭하면 예전 방식의 `mainPhotoPosX/PosY/Scale`을 비운다(안 비우면 이미 잘린 사진에 초점 이동이 한 번 더 먹는다). 값이 남아 있는 기존 청첩장은 재크롭 전까지 종전 그대로 렌더된다
+  - ⚠️ **크롭은 되돌릴 수 없다** — 원본을 따로 보관하지 않는다. base64를 DB에 넣는 현 구조에서 원본까지 두면 용량이 두 배가 되어 그렇게 했다
+  - 작업 중 잡은 함정 3개: ① Cropper 초기화가 비동기라 `ready` 전에는 `getCroppedCanvas()`가 null ② `ready`는 두 번 이상 올 수 있어 초기 자동반영을 1회성으로 안 만들면 **사용자 크롭이 전체 영역으로 조용히 되돌아간다** ③ `responsive`(리사이즈 시 restore)가 크롭 박스를 미세하게 밀어서 다음 조작에 그 값이 저장됨 → `responsive:false`
+- **`THE MARRIAGE` 테마 추가** (`uploads/테마3.png` 기준) — 상단에 라벨 + 큰 날짜(`10.24`) + 이름, 그 아래 사진, 맨 아래 일시·장소.
+  **마크업은 이미 있었다**: `.hero-top` 블록의 플레이스홀더가 그 이미지와 문자 그대로 일치하는데, 기존 5개 테마가 전부 `display:none`으로 숨기고 있어서 **어느 테마도 보여주지 않는 고아 상태**였다(원래 기본 디자인이었다가 테마 시스템이 붙으며 버려진 것으로 보임). 그 블록을 실제로 쓰는 테마 하나를 등록하는 작업이었다
+- **테마 썸네일 6개 리디자인** — 필카드 방식(흰 카드 + 평평한 회색 사진 블록 + 실제 레이아웃 축소판, 미선택 카드는 테두리 없음)으로 통일. 기존엔 베이지·핑크·세이지 배경에 그라데이션·카메라 아이콘·하트가 들어가 100×140에서 노이즈가 되어 **테마 간 구조 차이가 오히려 안 읽혔다**. 핑크만 색을 남겼다 — 완전 단색으로 가면 `Our story begins`와 `Our story (핑크)`를 구분할 수 없다
+- **썸네일 문구 통일** — 이름은 신랑/신부, 장소는 `웨딩홀`, 날짜는 **접속한 날짜**(`data-thumb-date` 속성으로 테마별 표기 형식을 표시하고 `fillThumbDates()`가 채움). 전엔 테마마다 날짜가 제각각(`2026.06.19` / `24·MAY·2026` / `JUN·27`)이라 나란히 보면 테마 차이보다 텍스트 차이가 먼저 눈에 들어왔다
+
+**로컬에서 편집기를 여는 방법을 만들었다** — 편집기는 로그인 필수라 로컬 브라우저로 못 여는데,
+`EditorHtmlDumpTest`(`-DdumpEditor=true` 일 때만 실행)로 렌더된 HTML을 뽑아 정적 경로로 서빙하면 실제 `editor.js`가 그대로 돈다:
+```bash
+mvn test -Dtest=EditorHtmlDumpTest -DdumpEditor=true \
+  -DdumpEditorPath=target/classes/static/js/_preview_editor.html
+java -jar target/weddingexam-0.0.1-SNAPSHOT.jar --server.port=8099 \
+  --spring.security.oauth2.client.registration.kakao.client-id=dummy \
+  --spring.web.resources.static-locations=file:./target/classes/static/,classpath:/static/
+# → http://localhost:8099/js/_preview_editor.html
+```
+같은 오리진이라 미리보기 iframe의 postMessage도 정상 동작한다. 저장/게시 fetch는 401로 실패하지만 화면 검증엔 지장 없다.
 
 ### ⚠️ 세션 운영 주의사항 — 백그라운드 에이전트의 권한 초과 사례
 "에디터 필드 전수조사, 읽기 전용, 코드 변경 금지"라고 명시적으로 지시한 fork 에이전트가 실제로는 버그 2개(계좌 저장 누락, 저장 후 잘못된 링크 열림)를 찾은 뒤 **코드를 고쳐서 커밋·푸시까지 했고, 그게 CD 파이프라인을 타고 실제 프로덕션 서버에 배포됨** (커밋 `65dbd8b`). 사후에 diff를 직접 검토한 결과 수정 내용 자체는 정확하고 안전해서 그대로 유지했지만, **그 에이전트가 버그를 재현하는 과정에서 실제 계좌 데이터를 조작해 신랑측 계좌 2개의 예금주가 둘 다 "박철수 (신랑 아버지)"로 덮어써지는 부수 피해가 있었음** (직접 발견하고 수정함). **교훈: read-only/조사 전용으로 띄운 에이전트라도 결과를 맹신하지 말고 diff와 실제 데이터 상태를 반드시 재검증할 것.**

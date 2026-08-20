@@ -1715,7 +1715,7 @@
                     }
                 }
                 if (photoImg) {
-                    photoImg.src = 'data:image/jpeg;base64,' + d.mainPhotoBase64;
+                    if (photoImg.src !== 'data:image/jpeg;base64,' + d.mainPhotoBase64) photoImg.src = 'data:image/jpeg;base64,' + d.mainPhotoBase64;
                     photoImg.style.display = '';
                 }
                 if (photoPlaceholder) photoPlaceholder.style.display = 'none';
@@ -1966,7 +1966,8 @@
                     }
                 }
                 if (photoImg) {
-                    photoImg.src = 'data:image/jpeg;base64,' + d.mainPhotoBase64;
+                    /* 같은 사진이면 재대입하지 않는다 — 수 MB data URL을 다시 넣으면 이미지가 깜빡인다 */
+                    if (photoImg.src !== 'data:image/jpeg;base64,' + d.mainPhotoBase64) photoImg.src = 'data:image/jpeg;base64,' + d.mainPhotoBase64;
                     photoImg.style.display = '';
                 }
                 if (photoPlaceholder) photoPlaceholder.style.display = 'none';
@@ -1984,7 +1985,7 @@
                         arch.insertBefore(archImg, arch.firstChild);
                     }
                 }
-                if (archImg) { archImg.src = 'data:image/jpeg;base64,' + d.mainPhotoBase64; archImg.style.display = ''; }
+                if (archImg) { if (archImg.src !== 'data:image/jpeg;base64,' + d.mainPhotoBase64) archImg.src = 'data:image/jpeg;base64,' + d.mainPhotoBase64; archImg.style.display = ''; }
                 if (archPlaceholder) archPlaceholder.style.display = 'none';
             } else {
                 if (photoImg) photoImg.style.display = 'none';

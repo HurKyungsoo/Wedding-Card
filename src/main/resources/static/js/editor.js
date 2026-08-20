@@ -85,33 +85,13 @@ function resyncPickerVisuals() {
 /* 히든 입력값만으로는 갱신되지 않는, 섹션별 추가 시각 동기화 */
 var SECTION_REVERT_HOOKS = {
     main: function() {
-        var thumbImg  = document.getElementById('mainThumbImg');
-        var posXInput = document.getElementById('mainPhotoPosXInput');
-        var posYInput = document.getElementById('mainPhotoPosYInput');
-        if (thumbImg && posXInput && posYInput) {
-            thumbImg.style.objectPosition = (posXInput.value !== '' && posYInput.value !== '')
-                ? (posXInput.value + '% ' + posYInput.value + '%') : '';
-        }
-        /* 확대 배율 — 되돌아간 히든 값에 슬라이더와 썸네일 transform을 다시 맞춘다.
-           안 하면 슬라이더는 옛 값을 가리키는데 실제 배율은 그대로인 상태가 된다. */
-        var scaleInput = document.getElementById('mainPhotoScaleInput');
-        var savedScale = (scaleInput && scaleInput.value) ? parseFloat(scaleInput.value) : 1;
-        applyMainPhotoZoom(isNaN(savedScale) ? 1 : savedScale);
-
+        /* 되돌아간 사진으로 크롭 UI를 다시 연다 (사진이 없으면 업로드 영역으로) */
         var b64 = document.getElementById('mainPhotoBase64');
-        var thumbWrap = document.getElementById('mainPhotoThumb');
-        var hint = document.getElementById('mainUploadHint');
-        var zoomRow = document.getElementById('mainPhotoZoomRow');
-        if (b64 && thumbImg) {
+        if (b64) {
             if (b64.value) {
-                thumbImg.src = 'data:image/jpeg;base64,' + b64.value;
-                if (thumbWrap) thumbWrap.style.display = 'block';
-                if (hint) hint.style.display = 'none';
-                if (zoomRow) zoomRow.style.display = 'flex';
+                openMainCropper('data:image/jpeg;base64,' + b64.value);
             } else {
-                if (thumbWrap) thumbWrap.style.display = 'none';
-                if (hint) hint.style.display = '';
-                if (zoomRow) zoomRow.style.display = 'none';
+                closeMainCropper();
             }
         }
 
@@ -212,6 +192,36 @@ function revertSection(evt, sectionKey) {
 })();
 
 /* ──────────────────────────────────────
+   테마 썸네일 날짜 — 접속한 날짜로 통일
+   ──────────────────────────────────────
+   테마마다 하드코딩된 날짜가 제각각(2026.06.19 / 24·MAY·2026 / JUN·27 …)이라
+   나란히 놓고 보면 테마 차이가 아니라 날짜 차이가 먼저 눈에 들어왔다.
+   전부 오늘 날짜로 맞춰서, 썸네일 간 차이가 오직 "레이아웃"만 남게 한다.
+   data-thumb-date 값이 그 자리의 표기 형식이다. */
+(function fillThumbDates() {
+    var MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    var DOW = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+    var d   = new Date();
+    var y   = d.getFullYear();
+    var m2  = String(d.getMonth() + 1).padStart(2, '0');
+    var d2  = String(d.getDate()).padStart(2, '0');
+
+    var FORMATS = {
+        'm-dot-d-dot-y':  m2 + ' · ' + d2 + ' · ' + y,          /* 기본 */
+        'ymd-dow-time':   y + '.' + m2 + '.' + d2 + ' ' + DOW[d.getDay()] + ' 13:00',
+        'd-mon-y':        d2 + ' · ' + MON[d.getMonth()] + ' · ' + y,  /* Getting Married */
+        'mon-d':          MON[d.getMonth()] + ' · ' + d2,        /* 아치형 */
+        'm-d':            (d.getMonth() + 1) + '.' + d2,         /* THE MARRIAGE 큰 날짜 */
+        'y-m-d':          y + '. ' + m2 + '. ' + d2 + '.'
+    };
+
+    document.querySelectorAll('[data-thumb-date]').forEach(function(el) {
+        var fmt = FORMATS[el.dataset.thumbDate];
+        if (fmt) el.textContent = fmt;
+    });
+})();
+
+/* ──────────────────────────────────────
    섹션 접기/펼치기
 ────────────────────────────────────── */
 document.querySelectorAll('.ed-sec-hd').forEach(function(hd) {
@@ -306,7 +316,8 @@ var DESIGN_DEFAULT_COLORS = {
     our_story:      '#000000',
     our_story_pink: '#d9527a',
     married:        '#ffffff',
-    forever:        '#2c2822'
+    forever:        '#2c2822',
+    the_marriage:   '#1a1a1a'
 };
 
 /** 해당 테마의 기본 글자색을 색상 입력에 적용 */
@@ -370,7 +381,8 @@ var THEME_COLORS = {
     our_story:       ['#000000', '#2c2822', '#5a4e40'],
     our_story_pink:  ['#d9527a', '#e68a9a', '#c4748a'],
     married:         ['#ffffff', '#f0ece6', '#e8e0d0'],
-    forever:         ['#2c2822', '#5a4e40', '#8a7a64']
+    forever:         ['#2c2822', '#5a4e40', '#8a7a64'],
+    the_marriage:    ['#1a1a1a', '#4a4a4a', '#8b98a8']
 };
 
 function updateThemeColorPresets(design) {
@@ -503,190 +515,181 @@ function updateDateCard() {
     if (el) { el.addEventListener('input', updateDateCard); el.addEventListener('change', updateDateCard); }
 });
 updateDateCard();
-
 /* ──────────────────────────────────────
-   메인 사진 업로드
-────────────────────────────────────── */
-/* 갤러리와 같은 리사이즈 적용 — 원본을 그대로 base64로 저장하면 이 청첩장에서
-   가장 자주(전체 화면 히어로) 로드되는 사진이 제일 큰 용량으로 남는 문제 방지.
-   히어로 사진은 갤러리 썸네일보다 크게 표시되므로 폭을 조금 더 넉넉히 잡는다. */
-/* 사진 확대(줌) 배율 적용 — 슬라이더, 새 업로드, 사진 제거, 페이지 로드 복원에서 공통으로 사용 */
-function applyMainPhotoZoom(scale) {
-    scale = Math.max(1, Math.min(2.5, scale || 1));
-    var scaleInput = document.getElementById('mainPhotoScaleInput');
-    var slider = document.getElementById('mainPhotoZoomSlider');
-    var thumb = document.getElementById('mainThumbImg');
-    if (scaleInput) scaleInput.value = scale === 1 ? '' : scale.toFixed(2);
-    if (slider) slider.value = scale;
-    if (thumb) thumb.style.transform = scale === 1 ? '' : 'scale(' + scale + ')';
+   메인 사진 — 크롭 박스 (Cropper.js)
+   ──────────────────────────────────────
+   필카드와 같은 방식: 사진 위에 크롭 사각형을 올리고 비율 프리셋·회전을 제공한다.
+   미리보기 갱신은 cropend(손을 뗄 때)에만 — 드래그 중에는 갱신하지 않는다.
+
+   저장은 "크롭된 결과 이미지"를 mainPhotoBase64에 넣는 방식. 히어로는 그걸 그대로
+   보여주므로 위치·배율 보정이 필요 없다. 예전 드래그+줌 방식이 쓰던
+   mainPhotoPosX/PosY/Scale은 새로 크롭할 때 비운다 — 남아 있으면 이미 잘린 사진에
+   초점 이동이 한 번 더 먹어서 엉뚱한 곳이 보인다. (값이 남아 있는 기존 청첩장은
+   재크롭 전까지 종전 그대로 렌더된다 — 청첩장 쪽 처리는 그대로 두었다.) */
+
+var _cropper = null;
+
+/**
+ * 업로드/복원된 사진으로 크롭 UI를 연다.
+ * opts.applyOnReady = true 면 초기화가 끝난 뒤 전체 영역 기준으로 한 번 반영한다
+ * (새로 업로드한 경우). 저장된 사진을 다시 열 때는 쓰지 않는다 — 여는 것만으로
+ * base64를 덮어쓰면 아무것도 안 했는데 "변경됨"이 되기 때문.
+ */
+function openMainCropper(dataUrl, opts) {
+    var img  = document.getElementById('mainCropImg');
+    var wrap = document.getElementById('mainCropWrap');
+    var zone = document.getElementById('mainPhotoZone');
+    var hint = document.getElementById('mainCropHint');
+    if (!img || !wrap) return;
+
+    if (_cropper) { _cropper.destroy(); _cropper = null; }
+
+    wrap.style.display = 'flex';
+    if (zone) zone.style.display = 'none';
+    if (hint) hint.style.display = '';
+
+    img.src = dataUrl;
+
+    /* 비율 프리셋 표시는 항상 "자유형태"에서 다시 시작 */
+    document.querySelectorAll('.ed-crop-ratio').forEach(function(b) {
+        b.classList.toggle('active', b.dataset.ratio === 'free');
+    });
+
+    if (typeof Cropper === 'undefined') return;   /* CDN 미로드 — 사진만 보이고 크롭은 비활성 */
+    var applyOnReady = !!(opts && opts.applyOnReady);
+    _cropper = new Cropper(img, {
+        viewMode: 2,
+        autoCrop: true,
+        autoCropArea: 1,
+        aspectRatio: NaN,          /* 자유형태 */
+        background: false,
+        /* responsive(=리사이즈 시 재렌더 + restore)를 끈다.
+           창 크기가 바뀔 때 크롭 박스가 비율 환산 과정에서 미세하게 밀리는데,
+           그 상태로 다음 조작을 하면 사용자가 의도하지 않은 영역이 저장된다. */
+        responsive: false,
+        /* Cropper 초기화는 비동기 — ready 전에는 getCroppedCanvas()가 null이다.
+           ready는 responsive 리사이즈 등으로 두 번 이상 올 수 있으므로 반드시 1회성으로 —
+           안 그러면 사용자가 잡아둔 크롭이 전체 영역으로 조용히 되돌아간다. */
+        ready: function() {
+            if (!applyOnReady) return;
+            applyOnReady = false;
+            applyCropToPhoto();
+        },
+        /* 드래그 중에는 아무것도 하지 않는다 — 손을 뗄 때만 반영 */
+        cropend: function() { applyCropToPhoto(); }
+    });
 }
 
+/** 크롭 박스를 닫고 업로드 영역으로 되돌린다 */
+function closeMainCropper() {
+    if (_cropper) { _cropper.destroy(); _cropper = null; }
+    var wrap = document.getElementById('mainCropWrap');
+    var zone = document.getElementById('mainPhotoZone');
+    var hint = document.getElementById('mainCropHint');
+    var img  = document.getElementById('mainCropImg');
+    if (wrap) wrap.style.display = 'none';
+    if (zone) zone.style.display = '';
+    if (hint) hint.style.display = 'none';
+    if (img)  img.removeAttribute('src');
+}
+
+/** 현재 크롭 영역을 잘라 mainPhotoBase64에 반영 */
+function applyCropToPhoto() {
+    if (!_cropper) return;
+    /* 히어로는 전체화면으로 뜨므로 폭을 넉넉히. 원본보다 크게 늘리지는 않는다. */
+    var canvas = _cropper.getCroppedCanvas({
+        maxWidth: 1440,
+        imageSmoothingQuality: 'high'
+    });
+    if (!canvas) return;
+
+    var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    var b64 = document.getElementById('mainPhotoBase64');
+    if (b64) b64.value = dataUrl.split(',')[1];
+
+    /* 크롭 결과에 이미 구도가 담겨 있으므로 예전 방식의 보정값은 비운다 */
+    ['mainPhotoPosXInput', 'mainPhotoPosYInput', 'mainPhotoScaleInput'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+
+    scheduleLive(150);
+}
+
+/* 업로드된 파일을 크롭 UI로 넘긴다 */
 function handleMainPhotoFile(file) {
     if (!file) return;
-    resizeImage(file, 1440, 0.85, function(dataUrl) {
-        var b64 = document.getElementById('mainPhotoBase64');
-        if (b64) b64.value = dataUrl.split(',')[1];
-        var thumb = document.getElementById('mainThumbImg');
-        if (thumb) { thumb.src = dataUrl; thumb.style.objectPosition = ''; }
-        /* 새 사진이므로 이전 위치(초점)·확대 조정값 초기화 */
-        var posXEl = document.getElementById('mainPhotoPosXInput');
-        var posYEl = document.getElementById('mainPhotoPosYInput');
-        if (posXEl) posXEl.value = '';
-        if (posYEl) posYEl.value = '';
-        applyMainPhotoZoom(1);
-        var hint = document.getElementById('mainUploadHint');
-        if (hint) hint.style.display = 'none';
-        var thumbWrap = document.getElementById('mainPhotoThumb');
-        if (thumbWrap) thumbWrap.style.display = 'block';
-        var zoomRow = document.getElementById('mainPhotoZoomRow');
-        if (zoomRow) zoomRow.style.display = 'flex';
-        /* 날짜 카드 사진 (있을 때만) */
-        var dcImg = document.getElementById('dcImg');
-        var dcPh  = document.getElementById('dcPlaceholder');
-        if (dcPh)  dcPh.style.display = 'none';
-        if (dcImg) { dcImg.src = dataUrl; dcImg.style.display = 'block'; }
-        scheduleLive(200);
+    /* 원본을 그대로 들고 있으면 크롭 캔버스가 과하게 커지므로 한 번 줄여서 시작한다 */
+    resizeImage(file, 1600, 0.9, function(dataUrl) {
+        /* 업로드 직후엔 전체 영역 기준으로 바로 반영 (ready 이후에 실행된다) */
+        openMainCropper(dataUrl, { applyOnReady: true });
     });
 }
 
 var mainPhotoZoneEl = document.getElementById('mainPhotoZone');
-mainPhotoZoneEl.addEventListener('click', function(e) {
-    if (e.target.closest('#removeMainPhoto')) return;
+mainPhotoZoneEl.addEventListener('click', function() {
     document.getElementById('mainPhotoFile').click();
 });
 document.getElementById('mainPhotoFile').addEventListener('change', function() {
     handleMainPhotoFile(this.files[0]);
 });
-/* 드래그 업로드 — 안내 문구("클릭 또는 드래그하여 업로드")는 있었지만
-   실제로 드롭을 받는 핸들러가 없어 드래그로는 아무 반응이 없던 문제 */
+
+/* 드래그 업로드 */
 ['dragenter', 'dragover'].forEach(function(evt) {
     mainPhotoZoneEl.addEventListener(evt, function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         mainPhotoZoneEl.classList.add('drag-over');
     });
 });
 ['dragleave', 'dragend'].forEach(function(evt) {
     mainPhotoZoneEl.addEventListener(evt, function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         mainPhotoZoneEl.classList.remove('drag-over');
     });
 });
 mainPhotoZoneEl.addEventListener('drop', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     mainPhotoZoneEl.classList.remove('drag-over');
     var file = e.dataTransfer.files && e.dataTransfer.files[0];
     if (file && file.type.indexOf('image/') === 0) handleMainPhotoFile(file);
 });
+
+/* 비율 프리셋 */
+var CROP_RATIOS = { 'free': NaN, '1:1': 1, '3:4': 3 / 4, '2:1': 2 };
+document.querySelectorAll('.ed-crop-ratio').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.ed-crop-ratio').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        if (!_cropper) return;
+        _cropper.setAspectRatio(CROP_RATIOS[btn.dataset.ratio]);
+        applyCropToPhoto();   /* 비율 변경은 버튼 클릭이므로 즉시 반영 */
+    });
+});
+
+/* 회전 */
+var rotateBtn = document.getElementById('mainCropRotate');
+if (rotateBtn) {
+    rotateBtn.addEventListener('click', function() {
+        if (!_cropper) return;
+        _cropper.rotate(90);
+        applyCropToPhoto();
+    });
+}
+
+/* 삭제 */
 document.getElementById('removeMainPhoto').addEventListener('click', function(e) {
     e.stopPropagation();
+    closeMainCropper();
     var b64 = document.getElementById('mainPhotoBase64');
     if (b64) b64.value = '';
     var fileEl = document.getElementById('mainPhotoFile');
     if (fileEl) fileEl.value = '';
-    var thumbWrap = document.getElementById('mainPhotoThumb');
-    if (thumbWrap) thumbWrap.style.display = 'none';
-    var hint = document.getElementById('mainUploadHint');
-    if (hint) hint.style.display = '';
-    var dcImg = document.getElementById('dcImg');
-    var dcPh  = document.getElementById('dcPlaceholder');
-    if (dcImg) dcImg.style.display = 'none';
-    if (dcPh)  dcPh.style.display = '';
-    var posXEl = document.getElementById('mainPhotoPosXInput');
-    var posYEl = document.getElementById('mainPhotoPosYInput');
-    if (posXEl) posXEl.value = '';
-    if (posYEl) posYEl.value = '';
-    applyMainPhotoZoom(1);
-    var zoomRow = document.getElementById('mainPhotoZoomRow');
-    if (zoomRow) zoomRow.style.display = 'none';
+    ['mainPhotoPosXInput', 'mainPhotoPosYInput', 'mainPhotoScaleInput'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.value = '';
+    });
     scheduleLive(200);
 });
-
-/* 사진 확대(줌) 슬라이더 */
-(function() {
-    var slider = document.getElementById('mainPhotoZoomSlider');
-    if (!slider) return;
-    slider.addEventListener('input', function() {
-        applyMainPhotoZoom(parseFloat(this.value));
-        scheduleLive(100);
-    });
-})();
-
-/* ──────────────────────────────────────
-   메인 사진 위치(초점) 드래그 조정 — object-position을 드래그로 지정
-────────────────────────────────────── */
-(function() {
-    var thumbImg  = document.getElementById('mainThumbImg');
-    var posXInput = document.getElementById('mainPhotoPosXInput');
-    var posYInput = document.getElementById('mainPhotoPosYInput');
-    if (!thumbImg || !posXInput || !posYInput) return;
-
-    var dragging = false;
-    var wasDragged = false;
-    var startClientX, startClientY, startPosX, startPosY;
-
-    function currentPos() {
-        var x = parseFloat(posXInput.value);
-        var y = parseFloat(posYInput.value);
-        return { x: isNaN(x) ? 50 : x, y: isNaN(y) ? 50 : y };
-    }
-
-    function applyPos(x, y) {
-        x = Math.max(0, Math.min(100, x));
-        y = Math.max(0, Math.min(100, y));
-        thumbImg.style.objectPosition = x + '% ' + y + '%';
-        posXInput.value = x.toFixed(1);
-        posYInput.value = y.toFixed(1);
-    }
-
-    /* 저장된 위치가 있으면 썸네일에도 반영 */
-    if (posXInput.value !== '' && posYInput.value !== '') {
-        var initial = currentPos();
-        thumbImg.style.objectPosition = initial.x + '% ' + initial.y + '%';
-    }
-
-    thumbImg.style.cursor = 'move';
-    thumbImg.title = '드래그하여 사진 위치를 조정하세요';
-
-    thumbImg.addEventListener('pointerdown', function(e) {
-        dragging = true;
-        wasDragged = false;
-        startClientX = e.clientX; startClientY = e.clientY;
-        var p = currentPos();
-        startPosX = p.x; startPosY = p.y;
-        try { thumbImg.setPointerCapture(e.pointerId); } catch (err) {}
-        e.preventDefault();
-    });
-
-    thumbImg.addEventListener('pointermove', function(e) {
-        if (!dragging) return;
-        var dx = e.clientX - startClientX;
-        var dy = e.clientY - startClientY;
-        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) wasDragged = true;
-        var rect = thumbImg.getBoundingClientRect();
-        if (!rect.width || !rect.height) return;
-        /* 커서를 따라 사진이 움직이는 것처럼 보이도록 초점은 반대 방향으로 이동 */
-        var newX = startPosX - (dx / rect.width) * 100;
-        var newY = startPosY - (dy / rect.height) * 100;
-        applyPos(newX, newY);
-    });
-
-    function endDrag() {
-        if (!dragging) return;
-        dragging = false;
-        if (wasDragged) scheduleLive(150);
-    }
-    thumbImg.addEventListener('pointerup', endDrag);
-    thumbImg.addEventListener('pointercancel', endDrag);
-
-    /* 드래그 직후 발생하는 click이 업로드 창을 다시 여는 것을 방지 */
-    thumbImg.addEventListener('click', function(e) {
-        if (wasDragged) { e.stopPropagation(); wasDragged = false; }
-    });
-})();
-
 /* ──────────────────────────────────────
    갤러리 업로드
 ────────────────────────────────────── */
@@ -2054,26 +2057,19 @@ window.addEventListener('load', function() {
     /* 아직 색상을 고른 적이 없으면 해당 테마의 기본색으로 시작 */
     if (!hasSavedColor) applyDesignDefaultColor(savedDesign);
     if (WEDDING.hasPhoto) {
-        var hint = document.getElementById('mainUploadHint');
-        if (hint) hint.style.display = 'none';
-        var thumbWrap = document.getElementById('mainPhotoThumb');
-        if (thumbWrap) thumbWrap.style.display = 'block';
         /* /api/admin/photo는 청첩장별로 스코프되지 않으므로 이미 폼에 있는 base64 값을 사용 */
         var b64Input = document.getElementById('mainPhotoBase64');
         var photoDataUrl = (b64Input && b64Input.value) ? 'data:image/jpeg;base64,' + b64Input.value : '/api/admin/photo';
-        var thumb = document.getElementById('mainThumbImg');
-        if (thumb) thumb.src = photoDataUrl;
+
+        /* 저장된 사진으로 크롭 UI를 연다. 이때 applyCropToPhoto()는 부르지 않는다 —
+           여는 것만으로 base64를 다시 써버리면 아무것도 안 했는데 "변경됨"이 되고,
+           기존 청첩장의 posX/posY 보정값까지 지워진다. */
+        openMainCropper(photoDataUrl);
+
         var dcPh  = document.getElementById('dcPlaceholder');
         var dcImg = document.getElementById('dcImg');
         if (dcPh)  dcPh.style.display = 'none';
         if (dcImg) { dcImg.style.display = 'block'; dcImg.src = photoDataUrl; }
-
-        /* 저장된 확대(줌) 배율 복원 */
-        var zoomRow = document.getElementById('mainPhotoZoomRow');
-        if (zoomRow) zoomRow.style.display = 'flex';
-        var scaleInput = document.getElementById('mainPhotoScaleInput');
-        var savedScale = scaleInput && scaleInput.value ? parseFloat(scaleInput.value) : 1;
-        applyMainPhotoZoom(isNaN(savedScale) ? 1 : savedScale);
     }
 
     /* 토글 상태에 따라 섹션 제목 색상 + 즉시 반영 */

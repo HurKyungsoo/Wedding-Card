@@ -10,12 +10,22 @@ import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationC
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequestEntityConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.MultiValueMap;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    /**
+     * H2 콘솔 사용 여부. 기본값 false —
+     * 프로덕션에서 /h2-console/ 이 로그인 없이 열려 있던 것을 막기 위해,
+     * 콘솔 자체를 끄고 그 경로의 permitAll도 콘솔이 켜져 있을 때만 등록한다.
+     * 로컬에서 쓰려면 H2_CONSOLE_ENABLED=true 로 띄울 것.
+     */
+    @Value("${spring.h2.console.enabled:false}")
+    private boolean h2ConsoleEnabled;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
@@ -38,13 +48,15 @@ public class SecurityConfig {
                     // /api/map/** 은 공개하지 않는다 — 편집기(로그인 필수)만 쓰는 카카오 API
                     // 프록시라, 열어두면 누구나 우리 REST 키 할당량을 소진시킬 수 있다.
                     "/api/wedding/*/calendar.ics",
-                    "/h2-console/**",
                     "/error"
                 ).permitAll()
                 // 하객 참석 응답 제출 — 비로그인 공개
                 .requestMatchers(HttpMethod.POST, "/api/rsvp").permitAll()
                 // 슈퍼어드민
                 .requestMatchers("/superadmin/**").hasRole("ADMIN")
+                // H2 콘솔 — 명시적으로 켠 환경(로컬)에서만 공개
+                .requestMatchers("/h2-console/**").access((authentication, ctx) ->
+                        new org.springframework.security.authorization.AuthorizationDecision(h2ConsoleEnabled))
                 // 그 외는 로그인 필요
                 .anyRequest().authenticated()
             )

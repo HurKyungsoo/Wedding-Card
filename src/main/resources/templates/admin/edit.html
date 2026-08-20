@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;1,400&family=Cormorant+Garamond:ital,wght@1,400&family=Dancing+Script:wght@600&family=Great+Vibes&family=Pinyon+Script&family=Sacramento&family=Patrick+Hand&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<!-- 메인 사진 크롭 (Cropper.js v1 — img.cropper 인스턴스 API) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
 <link rel="stylesheet" th:href="@{/css/editor.css}">
 </head>
 <body>
@@ -143,7 +145,8 @@
                 <input type="hidden" th:field="*{mainPhotoPosY}"   id="mainPhotoPosYInput">
                 <input type="hidden" th:field="*{mainPhotoScale}"  id="mainPhotoScaleInput">
 
-                <!-- 메인 사진 -->
+                <!-- 메인 사진 — 크롭 박스 방식.
+                     사진이 없으면 업로드 영역, 있으면 크롭 영역 + 오른쪽 툴바를 보여준다. -->
                 <div class="ed-row" style="align-items:flex-start">
                     <span class="ed-label" style="padding-top:10px">메인 사진 ⓘ</span>
                     <div class="ed-ctrl">
@@ -152,18 +155,43 @@
                                 <i class="ti ti-photo" style="font-size:28px;"></i>
                                 <p>클릭 또는 드래그하여<br>이미지를 업로드 해주세요.</p>
                             </div>
-                            <div id="mainPhotoThumb" style="display:none;position:relative;">
-                                <img id="mainThumbImg" alt="" style="width:100%;border-radius:6px;display:block;max-height:240px;object-fit:cover;">
-                                <button type="button" id="removeMainPhoto" class="ed-thumb-del"><i class="ti ti-x"></i></button>
+                        </div>
+
+                        <div class="ed-crop-wrap" id="mainCropWrap" style="display:none;">
+                            <div class="ed-crop-area">
+                                <!-- Cropper.js가 이 img를 감싸 크롭 박스를 만든다 -->
+                                <img id="mainCropImg" alt="메인 사진">
+                            </div>
+                            <div class="ed-crop-tools">
+                                <button type="button" class="ed-crop-ratio active" data-ratio="free">
+                                    <span class="ed-crop-ratio-label">자유형태</span>
+                                </button>
+                                <button type="button" class="ed-crop-ratio" data-ratio="1:1">
+                                    <span class="ed-crop-ratio-box" style="width:22px;height:22px;"></span>
+                                    <span class="ed-crop-ratio-label">1:1</span>
+                                </button>
+                                <button type="button" class="ed-crop-ratio" data-ratio="3:4">
+                                    <span class="ed-crop-ratio-box" style="width:17px;height:22px;"></span>
+                                    <span class="ed-crop-ratio-label">3:4</span>
+                                </button>
+                                <button type="button" class="ed-crop-ratio" data-ratio="2:1">
+                                    <span class="ed-crop-ratio-box" style="width:24px;height:12px;"></span>
+                                    <span class="ed-crop-ratio-label">2:1</span>
+                                </button>
+                                <button type="button" class="ed-crop-act" id="mainCropRotate">
+                                    <i class="ti ti-rotate-clockwise"></i>
+                                    <span class="ed-crop-ratio-label">회전</span>
+                                </button>
+                                <button type="button" class="ed-crop-act" id="removeMainPhoto">
+                                    <i class="ti ti-trash"></i>
+                                    <span class="ed-crop-ratio-label">삭제</span>
+                                </button>
                             </div>
                         </div>
-                        <!-- 사진 확대(줌) — 사진이 있을 때만 표시. 드래그 위치조정과 함께 써서
-                             인스타그램 프로필 사진 편집처럼 확대 후 원하는 부분으로 밀 수 있게 함 -->
-                        <div class="ed-photo-zoom-row" id="mainPhotoZoomRow" style="display:none;">
-                            <i class="ti ti-zoom-out"></i>
-                            <input type="range" id="mainPhotoZoomSlider" class="ed-zoom-slider" min="1" max="2.5" step="0.02" value="1">
-                            <i class="ti ti-zoom-in"></i>
+                        <div class="ed-hint" id="mainCropHint" style="display:none;">
+                            ⓘ 크롭 영역을 옮기거나 크기를 조절한 뒤 손을 떼면 미리보기에 반영됩니다.
                         </div>
+
                         <input type="file" id="mainPhotoFile" accept="image/*" style="display:none">
                     </div>
                 </div>
@@ -173,49 +201,57 @@
                 <div class="ed-design-scroll" id="designScroll">
                     <div class="ed-design-card active" data-design="basic" onclick="pickDesign(this,'basic')">
                         <div class="ed-design-thumb ed-dt-basic">
-                            <div class="ed-dt-photo-ph"><i class="ti ti-camera ed-dt-photo-icon"></i></div>
+                            <div class="ed-dt-photo-ph"></div>
                             <div class="ed-dt-basic-row">
                                 <span class="ed-dt-basic-name">신랑</span>
                                 <span class="ed-dt-basic-div"></span>
                                 <span class="ed-dt-basic-name">신부</span>
                             </div>
-                            <div class="ed-dt-basic-date">10 · 24 · 2026</div>
-                            <div class="ed-dt-basic-place">POCKET HALL</div>
+                            <div class="ed-dt-basic-date" data-thumb-date="m-dot-d-dot-y">10 · 24 · 2026</div>
+                            <div class="ed-dt-basic-place">웨딩홀</div>
                         </div>
                         <span class="ed-design-name">기본</span>
                     </div>
                     <div class="ed-design-card" data-design="our_story" onclick="pickDesign(this,'our_story')">
                         <div class="ed-design-thumb ed-dt-fill">
                             <div class="ed-dt-bigtext ed-dt-bigtext-story">Our story<br>begins</div>
-                            <div class="ed-dt-datebar ed-dt-datebar-story">2026.06.19 FRI 13:00<br>웨딩홀</div>
+                            <div class="ed-dt-datebar ed-dt-datebar-story"><span data-thumb-date="ymd-dow-time">2026.06.19 FRI 13:00</span><br>웨딩홀</div>
                         </div>
                         <span class="ed-design-name">Our story begins</span>
                     </div>
                     <div class="ed-design-card" data-design="our_story_pink" onclick="pickDesign(this,'our_story_pink')">
                         <div class="ed-design-thumb ed-dt-pink">
                             <div class="ed-dt-script ed-dt-script-center">Our story<br>begins</div>
-                            <div class="ed-dt-datebar ed-dt-datebar-pink-center">2026.07.01 WED 13:00<br>웨딩홀</div>
+                            <div class="ed-dt-datebar ed-dt-datebar-pink-center"><span data-thumb-date="ymd-dow-time">2026.07.01 WED 13:00</span><br>웨딩홀</div>
                         </div>
                         <span class="ed-design-name">Our story (핑크)</span>
                     </div>
                     <div class="ed-design-card" data-design="married" onclick="pickDesign(this,'married')">
                         <div class="ed-design-thumb ed-dt-married">
                             <div class="ed-dt-married-big">Getting<br>Married</div>
-                            <div class="ed-dt-datebar ed-dt-datebar-married">24 · MAY · 2026</div>
+                            <div class="ed-dt-datebar ed-dt-datebar-married" data-thumb-date="d-mon-y">24 · MAY · 2026</div>
                         </div>
                         <span class="ed-design-name">Getting Married</span>
                     </div>
                     <div class="ed-design-card" data-design="forever" onclick="pickDesign(this,'forever')">
                         <div class="ed-design-thumb ed-dt-forever">
-                            <span class="ed-dt-forever-heart ed-dt-forever-heart-1">♥</span>
-                            <span class="ed-dt-forever-heart ed-dt-forever-heart-2">♥</span>
                             <div class="ed-dt-forever-script">We're getting<br>married!</div>
                             <div class="ed-dt-forever-names"><span class="ed-dt-forever-name">신랑</span><span class="ed-dt-forever-amp">&amp;</span><span class="ed-dt-forever-name">신부</span></div>
-                            <div class="ed-dt-forever-arch"><i class="ti ti-camera ed-dt-forever-arch-icon"></i></div>
-                            <div class="ed-dt-forever-date">JUN · 27</div>
-                            <div class="ed-dt-forever-place">POCKET HALL</div>
+                            <div class="ed-dt-forever-arch"></div>
+                            <div class="ed-dt-forever-date" data-thumb-date="mon-d">JUN · 27</div>
+                            <div class="ed-dt-forever-place">웨딩홀</div>
                         </div>
                         <span class="ed-design-name">아치형</span>
+                    </div>
+                    <div class="ed-design-card" data-design="the_marriage" onclick="pickDesign(this,'the_marriage')">
+                        <div class="ed-design-thumb ed-dt-marriage">
+                            <div class="ed-dt-marriage-label">THE MARRIAGE</div>
+                            <div class="ed-dt-marriage-date" data-thumb-date="m-d">10.24</div>
+                            <div class="ed-dt-marriage-names">신랑, 신부 결혼합니다.</div>
+                            <div class="ed-dt-marriage-photo"></div>
+                            <div class="ed-dt-marriage-info"><span data-thumb-date="y-m-d">2026. 10. 24.</span><br>웨딩홀</div>
+                        </div>
+                        <span class="ed-design-name">THE MARRIAGE</span>
                     </div>
                 </div>
                 <input type="hidden" id="mainDesignVal" name="mainDesign" value="basic">
@@ -1075,6 +1111,7 @@ var WEDDING = {
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
 <script th:src="@{/js/editor.js}"></script>
 <script>
 /* ── RSVP 관리 ── */

@@ -435,11 +435,31 @@ textarea.ed-input{resize:none;line-height:1.75;}
     min-height:100px;
 }
 .ed-upload:hover,.ed-upload.drag-over{border-color:#c4748a;background:#fff5f7;}
-/* 확대(줌) 적용 시 썸네일 박스 밖으로 사진이 삐져나오지 않도록 */
-#mainPhotoThumb{overflow:hidden;border-radius:6px;}
-.ed-photo-zoom-row{display:flex;align-items:center;gap:8px;margin-top:8px;}
-.ed-zoom-slider{flex:1;accent-color:#c4748a;cursor:pointer;}
 .ed-upload i{font-size:24px;color:#c4bea0;}
+
+/* ── 메인 사진 크롭 (Cropper.js) ── */
+.ed-crop-wrap{display:flex;gap:0;align-items:stretch;}
+.ed-crop-area{
+    flex:1;min-width:0;background:#2c2822;border-radius:6px 0 0 6px;
+    overflow:hidden;max-height:280px;
+}
+/* Cropper가 이 img를 대체하므로 초기 폭만 잡아준다 */
+.ed-crop-area img{display:block;max-width:100%;}
+.ed-crop-tools{
+    flex:0 0 62px;display:flex;flex-direction:column;align-items:center;
+    justify-content:flex-start;gap:2px;padding:8px 0;
+    background:#faf7f3;border:1px solid #efe6dc;border-left:none;border-radius:0 6px 6px 0;
+}
+.ed-crop-ratio,.ed-crop-act{
+    width:100%;background:none;border:none;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    padding:6px 0;color:#7a6a58;font-family:inherit;
+}
+.ed-crop-ratio:hover,.ed-crop-act:hover{background:#f3ece4;}
+.ed-crop-ratio.active{color:#c4748a;}
+.ed-crop-ratio-box{border:1.5px solid currentColor;border-radius:2px;display:block;}
+.ed-crop-ratio-label{font-size:10px;letter-spacing:.2px;line-height:1;}
+.ed-crop-act i{font-size:16px;}
 .ed-upload p{font-size:12px;color:#9a8a74;margin:0;}
 .ed-thumb-del{
     position:absolute;top:5px;right:5px;
@@ -837,10 +857,12 @@ textarea.ed-input{resize:none;line-height:1.75;}
 }
 .ed-design-thumb{
     width:100px;height:140px;
-    border-radius:8px;
-    border:2px solid #e8e2da;
+    border-radius:2px;
+    /* 미선택 카드는 테두리 없이 — 회색 사진 블록만으로 형태가 읽히고,
+       선택된 카드만 검은 테두리로 도드라지게 한다 */
+    border:1px solid transparent;
     overflow:hidden;position:relative;
-    background:#f5f2ec;
+    background:#fff;
     display:flex;flex-direction:column;
     align-items:center;justify-content:center;
     transition:border-color .2s,box-shadow .2s;
@@ -856,7 +878,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
     width:18px;height:18px;border-radius:50%;
     background:#2c2822;color:#fff;
     display:flex;align-items:center;justify-content:center;
-    font-size:11px;
+    font-size:11px;z-index:5;
 }
 .ed-design-name{
     font-size:10px;color:#8a7a64;
@@ -865,69 +887,60 @@ textarea.ed-input{resize:none;line-height:1.75;}
 }
 .ed-design-card.active .ed-design-name{color:#2c2822;font-weight:500;}
 
-/* 템플릿 썸네일 미리보기 스타일 */
-.ed-dt-photo-ph{width:82px;height:56px;background:#d8d2ca;border-radius:3px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;}
-.ed-dt-photo-icon{font-size:22px;color:#8a7a64;opacity:0.55;}
-.ed-dt-bigtext{font-family:'Cormorant Garamond',serif;font-size:15px;color:#2c2822;line-height:1.1;text-align:center;font-weight:600;}
-.ed-dt-datebar{position:absolute;bottom:10px;font-size:6px;color:#8a7a64;letter-spacing:1px;}
-.ed-dt-fill{background:#e8e4de;}
-.ed-dt-pink{background:#f5e6e8;}
-.ed-dt-script{font-family:'Pinyon Script',cursive;font-size:16px;color:#d9527a;text-align:center;line-height:1.1;}
-.ed-dt-married{background:#d8d2ca;overflow:hidden;}
-.ed-dt-married-big{font-family:'Great Vibes','Dancing Script',cursive;font-size:19px;color:#fff;position:absolute;bottom:22px;left:8px;line-height:0.95;text-align:left;font-weight:400;}
-.ed-dt-forever{background:#F5F2EC;flex-direction:column;justify-content:center;align-items:center;gap:2px;}
+/* ── 템플릿 썸네일 ──
+   흰 배경 + 평평한 회색 사진 블록 + 실제 레이아웃의 축소판.
+   장식(그라데이션·아이콘·하트)을 넣지 않는다 — 100×140에서는 노이즈만 되고,
+   여러 장을 늘어놓았을 때 테마 간 "구조 차이"가 안 읽힌다. */
+.ed-dt-ph{background:#ececec;flex-shrink:0;}
 
-/* 기본 — 이름 + 날짜 + 장소 (여백 위주, 실제 hero-bottom 구성 반영) */
-.ed-dt-basic-row{display:flex;align-items:center;justify-content:center;gap:10px;}
-.ed-dt-basic-name{font-family:'Noto Serif KR',serif;font-size:10px;color:#1a1a1a;letter-spacing:1.5px;}
-.ed-dt-basic-div{width:1px;height:14px;background:#C4956A;}
-.ed-dt-basic-date{font-family:'EB Garamond','Cormorant Garamond',serif;font-size:6.5px;color:#2a2a28;letter-spacing:1px;margin-top:11px;}
-.ed-dt-basic-place{font-family:'Noto Serif KR',serif;font-size:5.5px;font-weight:300;color:#8a7a64;letter-spacing:0.5px;margin-top:3px;text-transform:uppercase;}
+/* 1. 기본 — 사진(상단) + 이름 + 날짜 + 장소 */
+.ed-dt-basic{background:#fff;justify-content:flex-start;}
+.ed-dt-photo-ph{width:100%;height:80px;background:#ececec;border-radius:0;margin-bottom:9px;}
+.ed-dt-basic-row{display:flex;align-items:center;justify-content:center;gap:7px;}
+.ed-dt-basic-name{font-family:'Noto Serif KR',serif;font-size:7px;color:#3a3a3a;letter-spacing:0.5px;}
+.ed-dt-basic-div{width:1px;height:9px;background:#ccc;}
+.ed-dt-basic-date{font-family:'Noto Serif KR',serif;font-size:5px;color:#7a7a7a;letter-spacing:0.3px;margin-top:6px;}
+.ed-dt-basic-place{font-family:'Noto Serif KR',serif;font-size:4.5px;font-weight:300;color:#9a9a9a;letter-spacing:0.3px;margin-top:2px;}
 
-/* Our story begins (2번째) — 손글씨 타이틀 + 중앙 날짜/장소, 블랙 톤 (이름 없음) */
-.ed-dt-bigtext-story{font-family:'Dancing Script',cursive;font-weight:600;font-size:23px;color:#000;text-align:center;line-height:1.0;position:absolute;bottom:32px;left:4px;right:4px;}
-.ed-dt-datebar-story{font-family:'Noto Sans KR',sans-serif;color:#000;position:absolute;bottom:6px;left:0;right:0;text-align:center;letter-spacing:0.2px;line-height:1.5;}
-
-/* our_story_pink — 실제 테마와 동일하게 타이틀·날짜/장소 모두 가운데 정렬 */
+/* 2·3. Our story — 사진이 카드를 채우고 그 위에 타이틀/날짜 */
+.ed-dt-fill,.ed-dt-pink{background:#ececec;}
+.ed-dt-bigtext{font-family:'Cormorant Garamond',serif;font-size:15px;color:#3a3a3a;line-height:1.1;text-align:center;font-weight:600;}
+.ed-dt-datebar{position:absolute;bottom:10px;font-size:4.5px;color:#6a6a6a;letter-spacing:0.3px;}
+.ed-dt-bigtext-story{font-family:'Dancing Script',cursive;font-weight:600;font-size:20px;color:#2a2a2a;text-align:center;line-height:1.0;position:absolute;bottom:30px;left:4px;right:4px;}
+.ed-dt-datebar-story{font-family:'Noto Sans KR',sans-serif;color:#5a5a5a;position:absolute;bottom:7px;left:0;right:0;text-align:center;line-height:1.5;}
+.ed-dt-script{font-family:'Pinyon Script',cursive;font-size:16px;text-align:center;line-height:1.1;}
+/* 핑크만 색을 남긴다 — 안 그러면 Our story 두 종을 썸네일로 구분할 수 없다 */
 .ed-dt-script-center{
-    font-family:'Pinyon Script',cursive;
-    font-size:17px;
-    color:#d9527a;
-    text-align:center;
-    line-height:1.0;
-    position:absolute;
-    bottom:32px;
-    left:4px;
-    right:4px;
+    font-family:'Pinyon Script',cursive;font-size:17px;color:#d9527a;
+    text-align:center;line-height:1.0;position:absolute;bottom:30px;left:4px;right:4px;
 }
 .ed-dt-datebar-pink-center{
-    position:absolute;
-    bottom:8px;
-    left:4px;
-    right:4px;
-    font-family:'Noto Serif KR',serif;
-    font-size:5.5px;
-    color:#d9527a;
-    letter-spacing:0.5px;
-    line-height:1.6;
-    text-align:center;
+    position:absolute;bottom:7px;left:4px;right:4px;
+    font-family:'Noto Serif KR',serif;font-size:4.5px;color:#c47a90;
+    letter-spacing:0.3px;line-height:1.6;text-align:center;
 }
 
-/* Getting Married (4번째) — 사진 위 흰 날짜 */
-.ed-dt-datebar-married{color:#fff;font-family:'Patrick Hand',sans-serif;}
+/* 4. Getting Married — 사진 위 좌하단 타이틀 */
+.ed-dt-married{background:#ececec;overflow:hidden;}
+.ed-dt-married-big{font-family:'Great Vibes','Dancing Script',cursive;font-size:18px;color:#3a3a3a;position:absolute;bottom:20px;left:8px;line-height:0.95;text-align:left;font-weight:400;}
+.ed-dt-datebar-married{color:#6a6a6a;font-family:'Noto Sans KR',sans-serif;}
 
-/* Together forever (5번째) — 손글씨 + 이름 + 아치 사진 + 날짜 + 장소 (실제 forever-layout 순서 반영) */
-.ed-dt-forever{position:relative;}
-.ed-dt-forever-script{font-family:'Sacramento',cursive;font-size:10px;color:#2a2a28;text-align:center;line-height:1.15;}
-.ed-dt-forever-names{display:flex;align-items:center;gap:3px;font-family:'Noto Serif KR',serif;font-size:8px;color:#2a2a28;letter-spacing:1px;}
-.ed-dt-forever-amp{color:#E8A0B4;font-size:8px;}
-.ed-dt-forever-arch{width:34px;height:40px;border-radius:20px 20px 0 0;background:linear-gradient(180deg,#ffffff 0%,#f0e6d6 100%);border:1.5px solid #c9a876;border-bottom:none;box-shadow:inset 0 0 6px rgba(201,168,118,.18);display:flex;align-items:center;justify-content:center;}
-.ed-dt-forever-arch-icon{font-size:14px;color:#c9a876;opacity:0.7;}
-.ed-dt-forever-date{font-family:'Cormorant Garamond',serif;font-size:6.5px;color:#6FAF8A;letter-spacing:1px;}
-.ed-dt-forever-place{font-family:'Cormorant Garamond','EB Garamond',serif;font-size:5px;color:#5a5a58;letter-spacing:0.8px;text-transform:uppercase;}
-.ed-dt-forever-heart{position:absolute;color:#F4A0B4;font-size:7px;opacity:0.8;pointer-events:none;}
-.ed-dt-forever-heart-1{top:8px;left:10px;}
-.ed-dt-forever-heart-2{bottom:10px;right:9px;}
+/* 5. 아치형 — 흰 배경 + 손글씨 + 이름 + 아치 사진 + 날짜 + 장소 */
+.ed-dt-forever{background:#fff;position:relative;flex-direction:column;justify-content:center;align-items:center;gap:3px;}
+.ed-dt-forever-script{font-family:'Sacramento',cursive;font-size:10px;color:#3a3a3a;text-align:center;line-height:1.15;}
+.ed-dt-forever-names{display:flex;align-items:center;gap:3px;font-family:'Noto Serif KR',serif;font-size:6.5px;color:#3a3a3a;letter-spacing:0.5px;}
+.ed-dt-forever-amp{color:#9a9a9a;font-size:6.5px;}
+.ed-dt-forever-arch{width:36px;height:44px;border-radius:18px 18px 0 0;background:#ececec;border:none;}
+.ed-dt-forever-date{font-family:'Noto Serif KR',serif;font-size:5px;color:#7a7a7a;letter-spacing:0.3px;}
+.ed-dt-forever-place{font-family:'Noto Serif KR',serif;font-size:4.5px;color:#9a9a9a;letter-spacing:0.3px;}
+
+/* 6. THE MARRIAGE — 라벨 + 큰 날짜 + 이름 + 사진 + 일시·장소 */
+.ed-dt-marriage{background:#fff;flex-direction:column;justify-content:flex-start;align-items:center;padding:9px 6px 6px;gap:0;}
+.ed-dt-marriage-label{font-family:'Noto Sans KR',sans-serif;font-size:4px;font-weight:500;letter-spacing:1px;color:#9aa5b2;}
+.ed-dt-marriage-date{font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:300;color:#5a5a5a;line-height:1.1;margin-top:2px;}
+.ed-dt-marriage-names{font-family:'Noto Sans KR',sans-serif;font-size:4.5px;font-weight:600;color:#3a3a3a;margin-top:4px;}
+.ed-dt-marriage-photo{width:100%;flex:1;margin-top:5px;background:#ececec;min-height:0;}
+.ed-dt-marriage-info{font-family:'Noto Sans KR',sans-serif;font-size:4px;color:#6a6a6a;text-align:center;line-height:1.5;margin-top:4px;}
 
 /* 글꼴 색상 행 */
 .ed-color-row{display:flex;align-items:center;gap:8px;}

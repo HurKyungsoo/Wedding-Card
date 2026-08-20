@@ -944,6 +944,99 @@ body{
 .hero:not(.design-basic) .hero-bottom-names{ display: none !important; }
 
 
+/* ─────────────────────────────────────
+   ★ design-the_marriage ("THE MARRIAGE")
+   상단에 라벨 + 큰 날짜 + 이름, 그 아래 사진, 맨 아래 일시·장소.
+   .hero-top 마크업은 원래부터 있었지만 어느 테마도 표시하지 않아 死코드였다 —
+   이 테마가 그 블록을 실제로 쓰는 유일한 테마다.
+───────────────────────────────────── */
+.hero.design-the_marriage{
+    background:#fff;
+    display:flex;
+    flex-direction:column;
+}
+/* 사진 위 오버레이 요소와 손글씨는 쓰지 않는다 */
+.hero.design-the_marriage .hero-design-title,
+.hero.design-the_marriage .hero-design-date,
+.hero.design-the_marriage .hero-design-names,
+.hero.design-the_marriage .hero-design-title-bottom,
+.hero.design-the_marriage .hero-design-center-info,
+.hero.design-the_marriage .hero-script-wrap{ display:none !important; }
+
+.hero.design-the_marriage .hero-top{
+    display:block;
+    padding:2.2rem 1.5rem 1.6rem;
+}
+.hero.design-the_marriage .hero-top-label{
+    font-size:12px;
+    letter-spacing:3.5px;
+    color:#8b98a8;
+    font-weight:500;
+    margin-bottom:0.7rem;
+}
+.hero.design-the_marriage .hero-top-date{
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:56px;
+    font-weight:300;
+    color:#4a4a4a;
+    letter-spacing:0;
+    margin-bottom:1.5rem;
+}
+.hero.design-the_marriage .hero-top-names{
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:17px;
+    font-weight:600;
+    color:#1a1a1a;
+    letter-spacing:-0.2px;
+    margin-bottom:0;
+}
+
+/* 사진 — 좌우로 살짝 여백을 두고 세로로 길게 */
+.hero.design-the_marriage .hero-fullphoto{
+    width:auto;
+    margin:0 1.1rem;
+    height:auto;
+    aspect-ratio:3 / 4;
+    min-height:0;
+    display:block;
+    position:relative;
+    overflow:hidden;
+    flex-shrink:0;
+}
+.hero.design-the_marriage .hero-fullphoto-img{
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover;
+    display:block;
+    position:absolute;
+    inset:0;
+}
+
+.hero.design-the_marriage .hero-bottom{
+    background:#fff;
+    padding:1.6rem 1.5rem 2rem;
+    text-align:center;
+    flex:1;
+}
+.hero.design-the_marriage .hero-bottom-date{
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:15px;
+    font-weight:400;
+    color:#3a3a3a;
+    letter-spacing:0.2px;
+    margin-bottom:0.5rem;
+    line-height:1.6;
+}
+.hero.design-the_marriage .hero-bottom-place{
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:14.5px;
+    font-weight:400;
+    color:#3a3a3a;
+    letter-spacing:0.2px;
+    line-height:1.6;
+}
+
+
 
 /* ★ 하단 날짜 — 기본 테마 고유 서체 고정(Noto Serif KR), 글꼴 선택 영향 없음 */
 .hero.design-basic .hero-bottom-date{
