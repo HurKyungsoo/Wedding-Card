@@ -19,6 +19,8 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;}
 .ed-logo-card{font-size:15px;font-weight:700;color:#c4748a;letter-spacing:0.5px;font-family:'Noto Serif KR',serif;}
 .ed-logo-plus{font-size:11px;color:#e8a070;font-family:'Cormorant Garamond',serif;font-style:italic;margin-left:2px;}
 .ed-header-right{display:flex;gap:10px;align-items:center;}
+/* 헤더 버튼 그룹 구분선 — 이동·도움 │ 확인 │ 게시 */
+.ed-header-sep{width:1px;height:18px;background:rgba(0,0,0,.10);flex-shrink:0;}
 .ed-btn-outline{
     padding:7px 18px;border-radius:22px;
     border:1px solid #ddd5cc;background:#fff;
