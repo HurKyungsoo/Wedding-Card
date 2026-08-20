@@ -722,7 +722,8 @@
                                 <div class="gtc-name">썸네일 스와이프</div>
                             </div>
                         </div>
-                        <input type="hidden" id="galTypeVal" name="galleryType" value="slide">
+                        <!-- th:value로 명시 렌더 — galleryType이 null(기존 청첩장)이어도 항상 값이 채워지도록 -->
+                        <input type="hidden" id="galTypeVal" name="galleryType" th:value="${wedding.galleryType ?: 'slide'}">
                     </div>
                 </div>
 
@@ -757,7 +758,8 @@
                             <button type="button" class="ed-tab active" data-val="true" onclick="pickTab(this,'galScrollTabs','galScrollVal')">사용함</button>
                             <button type="button" class="ed-tab" data-val="false" onclick="pickTab(this,'galScrollTabs','galScrollVal')">사용안함</button>
                         </div>
-                        <input type="hidden" id="galScrollVal" name="galleryScrollGuide" value="true">
+                        <!-- null(기존 청첩장, 한번도 안 건드린 값)이면 기존 동작대로 항상 켜진 것으로 취급 -->
+                        <input type="hidden" id="galScrollVal" name="galleryScrollGuide" th:value="${wedding.galleryScrollGuide == null or wedding.galleryScrollGuide}">
                     </div>
                 </div>
             </div>

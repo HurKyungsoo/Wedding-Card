@@ -479,6 +479,10 @@
             </div>
         </div>
         <div class="gallery-dots" id="galleryDots"></div>
+        <!-- 스크롤 안내 — 사진이 2장 이상일 때만, galleryScrollGuide가 명시적으로 false일 때는 숨김(null/미설정은 기존처럼 표시) -->
+        <div class="gallery-scroll-hint" id="galleryScrollHint"
+             th:if="${wedding.galleryImages != null and !#strings.isEmpty(wedding.galleryImages) and #strings.arraySplit(wedding.galleryImages, '|||').length > 1}"
+             th:style="${wedding.galleryScrollGuide != null and !wedding.galleryScrollGuide} ? 'display:none' : ''">사진을 눌러 크게 볼 수 있어요</div>
     </div>
 
     <!-- ⑦ 지도 -->
@@ -1397,6 +1401,18 @@
             }
         }
 
+        /* 스크롤 안내 — 사진 2장 이상 + 토글 켜짐일 때만 표시 */
+        if (d.galleryImages !== undefined || d.galleryScrollGuide !== undefined) {
+            var hintEl = document.getElementById('galleryScrollHint');
+            var hintTrack = document.getElementById('galleryTrack');
+            if (hintEl) {
+                var hintImgs = (d.galleryImages !== undefined ? (d.galleryImages || '') : (hintTrack ? hintTrack.getAttribute('data-imgs') || '' : ''))
+                               .split('|||').filter(function(s){ return s.trim(); });
+                var guideOn = d.galleryScrollGuide !== 'false';
+                hintEl.style.display = (hintImgs.length > 1 && guideOn) ? '' : 'none';
+            }
+        }
+
         /* ── 11. 메인 글꼴 색상 ── */
         if (d.mainFontColor !== undefined && d.mainFontColor) {
             /* 기본형 히어로 텍스트 */
@@ -2070,17 +2086,6 @@
     }, {passive:true});
 })();
 </script>
-
-    <!-- ══ 갤러리 이미지 팝업 뷰어 ══ -->
-    <div id="galleryPopup" class="gp-overlay" style="display:none;" onclick="closeGalleryPopup(event)">
-        <button class="gp-close" id="gpCloseBtn"><i class="ti ti-x"></i></button>
-        <button class="gp-arrow gp-prev" id="gpPrev"><i class="ti ti-chevron-left"></i></button>
-        <div class="gp-img-wrap">
-            <img class="gp-img" id="gpImg" src="" alt="">
-            <div class="gp-counter" id="gpCounter"></div>
-        </div>
-        <button class="gp-arrow gp-next" id="gpNext"><i class="ti ti-chevron-right"></i></button>
-    </div>
 
     <!-- ══ RSVP 스크립트 ══ -->
 <script th:inline="javascript">

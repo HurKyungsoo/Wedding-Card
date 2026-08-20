@@ -662,12 +662,6 @@ window.initPage = function(data) {
     }, 300);
 };
 
-/* ── 슬라이드 카운터 업데이트 ── */
-function updateSlideCounter(current, total) {
-    var counter = document.getElementById('slideCounter');
-    if (counter) counter.textContent = (current + 1) + ' / ' + total;
-}
-
 /* ════════════════════════════════════════
    공유하기 (Share)
    ════════════════════════════════════════ */
@@ -1056,89 +1050,4 @@ function closeContactModal(e) {
         modal.style.display = 'none';
         document.body.style.overflow = '';
     }
-}
-/* ══ 갤러리 이미지 팝업 뷰어 ══ */
-var _gpImgs = [], _gpIdx = 0, _gpCounterTimer = null;
-
-function openGalleryPopup(imgs, idx) {
-    _gpImgs = imgs;
-    _gpIdx  = idx || 0;
-    var overlay = document.getElementById('galleryPopup');
-    if (!overlay) return;
-    overlay.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-
-    /* 이미지만 업데이트 (카운터는 열릴 때 1회만) */
-    _updateGpImg();
-    _showCounter();
-
-    /* 좌우 버튼 — 이미지만 교체, 카운터 미표시 */
-    var btnP = document.getElementById('gpPrev');
-    var btnN = document.getElementById('gpNext');
-    if (btnP) btnP.onclick = function(e) { e.stopPropagation(); _gpIdx = Math.max(0, _gpIdx-1); _updateGpImg(); };
-    if (btnN) btnN.onclick = function(e) { e.stopPropagation(); _gpIdx = Math.min(_gpImgs.length-1, _gpIdx+1); _updateGpImg(); };
-
-    /* 배경(overlay) 클릭 → 닫기 */
-    overlay.onclick = function(e) {
-        if (e.target === overlay) closeGalleryPopup();
-    };
-
-    /* X 버튼 — 버튼 안 아이콘 클릭도 처리 */
-    var closeBtn = document.getElementById('gpCloseBtn');
-    if (closeBtn) closeBtn.onclick = function(e) { e.stopPropagation(); closeGalleryPopup(); };
-
-    /* 키보드 */
-    document.addEventListener('keydown', _gpKeyHandler);
-
-    /* 스와이프 */
-    var imgWrap = overlay.querySelector('.gp-img-wrap');
-    var sx = 0;
-    if (imgWrap) {
-        imgWrap.ontouchstart = function(e) { sx = e.touches[0].clientX; };
-        imgWrap.ontouchend   = function(e) {
-            var dx = e.changedTouches[0].clientX - sx;
-            if (Math.abs(dx) > 40) {
-                _gpIdx = dx < 0 ? Math.min(_gpImgs.length-1, _gpIdx+1) : Math.max(0, _gpIdx-1);
-                _updateGpImg();
-            }
-        };
-    }
-}
-
-function _updateGpImg() {
-    var img  = document.getElementById('gpImg');
-    var btnP = document.getElementById('gpPrev');
-    var btnN = document.getElementById('gpNext');
-    if (img) img.src = _gpImgs[_gpIdx].trim();
-    if (btnP) btnP.style.opacity = _gpIdx === 0 ? '0.3' : '1';
-    if (btnN) btnN.style.opacity = _gpIdx === _gpImgs.length-1 ? '0.3' : '1';
-}
-
-function _showCounter() {
-    var counter = document.getElementById('gpCounter');
-    if (!counter) return;
-    /* 카운터 텍스트 설정 + 표시 */
-    counter.textContent = (_gpIdx + 1) + ' / ' + _gpImgs.length;
-    counter.classList.remove('fade-out');
-    counter.style.opacity = '1';
-    /* 기존 타이머 취소 */
-    if (_gpCounterTimer) clearTimeout(_gpCounterTimer);
-    /* 1.8초 후 페이드아웃 */
-    _gpCounterTimer = setTimeout(function() {
-        counter.classList.add('fade-out');
-    }, 1800);
-}
-
-function _gpKeyHandler(e) {
-    if (e.key === 'ArrowLeft')  { _gpIdx = Math.max(0, _gpIdx-1); _updateGpImg(); }
-    if (e.key === 'ArrowRight') { _gpIdx = Math.min(_gpImgs.length-1, _gpIdx+1); _updateGpImg(); }
-    if (e.key === 'Escape')     { closeGalleryPopup(); }
-}
-
-function closeGalleryPopup(e) {
-    var overlay = document.getElementById('galleryPopup');
-    if (overlay) overlay.style.display = 'none';
-    document.body.style.overflow = '';
-    document.removeEventListener('keydown', _gpKeyHandler);
-    if (_gpCounterTimer) { clearTimeout(_gpCounterTimer); _gpCounterTimer = null; }
 }

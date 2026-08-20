@@ -68,7 +68,9 @@ var PICKER_GROUPS = [
     { hiddenId: 'contactInput',     itemSelector: '#contactTabs .ed-tab',   dataAttr: 'val' },
     { hiddenId: 'mapLockVal',       itemSelector: '#mapLockTabs .ed-tab',   dataAttr: 'val' },
     { hiddenId: 'mapDetailVal',     itemSelector: '#mapDetailTabs .ed-tab', dataAttr: 'val' },
-    { hiddenId: 'mapZoomInput',     itemSelector: '.ed-zoom-btn',           dataAttr: 'val' }
+    { hiddenId: 'mapZoomInput',     itemSelector: '.ed-zoom-btn',           dataAttr: 'val' },
+    { hiddenId: 'galTypeVal',       itemSelector: '.gal-type-card',         dataAttr: 'galtype' },
+    { hiddenId: 'galScrollVal',     itemSelector: '#galScrollTabs .ed-tab', dataAttr: 'val' }
 ];
 
 function resyncPickerVisuals() {
@@ -1949,6 +1951,15 @@ window.addEventListener('load', function() {
         });
         syncTitle();
     });
+
+    /* 저장된 갤러리 이미지를 galImages 배열/썸네일 목록에 복원.
+       안 하면 화면엔 빈 목록으로 보이다가, 여기서 사진을 한 장이라도 추가·삭제하는 순간
+       빈 배열 기준으로 히든 입력을 덮어써서 기존에 저장돼 있던 사진이 전부 사라진다. */
+    var savedGalImages = document.getElementById('galleryImagesInput').value;
+    if (savedGalImages) {
+        galImages = savedGalImages.split('|||').filter(function(s) { return s.trim(); });
+        renderGalThumbs();
+    }
 
     /* 탭/카드형 픽커들의 활성 표시를 방금 복원된 히든 입력값에 맞춰 동기화
        (되돌리기 버튼에서만 호출되던 것을 최초 로드 시에도 실행 — 안 하면 저장된 값과 무관하게
