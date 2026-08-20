@@ -1393,12 +1393,16 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .rsvp-stat-item.meal .rsvp-stat-icon,.rsvp-stat-item.meal .rsvp-stat-num{color:#7a8aba;}
 
 /* ══ RSVP 새로고침 버튼 ══ */
-.rsvp-action-row{display:flex;gap:8px;margin-top:10px;}
+.rsvp-action-row{display:flex;gap:8px;margin-top:18px;}
 .rsvp-refresh-btn{display:flex;align-items:center;gap:6px;margin-top:0;padding:8px 16px;border:1px solid #e0d8ce;border-radius:8px;background:#faf8f5;color:#9a8a74;font-size:12px;cursor:pointer;transition:all .15s;}
 .rsvp-refresh-btn:hover{background:#f0ebe3;color:#6a5a4a;border-color:#c4a882;}
 
 /* ══ RSVP 목록 행 ══ */
-.rsvp-list{display:flex;flex-direction:column;gap:6px;}
+/* 방명록·참석응답 관리 영역 — 이 두 섹션만 .ed-sec-bd 가 아니라서 좌우 여백이 없었고,
+   안내문구와 목록이 2px 간격으로 붙어 있었다. 다른 섹션과 같은 여백을 준다. */
+#bd-guest, #bd-rsvp{padding:.9rem 1.3rem 1.4rem;}
+#bd-guest .ed-hint{margin-bottom:16px;}
+.rsvp-list{display:flex;flex-direction:column;gap:8px;}
 .rsvp-mgmt-row{background:#fff;border:1px solid #ede8e0;border-radius:10px;padding:11px 14px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;transition:box-shadow .15s;}
 .rsvp-mgmt-row:hover{box-shadow:0 2px 8px rgba(0,0,0,0.07);}
 .rsvp-mgmt-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
