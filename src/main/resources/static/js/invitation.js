@@ -56,6 +56,9 @@ function calcDday(dateStr) {
 var _invMap = null;
 var _invMarker = null;
 
+/* 편집기 "지도 줌" 값(20M~500M) → 카카오맵 level */
+var MAP_ZOOM_LEVELS = {'20M':3, '30M':4, '50M':5, '100M':6, '250M':7, '500M':8};
+
 function initInvitationMap() {
     var mapDiv = document.getElementById('invitationMap');
     if (!mapDiv) return;
@@ -64,11 +67,13 @@ function initInvitationMap() {
     var lng       = parseFloat(mapDiv.getAttribute('data-lng'));
     var place     = mapDiv.getAttribute('data-place') || '';
     var kakaoLink = mapDiv.getAttribute('data-kakaolink') || '';
+    var zoomLevel = mapDiv.getAttribute('data-zoom') || '50M';
+    var locked    = mapDiv.getAttribute('data-locked') === 'true'; /* 명시적으로 true일 때만 잠금, 그 외(미설정 포함)는 인터랙티브 */
 
     if (!lat || !lng || isNaN(lat) || isNaN(lng)) return;
 
     if (window._kakaoReady && typeof kakao !== 'undefined' && kakao.maps) {
-        _drawInvitationMap(mapDiv, lat, lng, place, kakaoLink);
+        _drawInvitationMap(mapDiv, lat, lng, place, kakaoLink, zoomLevel, locked);
     } else {
         /* SDK 로딩 대기 */
         var tries = 0;
@@ -76,7 +81,7 @@ function initInvitationMap() {
             tries++;
             if (window._kakaoReady) {
                 clearInterval(poll);
-                _drawInvitationMap(mapDiv, lat, lng, place, kakaoLink);
+                _drawInvitationMap(mapDiv, lat, lng, place, kakaoLink, zoomLevel, locked);
             } else if (tries > 40) {
                 clearInterval(poll);
             }
@@ -84,12 +89,16 @@ function initInvitationMap() {
     }
 }
 
-function _drawInvitationMap(mapDiv, lat, lng, place, kakaoLink) {
+function _drawInvitationMap(mapDiv, lat, lng, place, kakaoLink, zoomLevel, locked) {
     var pos = new kakao.maps.LatLng(lat, lng);
+    var level = MAP_ZOOM_LEVELS[zoomLevel] || 5;
 
     if (_invMap) {
         _invMap.relayout();
         _invMap.setCenter(pos);
+        _invMap.setLevel(level);
+        _invMap.setDraggable(!locked);
+        _invMap.setZoomable(!locked);
         if (_invMarker) _invMarker.setPosition(pos);
         mapDiv.onclick = function() { if (kakaoLink) window.open(kakaoLink, '_blank'); };
         return;
@@ -100,17 +109,15 @@ function _drawInvitationMap(mapDiv, lat, lng, place, kakaoLink) {
     mapDiv.innerHTML = '';
 
     if (!mapDiv.offsetWidth) {
-        requestAnimationFrame(function() { _drawInvitationMap(mapDiv, lat, lng, place, kakaoLink); });
+        requestAnimationFrame(function() { _drawInvitationMap(mapDiv, lat, lng, place, kakaoLink, zoomLevel, locked); });
         return;
     }
 
     _invMap = new kakao.maps.Map(mapDiv, {
         center: pos,
-        level: 3,
-        draggable: false,
-        scrollwheel: false,
-        disableDoubleClick: true,
-        disableDoubleClickZoom: true
+        level: level,
+        draggable: !locked,
+        zoomable: !locked
     });
 
     setTimeout(function() {
@@ -654,42 +661,6 @@ window.initPage = function(data) {
         });
     }, 300);
 };
-
-/* ── 카카오 지도 초기화 ── */
-function initKakaoMap(lat, lng, zoomLevel) {
-    var mapEl = document.getElementById('invitationMap');
-    if (!mapEl || typeof kakao === 'undefined') return;
-    var zoomMap = {'20M':3,'30M':4,'50M':5,'100M':6,'250M':7,'500M':8};
-    var level = zoomMap[zoomLevel] || 5;
-    var center = new kakao.maps.LatLng(lat || 37.5009, lng || 127.0363);
-    var map = new kakao.maps.Map(mapEl, { center: center, level: level });
-    var marker = new kakao.maps.Marker({ position: center, map: map });
-}
-
-/* ── 내비게이션 앱 연결 ── */
-function bindNaviButtons() {
-    var naviKakao = document.getElementById('naviKakao');
-    var naviTmap  = document.getElementById('naviTmap');
-    var naviNaver = document.getElementById('naviNaver');
-    if (naviKakao) {
-        naviKakao.addEventListener('click', function() {
-            var addr = naviKakao.dataset.addr || '';
-            window.open('kakaomap://search?q=' + encodeURIComponent(addr), '_blank');
-        });
-    }
-    if (naviTmap) {
-        naviTmap.addEventListener('click', function() {
-            var addr = naviTmap.dataset.addr || '';
-            window.open('tmap://search?name=' + encodeURIComponent(addr), '_blank');
-        });
-    }
-    if (naviNaver) {
-        naviNaver.addEventListener('click', function() {
-            var addr = naviNaver.dataset.addr || '';
-            window.open('nmap://search?query=' + encodeURIComponent(addr) + '&appname=com.wedding', '_blank');
-        });
-    }
-}
 
 /* ── 슬라이드 카운터 업데이트 ── */
 function updateSlideCounter(current, total) {

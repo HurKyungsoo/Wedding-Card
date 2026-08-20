@@ -499,15 +499,19 @@
         <div class="map-full reveal-scale delay-3"
              th:attr="data-lat=${wedding.mapLat},data-lng=${wedding.mapLng},data-place=${wedding.mapPlaceName},data-addr=${wedding.mapAddressRoad}">
 
-            <!-- 카카오 Static Map 이미지 — 항상 DOM에 존재 (postMessage 실시간 반영용) -->
+            <!-- 카카오맵 JS SDK로 그리는 인터랙티브 지도 — 항상 DOM에 존재 (postMessage 실시간 반영용) -->
             <div class="map-wrap" id="invitationMap"
                  th:style="${wedding.mapLat == null or wedding.mapLng == null} ? 'display:none' : ''"
-                 th:attr="data-lat=${wedding.mapLat},data-lng=${wedding.mapLng},data-place=${wedding.mapPlaceName},data-kakaolink=|https://map.kakao.com/link/map/${wedding.mapPlaceName},${wedding.mapLat},${wedding.mapLng}|">
-                <!-- JS에서 Static Map img 주입 -->
+                 th:attr="data-lat=${wedding.mapLat},data-lng=${wedding.mapLng},data-place=${wedding.mapPlaceName},
+                           data-kakaolink=|https://map.kakao.com/link/map/${wedding.mapPlaceName},${wedding.mapLat},${wedding.mapLng}|,
+                           data-zoom=${wedding.mapZoomLevel ?: '50M'},
+                           data-locked=${wedding.mapLocked == true}">
+                <!-- JS(initInvitationMap)가 카카오맵 인스턴스를 주입 -->
             </div>
+            <!-- '자세히보기' 버튼 — 좌표 없으면 숨김, mapDetailView가 명시적으로 false일 때도 숨김(null/미설정은 기존처럼 표시) -->
             <a class="map-detail-btn" id="mapDetailBtn"
                th:href="|https://map.kakao.com/link/map/${wedding.mapPlaceName},${wedding.mapLat},${wedding.mapLng}|"
-               th:style="${wedding.mapLat == null or wedding.mapLng == null} ? 'display:none' : ''"
+               th:style="${(wedding.mapLat == null or wedding.mapLng == null) or (wedding.mapDetailView != null and !wedding.mapDetailView)} ? 'display:none' : ''"
                target="_blank">지도를 자세히 보려면 여기를 눌러주세요</a>
             <div class="map-wrap map-placeholder" id="invitationMapPlaceholder"
                  th:style="${wedding.mapLat != null and wedding.mapLng != null} ? 'display:none' : ''">
@@ -1159,6 +1163,8 @@
                 if (d.mapLat) smDiv.setAttribute('data-lat', d.mapLat);
                 if (d.mapLng) smDiv.setAttribute('data-lng', d.mapLng);
                 if (d.mapPlaceName) smDiv.setAttribute('data-place', d.mapPlaceName);
+                if (d.mapZoomLevel !== undefined) smDiv.setAttribute('data-zoom', d.mapZoomLevel || '50M');
+                if (d.mapLocked !== undefined) smDiv.setAttribute('data-locked', String(d.mapLocked) === 'true');
                 var smLat   = smDiv.getAttribute('data-lat');
                 var smLng   = smDiv.getAttribute('data-lng');
                 var smPlace = smDiv.getAttribute('data-place') || '';
@@ -1166,7 +1172,7 @@
                 smDiv.setAttribute('data-kakaolink', smKakaoLink);
                 smDiv.style.display = '';
                 if (smPh) smPh.style.display = 'none';
-                if (smBtn) { smBtn.style.display = ''; smBtn.href = smKakaoLink; }
+                if (smBtn) { smBtn.style.display = (d.mapDetailView === 'false' ? 'none' : ''); smBtn.href = smKakaoLink; }
                 if (typeof initInvitationMap === 'function') initInvitationMap();
             } else if (d.mapLat !== undefined || d.mapLng !== undefined) {
                 smDiv.style.display = 'none';

@@ -45,8 +45,7 @@ public class WeddingEntity {
     private Double mapLat, mapLng;
     private String mapZoomLevel;
     private Boolean mapDetailView;
-    private Boolean mapSketchUse;
-    private Boolean mapVisible, mapDetailEnabled, mapLocked;
+    private Boolean mapVisible, mapLocked;
     private Boolean mapNaviKakao = false, mapNaviTmap = false, mapNaviNaver = false;
 
     private Boolean galleryVisible;
@@ -131,10 +130,8 @@ public class WeddingEntity {
     public Double getMapLng() { return mapLng; } public void setMapLng(Double v) { this.mapLng=v; }
     public String getMapZoomLevel() { return mapZoomLevel; } public void setMapZoomLevel(String v) { this.mapZoomLevel=v; }
     public Boolean getMapDetailView() { return mapDetailView; } public void setMapDetailView(Boolean v) { this.mapDetailView=v; }
-    public Boolean getMapSketchUse() { return mapSketchUse; } public void setMapSketchUse(Boolean v) { this.mapSketchUse=v; }
     public Boolean getMapVisible() { return mapVisible; } public void setMapVisible(Boolean v) { this.mapVisible=v; }
     public Boolean getMapLocked() { return mapLocked; } public void setMapLocked(Boolean v) { this.mapLocked=v; }
-    public Boolean getMapDetailEnabled() { return mapDetailEnabled; } public void setMapDetailEnabled(Boolean v) { this.mapDetailEnabled=v; }
     public Boolean getMapNaviKakao() { return mapNaviKakao; } public void setMapNaviKakao(Boolean v) { this.mapNaviKakao=v; }
     public Boolean getMapNaviTmap() { return mapNaviTmap; } public void setMapNaviTmap(Boolean v) { this.mapNaviTmap=v; }
     public Boolean getMapNaviNaver() { return mapNaviNaver; } public void setMapNaviNaver(Boolean v) { this.mapNaviNaver=v; }
@@ -175,8 +172,8 @@ public class WeddingEntity {
             .contactPopupEnabled(contactPopupEnabled)
             .calendarVisible(calendarVisible).ddayVisible(ddayVisible).calendarStyle(calendarStyle).ddayStyle(ddayStyle)
             .mapPlaceName(mapPlaceName).mapAddressRoad(mapAddressRoad).mapAddress(mapAddress)
-            .mapLat(mapLat).mapLng(mapLng).mapZoomLevel(mapZoomLevel).mapDetailView(mapDetailView).mapSketchUse(mapSketchUse)
-            .mapVisible(mapVisible).mapLocked(mapLocked).mapDetailEnabled(mapDetailEnabled)
+            .mapLat(mapLat).mapLng(mapLng).mapZoomLevel(mapZoomLevel).mapDetailView(mapDetailView)
+            .mapVisible(mapVisible).mapLocked(mapLocked)
             .mapNaviKakao(mapNaviKakao).mapNaviTmap(mapNaviTmap).mapNaviNaver(mapNaviNaver)
             .galleryVisible(galleryVisible).accountVisible(accountVisible).galleryImages(galleryImages).galleryType(galleryType).galleryScrollGuide(galleryScrollGuide)
             .photoFilter(photoFilter).mainPhotoBase64(mainPhotoBase64)
@@ -213,8 +210,8 @@ public class WeddingEntity {
         e.setCalendarVisible(d.getCalendarVisible()); e.setDdayVisible(d.getDdayVisible());
         e.setCalendarStyle(d.getCalendarStyle()); e.setDdayStyle(d.getDdayStyle());
         e.setMapPlaceName(d.getMapPlaceName()); e.setMapAddressRoad(d.getMapAddressRoad()); e.setMapAddress(d.getMapAddress());
-        e.setMapLat(d.getMapLat()); e.setMapLng(d.getMapLng()); e.setMapZoomLevel(d.getMapZoomLevel()); e.setMapDetailView(d.getMapDetailView()); e.setMapSketchUse(d.getMapSketchUse());
-        e.setMapVisible(d.getMapVisible()); e.setMapLocked(d.getMapLocked()); e.setMapDetailEnabled(d.getMapDetailEnabled());
+        e.setMapLat(d.getMapLat()); e.setMapLng(d.getMapLng()); e.setMapZoomLevel(d.getMapZoomLevel()); e.setMapDetailView(d.getMapDetailView());
+        e.setMapVisible(d.getMapVisible()); e.setMapLocked(d.getMapLocked());
         e.setMapNaviKakao(d.getMapNaviKakao()); e.setMapNaviTmap(d.getMapNaviTmap()); e.setMapNaviNaver(d.getMapNaviNaver());
         e.setGalleryVisible(d.getGalleryVisible()); e.setAccountVisible(d.getAccountVisible()); e.setGalleryImages(d.getGalleryImages());
         e.setGalleryType(d.getGalleryType()); e.setGalleryScrollGuide(d.getGalleryScrollGuide());

@@ -787,7 +787,8 @@
                             <button type="button" class="ed-tab" data-val="true" onclick="pickTab(this,'mapLockTabs','mapLockVal')">사용함</button>
                             <button type="button" class="ed-tab active" data-val="false" onclick="pickTab(this,'mapLockTabs','mapLockVal')">사용안함</button>
                         </div>
-                        <input type="hidden" id="mapLockVal" name="mapLocked" value="false">
+                        <!-- th:value로 명시 렌더 — mapLocked가 null(기존 청첩장)이어도 항상 true/false 문자열이 되도록 -->
+                        <input type="hidden" name="mapLocked" th:value="${wedding.mapLocked == true}" id="mapLockVal">
                     </div>
                 </div>
 
@@ -841,7 +842,8 @@
                             <button type="button" class="ed-tab active" data-val="true" onclick="pickTab(this,'mapDetailTabs','mapDetailVal')">사용함</button>
                             <button type="button" class="ed-tab" data-val="false" onclick="pickTab(this,'mapDetailTabs','mapDetailVal')">사용안함</button>
                         </div>
-                        <input type="hidden" id="mapDetailVal" name="mapDetailView" value="true">
+                        <!-- null(기존 청첩장, 한번도 안 건드린 값)이면 기존 동작대로 항상 켜진 것으로 취급 -->
+                        <input type="hidden" name="mapDetailView" th:value="${wedding.mapDetailView == null or wedding.mapDetailView}" id="mapDetailVal">
                     </div>
                 </div>
 

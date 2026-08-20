@@ -156,7 +156,7 @@ public class WeddingService {
             .calendarVisible(true).ddayVisible(true)
             .mapPlaceName("그랜드 웨딩홀").mapAddressRoad("서울 강남구 테헤란로 123").mapAddress("역삼동 123-45")
             .mapLat(37.5009).mapLng(127.0363).mapZoomLevel("50M")
-            .mapVisible(true).mapDetailEnabled(true)
+            .mapVisible(true).mapDetailView(true)
             .mapNaviKakao(true).mapNaviTmap(true).mapNaviNaver(true)
             .galleryVisible(true).galleryImages("").galleryType("slide").galleryScrollGuide(true)
             .photoFilter("none").mainPhotoBase64("")

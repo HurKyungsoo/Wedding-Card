@@ -44,8 +44,7 @@ public class WeddingDto {
     private Double mapLat, mapLng;
     private String mapZoomLevel;
     private Boolean mapDetailView;
-    private Boolean mapSketchUse;
-    private Boolean mapVisible, mapDetailEnabled, mapLocked;
+    private Boolean mapVisible, mapLocked;
     private Boolean mapNaviKakao = false, mapNaviTmap = false, mapNaviNaver = false;
 
     private Boolean galleryVisible;
@@ -113,10 +112,8 @@ public class WeddingDto {
     public Double getMapLng() { return mapLng; } public void setMapLng(Double v) { this.mapLng = v; }
     public String getMapZoomLevel() { return mapZoomLevel; } public void setMapZoomLevel(String v) { this.mapZoomLevel = v; }
     public Boolean getMapDetailView() { return mapDetailView; } public void setMapDetailView(Boolean v) { this.mapDetailView = v; }
-    public Boolean getMapSketchUse() { return mapSketchUse; } public void setMapSketchUse(Boolean v) { this.mapSketchUse = v; }
     public Boolean getMapVisible() { return mapVisible; } public void setMapVisible(Boolean v) { this.mapVisible = v; }
     public Boolean getMapLocked() { return mapLocked; } public void setMapLocked(Boolean v) { this.mapLocked = v; }
-    public Boolean getMapDetailEnabled() { return mapDetailEnabled; } public void setMapDetailEnabled(Boolean v) { this.mapDetailEnabled = v; }
     public Boolean getMapNaviKakao() { return mapNaviKakao; } public void setMapNaviKakao(Boolean v) { this.mapNaviKakao = v; }
     public Boolean getMapNaviTmap() { return mapNaviTmap; } public void setMapNaviTmap(Boolean v) { this.mapNaviTmap = v; }
     public Boolean getMapNaviNaver() { return mapNaviNaver; } public void setMapNaviNaver(Boolean v) { this.mapNaviNaver = v; }
@@ -228,10 +225,8 @@ public class WeddingDto {
         public Builder mapLng(Double v) { d.mapLng=v; return this; }
         public Builder mapZoomLevel(String v) { d.mapZoomLevel=v; return this; }
         public Builder mapDetailView(Boolean v) { d.mapDetailView=v; return this; }
-        public Builder mapSketchUse(Boolean v) { d.mapSketchUse=v; return this; }
         public Builder mapVisible(Boolean v) { d.mapVisible=v; return this; }
         public Builder mapLocked(Boolean v) { d.mapLocked=v; return this; }
-        public Builder mapDetailEnabled(Boolean v) { d.mapDetailEnabled=v; return this; }
         public Builder mapNaviKakao(Boolean v) { d.mapNaviKakao=v; return this; }
         public Builder mapNaviTmap(Boolean v) { d.mapNaviTmap=v; return this; }
         public Builder mapNaviNaver(Boolean v) { d.mapNaviNaver=v; return this; }
