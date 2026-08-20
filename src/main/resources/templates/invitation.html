@@ -542,8 +542,11 @@
         </div>
 
         <!-- 내비게이션 — 지도 밖 별도 섹션 -->
+        <!-- th:if 로 통째로 빼면, 셋 다 꺼진 상태로 렌더됐을 때 편집기에서 켜도
+             미리보기에 나타날 DOM이 없다. 항상 렌더하고 "하나도 안 켬"은 display:none 으로
+             처리한다 — 하객이 보는 결과는 종전과 동일하다. -->
         <div class="map-navi-section" id="mapNaviBtns"
-             th:if="${wedding.mapNaviKakao == true or wedding.mapNaviTmap == true or wedding.mapNaviNaver == true}">
+             th:style="${wedding.mapNaviKakao == true or wedding.mapNaviTmap == true or wedding.mapNaviNaver == true} ? '' : 'display:none'">
             <div class="map-navi-title">내비게이션</div>
             <div class="map-navi-desc">원하시는 앱을 선택하시면 길안내가 시작됩니다.</div>
             <div class="map-navi-row">
@@ -1465,6 +1468,15 @@
         if (naviKakao && d.mapNaviKakao !== undefined) naviKakao.style.display = d.mapNaviKakao ? '' : 'none';
         if (naviTmap  && d.mapNaviTmap  !== undefined) naviTmap.style.display  = d.mapNaviTmap  ? '' : 'none';
         if (naviNaver && d.mapNaviNaver !== undefined) naviNaver.style.display  = d.mapNaviNaver ? '' : 'none';
+
+        /* 하나도 안 켜져 있으면 "내비게이션" 제목·설명만 덩그러니 남으므로 블록째 숨긴다.
+           payload에 없는 값은 현재 화면 상태에서 읽어, 한 개만 바뀌어 와도 판단이 맞게 한다. */
+        var naviWrap = document.getElementById('mapNaviBtns');
+        if (naviWrap) {
+            function naviOn(el) { return !!el && el.style.display !== 'none'; }
+            var anyNavi = naviOn(naviKakao) || naviOn(naviTmap) || naviOn(naviNaver);
+            naviWrap.style.display = anyNavi ? '' : 'none';
+        }
 
         /* ── 9. 혼주 이름 + 고인 표시 실시간 반영 ── */
 
