@@ -2620,23 +2620,64 @@ body{ -webkit-overflow-scrolling:touch; }
 .gb-submit-btn:disabled{opacity:.55;cursor:default;}
 .gb-hint{font-size:11px;color:#a09080;text-align:center;margin:2px 0 0;line-height:1.6;}
 
-.gb-list{margin-top:1.4rem;display:flex;flex-direction:column;gap:10px;}
-.gb-empty{text-align:center;color:#a09080;font-size:13px;padding:1.4rem 0;}
-.gb-item{
-    background:#fdfbf8;border:0.5px solid rgba(180,160,130,0.18);
-    border-radius:10px;padding:11px 13px;
+/* ── 방명록 목록 — 포스트잇 ──
+   2열 그리드에 살짝씩 기울인 메모지. 색과 각도는 글 id로 정해지므로
+   목록을 다시 그려도 같은 글은 같은 자리·같은 색을 유지한다(무작위면 깜빡일 때마다 바뀐다). */
+.gb-list{
+    margin-top:1.5rem;
+    display:grid;grid-template-columns:repeat(2,1fr);
+    gap:14px 12px;align-items:start;
 }
-.gb-item-head{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
-.gb-item-name{font-size:13px;font-weight:500;color:#3a2e22;font-family:'Noto Sans KR',sans-serif;}
-.gb-item-date{font-size:11px;color:#a09080;margin-left:auto;}
+.gb-empty{grid-column:1/-1;text-align:center;color:#a09080;font-size:13px;padding:1.4rem 0;}
+.gb-item{
+    position:relative;
+    padding:13px 13px 15px;
+    border:none;border-radius:2px;
+    min-height:104px;
+    display:flex;flex-direction:column;
+    box-shadow:0 3px 7px rgba(90,70,50,.16), 0 1px 2px rgba(90,70,50,.10);
+    transition:transform .18s ease, box-shadow .18s ease;
+}
+/* 메모지 색 — 웨딩 톤에 맞춘 파스텔 5종 */
+.gb-item.gb-p0{background:#fdf3d0;}   /* 버터 */
+.gb-item.gb-p1{background:#fae3e6;}   /* 블러시 */
+.gb-item.gb-p2{background:#e4f0e2;}   /* 세이지 */
+.gb-item.gb-p3{background:#e2edf5;}   /* 파우더블루 */
+.gb-item.gb-p4{background:#f6e7f2;}   /* 라일락 */
+/* 살짝 기울이기 */
+.gb-item.gb-r0{transform:rotate(-1.8deg);}
+.gb-item.gb-r1{transform:rotate(1.4deg);}
+.gb-item.gb-r2{transform:rotate(-0.8deg);}
+.gb-item.gb-r3{transform:rotate(2deg);}
+.gb-item.gb-r4{transform:rotate(-1.2deg);}
+.gb-item:hover{transform:rotate(0deg) translateY(-2px);box-shadow:0 7px 14px rgba(90,70,50,.20);}
+/* 접힌 모서리 */
+.gb-item::after{
+    content:'';position:absolute;right:0;bottom:0;
+    border-width:0 0 14px 14px;border-style:solid;
+    border-color:transparent transparent rgba(255,255,255,.55) transparent;
+}
+
+.gb-item-head{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.gb-item-name{
+    font-family:'Nanum Pen Script','Noto Sans KR',cursive;
+    font-size:18px;color:#3a2e22;line-height:1;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.gb-item-date{font-size:10px;color:rgba(90,78,64,.55);margin-left:auto;flex-shrink:0;}
 .gb-item-del{
-    background:none;border:none;color:#c4bcb0;cursor:pointer;padding:2px;
-    display:flex;align-items:center;font-size:13px;line-height:1;
+    background:none;border:none;color:rgba(90,78,64,.35);cursor:pointer;padding:1px;
+    display:flex;align-items:center;font-size:12px;line-height:1;flex-shrink:0;
 }
 .gb-item-del:hover{color:#c4748a;}
 .gb-item-msg{
-    font-size:13px;color:#5a4e40;line-height:1.75;margin:0;
-    white-space:pre-wrap;word-break:break-word;font-family:'Noto Sans KR',sans-serif;
+    font-family:'Nanum Pen Script','Noto Sans KR',cursive;
+    font-size:16px;color:#4a3e30;line-height:1.5;margin:0;
+    white-space:pre-wrap;word-break:break-word;
+}
+/* 좁은 화면에서는 1열 — 2열이면 메모지가 너무 작아진다 */
+@media (max-width:340px){
+    .gb-list{grid-template-columns:1fr;}
 }
 .gb-more-btn{
     width:100%;margin-top:10px;padding:10px;background:none;

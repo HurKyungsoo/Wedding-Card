@@ -1127,7 +1127,10 @@ function renderGuestbook() {
 /* 사용자 입력이므로 문자열 연결 대신 textContent로 DOM 조립 */
 function buildGuestbookItem(item) {
     var row = document.createElement('div');
-    row.className = 'gb-item';
+    /* 색·기울기는 글 id에서 뽑는다 — 무작위로 하면 목록을 다시 그릴 때마다 바뀐다.
+       색 5종과 각도 5종의 주기를 다르게 해서(5, 5지만 오프셋을 줘) 같은 조합이 붙어 나오지 않게 함 */
+    var id = Number(item.id) || 0;
+    row.className = 'gb-item gb-p' + (id % 5) + ' gb-r' + ((id + 2) % 5);
 
     var head = document.createElement('div');
     head.className = 'gb-item-head';
