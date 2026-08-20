@@ -59,7 +59,6 @@ setInterval(renderDraftStatus, 30000);
 /* data-* 속성으로 활성 카드를 표시하는 탭/카드형 픽커들 — 히든 입력값 기준으로 active 클래스만 재동기화 */
 var PICKER_GROUPS = [
     { hiddenId: 'mainDesignVal',    itemSelector: '.ed-design-card',        dataAttr: 'design' },
-    { hiddenId: 'photoFilterInput', itemSelector: '#filterTabs .ed-tab',    dataAttr: 'val' },
     { hiddenId: 'calStyleInput',    itemSelector: '.cal-style-card',        dataAttr: 'cal' },
     { hiddenId: 'ddayStyleInput',   itemSelector: '.style-type-item',       dataAttr: 'dday' },
     { hiddenId: 'orderVal',         itemSelector: '#orderTabs .ed-tab',     dataAttr: 'val' },
@@ -268,18 +267,6 @@ function pickDdayStyle(el, val) {
     scheduleLive(100);
 }
 
-/* 사진 필터 */
-function pickFilter(el) {
-    document.querySelectorAll('#filterTabs .ed-tab').forEach(function(t){ t.classList.remove('active'); });
-    el.classList.add('active');
-    var val = el.dataset.val;
-    var fi = document.getElementById('photoFilterInput');
-    if (fi) fi.value = val;
-    var img = document.getElementById('dcImg');
-    if (img) img.style.filter = val === 'none' ? '' : val;
-    scheduleLive(100);
-}
-
 /* ──────────────────────────────────────
    메인 화면 — 디자인/효과/글꼴/색상
 ────────────────────────────────────── */
@@ -407,7 +394,11 @@ function pickFontColor(color) {
     }
     if (reset) {
         reset.addEventListener('click', function() {
-            pickFontColor('#000000');
+            /* 무조건 검정이 아니라 현재 테마의 기본색으로 — Getting Married(흰 글자)처럼
+               어두운/사진 배경 테마에서 검정으로 리셋하면 글자가 안 보이게 되는 문제 방지 */
+            var designInput = document.getElementById('mainDesignVal');
+            var currentDesign = (designInput && designInput.value) || 'basic';
+            pickFontColor(DESIGN_DEFAULT_COLORS[currentDesign] || '#2c2822');
         });
     }
 })();
@@ -487,16 +478,12 @@ updateDateCard();
 /* ──────────────────────────────────────
    메인 사진 업로드
 ────────────────────────────────────── */
-document.getElementById('mainPhotoZone').addEventListener('click', function(e) {
-    if (e.target.closest('#removeMainPhoto')) return;
-    document.getElementById('mainPhotoFile').click();
-});
-document.getElementById('mainPhotoFile').addEventListener('change', function() {
-    var file = this.files[0];
+/* 갤러리와 같은 리사이즈 적용 — 원본을 그대로 base64로 저장하면 이 청첩장에서
+   가장 자주(전체 화면 히어로) 로드되는 사진이 제일 큰 용량으로 남는 문제 방지.
+   히어로 사진은 갤러리 썸네일보다 크게 표시되므로 폭을 조금 더 넉넉히 잡는다. */
+function handleMainPhotoFile(file) {
     if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-        var dataUrl = ev.target.result;
+    resizeImage(file, 1440, 0.85, function(dataUrl) {
         var b64 = document.getElementById('mainPhotoBase64');
         if (b64) b64.value = dataUrl.split(',')[1];
         var thumb = document.getElementById('mainThumbImg');
@@ -516,8 +503,39 @@ document.getElementById('mainPhotoFile').addEventListener('change', function() {
         if (dcPh)  dcPh.style.display = 'none';
         if (dcImg) { dcImg.src = dataUrl; dcImg.style.display = 'block'; }
         scheduleLive(200);
-    };
-    reader.readAsDataURL(file);
+    });
+}
+
+var mainPhotoZoneEl = document.getElementById('mainPhotoZone');
+mainPhotoZoneEl.addEventListener('click', function(e) {
+    if (e.target.closest('#removeMainPhoto')) return;
+    document.getElementById('mainPhotoFile').click();
+});
+document.getElementById('mainPhotoFile').addEventListener('change', function() {
+    handleMainPhotoFile(this.files[0]);
+});
+/* 드래그 업로드 — 안내 문구("클릭 또는 드래그하여 업로드")는 있었지만
+   실제로 드롭을 받는 핸들러가 없어 드래그로는 아무 반응이 없던 문제 */
+['dragenter', 'dragover'].forEach(function(evt) {
+    mainPhotoZoneEl.addEventListener(evt, function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        mainPhotoZoneEl.classList.add('drag-over');
+    });
+});
+['dragleave', 'dragend'].forEach(function(evt) {
+    mainPhotoZoneEl.addEventListener(evt, function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        mainPhotoZoneEl.classList.remove('drag-over');
+    });
+});
+mainPhotoZoneEl.addEventListener('drop', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    mainPhotoZoneEl.classList.remove('drag-over');
+    var file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file && file.type.indexOf('image/') === 0) handleMainPhotoFile(file);
 });
 document.getElementById('removeMainPhoto').addEventListener('click', function(e) {
     e.stopPropagation();
@@ -1912,10 +1930,6 @@ window.addEventListener('load', function() {
     if (designEl) pickDesign(designEl, savedDesign, { preserveColor: hasSavedColor });
     /* 아직 색상을 고른 적이 없으면 해당 테마의 기본색으로 시작 */
     if (!hasSavedColor) applyDesignDefaultColor(savedDesign);
-    if (WEDDING.photoFilter && WEDDING.photoFilter !== 'none') {
-        var fEl = document.querySelector('#filterTabs [data-val="'+WEDDING.photoFilter+'"]');
-        if (fEl) pickFilter(fEl);
-    }
     if (WEDDING.hasPhoto) {
         var hint = document.getElementById('mainUploadHint');
         if (hint) hint.style.display = 'none';
