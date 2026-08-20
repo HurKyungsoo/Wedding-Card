@@ -2,6 +2,7 @@ package com.example.weddingexam.guestbook;
 
 import com.example.weddingexam.dto.WeddingDto;
 import com.example.weddingexam.service.WeddingService;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,18 +68,29 @@ class GuestbookTest {
         assertThat(body).contains("홍길동").contains("결혼 축하합니다!");
     }
 
-    /** 목록은 하객 누구나 읽으므로 PIN/해시가 절대 실리면 안 된다 */
+    /**
+     * 목록은 하객 누구나 읽으므로 PIN/해시가 절대 실리면 안 된다.
+     *
+     * 본문을 문자열로 부분검색하지 않는다 — PIN 숫자 4자리는 createdAt의 마이크로초
+     * (예: 12:22:52.432164 안의 "4321")에 우연히 들어가서 시각에 따라 실패한다.
+     * 대신 응답 객체의 필드 집합 자체를 고정해, 새 필드가 새어 나오면 바로 걸리게 한다.
+     */
     @Test
     void list_neverLeaksPassword() throws Exception {
         Long w = newWeddingId();
         write(w, "홍길동", "축하해요", "4321");
 
         String body = mockMvc.perform(get("/api/guestbook").param("weddingId", String.valueOf(w)))
-                .andReturn().getResponse().getContentAsString();
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-        assertThat(body).doesNotContain("4321");
-        assertThat(body).doesNotContain("password");
-        assertThat(body).doesNotContain("$2a$");   // BCrypt 해시 접두사
+        JsonNode arr = om.readTree(body);
+        assertThat(arr).hasSize(1);
+
+        List<String> fields = new ArrayList<>();
+        arr.get(0).fieldNames().forEachRemaining(fields::add);
+        assertThat(fields)
+            .as("방명록 응답에 노출해도 되는 필드만 있어야 한다")
+            .containsExactlyInAnyOrder("id", "weddingId", "name", "message", "createdAt");
     }
 
     @Test
