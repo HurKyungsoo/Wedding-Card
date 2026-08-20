@@ -52,6 +52,11 @@ public class SecurityConfig {
                 ).permitAll()
                 // 하객 참석 응답 제출 — 비로그인 공개
                 .requestMatchers(HttpMethod.POST, "/api/rsvp").permitAll()
+                // 방명록 — 하객이 읽고(GET) 쓰고(POST) 본인 글을 지운다(POST /{id}/delete).
+                // 삭제는 PIN 검증을 서비스가 하므로 인증 없이 열어둔다.
+                .requestMatchers(HttpMethod.GET,  "/api/guestbook").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/guestbook").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/guestbook/*/delete").permitAll()
                 // 슈퍼어드민
                 .requestMatchers("/superadmin/**").hasRole("ADMIN")
                 // H2 콘솔 — 명시적으로 켠 환경(로컬)에서만 공개

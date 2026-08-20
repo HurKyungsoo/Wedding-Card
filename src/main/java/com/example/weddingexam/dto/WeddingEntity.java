@@ -66,6 +66,8 @@ public class WeddingEntity {
     private Double mainPhotoScale;
     private String mainDesign, mainFont, mainFontSize, mainFontColor, colorEffect, mainEffect, bgm;
     private Boolean rsvpEnabled;
+    /** 방명록 섹션 표시 여부 */
+    private Boolean guestbookVisible;
 
     /** 섹션 표시 순서 — 콤마 구분(예: "greet,cal,dday,hosts,gal,map,acct,rsvp"). 비어 있으면 템플릿 기본 순서 */
     private String sectionOrder;
@@ -166,6 +168,7 @@ public class WeddingEntity {
     public String getBgm() { return bgm; } public void setBgm(String v) { this.bgm=v; }
     public String getDisplayOrder() { return displayOrder; } public void setDisplayOrder(String v) { this.displayOrder=v; }
     public Boolean getRsvpEnabled() { return rsvpEnabled; } public void setRsvpEnabled(Boolean v) { this.rsvpEnabled=v; }
+    public Boolean getGuestbookVisible() { return guestbookVisible; } public void setGuestbookVisible(Boolean v) { this.guestbookVisible=v; }
     public String getSectionOrder() { return sectionOrder; } public void setSectionOrder(String v) { this.sectionOrder=v; }
     public String getDraftData() { return draftData; } public void setDraftData(String v) { this.draftData=v; }
     public LocalDateTime getDraftSavedAt() { return draftSavedAt; } public void setDraftSavedAt(LocalDateTime v) { this.draftSavedAt=v; }
@@ -197,7 +200,7 @@ public class WeddingEntity {
             .mainDesign(mainDesign).mainFont(mainFont).mainFontSize(mainFontSize).mainFontColor(mainFontColor)
             .colorEffect(colorEffect).mainEffect(mainEffect).bgm(bgm)
             .displayOrder(displayOrder)
-            .rsvpEnabled(rsvpEnabled)
+            .rsvpEnabled(rsvpEnabled).guestbookVisible(guestbookVisible)
             .sectionOrder(sectionOrder)
             .build();
     }
@@ -242,6 +245,7 @@ public class WeddingEntity {
         e.setMainEffect(d.getMainEffect()); e.setBgm(d.getBgm());
         if (d.getDisplayOrder() != null) e.setDisplayOrder(d.getDisplayOrder());
         e.setRsvpEnabled(d.getRsvpEnabled());
+        e.setGuestbookVisible(d.getGuestbookVisible());
         e.setSectionOrder(d.getSectionOrder());
         return e;
     }

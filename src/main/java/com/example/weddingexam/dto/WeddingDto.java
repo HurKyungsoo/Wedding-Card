@@ -62,6 +62,7 @@ public class WeddingDto {
     private Double mainPhotoScale;
     private String mainDesign, mainFont, mainFontSize, mainFontColor, colorEffect, mainEffect, bgm;
     private Boolean rsvpEnabled;
+    private Boolean guestbookVisible;
 
     /** 섹션 표시 순서 — 콤마 구분(예: "greet,cal,dday,hosts,gal,map,acct,rsvp"). 비어 있으면 템플릿 기본 순서 */
     private String sectionOrder;
@@ -195,6 +196,7 @@ public class WeddingDto {
     public String getMainEffect() { return mainEffect; } public void setMainEffect(String v) { this.mainEffect = v; }
     public String getBgm() { return bgm; } public void setBgm(String v) { this.bgm = v; }
     public Boolean getRsvpEnabled() { return rsvpEnabled; } public void setRsvpEnabled(Boolean v) { this.rsvpEnabled = v; }
+    public Boolean getGuestbookVisible() { return guestbookVisible; } public void setGuestbookVisible(Boolean v) { this.guestbookVisible = v; }
     public String getSectionOrder() { return sectionOrder; } public void setSectionOrder(String v) { this.sectionOrder = v; }
     public java.util.List<com.example.weddingexam.account.AccountDto> getAccounts() { return accounts; }
     public void setAccounts(java.util.List<com.example.weddingexam.account.AccountDto> v) { this.accounts = v; }
@@ -277,6 +279,7 @@ public class WeddingDto {
         public Builder mainPhotoPosY(Double v) { d.mainPhotoPosY=v; return this; }
         public Builder mainPhotoScale(Double v) { d.mainPhotoScale=v; return this; }
         public Builder rsvpEnabled(Boolean v) { d.rsvpEnabled=v; return this; }
+        public Builder guestbookVisible(Boolean v) { d.guestbookVisible=v; return this; }
         public Builder sectionOrder(String v) { d.sectionOrder=v; return this; }
         public WeddingDto build() { return d; }
     }

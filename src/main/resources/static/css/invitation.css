@@ -2589,3 +2589,58 @@ body{ -webkit-overflow-scrolling:touch; }
         );
     mix-blend-mode: multiply;
 }
+
+/* ════════════════════════════════════════
+   방명록 — RSVP 카드와 같은 톤을 유지
+   ════════════════════════════════════════ */
+.gb-card{
+    background:transparent;border-radius:16px;
+    border:0.5px solid rgba(180,160,130,0.18);
+    padding:1.6rem 1.4rem;backdrop-filter:blur(4px);
+}
+.gb-form{display:flex;flex-direction:column;gap:8px;}
+.gb-form-row{display:flex;gap:8px;}
+.gb-input{
+    flex:1;min-width:0;padding:10px 12px;border:1px solid #e0d8cf;border-radius:8px;
+    font-size:14px;font-family:'Noto Sans KR',sans-serif;background:#faf8f5;color:#2c2822;outline:none;
+}
+.gb-input-pw{flex:0 0 120px;}
+.gb-input:focus,.gb-textarea:focus{border-color:#c4a882;}
+.gb-textarea{
+    width:100%;padding:10px 12px;border:1px solid #e0d8cf;border-radius:8px;
+    font-size:14px;font-family:'Noto Sans KR',sans-serif;background:#faf8f5;color:#2c2822;
+    outline:none;min-height:82px;resize:none;line-height:1.7;
+}
+.gb-err{color:#c4748a;font-size:12px;text-align:center;padding:2px 0;}
+.gb-submit-btn{
+    width:100%;padding:13px;background:#2c2822;color:#fff;border:none;border-radius:10px;
+    font-size:14px;font-family:'Noto Sans KR',sans-serif;font-weight:500;cursor:pointer;
+    margin-top:2px;transition:background .2s;
+}
+.gb-submit-btn:disabled{opacity:.55;cursor:default;}
+.gb-hint{font-size:11px;color:#a09080;text-align:center;margin:2px 0 0;line-height:1.6;}
+
+.gb-list{margin-top:1.4rem;display:flex;flex-direction:column;gap:10px;}
+.gb-empty{text-align:center;color:#a09080;font-size:13px;padding:1.4rem 0;}
+.gb-item{
+    background:#fdfbf8;border:0.5px solid rgba(180,160,130,0.18);
+    border-radius:10px;padding:11px 13px;
+}
+.gb-item-head{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.gb-item-name{font-size:13px;font-weight:500;color:#3a2e22;font-family:'Noto Sans KR',sans-serif;}
+.gb-item-date{font-size:11px;color:#a09080;margin-left:auto;}
+.gb-item-del{
+    background:none;border:none;color:#c4bcb0;cursor:pointer;padding:2px;
+    display:flex;align-items:center;font-size:13px;line-height:1;
+}
+.gb-item-del:hover{color:#c4748a;}
+.gb-item-msg{
+    font-size:13px;color:#5a4e40;line-height:1.75;margin:0;
+    white-space:pre-wrap;word-break:break-word;font-family:'Noto Sans KR',sans-serif;
+}
+.gb-more-btn{
+    width:100%;margin-top:10px;padding:10px;background:none;
+    border:1px solid #e0d8cf;border-radius:8px;color:#7a6a54;
+    font-size:13px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;
+}
+.gb-more-btn:hover{background:#faf6f1;}

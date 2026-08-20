@@ -159,6 +159,7 @@ public class WeddingService {
             .mapVisible(true).mapDetailView(true)
             .mapNaviKakao(true).mapNaviTmap(true).mapNaviNaver(true)
             .galleryVisible(true).galleryImages("").galleryType("slide").galleryScrollGuide(true)
+            .guestbookVisible(true)
             .photoFilter("none").mainPhotoBase64("")
             .build();
     }

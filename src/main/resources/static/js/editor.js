@@ -243,7 +243,8 @@ document.querySelectorAll('.ed-sec-hd').forEach(function(hd) {
             sec.classList.remove('collapsed');
             bd.style.display = '';
             if (chev) chev.style.transform = 'rotate(0deg)';
-            if (hd.dataset.sec === 'rsvp' && typeof loadRsvpList === 'function') loadRsvpList();
+            if (hd.dataset.sec === 'rsvp'  && typeof loadRsvpList === 'function') loadRsvpList();
+            if (hd.dataset.sec === 'guest' && typeof loadGuestbookAdmin === 'function') loadGuestbookAdmin();
         }
     });
 });
@@ -947,7 +948,8 @@ function collectData() {
         'galleryVisible':  'chkGal',
         'mapVisible':      'chkMap',
         'accountVisible':  'chkAcct',
-        'rsvpEnabled':     'chkRsvp'
+        'rsvpEnabled':     'chkRsvp',
+        'guestbookVisible':'chkGuest'
     };
     Object.keys(TOGGLES).forEach(function(name) {
         var el = document.getElementById(TOGGLES[name])
@@ -1085,7 +1087,7 @@ document.getElementById('editForm').addEventListener('change', function() { sche
 });
 
 /* 섹션 표시/숨김 토글 — postMessage로 즉시 반영 (iframe 재로드 없음) */
-['chkGreet','chkHosts','chkCal','chkDday','chkGal','chkMap','chkAcct','chkRsvp'].forEach(function(id) {
+['chkGreet','chkHosts','chkCal','chkDday','chkGal','chkMap','chkAcct','chkRsvp','chkGuest'].forEach(function(id) {
     var el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('change', function() {
@@ -1261,6 +1263,7 @@ var SECTION_SCROLL_MAP = {
     'map':     '.map-card',
     'acct':    '.acct-tab-wrap',
     'rsvp':    '#rsvpCard',
+    'guest':   '#guestbookCard',
 };
 
 function scrollPreviewTo(secId) {
@@ -1357,6 +1360,7 @@ var NAV_SECTIONS = [
     {id:'map',    label:'지도',              chk:'chkMap'},
     {id:'acct',   label:'계좌 송금',         chk:'chkAcct'},
     {id:'rsvp',   label:'참석 여부',         chk:'chkRsvp'},
+    {id:'guest',  label:'방명록',             chk:'chkGuest'},
 ];
 
 /* 저장된 sectionOrder를 NAV_SECTIONS에 적용한 목록.
@@ -1583,7 +1587,7 @@ function scrollToSection(secId) {
 /* 스크롤 스파이 → 패널 내 활성 섹션 표시 */
 var mainEl = document.querySelector('.ed-main');
 mainEl.addEventListener('scroll', function() {
-    var secs = ['main','basic','wedding','greet','hosts','cal','dday','gal','map','acct','rsvp'];
+    var secs = ['main','basic','wedding','greet','hosts','cal','dday','gal','map','acct','rsvp','guest'];
     var active = secs[0];
     secs.forEach(function(id) {
         var el = document.getElementById('sec-'+id);

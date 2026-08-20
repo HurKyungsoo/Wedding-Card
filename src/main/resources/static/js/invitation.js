@@ -651,6 +651,7 @@ window.initPage = function(data) {
     initPetals();
     initScrollEffects();
     bindEvents();
+    initGuestbook();
 
     /* 안전장치: 화면에 이미 보이는 reveal 요소만 표시 (화면 밖은 스크롤 시 등장) */
     setTimeout(function() {
@@ -1055,4 +1056,162 @@ function closeContactModal(e) {
         modal.style.display = 'none';
         document.body.style.overflow = '';
     }
+}
+
+/* ════════════════════════════════════════
+   방명록
+   ════════════════════════════════════════
+   하객이 축하글을 남기고, 본인이 정한 4자리 PIN으로 지울 수 있다.
+   청첩장 주인은 편집기에서 PIN 없이 지운다(서버가 소유자를 확인). */
+var GB_PAGE_SIZE = 5;
+var _gbAll = [];
+var _gbShown = 0;
+var _gbWeddingId = null;
+
+function initGuestbook() {
+    var card = document.getElementById('guestbookCard');
+    if (!card) return;
+    _gbWeddingId = card.getAttribute('data-wedding-id');
+    if (!_gbWeddingId) return;
+
+    var submitBtn = document.getElementById('gbSubmitBtn');
+    if (submitBtn) submitBtn.addEventListener('click', submitGuestbook);
+
+    var moreBtn = document.getElementById('gbMoreBtn');
+    if (moreBtn) moreBtn.addEventListener('click', function() {
+        _gbShown += GB_PAGE_SIZE;
+        renderGuestbook();
+    });
+
+    /* PIN 입력칸은 숫자만 */
+    var pw = document.getElementById('gbPw');
+    if (pw) pw.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);
+    });
+
+    loadGuestbook();
+}
+
+function loadGuestbook() {
+    fetch('/api/guestbook?weddingId=' + encodeURIComponent(_gbWeddingId))
+        .then(function(r) { return r.json(); })
+        .then(function(list) {
+            _gbAll = Array.isArray(list) ? list : [];
+            _gbShown = GB_PAGE_SIZE;
+            renderGuestbook();
+        })
+        .catch(function() { /* 목록을 못 불러와도 작성 폼은 그대로 쓸 수 있게 둔다 */ });
+}
+
+function renderGuestbook() {
+    var listEl = document.getElementById('gbList');
+    var moreBtn = document.getElementById('gbMoreBtn');
+    if (!listEl) return;
+
+    listEl.innerHTML = '';
+    if (!_gbAll.length) {
+        var empty = document.createElement('div');
+        empty.className = 'gb-empty';
+        empty.textContent = '첫 번째 축하 메시지를 남겨주세요';
+        listEl.appendChild(empty);
+        if (moreBtn) moreBtn.style.display = 'none';
+        return;
+    }
+
+    _gbAll.slice(0, _gbShown).forEach(function(item) {
+        listEl.appendChild(buildGuestbookItem(item));
+    });
+    if (moreBtn) moreBtn.style.display = _gbShown < _gbAll.length ? '' : 'none';
+}
+
+/* 사용자 입력이므로 문자열 연결 대신 textContent로 DOM 조립 */
+function buildGuestbookItem(item) {
+    var row = document.createElement('div');
+    row.className = 'gb-item';
+
+    var head = document.createElement('div');
+    head.className = 'gb-item-head';
+
+    var name = document.createElement('span');
+    name.className = 'gb-item-name';
+    name.textContent = item.name || '';
+
+    var date = document.createElement('span');
+    date.className = 'gb-item-date';
+    date.textContent = (item.createdAt || '').substring(0, 10).replace(/-/g, '.');
+
+    var del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'gb-item-del';
+    del.setAttribute('aria-label', '삭제');
+    del.innerHTML = '<i class="ti ti-x"></i>';
+    del.addEventListener('click', function() { deleteGuestbook(item.id); });
+
+    head.appendChild(name);
+    head.appendChild(date);
+    head.appendChild(del);
+
+    var msg = document.createElement('p');
+    msg.className = 'gb-item-msg';
+    msg.textContent = item.message || '';
+
+    row.appendChild(head);
+    row.appendChild(msg);
+    return row;
+}
+
+function submitGuestbook() {
+    var nameEl = document.getElementById('gbName');
+    var msgEl  = document.getElementById('gbMsg');
+    var pwEl   = document.getElementById('gbPw');
+    var errEl  = document.getElementById('gbErr');
+    var btn    = document.getElementById('gbSubmitBtn');
+
+    function fail(m) {
+        if (!errEl) return;
+        errEl.textContent = m;
+        errEl.style.display = '';
+    }
+    if (errEl) errEl.style.display = 'none';
+
+    var name = (nameEl.value || '').trim();
+    var msg  = (msgEl.value || '').trim();
+    var pw   = (pwEl.value || '').trim();
+    if (!name)              return fail('이름을 입력해 주세요.');
+    if (!msg)               return fail('축하 메시지를 입력해 주세요.');
+    if (!/^[0-9]{4}$/.test(pw)) return fail('비밀번호는 숫자 4자리로 입력해 주세요.');
+
+    btn.disabled = true;
+    fetch('/api/guestbook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ weddingId: Number(_gbWeddingId), name: name, message: msg, password: pw })
+    })
+        .then(function(r) { return r.json().then(function(b) { return { ok: r.ok, body: b }; }); })
+        .then(function(res) {
+            if (!res.ok) { fail((res.body && res.body.error) || '등록에 실패했습니다.'); return; }
+            nameEl.value = ''; msgEl.value = ''; pwEl.value = '';
+            loadGuestbook();
+        })
+        .catch(function() { fail('등록에 실패했습니다. 잠시 후 다시 시도해 주세요.'); })
+        .finally(function() { btn.disabled = false; });
+}
+
+function deleteGuestbook(id) {
+    var pw = window.prompt('작성할 때 입력한 비밀번호 4자리를 입력해 주세요.');
+    if (pw === null) return;                       /* 취소 */
+    pw = (pw || '').trim();
+    if (!/^[0-9]{4}$/.test(pw)) { window.alert('비밀번호는 숫자 4자리입니다.'); return; }
+
+    fetch('/api/guestbook/' + id + '/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ weddingId: Number(_gbWeddingId), password: pw })
+    })
+        .then(function(r) { return r.json().then(function(b) { return { ok: r.ok, body: b }; }); })
+        .then(function(res) {
+            if (!res.ok) { window.alert((res.body && res.body.error) || '삭제하지 못했습니다.'); return; }
+            loadGuestbook();
+        })
+        .catch(function() { window.alert('삭제하지 못했습니다.'); });
 }

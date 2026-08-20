@@ -985,6 +985,32 @@
         </div>
 
         <!-- ━━ 참석 응답 현황 ━━ -->
+        <!-- ━━ 방명록 ━━ -->
+        <div class="ed-section collapsed" id="sec-guest">
+            <div class="ed-sec-hd" data-sec="guest">
+                <div class="ed-sec-hd-left">
+                    <label class="ed-toggle-wrap" onclick="event.stopPropagation()">
+                        <input type="checkbox" name="guestbookVisible" id="chkGuest"
+                               th:checked="${wedding.guestbookVisible == null or wedding.guestbookVisible}">
+                        <span class="ed-toggle-slider"></span>
+                    </label>
+                    <span class="ed-sec-icon"><i class="ti ti-message-2-heart"></i></span>
+                    <span class="ed-sec-title">방명록</span>
+                </div>
+                <i class="ti ti-chevron-down ed-chevron"></i>
+            </div>
+            <div id="bd-guest" style="display:none;padding:0 0 1.2rem;">
+                <div class="ed-hint" style="padding:0 1.3rem;">
+                    ⓘ 하객이 남긴 축하글이 여기에 모입니다.<br>
+                    ⓘ 하객은 작성 시 정한 비밀번호로 본인 글을 지울 수 있고, 신랑·신부는 비밀번호 없이 지울 수 있습니다.
+                </div>
+                <div id="gbAdminList" class="rsvp-list"></div>
+                <div class="rsvp-action-row">
+                    <button type="button" class="rsvp-refresh-btn" onclick="loadGuestbookAdmin()"><i class="ti ti-refresh"></i> 새로고침</button>
+                </div>
+            </div>
+        </div>
+
         <div class="ed-section collapsed" id="sec-rsvp">
             <div class="ed-sec-hd" data-sec="rsvp">
                 <div class="ed-sec-hd-left">
@@ -1175,6 +1201,72 @@ function esc(s) {
 }
 
 /* ── 하객 명단 CSV 내보내기 (식수 집계 등 실제 준비에 사용) ── */
+/* ── 방명록 관리 ──
+   신랑·신부는 비밀번호 없이 지운다. 서버가 로그인 사용자의 소유 여부를 확인한다. */
+function loadGuestbookAdmin() {
+    var list = document.getElementById('gbAdminList');
+    if (!list) return;
+    list.innerHTML = '<div style="text-align:center;color:#bbb;padding:1rem;font-size:13px;">불러오는 중...</div>';
+
+    fetch('/api/guestbook?weddingId=' + WEDDING.id)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            list.innerHTML = '';
+            if (!data || !data.length) {
+                list.innerHTML = '<div style="text-align:center;color:#bbb;padding:1.5rem;font-size:13px;">아직 남겨진 축하글이 없습니다</div>';
+                return;
+            }
+            data.forEach(function(item) {
+                var row = document.createElement('div');
+                row.className = 'rsvp-mgmt-row';
+
+                var head = document.createElement('div');
+                head.className = 'rsvp-mgmt-left';
+                var nm = document.createElement('span');
+                nm.className = 'rsvp-mgmt-name';
+                nm.textContent = item.name || '';
+                head.appendChild(nm);
+
+                var right = document.createElement('div');
+                right.className = 'rsvp-mgmt-right';
+                var dt = document.createElement('span');
+                dt.className = 'rsvp-mgmt-date';
+                dt.textContent = (item.createdAt || '').substring(0, 10);
+                var del = document.createElement('button');
+                del.type = 'button';
+                del.className = 'rsvp-mgmt-del';
+                del.innerHTML = '<i class="ti ti-trash"></i>';
+                del.addEventListener('click', function() {
+                    if (!confirm('이 축하글을 삭제하시겠습니까?')) return;
+                    fetch('/api/guestbook/' + item.id + '/delete', {
+                        method: 'POST',
+                        headers: {'Content-Type':'application/json'},
+                        body: JSON.stringify({ weddingId: WEDDING.id })
+                    })
+                        .then(function(r) {
+                            if (!r.ok) throw new Error();
+                            loadGuestbookAdmin();
+                        })
+                        .catch(function() { showEditorToast('삭제에 실패했습니다', 'error'); });
+                });
+                right.appendChild(dt);
+                right.appendChild(del);
+
+                var msg = document.createElement('div');
+                msg.className = 'rsvp-mgmt-msg';
+                msg.textContent = item.message || '';
+
+                row.appendChild(head);
+                row.appendChild(right);
+                row.appendChild(msg);
+                list.appendChild(row);
+            });
+        })
+        .catch(function() {
+            list.innerHTML = '<div style="text-align:center;color:#c4748a;padding:1rem;font-size:13px;">불러오기 실패</div>';
+        });
+}
+
 function exportRsvpCsv() {
     fetch('/api/rsvp?weddingId=' + WEDDING.id)
         .then(function(r) { return r.json(); })

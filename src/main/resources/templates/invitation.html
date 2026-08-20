@@ -713,7 +713,35 @@
         </div>
     </div>
 
-    <!-- ⑩ 공유하기 -->
+    <!-- ⑩ 방명록 -->
+    <div class="section-divider" data-vis="guestbook" th:style="${wedding.guestbookVisible != null and !wedding.guestbookVisible} ? 'display:none' : ''">
+        <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
+    </div>
+    <div class="sec" data-vis="guestbook" th:style="${wedding.guestbookVisible != null and !wedding.guestbookVisible} ? 'display:none' : ''">
+        <div class="sec-label reveal">Guestbook</div>
+        <div class="sec-title reveal delay-1">방명록</div>
+        <div class="gb-card reveal delay-2" id="guestbookCard" th:attr="data-wedding-id=${wedding.id}">
+
+            <!-- 작성 폼 -->
+            <div class="gb-form">
+                <div class="gb-form-row">
+                    <input class="gb-input" type="text" id="gbName" placeholder="이름" maxlength="20">
+                    <input class="gb-input gb-input-pw" type="password" id="gbPw"
+                           placeholder="비밀번호 4자리" maxlength="4" inputmode="numeric" autocomplete="off">
+                </div>
+                <textarea class="gb-textarea" id="gbMsg" placeholder="따뜻한 축하 메시지를 남겨주세요" maxlength="500"></textarea>
+                <div id="gbErr" class="gb-err" style="display:none;"></div>
+                <button type="button" class="gb-submit-btn" id="gbSubmitBtn">축하글 남기기</button>
+                <p class="gb-hint">비밀번호는 작성한 글을 지울 때 사용됩니다.</p>
+            </div>
+
+            <!-- 목록 -->
+            <div class="gb-list" id="gbList"></div>
+            <button type="button" class="gb-more-btn" id="gbMoreBtn" style="display:none;">더보기</button>
+        </div>
+    </div>
+
+    <!-- ⑪ 공유하기 -->
     <div class="section-divider">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
@@ -1349,7 +1377,8 @@
             galleryVisible:  'gallery',
             mapVisible:      'map',
             accountVisible:  'acct',
-            rsvpEnabled:     'rsvp'
+            rsvpEnabled:     'rsvp',
+            guestbookVisible:'guestbook'
         };
         Object.keys(visMap).forEach(function(key) {
             if (d[key] === undefined) return;
@@ -2040,7 +2069,8 @@
 
         var idToVis = {
             greet: 'greeting', cal: 'calendar', dday: 'dday',
-            hosts: 'hosts',    gal: 'gallery',  map:  'map',  acct: 'acct',  rsvp: 'rsvp'
+            hosts: 'hosts',    gal: 'gallery',  map:  'map',  acct: 'acct',  rsvp: 'rsvp',
+            guest: 'guestbook'
         };
 
         /* 고정 앵커 = 일시 및 장소 섹션 */
@@ -2117,6 +2147,7 @@
             'map':     '.map-full',
             'acct':    '.acct-tab-wrap',
             'rsvp':    '#rsvpCard',
+            'guest':   '#guestbookCard',
         };
 
         var selector = targetMap[sec];
