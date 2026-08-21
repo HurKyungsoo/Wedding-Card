@@ -190,7 +190,11 @@ public class WeddingDto {
         java.util.Map.entry("gowun_batang", "'Gowun Batang', 'Noto Serif KR', serif"),
         java.util.Map.entry("song_myung",   "'Song Myung', 'Noto Serif KR', serif"),
         java.util.Map.entry("gowun_dodum",  "'Gowun Dodum', 'Noto Sans KR', sans-serif"),
-        java.util.Map.entry("nanum_pen",    "'Nanum Pen Script', 'Noto Sans KR', cursive")
+        java.util.Map.entry("nanum_pen",    "'Nanum Pen Script', 'Noto Sans KR', cursive"),
+        // 아래 셋은 구글폰트에 없다 — MAIN_FONT_CDN_CSS 로 따로 로드한다
+        java.util.Map.entry("pretendard",     "'Pretendard', 'Noto Sans KR', sans-serif"),
+        java.util.Map.entry("maru_buri",      "'Maru Buri', 'Noto Serif KR', serif"),
+        java.util.Map.entry("gyeonggi_batang","'Gyeonggi Batang', 'Noto Serif KR', serif")
     );
     /** 청첩장 전역 글꼴(mainFont) 선택값을 실제 CSS font-family 스택으로 변환 — 테마 고유 타이틀 서체는 이 값과 무관하게 고정 */
     public String getMainFontCss() { return MAIN_FONT_CSS.getOrDefault(mainFont != null ? mainFont : "noto", MAIN_FONT_CSS.get("noto")); }
@@ -228,6 +232,31 @@ public class WeddingDto {
         StringBuilder sb = new StringBuilder();
         for (String f : fams) sb.append("&family=").append(f);
         return sb.toString();
+    }
+
+    /**
+     * 구글폰트에 없어 별도 CDN 에서 받아야 하는 글꼴.
+     * 여기 쓰는 CSS 는 구글폰트와 같은 방식이다 — unicode-range 로 쪼갠 subset 목록이라
+     * 브라우저가 청첩장에 실제로 나온 글자가 든 조각만 내려받는다(조각당 20~35KB).
+     * CSS 자체는 압축 전송 기준 24~27KB.
+     *
+     * 프리텐다드는 여기 없다 — invitation.css 가 본문 기본 글꼴로 이미 쓰고 있어
+     * 모든 청첩장이 어차피 받는다. 목록에 넣는 비용이 0이라 넣었다.
+     */
+    private static final java.util.Map<String, String> MAIN_FONT_CDN_CSS = java.util.Map.of(
+        "maru_buri",
+        "https://cdn.jsdelivr.net/gh/fonts-archive/MaruBuri/subsets/MaruBuri-dynamic-subset.css",
+        "gyeonggi_batang",
+        "https://cdn.jsdelivr.net/gh/fonts-archive/GyeonggiBatang/subsets/GyeonggiBatang-dynamic-subset.css"
+    );
+    /** 하객 화면용 — 이 청첩장이 고른 글꼴이 별도 CDN 을 쓸 때만 한 줄. 아니면 빈 목록. */
+    public java.util.Collection<String> getExtraFontStylesheets() {
+        String href = MAIN_FONT_CDN_CSS.get(mainFont != null ? mainFont : "noto");
+        return href == null ? java.util.List.of() : java.util.List.of(href);
+    }
+    /** 편집기 미리보기용 — 글꼴을 바꿔가며 보므로 미리 다 받아둔다. */
+    public static java.util.Collection<String> getAllFontStylesheets() {
+        return MAIN_FONT_CDN_CSS.values();
     }
     public String getMainFontSize() { return mainFontSize; } public void setMainFontSize(String v) { this.mainFontSize = v; }
     public String getMainFontColor() { return mainFontColor; } public void setMainFontColor(String v) { this.mainFontColor = v; }
