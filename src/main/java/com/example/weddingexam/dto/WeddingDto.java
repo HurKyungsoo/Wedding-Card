@@ -180,16 +180,55 @@ public class WeddingDto {
     public String getMainDesign() { return mainDesign; } public void setMainDesign(String v) { this.mainDesign = v; }
     public String getMainFont() { return mainFont; } public void setMainFont(String v) { this.mainFont = v; }
 
-    private static final java.util.Map<String, String> MAIN_FONT_CSS = java.util.Map.of(
-        "noto",        "'Noto Serif KR', serif",
-        "playfair",    "'Playfair Display', 'Noto Serif KR', serif",
-        "eb_garamond", "'EB Garamond', 'Cormorant Garamond', serif",
-        "cormorant",   "'Cormorant Garamond', serif",
-        "dancing",     "'Dancing Script', cursive",
-        "nanum",       "'Nanum Myeongjo', serif"
+    private static final java.util.Map<String, String> MAIN_FONT_CSS = java.util.Map.ofEntries(
+        java.util.Map.entry("noto",         "'Noto Serif KR', serif"),
+        java.util.Map.entry("playfair",     "'Playfair Display', 'Noto Serif KR', serif"),
+        java.util.Map.entry("eb_garamond",  "'EB Garamond', 'Cormorant Garamond', serif"),
+        java.util.Map.entry("cormorant",    "'Cormorant Garamond', serif"),
+        java.util.Map.entry("dancing",      "'Dancing Script', cursive"),
+        java.util.Map.entry("nanum",        "'Nanum Myeongjo', 'Noto Serif KR', serif"),
+        java.util.Map.entry("gowun_batang", "'Gowun Batang', 'Noto Serif KR', serif"),
+        java.util.Map.entry("song_myung",   "'Song Myung', 'Noto Serif KR', serif"),
+        java.util.Map.entry("gowun_dodum",  "'Gowun Dodum', 'Noto Sans KR', sans-serif"),
+        java.util.Map.entry("nanum_pen",    "'Nanum Pen Script', 'Noto Sans KR', cursive")
     );
     /** 청첩장 전역 글꼴(mainFont) 선택값을 실제 CSS font-family 스택으로 변환 — 테마 고유 타이틀 서체는 이 값과 무관하게 고정 */
     public String getMainFontCss() { return MAIN_FONT_CSS.getOrDefault(mainFont != null ? mainFont : "noto", MAIN_FONT_CSS.get("noto")); }
+
+    /**
+     * 한글 폰트는 구글폰트 CSS 한 벌이 50~90KB씩 한다(영문은 다 합쳐도 35KB).
+     * 그래서 항상 로드하는 기본 묶음에는 넣지 않고, 그 청첩장이 실제로 고른 것만 덧붙인다.
+     * 안 고른 하객은 한 바이트도 받지 않는다.
+     *
+     * 여기 없는 값(noto·영문 계열)은 기본 묶음에 이미 들어 있으므로 빈 문자열.
+     */
+    private static final java.util.Map<String, String> MAIN_FONT_GF_FAMILY = java.util.Map.of(
+        "nanum",        "Nanum+Myeongjo:wght@400;700",
+        "gowun_batang", "Gowun+Batang:wght@400;700",
+        "song_myung",   "Song+Myung",
+        "gowun_dodum",  "Gowun+Dodum",
+        "nanum_pen",    "Nanum+Pen+Script"
+    );
+    /**
+     * 기본 묶음에 없는 폰트 중 이 청첩장이 실제로 필요로 하는 것만 `&family=...` 로 이어 붙인다.
+     *  - 고른 메인 글꼴 (한글 계열일 때만)
+     *  - 방명록을 켰다면 손글씨체 — 방명록 이름/본문에만 쓰인다(57KB)
+     * 둘 다 나눔손글씨펜인 경우가 있어 중복은 제거한다(같은 family 를 두 번 넘기면 URL 이 지저분해진다).
+     */
+    public String getExtraFontFamilies() {
+        java.util.LinkedHashSet<String> fams = new java.util.LinkedHashSet<>();
+        String sel = MAIN_FONT_GF_FAMILY.get(mainFont != null ? mainFont : "noto");
+        if (sel != null) fams.add(sel);
+        // null 은 "안 보임"이 아니라 "보임"이다 — invitation.html 이
+        // `guestbookVisible != null and !guestbookVisible` 일 때만 숨기므로,
+        // 토글을 한 번도 만지지 않은 기존 청첩장은 방명록이 그대로 뜬다.
+        // 여기서 TRUE.equals 로 걸러버리면 그 청첩장들만 손글씨체가 폴백된다.
+        if (!Boolean.FALSE.equals(guestbookVisible)) fams.add("Nanum+Pen+Script");
+
+        StringBuilder sb = new StringBuilder();
+        for (String f : fams) sb.append("&family=").append(f);
+        return sb.toString();
+    }
     public String getMainFontSize() { return mainFontSize; } public void setMainFontSize(String v) { this.mainFontSize = v; }
     public String getMainFontColor() { return mainFontColor; } public void setMainFontColor(String v) { this.mainFontColor = v; }
     public String getColorEffect() { return colorEffect; } public void setColorEffect(String v) { this.colorEffect = v; }

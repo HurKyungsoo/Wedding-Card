@@ -76,6 +76,10 @@ public class WeddingController {
         List<AccountDto> accounts = accountService.findByWeddingId(dto.getId());
         model.addAttribute("accounts", accounts);
         model.addAttribute("kakaoAppKey", kakaoAppKey);
+        // 편집기 미리보기에서는 글꼴을 새로고침 없이 바꿔가며 보므로 전부 로드해야 한다.
+        // 하객 화면은 그 청첩장이 고른 것만 받는다(한글 폰트 CSS가 한 벌에 50~90KB).
+        // 인증과 무관 — 폰트를 더 받는 것뿐이라 preview 파라미터만 본다.
+        model.addAttribute("loadAllFonts", "1".equals(preview));
         return "invitation";
     }
 
@@ -213,14 +217,18 @@ public class WeddingController {
         return "redirect:/admin/edit?saved=true";
     }
 
-    /* ── ID 기반 공개 청첩장 (하위 호환) ── */
+    /* ── ID 기반 공개 청첩장 (하위 호환) ──
+         slug 발급 전인 청첩장은 편집기 미리보기도 이 경로를 쓴다(`?preview=1`) */
     @GetMapping("/wedding/{id}")
-    public String invitationById(@PathVariable Long id, Model model) {
+    public String invitationById(@PathVariable Long id,
+                                 @RequestParam(name = "preview", required = false) String preview,
+                                 Model model) {
         WeddingDto dto = weddingService.findById(id);
         addFormattedFields(model, dto);
         List<AccountDto> accounts = accountService.findByWeddingId(id);
         model.addAttribute("accounts", accounts);
         model.addAttribute("kakaoAppKey", kakaoAppKey);
+        model.addAttribute("loadAllFonts", "1".equals(preview));
         return "invitation";
     }
 

@@ -312,12 +312,20 @@
                     <div class="ed-ctrl" style="display:flex;gap:8px;">
                         <select class="ed-select" id="fontSelect" name="mainFont" style="flex:2;"
                                 th:with="cur=${wedding.mainFont ?: 'noto'}">
-                            <option value="noto"        th:selected="${cur == 'noto'}">기본 (Noto Serif KR)</option>
-                            <option value="playfair"    th:selected="${cur == 'playfair'}">Playfair Display ★ 추천</option>
-                            <option value="eb_garamond" th:selected="${cur == 'eb_garamond'}">EB Garamond (우아한 세리프)</option>
-                            <option value="cormorant"   th:selected="${cur == 'cormorant'}">Cormorant Garamond (이탤릭)</option>
-                            <option value="dancing"     th:selected="${cur == 'dancing'}">Dancing Script (손글씨)</option>
-                            <option value="nanum"       th:selected="${cur == 'nanum'}">나눔명조</option>
+                            <optgroup label="한글">
+                                <option value="noto"         th:selected="${cur == 'noto'}">기본 (Noto Serif KR)</option>
+                                <option value="nanum"        th:selected="${cur == 'nanum'}">나눔명조 (단정한 명조)</option>
+                                <option value="gowun_batang" th:selected="${cur == 'gowun_batang'}">고운바탕 (부드러운 명조) ★ 추천</option>
+                                <option value="song_myung"   th:selected="${cur == 'song_myung'}">송명 (굵고 또렷한 명조)</option>
+                                <option value="gowun_dodum"  th:selected="${cur == 'gowun_dodum'}">고운돋움 (담백한 고딕)</option>
+                                <option value="nanum_pen"    th:selected="${cur == 'nanum_pen'}">나눔손글씨 펜 (손글씨)</option>
+                            </optgroup>
+                            <optgroup label="영문">
+                                <option value="playfair"     th:selected="${cur == 'playfair'}">Playfair Display</option>
+                                <option value="eb_garamond"  th:selected="${cur == 'eb_garamond'}">EB Garamond (우아한 세리프)</option>
+                                <option value="cormorant"    th:selected="${cur == 'cormorant'}">Cormorant Garamond (이탤릭)</option>
+                                <option value="dancing"      th:selected="${cur == 'dancing'}">Dancing Script (손글씨)</option>
+                            </optgroup>
                         </select>
                         <select class="ed-select" id="fontSizeSelect" name="mainFontSize" style="flex:1;"
                                 th:with="cur=${wedding.mainFontSize ?: 'md'}">
