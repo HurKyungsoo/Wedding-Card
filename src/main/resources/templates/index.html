@@ -88,19 +88,28 @@
       animation: float 5s ease-in-out infinite;
       filter: drop-shadow(0 48px 64px rgba(44,30,20,0.22));
     }
-    .lp-deck-card {
-      position: absolute; top: 54px; width: 148px; height: 304px;
-      border-radius: 18px; overflow: hidden; z-index: 1;
-      box-shadow: 0 18px 42px rgba(44,30,20,0.18), 0 0 0 1px rgba(44,30,20,0.05);
+    /* 좌우 폰 — 가운데보다 작지만 같은 프레임을 쓴다.
+       각 폰의 중앙이 가운데 폰에 가리지 않도록 100px씩 벌려 둬야
+       가운데 정렬된 이름·날짜가 보인다. */
+    .lp-deck-phone {
+      position: absolute; top: 58px; width: 140px; z-index: 1;
+      background: linear-gradient(165deg,#2d2824 0%,#171210 100%);
+      border-radius: 32px; padding: 7px;
+      box-shadow: 0 18px 42px rgba(44,30,20,0.22),
+                  inset 0 1px 0 rgba(255,255,255,0.08),
+                  0 0 0 1px rgba(0,0,0,0.25);
     }
-    .lp-deck-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .lp-deck-l { left: -78px; transform: rotate(-9deg); animation: floatL 7s ease-in-out infinite; }
-    .lp-deck-r { right: -78px; transform: rotate(9deg);  animation: floatR 6.4s ease-in-out infinite; }
-    @keyframes floatL { 0%,100% { transform: rotate(-9deg) translateY(0); } 50% { transform: rotate(-9deg) translateY(-11px); } }
-    @keyframes floatR { 0%,100% { transform: rotate(9deg) translateY(0); }  50% { transform: rotate(9deg) translateY(-13px); } }
+    .lp-deck-screen {
+      height: 276px; border-radius: 26px;
+      overflow: hidden; position: relative; background: #fff;
+    }
+    .lp-deck-l { left: -122px; transform: rotate(-7deg); animation: floatL 7s ease-in-out infinite; }
+    .lp-deck-r { right: -122px; transform: rotate(7deg);  animation: floatR 6.4s ease-in-out infinite; }
+    @keyframes floatL { 0%,100% { transform: rotate(-7deg) translateY(0); } 50% { transform: rotate(-7deg) translateY(-11px); } }
+    @keyframes floatR { 0%,100% { transform: rotate(7deg) translateY(0); }  50% { transform: rotate(7deg) translateY(-13px); } }
 
-    /* 카드가 좌우로 78px씩 삐져나오므로 폭이 빠듯해지면 먼저 접는다 */
-    @media (max-width: 1080px) { .lp-deck-card { display: none; } }
+    /* 좌우로 122px씩 삐져나오므로 폭이 빠듯해지면 먼저 접는다 */
+    @media (max-width: 1180px) { .lp-deck-phone { display: none; } }
 
     /* ── 테마 카드 3D 틸트 ── */
     .theme-card-wrap.tilting { transition: transform 0.08s linear, filter 0.35s ease; }
@@ -153,8 +162,8 @@
       .theme-card-wrap, .feat-card { transition: none !important; }
       /* 떠다니는 것들은 전부 정지 — 회전은 배치라서 유지한다 */
       .lp-hero-glow, .lp-hero-phone { animation: none !important; }
-      .lp-deck-l { animation: none !important; transform: rotate(-9deg); }
-      .lp-deck-r { animation: none !important; transform: rotate(9deg); }
+      .lp-deck-l { animation: none !important; transform: rotate(-7deg); }
+      .lp-deck-r { animation: none !important; transform: rotate(7deg); }
     }
   </style>
 </head>
@@ -209,16 +218,48 @@
         <p data-reveal data-delay="4" style="margin-top:20px;font-size:12px;color:#c0b0a8;letter-spacing:0.5px;">카드 등록 불필요 · 바로 시작</p>
       </div>
 
-      <!-- 폰 목업 + 뒤에 깔린 카드 두 장 -->
+      <!-- 폰 목업 세 대 — 가운데 Our story, 좌우로 Getting Married / 기본.
+           좌우도 사진만 깔지 않고 각 테마가 적용된 화면을 그대로 넣는다.
+           폰 중앙이 가려지지 않게 배치했으므로 가운데 정렬 요소도 보인다. -->
       <div class="lp-hero-visual" data-reveal="scale" data-delay="2">
         <div class="lp-hero-stack">
 
-          <!-- 뒤 카드 — 폰에 대부분 가려지므로 사진만, 글자는 넣지 않는다 -->
-          <div class="lp-deck-card lp-deck-l" aria-hidden="true">
-            <img src="/images/theme-married.webp" alt="" style="filter:brightness(0.94);">
+          <!-- 왼쪽 — Getting Married (글자가 왼쪽 정렬이라 드러나는 쪽과 맞다) -->
+          <div class="lp-deck-phone lp-deck-l" aria-hidden="true">
+            <div class="lp-deck-screen">
+              <img src="/images/theme-married.webp" alt=""
+                   style="width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;inset:0;filter:brightness(0.84);">
+              <div style="position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,0.42) 100%);"></div>
+              <div style="position:absolute;left:7px;right:0;bottom:19%;text-align:left;">
+                <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:25px;color:#fff;line-height:0.88;letter-spacing:-0.5px;">Getting</div>
+                <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:31px;color:#fff;line-height:0.88;letter-spacing:-0.5px;margin-top:-2px;">Married</div>
+              </div>
+              <div style="position:absolute;left:0;right:0;bottom:5%;text-align:center;font-family:'Patrick Hand',sans-serif;font-size:8px;letter-spacing:1.2px;color:#fff;">2025 · 10 · 25</div>
+            </div>
           </div>
-          <div class="lp-deck-card lp-deck-r" aria-hidden="true">
-            <img src="/images/theme-basic.webp" alt="">
+
+          <!-- 오른쪽 — 기본 -->
+          <div class="lp-deck-phone lp-deck-r" aria-hidden="true">
+            <div class="lp-deck-screen" style="display:flex;flex-direction:column;background:#fdfaf8;">
+              <div style="width:100%;flex:0 0 62%;overflow:hidden;">
+                <img src="/images/theme-basic.webp" alt=""
+                     style="width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block;">
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:0 6px;">
+                <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+                    <span style="font-family:'Cormorant Garamond',serif;font-size:5px;letter-spacing:1.4px;text-transform:uppercase;color:#C4956A;">Groom</span>
+                    <span style="font-family:'Noto Serif KR',serif;font-size:10px;color:#1a1a1a;letter-spacing:1.5px;">지훈</span>
+                  </div>
+                  <div style="width:1px;height:16px;background:#C4956A;"></div>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+                    <span style="font-family:'Cormorant Garamond',serif;font-size:5px;letter-spacing:1.4px;text-transform:uppercase;color:#C4956A;">Bride</span>
+                    <span style="font-family:'Noto Serif KR',serif;font-size:10px;color:#1a1a1a;letter-spacing:1.5px;">수아</span>
+                  </div>
+                </div>
+                <div style="font-family:'Cormorant Garamond',serif;font-size:7px;color:#2a2a28;letter-spacing:0.4px;">2025.10.25 SAT 2:00 PM</div>
+              </div>
+            </div>
           </div>
 
           <!-- 앞 폰 — 완성된 청첩장을 그대로 보여준다 -->
