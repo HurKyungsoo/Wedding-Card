@@ -95,6 +95,51 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;}
     backdrop-filter:blur(4px);
 }
 
+/* ── 미리보기 배지 ──
+   미리보기가 타이핑하는 대로 즉시 갱신되다 보니 "이미 반영됐다"는 인상을 준다.
+   실제로는 게시하기 전까지 하객에게 예전 내용이 보인다 — 그 간극을 여기서 못박는다. */
+.ed-preview-badge{
+    width:360px;max-width:calc(100% - 1rem);
+    display:flex;align-items:center;gap:7px;
+    padding:7px 14px;margin-bottom:8px;
+    border-radius:14px;
+    font-size:11.5px;letter-spacing:.2px;
+    flex-shrink:0;
+    transition:background .25s,color .25s;
+}
+.ed-preview-badge.dirty{background:rgba(214,150,60,.16);color:#8a6520;}
+.ed-preview-badge.clean{background:rgba(0,0,0,.05);color:#7a6a58;}
+
+/* ── 게시 상태 표시 (헤더 라벨 · 미리보기 배지 공용) ── */
+.ed-status-mark{
+    flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;
+    width:10px;height:10px;font-size:11px;line-height:1;
+}
+.dirty > .ed-status-mark{width:6px;height:6px;border-radius:50%;background:#d6963c;}
+.clean > .ed-status-mark{color:#7a9668;font-weight:700;}
+
+.ed-draft-status{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:.75rem;white-space:nowrap;transition:color .25s;
+}
+.ed-draft-status.dirty{color:#96702a;}
+.ed-draft-status.clean{color:#a09080;}
+
+/* 게시 버튼이 상태를 싣는다 — 항상 같은 분홍이면 언제 눌러야 하는지 알려주지 못한다 */
+.ed-btn-solid.has-changes{position:relative;}
+.ed-btn-solid.has-changes::after{
+    content:'';position:absolute;top:-2px;right:-2px;
+    width:9px;height:9px;border-radius:50%;
+    background:#e8a33c;border:2px solid #fff;
+}
+/* 전부 게시된 상태 — 비활성이 아니라 "지금은 누를 일 없음" 정도로만 가라앉힌다 */
+.ed-btn-solid.published{
+    background:#f3e6ea;color:#b08494;box-shadow:none;
+}
+.ed-btn-solid.published:hover{
+    background:#ecd9e0;color:#96707f;transform:none;box-shadow:none;
+}
+
 /* ── 오른쪽: 편집 영역 ── */
 .ed-main{
     flex:1;overflow-y:auto;

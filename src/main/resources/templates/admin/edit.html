@@ -93,9 +93,13 @@
 
         <!-- 게시 -->
         <span class="ed-header-sep"></span>
-        <span id="draftStatusLabel"
-              style="font-size:0.75rem;color:#a09080;white-space:nowrap;"
-              th:text="${hasDraft} ? '게시되지 않은 변경사항 있음' : '게시됨'">게시됨</span>
+        <!-- "임시저장됨" 같은 시스템 용어 대신 하객에게 보이는지로 말한다.
+             renderDraftStatus() 가 클래스와 문구를 함께 갱신한다. -->
+        <span id="draftStatus" th:class="'ed-draft-status ' + (${hasDraft} ? 'dirty' : 'clean')" class="ed-draft-status clean">
+            <span class="ed-status-mark" th:text="${hasDraft} ? '' : '✓'">✓</span>
+            <span id="draftStatusLabel"
+                  th:text="${hasDraft} ? '저장됨 · 하객 화면 미반영' : '하객 화면과 같음'">하객 화면과 같음</span>
+        </span>
         <button class="ed-btn-solid" id="topSaveBtn" type="button" title="변경사항을 게스트 화면에 실제로 반영합니다">게시하기</button>
 
         <!-- 도움 · 계정 -->
@@ -121,6 +125,12 @@
 
     <!-- 왼쪽: 실시간 미리보기 -->
     <aside class="ed-preview">
+        <!-- 이 미리보기는 편집 중인 내용이지 하객이 보는 화면이 아니다 — 배지로 명시한다 -->
+        <div id="previewBadge" th:class="'ed-preview-badge ' + (${hasDraft} ? 'dirty' : 'clean')" class="ed-preview-badge clean">
+            <span class="ed-status-mark" th:text="${hasDraft} ? '' : '✓'">✓</span>
+            <span id="previewBadgeText"
+                  th:text="${hasDraft} ? '편집 중 — 아직 하객에게 보이지 않습니다' : '하객이 보는 화면과 같습니다'">하객이 보는 화면과 같습니다</span>
+        </div>
         <!-- preview=1 — 편집기 미리보기는 조회수/방문로그에 집계하지 않는다.
              전체 미리보기와 refreshPreview()도 이 주소(INVITATION_URL)를 그대로 물려받는다. -->
         <iframe id="liveFrame"

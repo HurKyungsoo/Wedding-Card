@@ -29,12 +29,40 @@ function relativeTimeFrom(date) {
     return diffHour + '시간 전';
 }
 
+/* 헤더 라벨 · 미리보기 배지 · 게시 버튼을 한 번에 맞춘다.
+   문구는 "임시저장됨" 같은 방식이 아니라 "하객에게 보이는지"라는 결과로 말한다 —
+   사용자가 알고 싶은 건 그것이고, 미리보기가 실시간이라 오해하기 쉬운 지점이다. */
 function renderDraftStatus() {
-    var label = document.getElementById('draftStatusLabel');
-    if (!label) return;
-    label.textContent = lastDraftSavedAt
-        ? '임시저장됨 · ' + relativeTimeFrom(lastDraftSavedAt)
-        : '게시됨';
+    var dirty = !!lastDraftSavedAt;
+    var savedAgo = dirty ? relativeTimeFrom(lastDraftSavedAt) : null;
+
+    function paint(box, textEl, dirtyText, cleanText) {
+        if (!box) return;
+        box.classList.toggle('dirty', dirty);
+        box.classList.toggle('clean', !dirty);
+        var mark = box.querySelector('.ed-status-mark');
+        if (mark) mark.textContent = dirty ? '' : '✓';
+        if (textEl) textEl.textContent = dirty ? dirtyText : cleanText;
+    }
+
+    var status = document.getElementById('draftStatus');
+    paint(status, document.getElementById('draftStatusLabel'),
+          '저장됨 · 하객 화면 미반영', '하객 화면과 같음');
+    if (status) {
+        status.title = dirty
+            ? savedAgo + ' 자동저장됨. "게시하기"를 눌러야 하객 화면에 반영됩니다.'
+            : '편집 중인 내용이 하객 화면에 모두 반영되어 있습니다.';
+    }
+
+    paint(document.getElementById('previewBadge'), document.getElementById('previewBadgeText'),
+          '편집 중 — 아직 하객에게 보이지 않습니다', '하객이 보는 화면과 같습니다');
+
+    ['topSaveBtn', 'bottomSaveBtn'].forEach(function(id) {
+        var btn = document.getElementById(id);
+        if (!btn) return;
+        btn.classList.toggle('has-changes', dirty);
+        btn.classList.toggle('published', !dirty);
+    });
 }
 
 function markDraftSaved() {
