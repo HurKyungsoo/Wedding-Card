@@ -1087,6 +1087,17 @@ body{
     position:relative;
     overflow:hidden;
 }
+
+/* 기본 · THE MARRIAGE 는 "사진 + 그 아래 텍스트" 구조라 위처럼 사진을 전면에 깔 수 없다.
+   (깔면 두 테마의 정체성이 사라지고 our_story 와 같아진다)
+   대신 히어로 자체가 한 화면을 채우게만 해서, 첫 화면에 다음 섹션이 딸려 올라오지 않게 한다.
+   내부 배치 — 사진 비율, 텍스트 위치 — 는 건드리지 않는다.
+   height 가 아니라 min-height 인 이유: 내용이 한 화면보다 길어지면 잘리지 않고 늘어나야 한다. */
+.hero.design-basic,
+.hero.design-the_marriage{
+    min-height:100vh;
+    min-height:100dvh;
+}
 .hero.design-our_story .hero-fullphoto,
 .hero.design-our_story_pink .hero-fullphoto,
 .hero.design-married .hero-fullphoto,
