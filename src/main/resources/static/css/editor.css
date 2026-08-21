@@ -96,8 +96,8 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;}
     .ed-btn-icon{padding:7px 11px;gap:0;}
 }
 @media (max-width:860px){
-    /* 상태 문구는 접고 점/체크만 남긴다 —
-       게시 버튼의 앰버 점이 같은 신호를 주고, 자세한 내용은 title 에 있다 */
+    /* 상태 문구는 접고 점만 남긴다 —
+       점 색이 신호를 그대로 유지하고, 자세한 내용은 title 에 있다 */
     .ed-status-text{display:none;}
     .ed-draft-status{gap:0;}
     .ed-header-sep{display:none;}
@@ -177,12 +177,15 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;}
 .ed-preview-badge.clean{background:rgba(0,0,0,.05);color:#7a6a58;}
 
 /* ── 게시 상태 표시 (헤더 라벨 · 미리보기 배지 공용) ── */
+/* 두 상태 모두 같은 점 — 색만 바뀐다. 헤더가 좁아지면 글자가 숨고 점만
+   남으므로(.ed-status-text{display:none}) 색이 유일한 신호가 된다 */
 .ed-status-mark{
-    flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;
-    width:10px;height:10px;font-size:11px;line-height:1;
+    flex-shrink:0;display:inline-block;
+    width:6px;height:6px;border-radius:50%;
+    background:#d6963c;transition:background .25s;
 }
-.dirty > .ed-status-mark{width:6px;height:6px;border-radius:50%;background:#d6963c;}
-.clean > .ed-status-mark{color:#7a9668;font-weight:700;}
+.dirty > .ed-status-mark{background:#d6963c;}   /* 노랑 — 하객 화면에 아직 미반영 */
+.clean > .ed-status-mark{background:#3b7dd8;}   /* 파랑 — 게시돼서 하객 화면과 같음 */
 
 .ed-draft-status{
     display:inline-flex;align-items:center;gap:6px;

@@ -40,8 +40,6 @@ function renderDraftStatus() {
         if (!box) return;
         box.classList.toggle('dirty', dirty);
         box.classList.toggle('clean', !dirty);
-        var mark = box.querySelector('.ed-status-mark');
-        if (mark) mark.textContent = dirty ? '' : '✓';
         if (textEl) textEl.textContent = dirty ? dirtyText : cleanText;
     }
 

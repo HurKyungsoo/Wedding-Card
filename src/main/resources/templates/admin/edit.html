@@ -97,7 +97,7 @@
         <!-- "임시저장됨" 같은 시스템 용어 대신 하객에게 보이는지로 말한다.
              renderDraftStatus() 가 클래스와 문구를 함께 갱신한다. -->
         <span id="draftStatus" th:class="'ed-draft-status ' + (${hasDraft} ? 'dirty' : 'clean')" class="ed-draft-status clean">
-            <span class="ed-status-mark" th:text="${hasDraft} ? '' : '✓'">✓</span>
+            <span class="ed-status-mark"></span>
             <span id="draftStatusLabel" class="ed-status-text"
                   th:text="${hasDraft} ? '저장됨 · 하객 화면 미반영' : '하객 화면과 같음'">하객 화면과 같음</span>
         </span>
@@ -126,7 +126,7 @@
     <aside class="ed-preview">
         <!-- 이 미리보기는 편집 중인 내용이지 하객이 보는 화면이 아니다 — 배지로 명시한다 -->
         <div id="previewBadge" th:class="'ed-preview-badge ' + (${hasDraft} ? 'dirty' : 'clean')" class="ed-preview-badge clean">
-            <span class="ed-status-mark" th:text="${hasDraft} ? '' : '✓'">✓</span>
+            <span class="ed-status-mark"></span>
             <span id="previewBadgeText"
                   th:text="${hasDraft} ? '편집 중 — 아직 하객에게 보이지 않습니다' : '하객이 보는 화면과 같습니다'">하객이 보는 화면과 같습니다</span>
         </div>
