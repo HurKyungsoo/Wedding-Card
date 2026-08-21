@@ -74,21 +74,22 @@
     <div class="ed-header-right">
 
         <!-- 이동 -->
-        <a href="/my" class="ed-btn-outline" title="내 청첩장 목록"
-           style="display:inline-flex;align-items:center;gap:5px;text-decoration:none;">
-            <i class="ti ti-layout-grid" style="font-size:14px;"></i> 내 청첩장
+        <a href="/my" class="ed-btn-outline ed-btn-icon" title="내 청첩장 목록">
+            <i class="ti ti-layout-grid"></i><span class="ed-btn-label">내 청첩장</span>
         </a>
 
         <!-- 확인 — 편집 중 내용(전체 미리보기)을 먼저, 게시된 결과(청첩장 보기)를 다음에 -->
         <span class="ed-header-sep"></span>
-        <button class="ed-btn-outline" id="fullPrevBtn" type="button">전체 미리보기</button>
+        <button class="ed-btn-outline ed-btn-icon" id="fullPrevBtn" type="button" title="전체 미리보기">
+            <i class="ti ti-device-mobile"></i><span class="ed-btn-label">전체 미리보기</span>
+        </button>
         <a th:if="${wedding.slug != null}"
            id="viewInviteLink"
            th:href="'/w/' + ${wedding.slug}"
            target="_blank"
-           class="ed-btn-outline"
-           style="display:inline-flex;align-items:center;gap:5px;text-decoration:none;">
-            <i class="ti ti-external-link" style="font-size:14px;"></i> 청첩장 보기
+           class="ed-btn-outline ed-btn-icon"
+           title="게시된 청첩장 열기">
+            <i class="ti ti-external-link"></i><span class="ed-btn-label">청첩장 보기</span>
         </a>
 
         <!-- 게시 -->
@@ -97,22 +98,20 @@
              renderDraftStatus() 가 클래스와 문구를 함께 갱신한다. -->
         <span id="draftStatus" th:class="'ed-draft-status ' + (${hasDraft} ? 'dirty' : 'clean')" class="ed-draft-status clean">
             <span class="ed-status-mark" th:text="${hasDraft} ? '' : '✓'">✓</span>
-            <span id="draftStatusLabel"
+            <span id="draftStatusLabel" class="ed-status-text"
                   th:text="${hasDraft} ? '저장됨 · 하객 화면 미반영' : '하객 화면과 같음'">하객 화면과 같음</span>
         </span>
         <button class="ed-btn-solid" id="topSaveBtn" type="button" title="변경사항을 게스트 화면에 실제로 반영합니다">게시하기</button>
 
         <!-- 도움 · 계정 -->
         <span class="ed-header-sep"></span>
-        <button type="button" class="ed-btn-outline" id="onboardingReopenBtn" title="가이드 다시 보기" style="padding:0 10px;">
-            <i class="ti ti-help-hexagon" style="font-size:15px;"></i>
+        <button type="button" class="ed-btn-outline ed-btn-icononly" id="onboardingReopenBtn" title="가이드 다시 보기">
+            <i class="ti ti-help-hexagon"></i>
         </button>
-        <div th:if="${currentUser != null}" style="display:flex;align-items:center;gap:8px;margin-left:4px;padding-left:12px;border-left:1px solid rgba(0,0,0,0.12);">
-            <span style="font-size:0.78rem;color:#7a6a58;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
-                  th:text="${currentUser.name}">사용자</span>
+        <div class="ed-user" th:if="${currentUser != null}">
+            <span class="ed-user-name" th:text="${currentUser.name}">사용자</span>
             <form th:action="@{/logout}" method="post" style="margin:0;">
-                <button type="submit" title="로그아웃"
-                        style="font:inherit;font-size:0.78rem;color:#a09080;background:none;border:none;padding:0;cursor:pointer;white-space:nowrap;">로그아웃</button>
+                <button type="submit" class="ed-logout" title="로그아웃">로그아웃</button>
             </form>
         </div>
     </div>

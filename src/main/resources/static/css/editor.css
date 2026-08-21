@@ -45,6 +45,56 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;}
 }
 .ed-btn-solid:active{transform:translateY(0);}
 
+/* 어느 폭에서도 버튼 글자는 줄바꿈하지 않는다 —
+   예전엔 좁은 화면에서 "내 청첩 / 장" 처럼 두 줄로 깨졌다 */
+.ed-btn-outline,.ed-btn-solid{white-space:nowrap;flex-shrink:0;}
+
+/* 아이콘 + 라벨 버튼 — 좁아지면 라벨만 접고 아이콘은 남긴다 */
+.ed-btn-icon{display:inline-flex;align-items:center;gap:5px;text-decoration:none;}
+.ed-btn-icon > i{font-size:14px;line-height:1;}
+.ed-btn-icononly{display:inline-flex;align-items:center;justify-content:center;padding:0 10px;height:30px;}
+.ed-btn-icononly > i{font-size:15px;line-height:1;}
+
+/* 계정 영역 */
+.ed-user{display:flex;align-items:center;gap:8px;margin-left:4px;padding-left:12px;
+    border-left:1px solid rgba(0,0,0,0.12);flex-shrink:0;}
+.ed-user-name{font-size:.78rem;color:#7a6a58;max-width:80px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ed-logout{font:inherit;font-size:.78rem;color:#a09080;background:none;border:none;
+    padding:0;cursor:pointer;white-space:nowrap;}
+.ed-logout:hover{color:#c4748a;}
+
+/* ── 헤더 반응형 ──
+   헤더에는 지금까지 브레이크포인트가 하나도 없어서(미리보기·본문만 다뤘다),
+   폭이 줄면 버튼이 그대로 눌려 글자가 깨졌다. 덜 중요한 것부터 접되
+   "게시하기"와 게시 상태 표시는 마지막까지 남긴다. */
+@media (max-width:1180px){
+    .ed-header{padding:0 1.1rem;}
+    .ed-header-right{gap:7px;}
+    .ed-btn-outline{padding:7px 13px;}
+    .ed-btn-solid{padding:8px 16px;}
+}
+@media (max-width:1000px){
+    /* 아이콘만으로 알아볼 수 있는 버튼은 라벨을 접는다 (title 로 남는다) */
+    .ed-btn-label{display:none;}
+    .ed-btn-icon{padding:7px 11px;gap:0;}
+}
+@media (max-width:860px){
+    /* 상태 문구는 접고 점/체크만 남긴다 —
+       게시 버튼의 앰버 점이 같은 신호를 주고, 자세한 내용은 title 에 있다 */
+    .ed-status-text{display:none;}
+    .ed-draft-status{gap:0;}
+    .ed-header-sep{display:none;}
+    .ed-user-name{display:none;}
+    .ed-user{margin-left:2px;padding-left:8px;}
+}
+@media (max-width:720px){
+    .ed-header{padding:0 .7rem;}
+    .ed-header-right{gap:6px;}
+    .ed-logo-main,.ed-logo-card{font-size:13px;}
+    .ed-btn-solid{padding:8px 14px;}
+}
+
 /* ── 루트 레이아웃 ── */
 .ed-root{
     display:flex;
