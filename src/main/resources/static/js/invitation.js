@@ -691,7 +691,10 @@ function initShare(groomName, brideName) {
                 content: {
                     title: shareTitle,
                     description: shareText,
-                    imageUrl: window.location.origin + '/images/theme-basic.png',
+                    /* 카카오 피드 템플릿은 2:1(800x400) 가로 이미지를 권장한다.
+                       예전엔 963x1181 세로 원본(1.4MB)을 그대로 넘겨서 양옆이 잘렸다.
+                       WebP는 카카오 쪽 지원이 불확실해 JPEG로 둔다. */
+                    imageUrl: window.location.origin + '/images/share-thumbnail.jpg',
                     link: { mobileWebUrl: pageUrl, webUrl: pageUrl }
                 }
             });
