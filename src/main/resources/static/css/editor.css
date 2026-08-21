@@ -185,7 +185,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;}
     background:#d6963c;transition:background .25s;
 }
 .dirty > .ed-status-mark{background:#d6963c;}   /* 노랑 — 하객 화면에 아직 미반영 */
-.clean > .ed-status-mark{background:#3b7dd8;}   /* 파랑 — 게시돼서 하객 화면과 같음 */
+.clean > .ed-status-mark{background:#5a9a5a;}   /* 초록 — 게시돼서 하객 화면과 같음 */
 
 .ed-draft-status{
     display:inline-flex;align-items:center;gap:6px;
