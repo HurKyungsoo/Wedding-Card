@@ -25,7 +25,11 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;}
     padding:7px 18px;border-radius:22px;
     border:1px solid #ddd5cc;background:#fff;
     color:#5a4e40;font-size:12px;cursor:pointer;
-    font-family:'Noto Sans KR',sans-serif;transition:all .2s;
+    font-family:'Noto Sans KR',sans-serif;
+    /* all 이 아니라 실제로 변하는 것만 —
+       all 이면 outline 까지 전환 대상이 돼서 포커스 링이 200ms 걸쳐 나타난다.
+       키보드로 빠르게 Tab 하면 링이 뒤늦게 따라오는 게 눈에 보인다. */
+    transition:background-color .2s,border-color .2s,color .2s,transform .12s;
     letter-spacing:.1px;
 }
 .ed-btn-outline:hover{border-color:#c4748a;color:#c4748a;background:#fff5f7;}
@@ -34,7 +38,9 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;}
     background:linear-gradient(135deg,#c4748a 0%,#e07890 100%);
     color:#fff;font-size:12px;
     cursor:pointer;font-family:'Noto Sans KR',sans-serif;
-    font-weight:500;transition:all .2s;
+    font-weight:500;
+    /* outline 을 전환에서 빼둔다 — 포커스 링은 즉시 떠야 한다 */
+    transition:background .2s,box-shadow .2s,transform .12s;
     letter-spacing:.1px;
     box-shadow:0 2px 10px rgba(196,116,138,.3);
 }
@@ -48,6 +54,16 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;}
 /* 어느 폭에서도 버튼 글자는 줄바꿈하지 않는다 —
    예전엔 좁은 화면에서 "내 청첩 / 장" 처럼 두 줄로 깨졌다 */
 .ed-btn-outline,.ed-btn-solid{white-space:nowrap;flex-shrink:0;}
+
+/* 눌림 — .ed-btn-solid 에만 있고 outline 버튼엔 없었다 */
+.ed-btn-outline:active{background:#f6efea;transform:translateY(1px);}
+
+/* ── 키보드 포커스 ──
+   편집기 전체에 :focus-visible 이 한 곳도 없었다. 버튼이 전부 border-radius
+   22px 커스텀이라 브라우저 기본 링이 제대로 드러나지 않는다. */
+.ed-btn-outline:focus-visible,
+.ed-btn-solid:focus-visible,
+.ed-logout:focus-visible{outline:2px solid #c4748a;outline-offset:2px;}
 
 /* 아이콘 + 라벨 버튼 — 좁아지면 라벨만 접고 아이콘은 남긴다 */
 .ed-btn-icon{display:inline-flex;align-items:center;gap:5px;text-decoration:none;}
@@ -1603,5 +1619,19 @@ textarea.ed-input{resize:none;line-height:1.75;}
     }
     .ed-float.panel-open{
         right:214px;
+    }
+}
+
+/* ── 모션 최소화 ──
+   하객 화면(invitation.css)에는 이미 있는데 편집기에만 빠져 있었다.
+   편집기는 오래 붙들고 쓰는 화면이라 오히려 더 필요하다.
+   완전히 0 이 아니라 0.001ms 로 두는 건, 전환 완료를 기다리는 코드가
+   나중에 생기더라도 이벤트는 정상적으로 발생하게 하기 위해서다. */
+@media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+        animation-duration:.001ms !important;
+        animation-iteration-count:1 !important;
+        transition-duration:.001ms !important;
+        scroll-behavior:auto !important;
     }
 }

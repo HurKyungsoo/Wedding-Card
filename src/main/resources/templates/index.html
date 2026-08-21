@@ -57,6 +57,22 @@
     .lp-primary:hover { background: #b56278 !important; transform: translateY(-1px); }
     .lp-dark-btn:hover { background: #3d3028 !important; }
 
+    /* ── 눌림 ──
+       터치 기기엔 hover가 없어서, 지금까지 모바일에서는 버튼을 눌러도 아무 반응이
+       없었다(반응이 없으면 한 번 더 누른다). 색 변화를 같이 주는 이유는
+       모션 최소화 설정에서 transform 이 무력화돼도 피드백은 남기기 위해서다. */
+    .lp-primary:active  { background: #a85369 !important; transform: translateY(1px) scale(0.985); }
+    .lp-dark-btn:active { background: #000 !important; transform: translateY(1px);
+                          transition: background 0.1s, transform 0.1s; }
+    .theme-card-wrap:active { transform: translateY(-6px) scale(0.985); transition-duration: 0.09s; }
+    .nav-link:active { opacity: 0.6; }
+
+    /* ── 키보드 포커스 ──
+       버튼이 전부 border-radius 22~40px 커스텀이라 브라우저 기본 링이 제대로
+       드러나지 않는다. outline 은 요소의 radius 를 따라가므로 모양은 그대로 둔다. */
+    a:focus-visible,
+    button:focus-visible { outline: 2px solid #b8536e; outline-offset: 3px; }
+
     /* ── 애니메이션 ── */
     @keyframes float { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-14px) rotate(-2deg); } }
     @keyframes scrollBounce { 0%,100% { transform: translateX(-50%) translateY(0); opacity: 0.5; } 50% { transform: translateX(-50%) translateY(9px); opacity: 0.15; } }
