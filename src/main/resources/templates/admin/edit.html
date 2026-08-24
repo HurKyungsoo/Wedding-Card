@@ -1092,69 +1092,6 @@
             </div>
         </div>
 
-        <!-- ━━ 엔딩(마지막 인사) ━━ -->
-        <div class="ed-section collapsed" id="sec-ending">
-            <div class="ed-sec-hd" data-sec="ending">
-                <div class="ed-sec-hd-left">
-                    <label class="ed-toggle-wrap" onclick="event.stopPropagation()">
-                        <input type="checkbox" name="endingVisible" id="chkEnding"
-                               th:checked="${wedding.endingVisible == null or wedding.endingVisible}">
-                        <span class="ed-toggle-slider"></span>
-                    </label>
-                    <span class="ed-sec-icon"><i class="ti ti-photo-heart"></i></span>
-                    <span class="ed-sec-title">엔딩</span>
-                </div>
-                <i class="ti ti-chevron-down ed-chevron"></i>
-            </div>
-            <div class="ed-sec-bd" id="bd-ending" style="display:none;">
-                <div class="ed-hint">
-                    ⓘ 방명록·공유하기 바로 앞에 사진 한 장과 문구로 마무리하는 클로징 섹션입니다.<br>
-                    ⓘ 사진을 올려야 하객 화면에 표시됩니다.
-                </div>
-                <input type="hidden" th:field="*{endingPhotoBase64}" id="endingPhotoBase64">
-                <div class="ed-row" style="align-items:flex-start">
-                    <span class="ed-label" style="padding-top:10px">사진</span>
-                    <div class="ed-ctrl">
-                        <div class="ed-upload" id="endingZone" style="min-height:140px;"
-                             th:style="${wedding.endingPhotoBase64 != null and !#strings.isEmpty(wedding.endingPhotoBase64)} ? 'display:none' : ''">
-                            <div>
-                                <i class="ti ti-photo" style="font-size:28px;"></i>
-                                <p>클릭 또는 드래그하여<br>이미지를 업로드 해주세요.</p>
-                            </div>
-                        </div>
-                        <div class="ed-thumb" id="endingThumb" style="width:100%;height:180px;"
-                             th:style="${wedding.endingPhotoBase64 != null and !#strings.isEmpty(wedding.endingPhotoBase64)} ? '' : 'display:none'">
-                            <img id="endingThumbImg" alt=""
-                                 th:if="${wedding.endingPhotoBase64 != null and !#strings.isEmpty(wedding.endingPhotoBase64)}"
-                                 th:src="|data:image/jpeg;base64,${wedding.endingPhotoBase64}|">
-                            <button type="button" class="gal-del-btn" id="removeEndingPhoto">✕</button>
-                        </div>
-                        <input type="file" id="endingPhotoFile" accept="image/*" style="display:none">
-                    </div>
-                </div>
-                <div class="ed-row">
-                    <span class="ed-label">효과</span>
-                    <div class="ed-ctrl">
-                        <select class="ed-select" id="endingEffectSelect" name="endingEffect"
-                                th:with="cur=${wedding.endingEffect ?: 'none'}">
-                            <option value="none"  th:selected="${cur == 'none'}">연출 효과 없음</option>
-                            <option value="fog"   th:selected="${cur == 'fog'}">안개</option>
-                            <option value="wave"  th:selected="${cur == 'wave'}">물결</option>
-                            <option value="paper" th:selected="${cur == 'paper'}">페이퍼</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="ed-row" style="align-items:flex-start;">
-                    <span class="ed-label" style="padding-top:9px;">문구</span>
-                    <div class="ed-ctrl">
-                        <textarea class="ed-input" style="height:90px;resize:none;line-height:1.8;"
-                                  th:field="*{endingCaption}" maxlength="300"
-                                  placeholder="와주셔서 감사합니다, 같은 짧은 문구나 좋아하는 문장을 남겨보세요."></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- 저장 버튼 -->
         <div class="ed-bottom-btns">
             <a th:href="@{/}" class="ed-btn-cancel">취소</a>

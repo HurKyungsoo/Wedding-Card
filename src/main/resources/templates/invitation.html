@@ -770,25 +770,7 @@
         </div>
     </div>
 
-    <!-- ⑪ 엔딩 — 사진이 없으면(초기 상태) 표시하지 않는다. 항상 DOM에는 있고 style로만 숨겨야
-         편집기에서 사진을 처음 올릴 때 라이브 미리보기 JS가 이 블록을 찾아 보여줄 수 있다 -->
-    <div class="section-divider" data-vis="ending"
-         th:style="${wedding.endingVisible != null and wedding.endingVisible and wedding.endingPhotoBase64 != null and !#strings.isEmpty(wedding.endingPhotoBase64)} ? '' : 'display:none'">
-        <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
-    </div>
-    <div class="sec ending-sec" data-vis="ending"
-         th:style="${wedding.endingVisible != null and wedding.endingVisible and wedding.endingPhotoBase64 != null and !#strings.isEmpty(wedding.endingPhotoBase64)} ? '' : 'display:none'">
-        <div class="ending-photo-wrap reveal-scale">
-            <img id="endingPhotoImg" class="ending-photo" alt="엔딩 사진"
-                 th:if="${wedding.endingPhotoBase64 != null and !#strings.isEmpty(wedding.endingPhotoBase64)}"
-                 th:src="|data:image/jpeg;base64,${wedding.endingPhotoBase64}|">
-            <div id="endingEffectLayer" class="effect-layer"
-                 th:classappend="${wedding.endingEffect != null and wedding.endingEffect != 'none'} ? 'eff-' + ${wedding.endingEffect} : ''"></div>
-        </div>
-        <div class="ending-caption reveal delay-1" id="endingCaptionEl" th:utext="${endingCaptionHtml}"></div>
-    </div>
-
-    <!-- ⑫ 공유하기 -->
+    <!-- ⑪ 공유하기 -->
     <div class="section-divider">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
@@ -1500,39 +1482,6 @@
         if (d.accounts !== undefined) {
             renderLiveAccounts(d.accounts || [],
                 d.accountVisible === true || d.accountVisible === 'true' || d.accountVisible === 1);
-        }
-
-        /* ── 7-2. 엔딩(마지막 인사) 실시간 반영 ──
-           위 visMap에 없는 필드다 — 계좌처럼 "표시 토글"과 "실제 내용 존재"를 같이 봐야
-           해서다(사진이 없으면 endingVisible이 true여도 빈 섹션이 노출되면 안 된다).
-           collectData()는 매번 폼 전체를 보내므로 두 필드가 항상 같이 온다. */
-        if (d.endingVisible !== undefined || d.endingPhotoBase64 !== undefined) {
-            var endingOn  = (d.endingVisible === true || d.endingVisible === 'true' || d.endingVisible === 1);
-            var hasEndingPhoto = !!(d.endingPhotoBase64 && d.endingPhotoBase64.length);
-            qa('[data-vis="ending"]').forEach(function(el) {
-                el.style.display = (endingOn && hasEndingPhoto) ? '' : 'none';
-            });
-            var endingImgEl = document.getElementById('endingPhotoImg');
-            if (endingImgEl) {
-                if (hasEndingPhoto) {
-                    endingImgEl.src = 'data:image/jpeg;base64,' + d.endingPhotoBase64;
-                    endingImgEl.style.display = '';
-                } else {
-                    endingImgEl.removeAttribute('src');
-                    endingImgEl.style.display = 'none';
-                }
-            }
-        }
-        if (d.endingCaption !== undefined) {
-            var ecEl = q('#endingCaptionEl');
-            if (ecEl) setHtml(ecEl, esc(d.endingCaption).replace(/\n/g,'<br>'));
-        }
-        if (d.endingEffect !== undefined) {
-            var eel = document.getElementById('endingEffectLayer');
-            if (eel) {
-                eel.className = 'effect-layer';
-                if (d.endingEffect && d.endingEffect !== 'none') eel.classList.add('eff-' + d.endingEffect);
-            }
         }
 
         /* ── 8. 내비게이션 버튼 실시간 표시/숨김 ── */

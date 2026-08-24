@@ -2743,24 +2743,3 @@ body{ -webkit-overflow-scrolling:touch; }
     font-size:13px;font-family:var(--font-sans);cursor:pointer;
 }
 .gb-more-btn:hover{background:#faf6f1;}
-
-/* ── 엔딩(마지막 인사) ──
-   히어로 사진과 짝을 이루는 클로징 섹션이라 일부러 sec-label/sec-title(다른 섹션의
-   formal한 제목표시)을 안 붙였다 — 담담하게 사진 한 장과 문구로 끝나는 느낌을 노렸다.
-   사진은 .sec의 좌우 padding을 넘어 히어로처럼 꽉 차게(엣지투엣지) 보여준다. */
-.ending-sec{padding-top:1rem;padding-bottom:3rem;}
-.ending-photo-wrap{
-    position:relative;
-    margin:0 -1.8rem 1.8rem;
-    aspect-ratio:4/5;
-    overflow:hidden;
-    background:var(--color-bg-soft);
-}
-.ending-photo{width:100%;height:100%;object-fit:cover;display:block;}
-.ending-caption{
-    font-family:var(--main-font, var(--font-serif));
-    font-size:14px;font-weight:300;line-height:2.1;
-    color:var(--color-ink-warm);text-align:center;letter-spacing:0.3px;
-    word-break:keep-all;padding:0 0.4rem;
-}
-.ending-caption:empty{display:none;}
