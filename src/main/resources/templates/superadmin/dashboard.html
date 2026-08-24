@@ -10,20 +10,21 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/tokens.css}">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
-            --rose: #c4748a;
+            --rose: var(--color-rose);
             --dark: #2d2520;
             --gray: #7a6a60;
-            --line: #e8e2da;
+            --line: var(--color-border-soft);
             --bg: #f7f4f2;
         }
         body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--dark); min-height: 100vh; }
 
         /* TOPBAR */
         .topbar {
-            background: #fff; border-bottom: 1px solid var(--line);
+            background: var(--color-white); border-bottom: 1px solid var(--line);
             padding: 0 32px; height: 56px;
             display: flex; align-items: center; justify-content: space-between;
             position: sticky; top: 0; z-index: 10;
@@ -36,7 +37,7 @@
         }
         .topbar-right a:hover { color: var(--rose); }
         .btn-new {
-            background: var(--rose); color: #fff !important;
+            background: var(--rose); color: var(--color-white) !important;
             padding: 7px 16px; border-radius: 16px;
         }
         .btn-new:hover { background: #b56278 !important; }
@@ -50,7 +51,7 @@
         .chart-row { display:grid; grid-template-columns:2fr 1fr; gap:14px; margin-bottom:28px; }
         @media (max-width: 768px) { .stats-5 { grid-template-columns: repeat(2, 1fr); } .chart-row { grid-template-columns: 1fr; } }
         .stat {
-            background: #fff; border: 1px solid var(--line);
+            background: var(--color-white); border: 1px solid var(--line);
             border-radius: 12px; padding: 20px 20px 18px;
         }
         .stat-label { font-size: 12px; color: var(--gray); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
@@ -59,7 +60,7 @@
 
         /* TABLE CARD */
         .card {
-            background: #fff; border: 1px solid var(--line);
+            background: var(--color-white); border: 1px solid var(--line);
             border-radius: 14px; overflow: hidden;
         }
         .card-head {

@@ -10,16 +10,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="stylesheet" th:href="@{/css/tokens.css}">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:#fdfaf7;font-family:'Noto Sans KR',sans-serif;color:#1c1814;min-height:100dvh;}
+body{background:var(--color-cream);font-family:'Noto Sans KR',sans-serif;color:var(--color-ink-deepest);min-height:100dvh;}
 
 .mp-header{
     display:flex;align-items:center;justify-content:space-between;
-    padding:16px 24px;background:#fff;border-bottom:1px solid #eee7df;
+    padding:16px 24px;background:var(--color-white);border-bottom:1px solid #eee7df;
     position:sticky;top:0;z-index:10;
 }
-.mp-logo{font-family:'Noto Serif KR',serif;font-size:17px;font-weight:600;letter-spacing:1.2px;color:#1c1814;text-decoration:none;}
+.mp-logo{font-family:'Noto Serif KR',serif;font-size:17px;font-weight:600;letter-spacing:1.2px;color:var(--color-ink-deepest);text-decoration:none;}
 .mp-header-right{display:flex;align-items:center;gap:12px;}
 .mp-user{font-size:13px;color:#7a6a58;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .mp-logout{font:inherit;font-size:13px;color:#a09080;background:none;border:none;cursor:pointer;padding:0;}
@@ -31,7 +32,7 @@ body{background:#fdfaf7;font-family:'Noto Sans KR',sans-serif;color:#1c1814;min-
 .mp-sub{font-size:13px;color:#8a7a68;margin-top:6px;}
 .mp-new-btn{
     display:inline-flex;align-items:center;gap:7px;
-    background:#1c1814;color:#fff;text-decoration:none;
+    background:var(--color-ink-deepest);color:var(--color-white);text-decoration:none;
     padding:11px 20px;border-radius:10px;font-size:14px;font-weight:500;
     transition:opacity .15s;white-space:nowrap;
 }
@@ -45,7 +46,7 @@ body{background:#fdfaf7;font-family:'Noto Sans KR',sans-serif;color:#1c1814;min-
 
 .mp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:16px;}
 .mp-card{
-    background:#fff;border:1px solid #eee7df;border-radius:14px;
+    background:var(--color-white);border:1px solid #eee7df;border-radius:14px;
     padding:20px;display:flex;flex-direction:column;gap:14px;
     transition:box-shadow .18s,transform .18s;
 }
@@ -68,17 +69,17 @@ body{background:#fdfaf7;font-family:'Noto Sans KR',sans-serif;color:#1c1814;min-
 .mp-btn{
     display:inline-flex;align-items:center;gap:5px;
     font-size:13px;padding:8px 14px;border-radius:8px;text-decoration:none;cursor:pointer;
-    border:1px solid #e0d8ce;background:#fff;color:#5a4e40;font-family:inherit;
+    border:1px solid #e0d8ce;background:var(--color-white);color:var(--color-brown);font-family:inherit;
     transition:background .15s,border-color .15s;
 }
 .mp-btn:hover{background:#faf6f1;border-color:#c4a882;}
-.mp-btn.primary{background:#1c1814;border-color:#1c1814;color:#fff;}
-.mp-btn.primary:hover{opacity:.85;background:#1c1814;}
+.mp-btn.primary{background:var(--color-ink-deepest);border-color:var(--color-ink-deepest);color:var(--color-white);}
+.mp-btn.primary:hover{opacity:.85;background:var(--color-ink-deepest);}
 .mp-btn.danger{border-color:transparent;color:#b8909a;padding:8px 10px;}
-.mp-btn.danger:hover{background:#fdf0f2;color:#c4748a;border-color:transparent;}
+.mp-btn.danger:hover{background:#fdf0f2;color:var(--color-rose);border-color:transparent;}
 
 .mp-empty{
-    text-align:center;padding:72px 24px;background:#fff;
+    text-align:center;padding:72px 24px;background:var(--color-white);
     border:1px dashed #e0d8ce;border-radius:16px;
 }
 .mp-empty i{font-size:42px;color:#d8cfc2;}

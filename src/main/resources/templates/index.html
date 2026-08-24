@@ -10,10 +10,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Dancing+Script:wght@600&family=Great+Vibes&family=Patrick+Hand&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" th:href="@{/css/tokens.css}">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Noto Sans KR', sans-serif; background: #fdfaf7; color: #2d2520; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: var(--color-cream); color: #2d2520; -webkit-font-smoothing: antialiased; }
 
     /* ── 레이아웃 ── */
     .lp-wrap { max-width: 1120px; margin: 0 auto; padding: 0 56px; }
@@ -53,7 +54,7 @@
     .theme-card-wrap:hover { transform: translateY(-10px); filter: drop-shadow(0 22px 40px rgba(44,30,20,0.17)); }
     .feat-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
     .feat-card:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(44,30,20,0.09) !important; }
-    .nav-link:hover  { color: #1c1814 !important; }
+    .nav-link:hover  { color: var(--color-ink-deepest) !important; }
     .lp-primary:hover { background: #b56278 !important; transform: translateY(-1px); }
     .lp-dark-btn:hover { background: #3d3028 !important; }
 
@@ -117,7 +118,7 @@
     }
     .lp-deck-screen {
       height: 276px; border-radius: 26px;
-      overflow: hidden; position: relative; background: #fff;
+      overflow: hidden; position: relative; background: var(--color-white);
     }
     .lp-deck-l { left: -122px; transform: rotate(-7deg); animation: floatL 7s ease-in-out infinite; }
     .lp-deck-r { right: -122px; transform: rotate(7deg);  animation: floatR 6.4s ease-in-out infinite; }
@@ -142,7 +143,7 @@
     .lp-nav.scrolled {
       background: rgba(253,250,247,0.96);
       backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-      border-bottom: 1px solid #e8e2da;
+      border-bottom: 1px solid var(--color-border-soft);
     }
 
     /* ── 반응형 ── */
@@ -188,17 +189,17 @@
 <!-- ── NAV ── -->
 <nav class="lp-nav" id="mainNav">
   <div class="lp-nav-inner" style="max-width:1120px;margin:0 auto;padding:0 56px;display:flex;align-items:center;justify-content:space-between;height:100%;">
-    <a href="/" style="font-family:'Noto Serif KR',serif;font-size:18px;font-weight:600;color:#1c1814;letter-spacing:1.5px;text-decoration:none;">WeddingCard</a>
+    <a href="/" style="font-family:'Noto Serif KR',serif;font-size:18px;font-weight:600;color:var(--color-ink-deepest);letter-spacing:1.5px;text-decoration:none;">WeddingCard</a>
     <div style="display:flex;align-items:center;gap:36px;">
       <a href="#themes" class="nav-link" style="text-decoration:none;color:#7a6a60;font-size:13px;font-weight:300;letter-spacing:0.5px;transition:color 0.2s;">테마</a>
       <a href="/superadmin" class="nav-link" style="text-decoration:none;color:#c0b0a8;font-size:12px;transition:color 0.2s;">관리자</a>
-      <a href="/my/create" class="lp-dark-btn" style="background:#1c1814;color:#fff;text-decoration:none;padding:10px 24px;border-radius:24px;font-size:13px;font-weight:500;letter-spacing:0.5px;transition:background 0.2s;">시작하기</a>
+      <a href="/my/create" class="lp-dark-btn" style="background:var(--color-ink-deepest);color:var(--color-white);text-decoration:none;padding:10px 24px;border-radius:24px;font-size:13px;font-weight:500;letter-spacing:0.5px;transition:background 0.2s;">시작하기</a>
     </div>
   </div>
 </nav>
 
 <!-- ── HERO ── -->
-<section style="min-height:100vh;padding:100px 0 80px;display:flex;align-items:center;position:relative;overflow:hidden;background:radial-gradient(ellipse 130% 90% at 10% 60%,#f9f4ef 0%,#fdfaf7 60%);">
+<section style="min-height:100vh;padding:100px 0 80px;display:flex;align-items:center;position:relative;overflow:hidden;background:radial-gradient(ellipse 130% 90% at 10% 60%,#f9f4ef 0%,var(--color-cream) 60%);">
   <div class="lp-hero-glow lp-glow-a"></div>
   <div class="lp-hero-glow lp-glow-b"></div>
   <div class="lp-hero-deco">W</div>
@@ -208,18 +209,18 @@
       <!-- 텍스트 -->
       <div>
         <div data-reveal style="display:flex;align-items:center;gap:10px;margin-bottom:24px;">
-          <span style="display:inline-block;width:28px;height:1px;background:#b89870;opacity:0.7;flex-shrink:0;"></span>
-          <span style="font-size:10px;letter-spacing:5px;color:#b89870;font-weight:500;text-transform:uppercase;">모바일 청첩장</span>
+          <span style="display:inline-block;width:28px;height:1px;background:var(--color-gold);opacity:0.7;flex-shrink:0;"></span>
+          <span style="font-size:10px;letter-spacing:5px;color:var(--color-gold);font-weight:500;text-transform:uppercase;">모바일 청첩장</span>
         </div>
-        <h1 data-reveal data-delay="1" style="font-family:'Noto Serif KR',serif;font-size:clamp(42px,6vw,80px);font-weight:300;line-height:1.2;color:#1c1814;margin-bottom:28px;letter-spacing:-0.5px;word-break:keep-all;">
+        <h1 data-reveal data-delay="1" style="font-family:'Noto Serif KR',serif;font-size:clamp(42px,6vw,80px);font-weight:300;line-height:1.2;color:var(--color-ink-deepest);margin-bottom:28px;letter-spacing:-0.5px;word-break:keep-all;">
           우리의 날을<br>
-          <span style="color:#c4748a;">특별하게</span>
+          <span style="color:var(--color-rose);">특별하게</span>
         </h1>
         <p data-reveal data-delay="2" style="font-size:16px;color:#7a6a60;line-height:2;font-weight:300;max-width:380px;margin-bottom:48px;word-break:keep-all;">
           5분 안에 완성하는 모바일 청첩장.<br>카카오톡으로 간편하게 공유하세요.
         </p>
         <div data-reveal data-delay="3" class="lp-hero-ctas">
-          <a href="/my/create" class="lp-primary" style="display:inline-flex;align-items:center;gap:8px;background:#c4748a;color:#fff;text-decoration:none;padding:15px 36px;border-radius:40px;font-size:15px;font-weight:500;letter-spacing:0.3px;white-space:nowrap;transition:background 0.2s,transform 0.15s;">
+          <a href="/my/create" class="lp-primary" style="display:inline-flex;align-items:center;gap:8px;background:var(--color-rose);color:var(--color-white);text-decoration:none;padding:15px 36px;border-radius:40px;font-size:15px;font-weight:500;letter-spacing:0.3px;white-space:nowrap;transition:background 0.2s,transform 0.15s;">
             <i class="ti ti-edit" style="font-size:15px;"></i>무료로 만들기
           </a>
           <!-- 로그인 없이 실제 완성된 청첩장을 바로 볼 수 있는 링크 — 데모 데이터가 없으면(청첩장이 하나도 없는 상태) 숨김 -->
@@ -247,10 +248,10 @@
                    style="width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;inset:0;filter:brightness(0.84);">
               <div style="position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,0.42) 100%);"></div>
               <div style="position:absolute;left:7px;right:0;bottom:19%;text-align:left;">
-                <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:25px;color:#fff;line-height:0.88;letter-spacing:-0.5px;">Getting</div>
-                <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:31px;color:#fff;line-height:0.88;letter-spacing:-0.5px;margin-top:-2px;">Married</div>
+                <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:25px;color:var(--color-white);line-height:0.88;letter-spacing:-0.5px;">Getting</div>
+                <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:31px;color:var(--color-white);line-height:0.88;letter-spacing:-0.5px;margin-top:-2px;">Married</div>
               </div>
-              <div style="position:absolute;left:0;right:0;bottom:5%;text-align:center;font-family:'Patrick Hand',sans-serif;font-size:8px;letter-spacing:1.2px;color:#fff;">2025 · 10 · 25</div>
+              <div style="position:absolute;left:0;right:0;bottom:5%;text-align:center;font-family:'Patrick Hand',sans-serif;font-size:8px;letter-spacing:1.2px;color:var(--color-white);">2025 · 10 · 25</div>
             </div>
           </div>
 
@@ -265,15 +266,15 @@
                 <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
                   <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
                     <span style="font-family:'Cormorant Garamond',serif;font-size:5px;letter-spacing:1.4px;text-transform:uppercase;color:#C4956A;">Groom</span>
-                    <span style="font-family:'Noto Serif KR',serif;font-size:10px;color:#1a1a1a;letter-spacing:1.5px;">지훈</span>
+                    <span style="font-family:'Noto Serif KR',serif;font-size:10px;color:var(--color-black);letter-spacing:1.5px;">지훈</span>
                   </div>
                   <div style="width:1px;height:16px;background:#C4956A;"></div>
                   <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
                     <span style="font-family:'Cormorant Garamond',serif;font-size:5px;letter-spacing:1.4px;text-transform:uppercase;color:#C4956A;">Bride</span>
-                    <span style="font-family:'Noto Serif KR',serif;font-size:10px;color:#1a1a1a;letter-spacing:1.5px;">수아</span>
+                    <span style="font-family:'Noto Serif KR',serif;font-size:10px;color:var(--color-black);letter-spacing:1.5px;">수아</span>
                   </div>
                 </div>
-                <div style="font-family:'Cormorant Garamond',serif;font-size:7px;color:#2a2a28;letter-spacing:0.4px;">2025.10.25 SAT 2:00 PM</div>
+                <div style="font-family:'Cormorant Garamond',serif;font-size:7px;color:var(--color-charcoal);letter-spacing:0.4px;">2025.10.25 SAT 2:00 PM</div>
               </div>
             </div>
           </div>
@@ -287,12 +288,12 @@
                      style="width:100%;height:100%;object-fit:cover;object-position:center 12%;position:absolute;inset:0;">
                 <!-- 폰은 카드보다 사진이 크게 잡혀 하단에 신랑 검은 정장이 걸린다.
                      테마 카드와 같은 그라데이션으로는 글자가 묻혀서 더 일찍·짙게 올린다. -->
-                <div style="position:absolute;left:0;right:0;bottom:0;height:54%;background:linear-gradient(180deg,transparent 0%,rgba(255,255,255,0.5) 32%,rgba(255,255,255,0.9) 55%,rgba(255,255,255,0.99) 78%,#fff 100%);"></div>
+                <div style="position:absolute;left:0;right:0;bottom:0;height:54%;background:linear-gradient(180deg,transparent 0%,rgba(255,255,255,0.5) 32%,rgba(255,255,255,0.9) 55%,rgba(255,255,255,0.99) 78%,var(--color-white) 100%);"></div>
                 <div style="position:absolute;left:0;right:0;bottom:27%;text-align:center;padding:0 10px;">
-                  <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:37px;font-weight:400;color:#1a1a1a;line-height:0.92;text-shadow:0 1px 12px rgba(255,255,255,0.9);">Our story<br>begins</div>
+                  <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:37px;font-weight:400;color:var(--color-black);line-height:0.92;text-shadow:0 1px 12px rgba(255,255,255,0.9);">Our story<br>begins</div>
                 </div>
                 <div style="position:absolute;left:0;right:0;bottom:16%;text-align:center;">
-                  <span style="font-family:'Cormorant Garamond',serif;font-size:12px;color:#2a2a28;letter-spacing:2.5px;">지훈 <span style="font-style:italic;color:rgba(0,0,0,0.5);">&amp;</span> 수아</span>
+                  <span style="font-family:'Cormorant Garamond',serif;font-size:12px;color:var(--color-charcoal);letter-spacing:2.5px;">지훈 <span style="font-style:italic;color:rgba(0,0,0,0.5);">&amp;</span> 수아</span>
                 </div>
                 <div style="position:absolute;left:0;right:0;bottom:7.5%;text-align:center;">
                   <span style="font-family:'Cormorant Garamond',serif;font-size:10px;color:#5a5a58;letter-spacing:2px;">2025 · 10 · 25</span>
@@ -306,26 +307,26 @@
 
     </div>
   </div>
-  <div style="position:absolute;bottom:28px;left:50%;animation:scrollBounce 2.5s ease-in-out infinite;color:#b89870;">
+  <div style="position:absolute;bottom:28px;left:50%;animation:scrollBounce 2.5s ease-in-out infinite;color:var(--color-gold);">
     <i class="ti ti-chevron-down" style="font-size:22px;"></i>
   </div>
 </section>
 
 <!-- ── STATS ── -->
-<div style="border-top:1px solid #e8e2da;border-bottom:1px solid #e8e2da;padding:52px 0;background:#fdfaf7;">
+<div style="border-top:1px solid var(--color-border-soft);border-bottom:1px solid var(--color-border-soft);padding:52px 0;background:var(--color-cream);">
   <div class="lp-stats-wrap" style="display:flex;align-items:stretch;justify-content:center;">
     <div class="lp-stat-item" data-reveal style="text-align:center;padding:0 72px;">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;color:#b89870;line-height:1;"><span data-count="5">0</span></div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;color:var(--color-gold);line-height:1;"><span data-count="5">0</span></div>
       <div style="font-size:10px;letter-spacing:3px;color:#9a8a78;margin-top:9px;font-weight:300;text-transform:uppercase;">가지 테마</div>
     </div>
-    <div class="lp-stats-divider" style="width:1px;background:#e8e2da;flex-shrink:0;"></div>
+    <div class="lp-stats-divider" style="width:1px;background:var(--color-border-soft);flex-shrink:0;"></div>
     <div class="lp-stat-item" data-reveal data-delay="1" style="text-align:center;padding:0 72px;">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;color:#b89870;line-height:1;"><span data-count="5">0</span>분</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;color:var(--color-gold);line-height:1;"><span data-count="5">0</span>분</div>
       <div style="font-size:10px;letter-spacing:3px;color:#9a8a78;margin-top:9px;font-weight:300;text-transform:uppercase;">안에 완성</div>
     </div>
-    <div class="lp-stats-divider" style="width:1px;background:#e8e2da;flex-shrink:0;"></div>
+    <div class="lp-stats-divider" style="width:1px;background:var(--color-border-soft);flex-shrink:0;"></div>
     <div class="lp-stat-item" data-reveal data-delay="2" style="text-align:center;padding:0 72px;">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;color:#b89870;line-height:1;">무료</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;color:var(--color-gold);line-height:1;">무료</div>
       <div style="font-size:10px;letter-spacing:3px;color:#9a8a78;margin-top:9px;font-weight:300;text-transform:uppercase;">로 시작</div>
     </div>
   </div>
@@ -335,8 +336,8 @@
 <section id="themes" style="padding:108px 0;">
   <div class="lp-wrap">
     <div data-reveal style="text-align:center;margin-bottom:68px;">
-      <div style="font-size:10px;letter-spacing:5px;color:#b89870;font-weight:500;text-transform:uppercase;margin-bottom:14px;">THEMES</div>
-      <h2 style="font-family:'Noto Serif KR',serif;font-size:clamp(26px,3.5vw,40px);font-weight:300;color:#1c1814;letter-spacing:-0.3px;">5가지 테마</h2>
+      <div style="font-size:10px;letter-spacing:5px;color:var(--color-gold);font-weight:500;text-transform:uppercase;margin-bottom:14px;">THEMES</div>
+      <h2 style="font-family:'Noto Serif KR',serif;font-size:clamp(26px,3.5vw,40px);font-weight:300;color:var(--color-ink-deepest);letter-spacing:-0.3px;">5가지 테마</h2>
       <p style="font-size:14px;color:#9a8a78;margin-top:12px;font-weight:300;">취향에 맞는 디자인을 선택하세요</p>
     </div>
     <div class="lp-themes-row">
@@ -351,15 +352,15 @@
             <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
               <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
                 <span style="font-family:'Cormorant Garamond',serif;font-size:6px;letter-spacing:2px;text-transform:uppercase;color:#C4956A;">Groom</span>
-                <span style="font-family:'Noto Serif KR',serif;font-size:12px;color:#1a1a1a;letter-spacing:2px;">지훈</span>
+                <span style="font-family:'Noto Serif KR',serif;font-size:12px;color:var(--color-black);letter-spacing:2px;">지훈</span>
               </div>
               <div style="width:1px;height:20px;background:#C4956A;"></div>
               <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
                 <span style="font-family:'Cormorant Garamond',serif;font-size:6px;letter-spacing:2px;text-transform:uppercase;color:#C4956A;">Bride</span>
-                <span style="font-family:'Noto Serif KR',serif;font-size:12px;color:#1a1a1a;letter-spacing:2px;">수아</span>
+                <span style="font-family:'Noto Serif KR',serif;font-size:12px;color:var(--color-black);letter-spacing:2px;">수아</span>
               </div>
             </div>
-            <div style="font-family:'EB Garamond','Cormorant Garamond',serif;font-size:8.5px;color:#2a2a28;letter-spacing:0.6px;">2025.10.25 SAT 2:00 PM</div>
+            <div style="font-family:'EB Garamond','Cormorant Garamond',serif;font-size:8.5px;color:var(--color-charcoal);letter-spacing:0.6px;">2025.10.25 SAT 2:00 PM</div>
             <div style="font-family:'Noto Serif KR',serif;font-size:7.5px;font-weight:300;color:#5a5a58;letter-spacing:0.4px;">서울 강남구 웨딩홀</div>
           </div>
         </div>
@@ -375,11 +376,11 @@
           <div style="position:absolute;left:0;right:0;bottom:0;height:45%;background:linear-gradient(180deg,transparent 0%,rgba(255,255,255,0.4) 45%,rgba(255,255,255,0.88) 72%,rgba(255,255,255,0.98) 100%);"></div>
           <!-- Our story begins — 하단 중앙 크게 -->
           <div style="position:absolute;left:0;right:0;bottom:28%;text-align:center;padding:0 8px;">
-            <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:30px;font-weight:400;color:#1a1a1a;line-height:0.92;text-shadow:0 1px 10px rgba(255,255,255,0.9);">Our story<br>begins</div>
+            <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:30px;font-weight:400;color:var(--color-black);line-height:0.92;text-shadow:0 1px 10px rgba(255,255,255,0.9);">Our story<br>begins</div>
           </div>
           <!-- 이름 -->
           <div style="position:absolute;left:0;right:0;bottom:16%;text-align:center;">
-            <span style="font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:400;color:#2a2a28;letter-spacing:2px;">지훈 <span style="font-style:italic;color:rgba(0,0,0,0.5);">&amp;</span> 수아</span>
+            <span style="font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:400;color:var(--color-charcoal);letter-spacing:2px;">지훈 <span style="font-style:italic;color:rgba(0,0,0,0.5);">&amp;</span> 수아</span>
           </div>
           <!-- 날짜 -->
           <div style="position:absolute;left:0;right:0;bottom:7%;text-align:center;">
@@ -415,10 +416,10 @@
           <img src="/images/theme-married.webp" alt="웨딩 사진" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;inset:0;filter:brightness(0.82);">
           <div style="position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,0.38) 100%);"></div>
           <div style="position:absolute;left:8px;right:0;bottom:20%;text-align:left;">
-            <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:30px;font-weight:400;color:#fff;line-height:0.88;letter-spacing:-0.5px;">Getting</div>
-            <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:38px;font-weight:400;color:#fff;line-height:0.88;letter-spacing:-0.5px;margin-top:-2px;">Married</div>
+            <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:30px;font-weight:400;color:var(--color-white);line-height:0.88;letter-spacing:-0.5px;">Getting</div>
+            <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:38px;font-weight:400;color:var(--color-white);line-height:0.88;letter-spacing:-0.5px;margin-top:-2px;">Married</div>
           </div>
-          <div style="position:absolute;left:0;right:0;bottom:4%;text-align:center;font-family:'Patrick Hand',sans-serif;font-size:10px;letter-spacing:1.5px;color:#fff;">2025 · 10 · 25</div>
+          <div style="position:absolute;left:0;right:0;bottom:4%;text-align:center;font-family:'Patrick Hand',sans-serif;font-size:10px;letter-spacing:1.5px;color:var(--color-white);">2025 · 10 · 25</div>
         </div>
         <span style="font-size:12px;color:#7a6a60;font-weight:300;letter-spacing:0.5px;">Getting Married</span>
       </a>
@@ -426,8 +427,8 @@
       <!-- Together forever -->
       <a href="/my/create" class="theme-card-wrap" data-reveal data-delay="5" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:16px;">
         <div style="width:162px;height:332px;border-radius:20px;overflow:hidden;background:#F5F2EC;box-shadow:0 10px 34px rgba(44,30,20,0.16),0 0 0 1px rgba(44,30,20,0.05);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px 14px;">
-          <div style="font-family:'Dancing Script',cursive;font-size:16px;color:#2a2a28;text-align:center;line-height:1.25;">We're getting<br>married!</div>
-          <div style="font-family:'Noto Serif KR',serif;font-size:12px;color:#2a2a28;letter-spacing:3px;display:flex;align-items:center;gap:6px;">지훈<span style="font-family:'Noto Serif KR',serif;color:#E8A0B4;font-size:10px;">&amp;</span>수아</div>
+          <div style="font-family:'Dancing Script',cursive;font-size:16px;color:var(--color-charcoal);text-align:center;line-height:1.25;">We're getting<br>married!</div>
+          <div style="font-family:'Noto Serif KR',serif;font-size:12px;color:var(--color-charcoal);letter-spacing:3px;display:flex;align-items:center;gap:6px;">지훈<span style="font-family:'Noto Serif KR',serif;color:#E8A0B4;font-size:10px;">&amp;</span>수아</div>
           <div style="width:74px;height:86px;border-radius:44px 44px 0 0;overflow:hidden;background:#ddd;">
             <img src="/images/theme-forever.webp" alt="웨딩 사진" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center 25%;display:block;">
           </div>
@@ -445,40 +446,40 @@
 <section style="padding:108px 0;background:#f5f0e8;">
   <div class="lp-wrap">
     <div data-reveal style="text-align:center;margin-bottom:64px;">
-      <div style="font-size:10px;letter-spacing:5px;color:#b89870;font-weight:500;text-transform:uppercase;margin-bottom:14px;">FEATURES</div>
-      <h2 style="font-family:'Noto Serif KR',serif;font-size:clamp(26px,3.5vw,40px);font-weight:300;color:#1c1814;">주요 기능</h2>
+      <div style="font-size:10px;letter-spacing:5px;color:var(--color-gold);font-weight:500;text-transform:uppercase;margin-bottom:14px;">FEATURES</div>
+      <h2 style="font-family:'Noto Serif KR',serif;font-size:clamp(26px,3.5vw,40px);font-weight:300;color:var(--color-ink-deepest);">주요 기능</h2>
     </div>
     <div class="lp-feat-grid">
 
       <div class="feat-card" data-reveal data-delay="1" style="background:rgba(255,255,255,0.72);border-radius:20px;padding:36px 32px;border:1px solid rgba(232,226,218,0.9);box-shadow:0 2px 12px rgba(44,30,20,0.04);">
         <div style="width:52px;height:52px;background:#fdf4ec;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-          <i class="ti ti-map-pin" style="font-size:26px;color:#b89870;"></i>
+          <i class="ti ti-map-pin" style="font-size:26px;color:var(--color-gold);"></i>
         </div>
-        <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:400;color:#1c1814;margin-bottom:10px;">카카오맵 연동</div>
+        <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:400;color:var(--color-ink-deepest);margin-bottom:10px;">카카오맵 연동</div>
         <div style="font-size:14px;color:#9a8a78;line-height:1.85;font-weight:300;">예식장 위치 안내와 내비게이션 연결을 한 번에 처리합니다.</div>
       </div>
 
       <div class="feat-card" data-reveal data-delay="2" style="background:rgba(255,255,255,0.72);border-radius:20px;padding:36px 32px;border:1px solid rgba(232,226,218,0.9);box-shadow:0 2px 12px rgba(44,30,20,0.04);">
         <div style="width:52px;height:52px;background:#fdf4ec;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-          <i class="ti ti-checkbox" style="font-size:26px;color:#b89870;"></i>
+          <i class="ti ti-checkbox" style="font-size:26px;color:var(--color-gold);"></i>
         </div>
-        <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:400;color:#1c1814;margin-bottom:10px;">RSVP 참석 확인</div>
+        <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:400;color:var(--color-ink-deepest);margin-bottom:10px;">RSVP 참석 확인</div>
         <div style="font-size:14px;color:#9a8a78;line-height:1.85;font-weight:300;">하객 참석 여부를 실시간으로 확인하고 관리합니다.</div>
       </div>
 
       <div class="feat-card" data-reveal data-delay="3" style="background:rgba(255,255,255,0.72);border-radius:20px;padding:36px 32px;border:1px solid rgba(232,226,218,0.9);box-shadow:0 2px 12px rgba(44,30,20,0.04);">
         <div style="width:52px;height:52px;background:#fdf4ec;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-          <i class="ti ti-photo" style="font-size:26px;color:#b89870;"></i>
+          <i class="ti ti-photo" style="font-size:26px;color:var(--color-gold);"></i>
         </div>
-        <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:400;color:#1c1814;margin-bottom:10px;">사진 갤러리</div>
+        <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:400;color:var(--color-ink-deepest);margin-bottom:10px;">사진 갤러리</div>
         <div style="font-size:14px;color:#9a8a78;line-height:1.85;font-weight:300;">커플 사진을 아름다운 슬라이드 갤러리로 전시합니다.</div>
       </div>
 
       <div class="feat-card" data-reveal data-delay="4" style="background:rgba(255,255,255,0.72);border-radius:20px;padding:36px 32px;border:1px solid rgba(232,226,218,0.9);box-shadow:0 2px 12px rgba(44,30,20,0.04);">
         <div style="width:52px;height:52px;background:#fdf4ec;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-          <i class="ti ti-credit-card" style="font-size:26px;color:#b89870;"></i>
+          <i class="ti ti-credit-card" style="font-size:26px;color:var(--color-gold);"></i>
         </div>
-        <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:400;color:#1c1814;margin-bottom:10px;">계좌 송금</div>
+        <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:400;color:var(--color-ink-deepest);margin-bottom:10px;">계좌 송금</div>
         <div style="font-size:14px;color:#9a8a78;line-height:1.85;font-weight:300;">카카오페이 링크와 계좌 정보를 깔끔하게 안내합니다.</div>
       </div>
 
@@ -489,7 +490,7 @@
 <!-- ── CTA ──
      페이지 전체가 크림 한 톤이라 스크롤해도 장면 전환이 없었다.
      마지막 행동을 요구하는 이 구간만 딥톤으로 뒤집어 대비를 만든다. -->
-<section style="background:linear-gradient(165deg,#2b2027 0%,#1c1814 52%,#241d1b 100%);padding:124px 0;text-align:center;position:relative;overflow:hidden;">
+<section style="background:linear-gradient(165deg,#2b2027 0%,var(--color-ink-deepest) 52%,#241d1b 100%);padding:124px 0;text-align:center;position:relative;overflow:hidden;">
   <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(80vw,760px);height:min(80vw,760px);border-radius:50%;background:radial-gradient(circle,rgba(196,116,138,0.20) 0%,rgba(196,116,138,0) 68%);pointer-events:none;"></div>
   <div class="lp-wrap" style="position:relative;z-index:1;">
     <div data-reveal style="font-size:10px;letter-spacing:5px;color:#d4a574;font-weight:500;text-transform:uppercase;margin-bottom:20px;">시작하기</div>
@@ -499,7 +500,7 @@
     <p data-reveal data-delay="2" style="font-size:16px;color:#b0a094;line-height:1.9;font-weight:300;max-width:420px;margin:0 auto 48px;word-break:keep-all;">
       무료로 청첩장 만들기,<br>5분이면 충분합니다.
     </p>
-    <a data-reveal data-delay="3" href="/my/create" class="lp-primary" style="display:inline-flex;align-items:center;gap:8px;background:#c4748a;color:#fff;text-decoration:none;padding:16px 44px;border-radius:40px;font-size:16px;font-weight:500;letter-spacing:0.3px;box-shadow:0 14px 42px rgba(196,116,138,0.42);transition:background 0.2s,transform 0.15s;">
+    <a data-reveal data-delay="3" href="/my/create" class="lp-primary" style="display:inline-flex;align-items:center;gap:8px;background:var(--color-rose);color:var(--color-white);text-decoration:none;padding:16px 44px;border-radius:40px;font-size:16px;font-weight:500;letter-spacing:0.3px;box-shadow:0 14px 42px rgba(196,116,138,0.42);transition:background 0.2s,transform 0.15s;">
       <i class="ti ti-edit" style="font-size:16px;"></i>무료로 만들기
     </a>
     <p data-reveal data-delay="4" style="margin-top:20px;font-size:12px;color:#8a7a6c;letter-spacing:0.5px;">카드 등록 불필요</p>
@@ -507,9 +508,9 @@
 </section>
 
 <!-- ── FOOTER ── -->
-<footer style="background:#fdfaf7;border-top:1px solid #e8e2da;padding:36px 0;">
+<footer style="background:var(--color-cream);border-top:1px solid var(--color-border-soft);padding:36px 0;">
   <div class="lp-wrap" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
-    <a href="/" style="font-family:'Noto Serif KR',serif;font-size:16px;font-weight:600;color:#1c1814;letter-spacing:1.5px;text-decoration:none;">WeddingCard</a>
+    <a href="/" style="font-family:'Noto Serif KR',serif;font-size:16px;font-weight:600;color:var(--color-ink-deepest);letter-spacing:1.5px;text-decoration:none;">WeddingCard</a>
     <div style="display:flex;gap:28px;align-items:center;flex-wrap:wrap;">
       <a href="/my/create" class="nav-link" style="text-decoration:none;color:#9a8a78;font-size:13px;font-weight:300;transition:color 0.2s;">청첩장 만들기</a>
       <a href="/admin/edit" class="nav-link" style="text-decoration:none;color:#9a8a78;font-size:13px;font-weight:300;transition:color 0.2s;">편집기</a>
