@@ -48,15 +48,38 @@ body{
     position:fixed;inset:0;z-index:9999;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     background:var(--color-cream);
-    animation:introSequence 2.6s ease forwards;
+    animation:introSequence 2.9s ease forwards;
 }
-.intro-line{width:32px;height:1px;background:var(--color-gold);margin-bottom:14px;opacity:0;animation:introTextIn .6s ease .15s forwards;}
-.intro-names{font-family:var(--font-serif);font-size:21px;font-weight:300;color:var(--color-ink);letter-spacing:3px;opacity:0;animation:introTextIn .8s ease .3s forwards;}
-.intro-date{font-family:var(--font-sans);font-size:11px;color:var(--color-taupe);letter-spacing:3px;margin-top:10px;opacity:0;animation:introTextIn .8s ease .5s forwards;}
+/* 오프닝 전용 꽃잎 — 처음엔 배경을 반투명하게 풀어 페이지의 상시 .petals 층이
+   비치게 해봤는데, 그러면 꽃잎만이 아니라 뒤의 히어로 사진·업로드 안내까지
+   같이 비쳐서(특히 사진을 이미 올린 청첩장에서) 의도치 않게 지저분해 보였다.
+   그래서 오프닝 안에만 사는 꽃잎 몇 개를 따로 둔다 — 심볼·색은 상시 꽃잎과
+   같은 것을 재사용해 톤은 이어지고, 수명은 오프닝과 함께 끝난다. */
+.intro-petal{
+    position:absolute;pointer-events:none;opacity:0;
+    animation:introPetalFall 2s ease-in forwards;
+}
+@keyframes introPetalFall{
+    0%{opacity:0;transform:translateY(-14px) rotate(0deg);}
+    15%{opacity:.85;}
+    100%{opacity:0;transform:translateY(64px) rotate(70deg);}
+}
+/* 하트 모티프를 제일 먼저 — 히어로의 ♡(.hero-heart-left/right)와 같은 글자를 재사용해
+   새 그래픽을 안 만들고도 이 청첩장 전체의 톤을 유지한다. 텍스트들과는 다르게
+   스케일로 들어와서 "장식이 먼저, 정보가 그 뒤" 순서가 또렷하게 읽힌다. */
+.intro-mark{
+    font-size:26px;color:var(--color-gold);line-height:1;margin-bottom:16px;
+    opacity:0;transform:scale(.5);
+    animation:introMarkIn .7s cubic-bezier(.34,1.4,.64,1) forwards;
+}
+.intro-line{width:32px;height:1px;background:var(--color-gold);margin-bottom:14px;opacity:0;animation:introTextIn .6s ease .55s forwards;}
+.intro-names{font-family:var(--font-serif);font-size:21px;font-weight:300;color:var(--color-ink);letter-spacing:3px;opacity:0;animation:introTextIn .8s ease .75s forwards;}
+.intro-date{font-family:var(--font-sans);font-size:11px;color:var(--color-taupe);letter-spacing:3px;margin-top:10px;opacity:0;animation:introTextIn .8s ease .95s forwards;}
+@keyframes introMarkIn{from{opacity:0;transform:scale(.5);}to{opacity:1;transform:scale(1);}}
 @keyframes introTextIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
 @keyframes introSequence{
     0%{opacity:1;}
-    75%{opacity:1;}
+    78%{opacity:1;}
     100%{opacity:0;visibility:hidden;pointer-events:none;}
 }
 @media(prefers-reduced-motion:reduce){

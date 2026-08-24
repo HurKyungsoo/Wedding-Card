@@ -76,6 +76,15 @@
 
 <!-- 오프닝 인트로 — 순수 CSS 애니메이션으로 진행/종료되므로 JS 실패에도 화면이 막히지 않는다 -->
 <div class="intro-screen" id="introScreen">
+    <!-- 오프닝 전용 꽃잎 — 페이지 상시 .petals와 같은 심볼·색을 재사용한다.
+         중앙(하트·이름·날짜)을 가리지 않도록 가장자리에만 흩어 두고, 순서대로
+         살짝씩 지연을 줘서 한꺼번에 우르르 나타나지 않게 했다. -->
+    <span class="intro-petal" style="top:14%;left:18%;font-size:13px;color:#f7b8c9;animation-delay:.3s;">✿</span>
+    <span class="intro-petal" style="top:20%;left:78%;font-size:10px;color:#f5c9d4;animation-delay:.6s;">❁</span>
+    <span class="intro-petal" style="top:70%;left:14%;font-size:11px;color:#f2dde5;animation-delay:.9s;">❀</span>
+    <span class="intro-petal" style="top:66%;left:82%;font-size:9px;color:#f9dfe8;animation-delay:1.15s;">✾</span>
+    <span class="intro-petal" style="top:82%;left:50%;font-size:10px;color:#e8d5e0;animation-delay:1.4s;">❃</span>
+    <div class="intro-mark">♡</div>
     <div class="intro-line"></div>
     <div class="intro-names" th:text="${(wedding.displayOrder == 'bride') ? (wedding.brideName + ' · ' + wedding.groomName) : (wedding.groomName + ' · ' + wedding.brideName)}">신랑 · 신부</div>
     <div class="intro-date" th:text="${!#strings.isEmpty(wedding.weddingDate) ? #strings.replace(wedding.weddingDate, '-', '.') : ''}">2026.10.24</div>
