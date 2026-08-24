@@ -138,4 +138,29 @@ class EndingSectionLivePreviewTest {
             .as("칩 클릭이 textarea 값을 채우는 핸들러가 있어야 한다")
             .contains("endingCaptionChips").contains("endingCaptionInput");
     }
+
+    /**
+     * 엔딩이 편집기 우하단 햄버거 패널(섹션 토글·드래그 재정렬)에도 올라와 있어야 한다.
+     * 처음 되살릴 때는 "따로 후속 작업"으로 미뤄뒀던 부분 — NAV_SECTIONS(패널에 뜨는 목록)와
+     * invitation.html의 idToVis(패널에서 옮긴 순서를 실제 하객 화면에 반영하는 맵) 양쪽에
+     * 다 등록돼야 한다. 하나만 등록하면 패널에서는 옮겨지는데 정작 게시된 화면은 그대로거나,
+     * 그 반대의 절반짜리 기능이 된다.
+     */
+    @Test
+    void endingSection_isWiredIntoTheNavPanel() throws Exception {
+        String editorJs = new String(
+            getClass().getClassLoader().getResourceAsStream("static/js/editor.js").readAllBytes(),
+            StandardCharsets.UTF_8);
+        String invitationHtml = new String(
+            getClass().getClassLoader().getResourceAsStream("templates/invitation.html").readAllBytes(),
+            StandardCharsets.UTF_8);
+
+        assertThat(editorJs)
+            .as("NAV_SECTIONS(패널 토글·재정렬 목록)에 엔딩이 없다")
+            .containsPattern("\\{id:'ending',\\s*label:'엔딩'");
+        assertThat(invitationHtml)
+            .as("idToVis(패널에서 옮긴 순서를 실제 하객 화면에 반영하는 맵)에 엔딩이 없다 — " +
+                "패널에서는 옮겨지는 것처럼 보이는데 게시된 화면은 그대로인 상태가 된다")
+            .containsPattern("ending:\\s*'ending'");
+    }
 }

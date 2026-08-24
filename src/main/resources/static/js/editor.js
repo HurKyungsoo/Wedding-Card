@@ -1568,6 +1568,7 @@ var NAV_SECTIONS = [
     {id:'acct',   label:'계좌 송금',         chk:'chkAcct'},
     {id:'rsvp',   label:'참석 여부',         chk:'chkRsvp'},
     {id:'guest',  label:'방명록',             chk:'chkGuest'},
+    {id:'ending', label:'엔딩',              chk:'chkEnding'},
 ];
 
 /* 저장된 sectionOrder를 NAV_SECTIONS에 적용한 목록.
@@ -1791,10 +1792,14 @@ function scrollToSection(secId) {
     scrollPreviewTo(secId);
 }
 
-/* 스크롤 스파이 → 패널 내 활성 섹션 표시 */
+/* 스크롤 스파이 → 패널 내 활성 섹션 표시
+   이전엔 여기서 계산한 active를 .nav-panel-sec-item(고정 3개: 메인/기본정보/예식정보)에만
+   반영했다 — 정작 스크롤로 지나가는 인사말·캘린더·갤러리 같은 나머지 섹션들은 계산은
+   되면서도 표시할 대상이 없어 패널 어디에도 "지금 여기" 표시가 안 됐다. 토글 목록 행에도
+   같은 active 클래스를 얹는다. */
 var mainEl = document.querySelector('.ed-main');
 mainEl.addEventListener('scroll', function() {
-    var secs = ['main','basic','wedding','greet','hosts','cal','dday','gal','map','acct','rsvp','guest'];
+    var secs = ['main','basic','wedding','greet','hosts','cal','dday','gal','map','acct','rsvp','guest','ending'];
     var active = secs[0];
     secs.forEach(function(id) {
         var el = document.getElementById('sec-'+id);
@@ -1802,6 +1807,9 @@ mainEl.addEventListener('scroll', function() {
     });
     document.querySelectorAll('.nav-panel-sec-item').forEach(function(item) {
         item.classList.toggle('active', item.dataset.sec === active);
+    });
+    document.querySelectorAll('.nav-panel-toggle-row').forEach(function(row) {
+        row.classList.toggle('active', row.dataset.secId === active);
     });
 });
 

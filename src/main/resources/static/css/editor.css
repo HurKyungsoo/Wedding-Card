@@ -743,7 +743,9 @@ textarea.ed-input{resize:none;line-height:1.75;}
 }
 .nav-panel-toggle-row:last-child{border-bottom:none;}
 .nav-panel-toggle-row:hover{background:var(--color-cream);}
-.nav-panel-toggle-name{flex:1;font-size:13px;color:#3a3632;}
+.nav-panel-toggle-name{flex:1;font-size:13px;color:#3a3632;transition:color .15s;}
+/* 스크롤로 지금 지나고 있는 섹션 — 고정 이동 목록(.nav-panel-sec-item.active)과 같은 표시 언어 */
+.nav-panel-toggle-row.active .nav-panel-toggle-name{color:var(--color-rose);font-weight:500;}
 .nav-panel-handle{color:#bdb0a6;font-size:16px;cursor:grab;padding:0 2px;touch-action:none;}
 .nav-panel-handle:active{cursor:grabbing;}
 .nav-panel-toggle-row.dragging{opacity:.35;background:var(--color-bg-alt);}
