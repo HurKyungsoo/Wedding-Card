@@ -141,10 +141,7 @@
             </div>
 
             <!-- 효과 레이어 (fog/wave/paper) — z-index:2, 오버레이 텍스트(z-index:3) 아래 -->
-            <!-- mainEffect(안개/물결/페이퍼) — 예전엔 initPage()가 이 값을 안 넘겨서 편집기
-                 라이브 미리보기에서만 보이고 실제 하객 화면엔 전혀 안 붙었다. 서버에서 바로 클래스를 붙인다 -->
-            <div id="effectLayer" class="effect-layer"
-                 th:classappend="${wedding.mainEffect != null and wedding.mainEffect != 'none'} ? 'eff-' + ${wedding.mainEffect} : ''"></div>
+            <div id="effectLayer" class="effect-layer"></div>
         </div>
 
         <!-- ★ design-forever 전용 레이아웃 (배경색 + 아치사진 + 텍스트) -->

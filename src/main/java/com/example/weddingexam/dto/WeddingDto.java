@@ -153,30 +153,10 @@ public class WeddingDto {
     public Double getMainPhotoPosY() { return mainPhotoPosY; } public void setMainPhotoPosY(Double v) { this.mainPhotoPosY = v; }
     public Double getMainPhotoScale() { return mainPhotoScale; } public void setMainPhotoScale(Double v) { this.mainPhotoScale = v; }
 
-    /** colorEffect 선택값 → CSS filter 조각. 편집기 라이브 미리보기(invitation.html의 cMap)와 값을 맞춰야 한다 */
-    private static final java.util.Map<String, String> COLOR_EFFECT_CSS = java.util.Map.of(
-        "warm",    "sepia(0.15) saturate(1.4) hue-rotate(-12deg)",
-        "cool",    "sepia(0.08) saturate(0.82) hue-rotate(18deg) brightness(1.04)",
-        "vintage", "sepia(0.4) contrast(0.88) brightness(1.06) saturate(0.78)"
-    );
-
-    /**
-     * 메인 사진 img 태그용 style 값 — 필터(+유색효과) + (드래그로 지정한) 초점 위치 + 확대 배율. 미지정 시 테마 기본 CSS를 따름.
-     *
-     * photoFilter와 colorEffect는 예전엔 initPage()가 둘 다 넘기지 않아 편집기 라이브 미리보기에서만
-     * 합산 적용되고(invitation.html의 applyPhotoFilter()) 실제 하객 화면에는 전혀 반영되지 않았다.
-     * photoFilter는 여기서 처음부터 서버 렌더링돼서 몰랐는데, colorEffect는 아예 안 됐다 — 여기서 같이 합쳐 렌더링한다.
-     */
+    /** 메인 사진 img 태그용 style 값 — 필터 + (드래그로 지정한) 초점 위치 + 확대 배율. 미지정 시 테마 기본 CSS를 따름 */
     public String getMainPhotoImgStyle() {
         StringBuilder sb = new StringBuilder();
-        StringBuilder filter = new StringBuilder();
-        if (photoFilter != null && !photoFilter.equals("none")) filter.append(photoFilter);
-        String colorEff = colorEffect != null ? COLOR_EFFECT_CSS.get(colorEffect) : null;
-        if (colorEff != null) {
-            if (filter.length() > 0) filter.append(' ');
-            filter.append(colorEff);
-        }
-        if (filter.length() > 0) sb.append("filter:").append(filter).append(";");
+        if (photoFilter != null && !photoFilter.equals("none")) sb.append("filter:").append(photoFilter).append(";");
         if (mainPhotoPosX != null && mainPhotoPosY != null)
             sb.append("object-position:").append(mainPhotoPosX).append("% ").append(mainPhotoPosY).append("% !important;");
         if (mainPhotoScale != null && mainPhotoScale != 1.0)
