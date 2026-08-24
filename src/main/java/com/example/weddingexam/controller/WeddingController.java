@@ -462,6 +462,7 @@ public class WeddingController {
         // 체크 안 된 체크박스는 폼에서 아예 빠지므로, 다른 토글과 동일하게 null이면 꺼짐으로 본다.
         // (기존 청첩장은 컬럼이 null이라 화면상 기본 표시 — 템플릿의 "null이면 보임" 규칙을 따른다)
         if (dto.getGuestbookVisible() == null) dto.setGuestbookVisible(false);
+        if (dto.getEndingVisible() == null) dto.setEndingVisible(false);
     }
 
     /**
@@ -526,5 +527,8 @@ public class WeddingController {
         model.addAttribute("greetingTextHtml",
                 dto.getGreetingText() != null
                         ? HtmlUtils.htmlEscape(dto.getGreetingText()).replace("\n", "<br>") : "");
+        model.addAttribute("endingCaptionHtml",
+                dto.getEndingCaption() != null
+                        ? HtmlUtils.htmlEscape(dto.getEndingCaption()).replace("\n", "<br>") : "");
     }
 }

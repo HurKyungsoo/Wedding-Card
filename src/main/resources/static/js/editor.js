@@ -761,6 +761,72 @@ function resizeImage(file, maxWidth, quality, callback) {
     reader.readAsDataURL(file);
 }
 
+/* ──────────────────────────────────────
+   엔딩(마지막 인사) 사진 업로드 — 메인 사진과 달리 크롭 UI 없이
+   갤러리처럼 리사이즈만 해서 바로 저장한다 (한 장뿐이라 굳이 크롭할 필요는 적다고 판단)
+────────────────────────────────────── */
+function handleEndingPhotoFile(file) {
+    if (!file) return;
+    resizeImage(file, 1440, 0.85, function(dataUrl) {
+        var b64 = document.getElementById('endingPhotoBase64');
+        if (b64) b64.value = dataUrl.split(',')[1];
+        var img = document.getElementById('endingThumbImg');
+        if (img) img.src = dataUrl;
+        var zone = document.getElementById('endingZone');
+        var thumb = document.getElementById('endingThumb');
+        if (zone) zone.style.display = 'none';
+        if (thumb) thumb.style.display = '';
+        scheduleLive(150);
+    });
+}
+
+var endingZoneEl = document.getElementById('endingZone');
+if (endingZoneEl) {
+    endingZoneEl.addEventListener('click', function() {
+        document.getElementById('endingPhotoFile').click();
+    });
+    ['dragenter', 'dragover'].forEach(function(evt) {
+        endingZoneEl.addEventListener(evt, function(e) {
+            e.preventDefault(); e.stopPropagation();
+            endingZoneEl.classList.add('drag-over');
+        });
+    });
+    ['dragleave', 'dragend'].forEach(function(evt) {
+        endingZoneEl.addEventListener(evt, function(e) {
+            e.preventDefault(); e.stopPropagation();
+            endingZoneEl.classList.remove('drag-over');
+        });
+    });
+    endingZoneEl.addEventListener('drop', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        endingZoneEl.classList.remove('drag-over');
+        var file = e.dataTransfer.files && e.dataTransfer.files[0];
+        if (file && file.type.indexOf('image/') === 0) handleEndingPhotoFile(file);
+    });
+}
+var endingPhotoFileEl = document.getElementById('endingPhotoFile');
+if (endingPhotoFileEl) {
+    endingPhotoFileEl.addEventListener('change', function() {
+        handleEndingPhotoFile(this.files[0]);
+        this.value = '';
+    });
+}
+var removeEndingPhotoBtn = document.getElementById('removeEndingPhoto');
+if (removeEndingPhotoBtn) {
+    removeEndingPhotoBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var b64 = document.getElementById('endingPhotoBase64');
+        if (b64) b64.value = '';
+        var fileEl = document.getElementById('endingPhotoFile');
+        if (fileEl) fileEl.value = '';
+        var zone = document.getElementById('endingZone');
+        var thumb = document.getElementById('endingThumb');
+        if (zone) zone.style.display = '';
+        if (thumb) thumb.style.display = 'none';
+        scheduleLive(150);
+    });
+}
+
 var galImages = [];
 function addGalThumb(dataUrl) {
     galImages.push(dataUrl);
@@ -962,7 +1028,8 @@ function collectData() {
         'mapVisible':      'chkMap',
         'accountVisible':  'chkAcct',
         'rsvpEnabled':     'chkRsvp',
-        'guestbookVisible':'chkGuest'
+        'guestbookVisible':'chkGuest',
+        'endingVisible':   'chkEnding'
     };
     Object.keys(TOGGLES).forEach(function(name) {
         var el = document.getElementById(TOGGLES[name])
@@ -990,6 +1057,10 @@ function collectData() {
     /* photoFilter — hidden input 직접 읽기 */
     var pfEl = document.getElementById('photoFilterInput');
     if (pfEl) data.photoFilter = pfEl.value || 'none';
+
+    /* endingPhotoBase64 — hidden input 직접 읽기 (FormData에서 누락 방지) */
+    var endB64El = document.getElementById('endingPhotoBase64');
+    if (endB64El) data.endingPhotoBase64 = endB64El.value || '';
 
     /* deceasedDisplayType — 혼주섹션 탭 값 명시 읽기 */
     var ddEl = document.getElementById('deceasedInput');

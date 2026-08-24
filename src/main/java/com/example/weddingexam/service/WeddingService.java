@@ -231,6 +231,7 @@ public class WeddingService {
             .galleryVisible(true).galleryImages("").galleryType("slide").galleryScrollGuide(true)
             .guestbookVisible(true)
             .photoFilter("none").mainPhotoBase64("")
+            .endingVisible(true).endingPhotoBase64("").endingCaption("").endingEffect("none")
             .build();
     }
 }
