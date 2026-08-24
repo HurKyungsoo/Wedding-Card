@@ -64,7 +64,7 @@ body{
     animation:fadeUp 0.8s 0.1s both;
 }
 .hero-top-label{
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     font-size:11px;
     letter-spacing:5px;
     color:#aaa;
@@ -73,7 +73,7 @@ body{
     text-transform:uppercase;
 }
 .hero-top-date{
-    font-family:'Noto Serif KR',serif;
+    font-family:var(--font-serif);
     font-size:52px;
     font-weight:200;
     color:var(--color-black);
@@ -82,7 +82,7 @@ body{
     margin-bottom:0.8rem;
 }
 .hero-top-names{
-    font-family:'Noto Serif KR',serif;
+    font-family:var(--font-serif);
     font-size:17px;
     font-weight:300;
     color:var(--color-black);
@@ -173,7 +173,7 @@ body{
     animation:fadeUp 0.8s 0.6s both;
 }
 .hero-bottom-date{
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     font-size:13px;
     font-weight:300;
     color:#3a3a38;
@@ -182,7 +182,7 @@ body{
     line-height:1.6;
 }
 .hero-bottom-place{
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     font-size:13px;
     font-weight:300;
     color:#7a7a78;
@@ -201,7 +201,7 @@ body{
 .sec{padding:2.5rem 1.8rem;}
 .sec-white{background:transparent;}
 .sec-label{font-family:'EB Garamond','Cormorant Garamond',serif;font-size:11.5px;letter-spacing:5px;color:var(--color-gold);text-align:center;margin-bottom:0.4rem;font-style:italic;font-weight:400;}
-.sec-title{font-family:var(--main-font, 'Noto Serif KR', serif);font-size:16px;font-weight:300;color:var(--color-ink-warm);text-align:center;letter-spacing:3px;margin-bottom:1.8rem;}
+.sec-title{font-family:var(--main-font, var(--font-serif));font-size:16px;font-weight:300;color:var(--color-ink-warm);text-align:center;letter-spacing:3px;margin-bottom:1.8rem;}
 
 /* ── 스크롤 애니메이션 클래스 ── */
 /* 기본 페이드업 */
@@ -240,8 +240,8 @@ body{
 /* ── 인사말 ── */
 .greet-card{background:transparent;border-radius:16px;padding:2rem 1.5rem;border:0.5px solid rgba(180,160,130,0.2);position:relative;overflow:hidden;}
 .greet-card::before{content:'❝';font-family:Georgia,serif;font-size:60px;color:var(--color-gold);opacity:0.07;position:absolute;top:-6px;left:10px;line-height:1;}
-.greet-title{font-family:var(--main-font, 'Noto Serif KR', serif);font-size:15px;font-weight:400;color:var(--color-ink-warm);line-height:2.1;margin-bottom:1.2rem;text-align:center;letter-spacing:0.5px;}
-.greet-text{font-family:var(--main-font, 'Noto Serif KR', serif);font-size:13px;color:var(--color-brown);line-height:2.4;font-weight:300;word-break:keep-all;text-align:center;letter-spacing:0.3px;}
+.greet-title{font-family:var(--main-font, var(--font-serif));font-size:15px;font-weight:400;color:var(--color-ink-warm);line-height:2.1;margin-bottom:1.2rem;text-align:center;letter-spacing:0.5px;}
+.greet-text{font-family:var(--main-font, var(--font-serif));font-size:13px;color:var(--color-brown);line-height:2.4;font-weight:300;word-break:keep-all;text-align:center;letter-spacing:0.3px;}
 .greet-sign{margin-top:1.5rem;font-family:'EB Garamond','Cormorant Garamond',serif;font-size:15px;color:var(--color-gold);letter-spacing:3px;font-style:italic;text-align:center;font-weight:400;}
 
 /* 타이핑 커서 효과 */
@@ -265,7 +265,7 @@ body{
   flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
   padding:11px;border:1px solid #e0d3c2;border-radius:10px;
   background:rgba(255,255,255,0.6);color:#7a6a54;
-  font-size:12.5px;font-family:'Noto Sans KR',sans-serif;font-weight:500;
+  font-size:12.5px;font-family:var(--font-sans);font-weight:500;
   text-decoration:none;transition:all .2s;
 }
 .cal-add-btn i{font-size:15px;color:var(--color-gold);}
@@ -273,7 +273,7 @@ body{
 
 /* ── 달력 ── */
 .cal-card{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);padding:1.5rem;backdrop-filter:blur(4px);}
-.cal-month-title{font-family:var(--main-font, 'Noto Serif KR', serif);font-size:14px;color:var(--color-ink-warm);font-weight:300;letter-spacing:2px;text-align:center;margin-bottom:1.2rem;}
+.cal-month-title{font-family:var(--main-font, var(--font-serif));font-size:14px;color:var(--color-ink-warm);font-weight:300;letter-spacing:2px;text-align:center;margin-bottom:1.2rem;}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:2px;}
 .cal-dow{font-size:10px;color:var(--color-gold);padding:5px 0;letter-spacing:1px;}
 .cal-cell{padding:6px 2px;font-size:12px;color:var(--color-brown);font-weight:300;border-radius:50%;transition:all 0.2s;}
@@ -299,7 +299,7 @@ body{
     backdrop-filter:blur(4px);
 }
 .host-badge{font-size:10px;letter-spacing:2px;color:var(--color-gold);margin-bottom:0.8rem;}
-.host-main-name{font-family:var(--main-font, 'Noto Serif KR', serif);font-size:17px;color:var(--color-ink-warm);font-weight:300;margin-bottom:9px;}
+.host-main-name{font-family:var(--main-font, var(--font-serif));font-size:17px;color:var(--color-ink-warm);font-weight:300;margin-bottom:9px;}
 .host-family{font-size:11px;color:#7a6a54;line-height:2;font-weight:300;}
 /* 관계(장남/장녀) — 이름 앞에 작게. 미입력이면 :empty 로 통째로 숨긴다 */
 .host-relation{font-size:0.72em;color:#8a7a64;margin-right:4px;letter-spacing:0.5px;}
@@ -317,7 +317,7 @@ body{
 .hosts-center{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:1.8rem;}
 .hosts-center-line{width:0.5px;height:26px;background:var(--color-tan);}
 .contact-row{display:flex;gap:4px;justify-content:center;margin-top:0.7rem;flex-wrap:wrap;}
-.cbtn{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--color-gold);background:#fdf9f5;border:0.5px solid var(--color-tan);border-radius:14px;padding:4px 9px;cursor:pointer;letter-spacing:1px;font-family:'Noto Sans KR',sans-serif;transition:all 0.2s;}
+.cbtn{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--color-gold);background:#fdf9f5;border:0.5px solid var(--color-tan);border-radius:14px;padding:4px 9px;cursor:pointer;letter-spacing:1px;font-family:var(--font-sans);transition:all 0.2s;}
 .cbtn:hover,.cbtn:active{background:#fdf4ec;transform:scale(0.96);}
 .cbtn i{font-size:11px;}
 
@@ -348,10 +348,10 @@ body{
 .map-pin-icon{animation:pinBounce 2s ease infinite;}
 @keyframes pinBounce{0%,100%{transform:translateY(0);}40%{transform:translateY(-10px);}60%{transform:translateY(-4px);}}
 .map-info{padding:1.3rem;}
-.map-place-name{font-family:var(--main-font, 'Noto Serif KR', serif);font-size:15px;color:var(--color-ink-warm);font-weight:400;margin-bottom:5px;}
+.map-place-name{font-family:var(--main-font, var(--font-serif));font-size:15px;color:var(--color-ink-warm);font-weight:400;margin-bottom:5px;}
 .map-addr-text{font-size:12px;color:#7a6a54;line-height:1.8;font-weight:300;}
 .map-btns{display:flex;gap:6px;margin-top:1rem;flex-wrap:wrap;}
-.mbtn{flex:1;min-width:80px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:11px;padding:9px 4px;border-radius:8px;border:0.5px solid var(--color-tan);background:#fdf9f5;color:var(--color-brown);cursor:pointer;letter-spacing:0.5px;font-family:'Noto Sans KR',sans-serif;transition:all 0.2s;}
+.mbtn{flex:1;min-width:80px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:11px;padding:9px 4px;border-radius:8px;border:0.5px solid var(--color-tan);background:#fdf9f5;color:var(--color-brown);cursor:pointer;letter-spacing:0.5px;font-family:var(--font-sans);transition:all 0.2s;}
 .mbtn:hover,.mbtn:active{background:#fdf4ec;transform:scale(0.97);}
 .mbtn i{font-size:13px;color:var(--color-gold);}
 
@@ -362,7 +362,7 @@ body{
 .acct-who{font-size:10px;letter-spacing:2px;color:var(--color-gold);margin-bottom:3px;}
 .acct-bank{font-size:12px;color:var(--color-brown);font-weight:300;}
 .acct-num{font-size:13px;color:var(--color-ink-warm);font-weight:400;letter-spacing:1px;}
-.copy-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--color-white);background:var(--color-ink-warm);border:none;border-radius:8px;padding:7px 14px;cursor:pointer;letter-spacing:1px;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;transition:all 0.2s;}
+.copy-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--color-white);background:var(--color-ink-warm);border:none;border-radius:8px;padding:7px 14px;cursor:pointer;letter-spacing:1px;font-family:var(--font-sans);white-space:nowrap;transition:all 0.2s;}
 .copy-btn:hover{background:var(--color-brown);}
 .copy-btn:active{transform:scale(0.95);}
 .copy-btn i{font-size:14px;}
@@ -372,7 +372,7 @@ body{
 /* ── 푸터 ── */
 .footer-sec{padding:3.5rem 2rem;text-align:center;background:#f5f0e8;border-top:0.5px solid #e8ddd0;}
 .footer-flower{font-size:15px;letter-spacing:8px;color:var(--color-gold);opacity:0.4;margin-bottom:1.2rem;}
-.footer-msg{font-family:var(--main-font, 'Noto Serif KR', serif);font-size:13px;color:#7a6a54;line-height:2.3;font-weight:300;letter-spacing:1px;}
+.footer-msg{font-family:var(--main-font, var(--font-serif));font-size:13px;color:#7a6a54;line-height:2.3;font-weight:300;letter-spacing:1px;}
 .footer-copy{font-family:'Cormorant Garamond',serif;font-size:11px;color:var(--color-gold);letter-spacing:3px;margin-top:1.8rem;font-style:italic;}
 
 /* ── 반응형 ── */
@@ -387,13 +387,13 @@ body{
 /* ── 연락하기 팝업 ── */
 .contact-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:8000;display:flex;align-items:flex-end;justify-content:center;}
 .contact-popup{background:var(--color-white);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:1.5rem 1.5rem 2rem;}
-.contact-popup-title{font-family:var(--main-font, 'Noto Serif KR', serif);font-size:15px;color:var(--color-ink-warm);text-align:center;margin-bottom:1.2rem;font-weight:400;letter-spacing:2px;}
+.contact-popup-title{font-family:var(--main-font, var(--font-serif));font-size:15px;color:var(--color-ink-warm);text-align:center;margin-bottom:1.2rem;font-weight:400;letter-spacing:2px;}
 .contact-popup-list{display:flex;flex-direction:column;gap:8px;}
 .contact-popup-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fdf9f5;border-radius:10px;border:0.5px solid #e8ddd0;}
 .contact-popup-who{font-size:13px;color:var(--color-ink-warm);}
 .contact-popup-num{font-size:12px;color:var(--color-gold);letter-spacing:1px;}
-.contact-popup-call{display:flex;align-items:center;gap:4px;background:var(--color-ink-warm);color:#f9f3ee;border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
-.contact-popup-close{width:100%;margin-top:12px;padding:12px;background:var(--color-bg-soft);border:none;border-radius:10px;font-size:13px;color:var(--color-brown);cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.contact-popup-call{display:flex;align-items:center;gap:4px;background:var(--color-ink-warm);color:#f9f3ee;border:none;border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer;font-family:var(--font-sans);}
+.contact-popup-close{width:100%;margin-top:12px;padding:12px;background:var(--color-bg-soft);border:none;border-radius:10px;font-size:13px;color:var(--color-brown);cursor:pointer;font-family:var(--font-sans);}
 
 /* ── 고인 표시 ── */
 .host-relation{font-size:11px;color:var(--color-gold);letter-spacing:1px;margin-top:4px;}
@@ -417,7 +417,7 @@ body{
 
 /* ── 내비게이션 버튼 ── */
 .navi-btns{display:flex;gap:8px;margin:12px 0 8px;flex-wrap:wrap;}
-.navi-app-btn{flex:1;min-width:80px;padding:10px 4px;border-radius:10px;border:0.5px solid var(--color-tan);font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-weight:500;letter-spacing:0.5px;transition:all .2s;}
+.navi-app-btn{flex:1;min-width:80px;padding:10px 4px;border-radius:10px;border:0.5px solid var(--color-tan);font-size:11px;cursor:pointer;font-family:var(--font-sans);font-weight:500;letter-spacing:0.5px;transition:all .2s;}
 .navi-app-btn:active{transform:scale(0.96);}
 .kakao-navi-btn{background:var(--color-kakao);color:#3C1E1E;border-color:var(--color-kakao);}
 .tmap-btn{background:#E8232A;color:var(--color-white);border-color:#E8232A;}
@@ -427,7 +427,7 @@ body{
    공유하기 (Share)
    ════════════════════════════════════════ */
 .share-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
-.share-btn{display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:none;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:transform .2s;}
+.share-btn{display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:none;cursor:pointer;font-family:var(--font-sans);transition:transform .2s;}
 .share-btn:hover{transform:translateY(-3px);}
 .share-btn:active{transform:scale(0.95);}
 .share-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.12);}
@@ -439,13 +439,13 @@ body{
 @keyframes qrIn{from{opacity:0;transform:scale(0.9);}to{opacity:1;transform:scale(1);}}
 .qr-box canvas{border-radius:8px;max-width:180px;}
 .qr-hint{font-size:12px;color:var(--color-taupe);margin-top:0.8rem;font-weight:300;letter-spacing:0.5px;}
-.qr-close-btn{margin-top:0.8rem;display:inline-flex;align-items:center;gap:4px;padding:6px 16px;border:0.5px solid var(--color-tan);border-radius:16px;background:var(--color-white);font-size:11px;color:var(--color-taupe);cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.qr-close-btn{margin-top:0.8rem;display:inline-flex;align-items:center;gap:4px;padding:6px 16px;border:0.5px solid var(--color-tan);border-radius:16px;background:var(--color-white);font-size:11px;color:var(--color-taupe);cursor:pointer;font-family:var(--font-sans);}
 
 /* ════════════════════════════════════════
    계좌 송금 섹션 (청첩장)
    ════════════════════════════════════════ */
 .acct-tab-wrap{display:flex;gap:8px;margin-bottom:1.2rem;}
-.acct-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:10px;border-radius:10px;border:0.5px solid rgba(180,160,130,0.25);background:rgba(255,255,255,0.45);font-size:13px;color:var(--color-taupe);cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .25s;}
+.acct-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:10px;border-radius:10px;border:0.5px solid rgba(180,160,130,0.25);background:rgba(255,255,255,0.45);font-size:13px;color:var(--color-taupe);cursor:pointer;font-family:var(--font-sans);transition:all .25s;}
 .acct-tab.active{background:var(--color-ink-warm);border-color:var(--color-ink-warm);color:#f9f3ee;font-weight:500;}
 .acct-panel{}
 .acct-card{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);overflow:hidden;}
@@ -460,12 +460,12 @@ body{
 .acct-bank-badge{font-size:10px;color:var(--color-gold);background:#fdf4ec;padding:2px 8px;border-radius:10px;letter-spacing:0.5px;white-space:nowrap;}
 .acct-num{font-size:12px;color:#7a6a54;font-weight:300;letter-spacing:0.5px;}
 .acct-btns{display:flex;gap:6px;align-items:center;flex-shrink:0;}
-.copy-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--color-white);background:var(--color-ink-warm);border:none;border-radius:8px;padding:7px 12px;cursor:pointer;letter-spacing:1px;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;transition:all .2s;}
+.copy-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--color-white);background:var(--color-ink-warm);border:none;border-radius:8px;padding:7px 12px;cursor:pointer;letter-spacing:1px;font-family:var(--font-sans);white-space:nowrap;transition:all .2s;}
 .copy-btn:hover{background:var(--color-brown);}
 .copy-btn:active{transform:scale(0.95);}
 .copy-btn.copied{background:#6a8a5a;}
 .copy-btn i{font-size:13px;}
-.kakao-pay-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:#3C1E1E;background:var(--color-kakao);border:none;border-radius:8px;padding:7px 12px;cursor:pointer;letter-spacing:0.5px;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;text-decoration:none;transition:all .2s;}
+.kakao-pay-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:#3C1E1E;background:var(--color-kakao);border:none;border-radius:8px;padding:7px 12px;cursor:pointer;letter-spacing:0.5px;font-family:var(--font-sans);white-space:nowrap;text-decoration:none;transition:all .2s;}
 .kakao-pay-btn:hover{background:#F5D800;}
 .kakao-icon{width:16px;height:16px;background:#3C1E1E;border-radius:3px;color:var(--color-kakao);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 .acct-empty{text-align:center;padding:2rem;color:#c4beb5;}
@@ -478,7 +478,7 @@ body{
 .cal-card{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);padding:1.5rem;backdrop-filter:blur(4px);}
 
 /* 공통 달력 그리드 */
-.cal-month-title{font-family:var(--main-font, 'Noto Serif KR', serif);font-size:14px;color:var(--color-ink-warm);font-weight:300;letter-spacing:2px;text-align:center;margin-bottom:1.2rem;}
+.cal-month-title{font-family:var(--main-font, var(--font-serif));font-size:14px;color:var(--color-ink-warm);font-weight:300;letter-spacing:2px;text-align:center;margin-bottom:1.2rem;}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:2px;}
 .cal-dow{font-size:10px;color:var(--color-gold);padding:5px 0;letter-spacing:0.5px;}
 .cal-dow-sun{color:#d4845a;}
@@ -505,7 +505,7 @@ body{
 
 /* 스타일 4: 텍스트형 헤더 */
 .cal-text-header{text-align:left;margin-bottom:1.2rem;}
-.cal-text-msg{font-family:var(--main-font, 'Noto Serif KR', serif);font-size:18px;color:#7a6a54;line-height:1.8;font-weight:300;letter-spacing:.5px;}
+.cal-text-msg{font-family:var(--main-font, var(--font-serif));font-size:18px;color:#7a6a54;line-height:1.8;font-weight:300;letter-spacing:.5px;}
 
 /* ════════════════════════════════════════
    D-Day 스타일별 CSS
@@ -520,7 +520,7 @@ body{
 /* 공통 시계 요소 */
 .dday-clock-row{display:flex;align-items:flex-end;justify-content:center;gap:8px;}
 .dday-unit{display:flex;flex-direction:column;align-items:center;min-width:40px;}
-.dday-num{font-size:36px;font-weight:700;color:var(--color-ink-warm);line-height:1;font-family:'Noto Sans KR',sans-serif;
+.dday-num{font-size:36px;font-weight:700;color:var(--color-ink-warm);line-height:1;font-family:var(--font-sans);
   animation:numTick .15s ease;}
 @keyframes numTick{from{transform:scale(1.1);}to{transform:scale(1);}}
 .dday-lbl{font-size:10px;color:var(--color-gold);letter-spacing:1px;margin-top:4px;}
@@ -537,7 +537,7 @@ body{
 /* 스타일 4: 인라인형 */
 .dday-style-inline{padding:0.5rem 0;}
 .dday-inline-row{display:flex;align-items:baseline;justify-content:center;gap:4px;flex-wrap:wrap;}
-.dday-in-num{font-size:28px;font-weight:700;color:var(--color-ink-warm);font-family:'Noto Sans KR',sans-serif;}
+.dday-in-num{font-size:28px;font-weight:700;color:var(--color-ink-warm);font-family:var(--font-sans);}
 .dday-in-lbl{font-size:11px;color:var(--color-gold);letter-spacing:1px;margin-right:8px;}
 
 /* D-Day 섹션도 달력처럼 독립 섹션으로 */
@@ -897,7 +897,7 @@ body{
     color: #C4956A;
 }
 .hero.design-basic .hbn-name{
-    font-family: 'Noto Serif KR', serif;
+    font-family:var(--font-serif);
     font-size: 28px;
     font-weight: 400;
     color: var(--color-black);
@@ -932,7 +932,7 @@ body{
 
 /* ── 장소 ── */
 .hero.design-basic .hero-bottom-place{
-    font-family: 'Noto Serif KR', serif;
+    font-family:var(--font-serif);
     font-size: 13px;
     font-weight: 400;
     color: #3a3228;
@@ -975,7 +975,7 @@ body{
     margin-bottom:0.7rem;
 }
 .hero.design-the_marriage .hero-top-date{
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     font-size:56px;
     font-weight:300;
     color:#4a4a4a;
@@ -983,7 +983,7 @@ body{
     margin-bottom:1.5rem;
 }
 .hero.design-the_marriage .hero-top-names{
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     font-size:17px;
     font-weight:600;
     color:var(--color-black);
@@ -1019,7 +1019,7 @@ body{
     flex:1;
 }
 .hero.design-the_marriage .hero-bottom-date{
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     font-size:15px;
     font-weight:400;
     color:#3a3a3a;
@@ -1028,7 +1028,7 @@ body{
     line-height:1.6;
 }
 .hero.design-the_marriage .hero-bottom-place{
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     font-size:14.5px;
     font-weight:400;
     color:#3a3a3a;
@@ -1040,7 +1040,7 @@ body{
 
 /* ★ 하단 날짜 — 기본 테마 고유 서체 고정(Noto Serif KR), 글꼴 선택 영향 없음 */
 .hero.design-basic .hero-bottom-date{
-    font-family: 'Noto Serif KR', serif !important;
+    font-family:var(--font-serif) !important;
     font-size: 14.5px;
     font-weight: 400;
     color: var(--color-charcoal);
@@ -1051,7 +1051,7 @@ body{
 
 /* ★ 하단 장소 — 기본 테마 고유 서체 고정(Noto Serif KR), 글꼴 선택 영향 없음 */
 .hero.design-basic .hero-bottom-place{
-    font-family: 'Noto Serif KR', serif !important;
+    font-family:var(--font-serif) !important;
     font-size: 13px;
     font-weight: 300;
     color: #5a5a58;
@@ -1163,7 +1163,7 @@ body{
 }
 /* Getting Married 테마 — 날짜는 전역 글꼴 선택을 따름, 흰색 유지 */
 .hero.design-married .hero-design-date span{
-    font-family:var(--main-font, 'Noto Serif KR', serif);
+    font-family:var(--main-font, var(--font-serif));
     color:var(--color-white);
     font-size:14px;
     font-weight:400;
@@ -1235,7 +1235,7 @@ body{
     text-align:center;
 }
 .hero.design-our_story .hdci-date{
-    font-family:var(--main-font, 'Noto Serif KR', serif);
+    font-family:var(--main-font, var(--font-serif));
     font-size:15px;
     color:#111;
     letter-spacing:0.5px;
@@ -1243,7 +1243,7 @@ body{
     text-shadow:0 1px 8px rgba(255,255,255,0.95);
 }
 .hero.design-our_story .hdci-place{
-    font-family:var(--main-font, 'Noto Serif KR', serif);
+    font-family:var(--main-font, var(--font-serif));
     font-size:13px;
     color:#111;
     letter-spacing:0.5px;
@@ -1311,7 +1311,7 @@ body{
     text-align:center;
 }
 .hero.design-our_story_pink .hdci-date{
-    font-family:var(--main-font, 'Noto Serif KR', serif);
+    font-family:var(--main-font, var(--font-serif));
     font-size:12px;
     color:#d9527a;
     letter-spacing:1px;
@@ -1321,7 +1321,7 @@ body{
     text-shadow:0 1px 6px rgba(255,255,255,0.6);
 }
 .hero.design-our_story_pink .hdci-place{
-    font-family:var(--main-font, 'Noto Serif KR', serif);
+    font-family:var(--main-font, var(--font-serif));
     font-size:11px;
     color:#d9527a;
     letter-spacing:0.5px;
@@ -1442,7 +1442,7 @@ body{
 /* 핑크 테마 (3번째) — ♥ 구분자 */
 .hero.design-our_story_pink .hero-design-names{
     color:#e68a9a;
-    font-family:'Noto Serif KR',serif;
+    font-family:var(--font-serif);
     font-size:16px;
     bottom:15% !important;
     text-align:center;
@@ -1510,14 +1510,14 @@ body{
 }
 .forever-name-groom,
 .forever-name-bride{
-    font-family: var(--main-font, 'Noto Serif KR', serif);
+    font-family: var(--main-font, var(--font-serif));
     font-size: 22px;
     font-weight: 400;
     color: var(--color-charcoal);
     letter-spacing: 8px;
 }
 .forever-name-sep{
-    font-family: 'Noto Serif KR', serif;
+    font-family:var(--font-serif);
     font-size: 16px;
     color: #E8A0B4;
     font-weight: 300;
@@ -1561,7 +1561,7 @@ body{
 
 /* 날짜 — 민트/그린 큰 폰트, 전역 글꼴 선택을 따름 */
 .forever-date{
-    font-family: var(--main-font, 'Noto Serif KR', serif);
+    font-family: var(--main-font, var(--font-serif));
     font-size: 30px;
     font-weight: 500;
     color: #6FAF8A;
@@ -1579,7 +1579,7 @@ body{
 }
 .forever-place1,
 .forever-place2{
-    font-family: var(--main-font, 'Noto Serif KR', serif);
+    font-family: var(--main-font, var(--font-serif));
     font-size: 12px;
     font-weight: 400;
     color: #5a5a58;
@@ -1628,11 +1628,11 @@ body{
     bottom: 2.5% !important;
     padding: 0 1.4rem;
     align-items: center;
-    font-family: var(--main-font, 'Noto Serif KR', serif);
+    font-family: var(--main-font, var(--font-serif));
 }
 /* married 날짜 — 전역 글꼴 선택을 따름 (타이틀만 테마 고정) */
 .hero.design-married .hero-design-date span{
-    font-family: var(--main-font, 'Noto Serif KR', serif);
+    font-family: var(--main-font, var(--font-serif));
 }
 
 /* ── design-married 한글 Pretendard 디폴트 적용 ── */
@@ -2042,7 +2042,7 @@ body{ -webkit-overflow-scrolling:touch; }
 .map-place-name{
     font-size:16px;font-weight:600;color:var(--color-ink);
     margin-bottom:4px;
-    font-family:var(--main-font, 'Noto Serif KR', serif);
+    font-family:var(--main-font, var(--font-serif));
 }
 .map-addr-text{
     font-size:12px;color:var(--color-taupe);line-height:1.6;
@@ -2107,7 +2107,7 @@ body{ -webkit-overflow-scrolling:touch; }
     padding:0 20px 18px;
 }
 .map-addr-header .map-addr-text{
-    font-family:var(--main-font, 'Noto Serif KR', serif);
+    font-family:var(--main-font, var(--font-serif));
     font-size:15px;
     color:#3a3a38;
     line-height:1.7;
@@ -2150,7 +2150,7 @@ body{ -webkit-overflow-scrolling:touch; }
     background:var(--color-white);
 }
 .map-navi-title{
-    font-family:var(--main-font, 'Noto Serif KR', serif);
+    font-family:var(--main-font, var(--font-serif));
     font-size:15px;
     font-weight:500;
     color:var(--color-black);
@@ -2209,12 +2209,12 @@ body{ -webkit-overflow-scrolling:touch; }
 .map-navi-title{
     font-size:15px;font-weight:600;
     color:var(--color-black);margin-bottom:6px;
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
 }
 .map-navi-desc{
     font-size:13px;color:#666;
     margin-bottom:14px;
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
 }
 .map-navi-row{
     display:flex;gap:10px;
@@ -2230,7 +2230,7 @@ body{ -webkit-overflow-scrolling:touch; }
     border:1.5px solid #e8e8e8;
     background:var(--color-white);
     transition:all .15s;
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
 }
 .map-navi-btn:active{ opacity:.75;transform:scale(.97); }
 
@@ -2367,7 +2367,7 @@ body{ -webkit-overflow-scrolling:touch; }
     text-align:center;
 }
 .contact-modal-name{
-    font-family:var(--main-font, 'Noto Serif KR', serif);
+    font-family:var(--main-font, var(--font-serif));
     font-size:18px;
     font-weight:400;
     color:var(--color-charcoal);
@@ -2397,7 +2397,7 @@ body{ -webkit-overflow-scrolling:touch; }
     max-width:140px;
     padding:1rem 0.8rem;
     border-radius:16px;
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     font-size:12px;
     font-weight:400;
     letter-spacing:0.5px;
@@ -2423,7 +2423,7 @@ body{ -webkit-overflow-scrolling:touch; }
     font-size:13px;
     color:#bbb;
     cursor:pointer;
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     letter-spacing:1px;
 }
 
@@ -2503,12 +2503,12 @@ body{ -webkit-overflow-scrolling:touch; }
 .rsvp-label{font-size:12px;color:var(--color-taupe);letter-spacing:0.5px;}
 .rsvp-required{color:var(--color-rose);}
 .rsvp-optional{color:#bbb;font-size:11px;}
-.rsvp-input{width:100%;padding:10px 12px;border:1px solid #e0d8cf;border-radius:8px;font-size:14px;font-family:'Noto Sans KR',sans-serif;background:#faf8f5;color:var(--color-ink);outline:none;}
+.rsvp-input{width:100%;padding:10px 12px;border:1px solid #e0d8cf;border-radius:8px;font-size:14px;font-family:var(--font-sans);background:#faf8f5;color:var(--color-ink);outline:none;}
 .rsvp-input:focus{border-color:#c4a882;}
-.rsvp-textarea{width:100%;padding:10px 12px;border:1px solid #e0d8cf;border-radius:8px;font-size:14px;font-family:'Noto Sans KR',sans-serif;background:#faf8f5;color:var(--color-ink);outline:none;resize:none;height:72px;}
+.rsvp-textarea{width:100%;padding:10px 12px;border:1px solid #e0d8cf;border-radius:8px;font-size:14px;font-family:var(--font-sans);background:#faf8f5;color:var(--color-ink);outline:none;resize:none;height:72px;}
 .rsvp-textarea:focus{border-color:#c4a882;}
 .rsvp-attend-btns{display:flex;gap:8px;}
-.rsvp-attend-btn{flex:1;padding:10px;border:1.5px solid #e0d8cf;border-radius:8px;background:var(--color-white);font-size:13px;font-family:'Noto Sans KR',sans-serif;color:var(--color-taupe);cursor:pointer;transition:all .2s;}
+.rsvp-attend-btn{flex:1;padding:10px;border:1.5px solid #e0d8cf;border-radius:8px;background:var(--color-white);font-size:13px;font-family:var(--font-sans);color:var(--color-taupe);cursor:pointer;transition:all .2s;}
 .rsvp-attend-btn.active{border-color:var(--color-rose);background:#fff0f3;color:var(--color-rose);font-weight:500;}
 .rsvp-count-wrap{display:flex;align-items:center;gap:12px;}
 .rsvp-count-btn{width:32px;height:32px;border:1.5px solid #e0d8cf;border-radius:50%;background:var(--color-white);font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--color-brown);}
@@ -2516,7 +2516,7 @@ body{ -webkit-overflow-scrolling:touch; }
 #rsvpMealCount{font-size:18px;font-weight:500;color:var(--color-ink);min-width:24px;text-align:center;}
 .rsvp-count-unit{font-size:13px;color:var(--color-taupe);}
 .rsvp-err{color:var(--color-rose);font-size:12px;text-align:center;padding:4px 0;}
-.rsvp-submit-btn{width:100%;padding:14px;background:var(--color-ink);color:var(--color-white);border:none;border-radius:10px;font-size:14px;font-family:'Noto Sans KR',sans-serif;font-weight:500;cursor:pointer;margin-top:4px;transition:background .2s;}
+.rsvp-submit-btn{width:100%;padding:14px;background:var(--color-ink);color:var(--color-white);border:none;border-radius:10px;font-size:14px;font-family:var(--font-sans);font-weight:500;cursor:pointer;margin-top:4px;transition:background .2s;}
 .rsvp-submit-btn:hover{background:var(--color-brown);}
 .rsvp-submit-btn:disabled{background:#bbb;cursor:default;}
 .rsvp-success-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 0;}
@@ -2613,19 +2613,19 @@ body{ -webkit-overflow-scrolling:touch; }
 .gb-form-row{display:flex;gap:8px;}
 .gb-input{
     flex:1;min-width:0;padding:10px 12px;border:1px solid #e0d8cf;border-radius:8px;
-    font-size:14px;font-family:'Noto Sans KR',sans-serif;background:#faf8f5;color:var(--color-ink);outline:none;
+    font-size:14px;font-family:var(--font-sans);background:#faf8f5;color:var(--color-ink);outline:none;
 }
 .gb-input-pw{flex:0 0 120px;}
 .gb-input:focus,.gb-textarea:focus{border-color:#c4a882;}
 .gb-textarea{
     width:100%;padding:10px 12px;border:1px solid #e0d8cf;border-radius:8px;
-    font-size:14px;font-family:'Noto Sans KR',sans-serif;background:#faf8f5;color:var(--color-ink);
+    font-size:14px;font-family:var(--font-sans);background:#faf8f5;color:var(--color-ink);
     outline:none;min-height:82px;resize:none;line-height:1.7;
 }
 .gb-err{color:var(--color-rose);font-size:12px;text-align:center;padding:2px 0;}
 .gb-submit-btn{
     width:100%;padding:13px;background:var(--color-ink);color:var(--color-white);border:none;border-radius:10px;
-    font-size:14px;font-family:'Noto Sans KR',sans-serif;font-weight:500;cursor:pointer;
+    font-size:14px;font-family:var(--font-sans);font-weight:500;cursor:pointer;
     margin-top:2px;transition:background .2s;
 }
 .gb-submit-btn:disabled{opacity:.55;cursor:default;}
@@ -2693,6 +2693,6 @@ body{ -webkit-overflow-scrolling:touch; }
 .gb-more-btn{
     width:100%;margin-top:10px;padding:10px;background:none;
     border:1px solid #e0d8cf;border-radius:8px;color:#7a6a54;
-    font-size:13px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;
+    font-size:13px;font-family:var(--font-sans);cursor:pointer;
 }
 .gb-more-btn:hover{background:#faf6f1;}

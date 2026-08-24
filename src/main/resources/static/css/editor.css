@@ -3,7 +3,7 @@
    ════════════════════════════════════════ */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&family=Cormorant+Garamond:ital,wght@1,400&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;}
+html,body{height:100%;overflow:hidden;font-family:var(--font-sans);}
 
 /* ── 헤더 ── */
 .ed-header{
@@ -15,8 +15,8 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;}
     box-shadow:0 1px 12px rgba(0,0,0,0.06);
 }
 .ed-logo{display:flex;align-items:baseline;gap:0;}
-.ed-logo-main{font-size:15px;font-weight:300;color:var(--color-ink);letter-spacing:0.5px;font-family:'Noto Serif KR',serif;}
-.ed-logo-card{font-size:15px;font-weight:700;color:var(--color-rose);letter-spacing:0.5px;font-family:'Noto Serif KR',serif;}
+.ed-logo-main{font-size:15px;font-weight:300;color:var(--color-ink);letter-spacing:0.5px;font-family:var(--font-serif);}
+.ed-logo-card{font-size:15px;font-weight:700;color:var(--color-rose);letter-spacing:0.5px;font-family:var(--font-serif);}
 .ed-logo-plus{font-size:11px;color:#e8a070;font-family:'Cormorant Garamond',serif;font-style:italic;margin-left:2px;}
 .ed-header-right{display:flex;gap:10px;align-items:center;}
 /* 헤더 버튼 그룹 구분선 — 이동·도움 │ 확인 │ 게시 */
@@ -25,7 +25,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;}
     padding:7px 18px;border-radius:22px;
     border:1px solid #ddd5cc;background:var(--color-white);
     color:var(--color-brown);font-size:12px;cursor:pointer;
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     /* all 이 아니라 실제로 변하는 것만 —
        all 이면 outline 까지 전환 대상이 돼서 포커스 링이 200ms 걸쳐 나타난다.
        키보드로 빠르게 Tab 하면 링이 뒤늦게 따라오는 게 눈에 보인다. */
@@ -37,7 +37,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;}
     padding:8px 22px;border-radius:22px;border:none;
     background:linear-gradient(135deg,var(--color-rose) 0%,#e07890 100%);
     color:var(--color-white);font-size:12px;
-    cursor:pointer;font-family:'Noto Sans KR',sans-serif;
+    cursor:pointer;font-family:var(--font-sans);
     font-weight:500;
     /* outline 을 전환에서 빼둔다 — 포커스 링은 즉시 떠야 한다 */
     transition:background .2s,box-shadow .2s,transform .12s;
@@ -324,7 +324,7 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;}
 .ed-input{
     width:100%;padding:9px 12px;
     border:1.5px solid #e4dcd4;border-radius:9px;
-    font-size:12.5px;font-family:'Noto Sans KR',sans-serif;
+    font-size:12.5px;font-family:var(--font-sans);
     color:var(--color-ink);background:var(--color-cream);outline:none;
     transition:border-color .2s,box-shadow .2s,background .2s;
 }
@@ -340,7 +340,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-select{
     width:100%;padding:9px 28px 9px 12px;
     border:1.5px solid #e4dcd4;border-radius:9px;
-    font-size:12.5px;font-family:'Noto Sans KR',sans-serif;
+    font-size:12.5px;font-family:var(--font-sans);
     color:var(--color-ink);background:var(--color-cream);outline:none;
     appearance:none;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath fill='%23c4748a' d='M5 7L0 0h10z'/%3E%3C/svg%3E");
@@ -358,7 +358,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-tab{
     padding:7px 15px;background:transparent;border:none;
     font-size:12px;color:var(--color-taupe);cursor:pointer;
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     border-right:1px solid #e4dcd4;
     transition:all .18s;white-space:nowrap;
 }
@@ -593,7 +593,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
 /* ── 지도 ── */
 .ed-map-area{height:160px;border-radius:10px;overflow:hidden;margin:.6rem 0;background:#e8e4de;}
 .ed-map-search-row{gap:8px;}
-.ed-btn-small{padding:8px 14px;border-radius:7px;border:none;background:var(--color-ink);color:var(--color-white);font-size:12px;cursor:pointer;white-space:nowrap;transition:background .2s;font-family:'Noto Sans KR',sans-serif;}
+.ed-btn-small{padding:8px 14px;border-radius:7px;border:none;background:var(--color-ink);color:var(--color-white);font-size:12px;cursor:pointer;white-space:nowrap;transition:background .2s;font-family:var(--font-sans);}
 .ed-btn-small:hover{background:var(--color-brown);}
 
 /* ── 계좌 ── */
@@ -608,14 +608,14 @@ textarea.ed-input{resize:none;line-height:1.75;}
     width:100%;padding:9px;border:1.5px dashed var(--color-tan);border-radius:8px;
     background:var(--color-white);color:var(--color-gold);font-size:12px;cursor:pointer;
     display:flex;align-items:center;justify-content:center;gap:5px;
-    font-family:'Noto Sans KR',sans-serif;margin-bottom:.5rem;transition:all .2s;
+    font-family:var(--font-sans);margin-bottom:.5rem;transition:all .2s;
 }
 .ed-btn-ghost:hover{border-color:var(--color-rose);color:var(--color-rose);background:#fff5f7;}
 .ed-btn-save-acct{
     width:100%;padding:11px;border:none;border-radius:10px;
     background:linear-gradient(135deg,var(--color-rose),#e07890);
     color:var(--color-white);font-size:12.5px;font-weight:500;cursor:pointer;
-    font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;
+    font-family:var(--font-sans);display:flex;align-items:center;
     justify-content:center;gap:5px;transition:all .2s;
     box-shadow:0 2px 10px rgba(196,116,138,.3);
 }
@@ -629,7 +629,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
     border:1px solid var(--color-border);background:var(--color-white);
     color:var(--color-taupe);font-size:13px;cursor:pointer;
     text-align:center;text-decoration:none;
-    font-family:'Noto Sans KR',sans-serif;transition:all .2s;
+    font-family:var(--font-sans);transition:all .2s;
     display:flex;align-items:center;justify-content:center;
     letter-spacing:.1px;
 }
@@ -681,7 +681,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
     padding:9px 16px;border-radius:20px;
     background:var(--color-white);border:1px solid var(--color-border);
     color:var(--color-brown);font-size:12px;cursor:pointer;
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     box-shadow:0 2px 12px rgba(0,0,0,.1);transition:all .2s;white-space:nowrap;
 }
 .ed-float-text:hover{border-color:var(--color-rose);color:var(--color-rose);}
@@ -1013,17 +1013,17 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-basic{background:var(--color-white);justify-content:flex-start;}
 .ed-dt-photo-ph{width:100%;height:80px;background:#ececec;border-radius:0;margin-bottom:9px;}
 .ed-dt-basic-row{display:flex;align-items:center;justify-content:center;gap:7px;}
-.ed-dt-basic-name{font-family:'Noto Serif KR',serif;font-size:7px;color:#3a3a3a;letter-spacing:0.5px;}
+.ed-dt-basic-name{font-family:var(--font-serif);font-size:7px;color:#3a3a3a;letter-spacing:0.5px;}
 .ed-dt-basic-div{width:1px;height:9px;background:#ccc;}
-.ed-dt-basic-date{font-family:'Noto Serif KR',serif;font-size:5px;color:#7a7a7a;letter-spacing:0.3px;margin-top:6px;}
-.ed-dt-basic-place{font-family:'Noto Serif KR',serif;font-size:4.5px;font-weight:300;color:#9a9a9a;letter-spacing:0.3px;margin-top:2px;}
+.ed-dt-basic-date{font-family:var(--font-serif);font-size:5px;color:#7a7a7a;letter-spacing:0.3px;margin-top:6px;}
+.ed-dt-basic-place{font-family:var(--font-serif);font-size:4.5px;font-weight:300;color:#9a9a9a;letter-spacing:0.3px;margin-top:2px;}
 
 /* 2·3. Our story — 사진이 카드를 채우고 그 위에 타이틀/날짜 */
 .ed-dt-fill,.ed-dt-pink{background:#ececec;}
 .ed-dt-bigtext{font-family:'Cormorant Garamond',serif;font-size:15px;color:#3a3a3a;line-height:1.1;text-align:center;font-weight:600;}
 .ed-dt-datebar{position:absolute;bottom:10px;font-size:4.5px;color:#6a6a6a;letter-spacing:0.3px;}
 .ed-dt-bigtext-story{font-family:'Dancing Script',cursive;font-weight:600;font-size:20px;color:#2a2a2a;text-align:center;line-height:1.0;position:absolute;bottom:30px;left:4px;right:4px;}
-.ed-dt-datebar-story{font-family:'Noto Sans KR',sans-serif;color:#5a5a5a;position:absolute;bottom:7px;left:0;right:0;text-align:center;line-height:1.5;}
+.ed-dt-datebar-story{font-family:var(--font-sans);color:#5a5a5a;position:absolute;bottom:7px;left:0;right:0;text-align:center;line-height:1.5;}
 .ed-dt-script{font-family:'Pinyon Script',cursive;font-size:16px;text-align:center;line-height:1.1;}
 /* 핑크만 색을 남긴다 — 안 그러면 Our story 두 종을 썸네일로 구분할 수 없다 */
 .ed-dt-script-center{
@@ -1032,14 +1032,14 @@ textarea.ed-input{resize:none;line-height:1.75;}
 }
 .ed-dt-datebar-pink-center{
     position:absolute;bottom:7px;left:4px;right:4px;
-    font-family:'Noto Serif KR',serif;font-size:4.5px;color:#c47a90;
+    font-family:var(--font-serif);font-size:4.5px;color:#c47a90;
     letter-spacing:0.3px;line-height:1.6;text-align:center;
 }
 
 /* 4. Getting Married — 사진 위 좌하단 타이틀 */
 .ed-dt-married{background:#ececec;overflow:hidden;}
 .ed-dt-married-big{font-family:'Great Vibes','Dancing Script',cursive;font-size:18px;color:#3a3a3a;position:absolute;bottom:20px;left:8px;line-height:0.95;text-align:left;font-weight:400;}
-.ed-dt-datebar-married{color:#6a6a6a;font-family:'Noto Sans KR',sans-serif;}
+.ed-dt-datebar-married{color:#6a6a6a;font-family:var(--font-sans);}
 
 /* 5. 아치형 — 실제 forever-layout을 그대로 축소.
    배경 베이지(#F5F2EC), 이름은 세로로 쌓임, 날짜는 민트그린 — 이 세 가지가
@@ -1047,19 +1047,19 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-forever{background:#F5F2EC;position:relative;flex-direction:column;justify-content:center;align-items:center;gap:0;padding:8px 6px;}
 .ed-dt-forever-script{font-family:'Sacramento',cursive;font-size:11px;color:var(--color-charcoal);text-align:center;line-height:1.15;margin-bottom:4px;}
 /* 실제와 동일하게 세로 배치 (신랑 / & / 신부) */
-.ed-dt-forever-names{display:flex;flex-direction:column;align-items:center;gap:0;font-family:'Noto Serif KR',serif;font-size:6px;color:var(--color-charcoal);letter-spacing:0.5px;line-height:1.35;margin-bottom:5px;}
+.ed-dt-forever-names{display:flex;flex-direction:column;align-items:center;gap:0;font-family:var(--font-serif);font-size:6px;color:var(--color-charcoal);letter-spacing:0.5px;line-height:1.35;margin-bottom:5px;}
 .ed-dt-forever-amp{color:var(--color-charcoal);font-size:5.5px;}
 .ed-dt-forever-arch{width:38px;aspect-ratio:3/4;border-radius:999px 999px 0 0;background:#ddd;border:none;margin-bottom:5px;}
-.ed-dt-forever-date{font-family:'Noto Serif KR',serif;font-size:6px;font-weight:500;color:#6FAF8A;letter-spacing:0.6px;margin-bottom:2px;}
-.ed-dt-forever-place{font-family:'Noto Serif KR',serif;font-size:4.5px;color:#5a5a58;letter-spacing:0.8px;}
+.ed-dt-forever-date{font-family:var(--font-serif);font-size:6px;font-weight:500;color:#6FAF8A;letter-spacing:0.6px;margin-bottom:2px;}
+.ed-dt-forever-place{font-family:var(--font-serif);font-size:4.5px;color:#5a5a58;letter-spacing:0.8px;}
 
 /* 6. THE MARRIAGE — 라벨 + 큰 날짜 + 이름 + 사진 + 일시·장소 */
 .ed-dt-marriage{background:var(--color-white);flex-direction:column;justify-content:flex-start;align-items:center;padding:9px 6px 6px;gap:0;}
-.ed-dt-marriage-label{font-family:'Noto Sans KR',sans-serif;font-size:4px;font-weight:500;letter-spacing:1px;color:#9aa5b2;}
-.ed-dt-marriage-date{font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:300;color:#5a5a5a;line-height:1.1;margin-top:2px;}
-.ed-dt-marriage-names{font-family:'Noto Sans KR',sans-serif;font-size:4.5px;font-weight:600;color:#3a3a3a;margin-top:4px;}
+.ed-dt-marriage-label{font-family:var(--font-sans);font-size:4px;font-weight:500;letter-spacing:1px;color:#9aa5b2;}
+.ed-dt-marriage-date{font-family:var(--font-sans);font-size:16px;font-weight:300;color:#5a5a5a;line-height:1.1;margin-top:2px;}
+.ed-dt-marriage-names{font-family:var(--font-sans);font-size:4.5px;font-weight:600;color:#3a3a3a;margin-top:4px;}
 .ed-dt-marriage-photo{width:100%;flex:1;margin-top:5px;background:#ececec;min-height:0;}
-.ed-dt-marriage-info{font-family:'Noto Sans KR',sans-serif;font-size:4px;color:#6a6a6a;text-align:center;line-height:1.5;margin-top:4px;}
+.ed-dt-marriage-info{font-family:var(--font-sans);font-size:4px;color:#6a6a6a;text-align:center;line-height:1.5;margin-top:4px;}
 
 /* 글꼴 색상 행 */
 .ed-color-row{display:flex;align-items:center;gap:8px;}
@@ -1092,7 +1092,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-input[type="time"]{
     cursor:pointer;
     position:relative;
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     width:auto;
     min-width:0;
 }
@@ -1178,7 +1178,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
     border:1px solid var(--color-border);border-radius:8px;
     background:var(--color-white);color:var(--color-brown);font-size:13px;cursor:pointer;
     display:flex;align-items:center;justify-content:center;gap:6px;
-    font-family:'Noto Sans KR',sans-serif;transition:all .2s;
+    font-family:var(--font-sans);transition:all .2s;
 }
 .gal-upload-btn:hover{border-color:var(--color-rose);color:var(--color-rose);background:#fff5f7;}
 .gal-upload-btn i{font-size:16px;}
@@ -1204,7 +1204,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
     flex:1;min-width:52px;padding:9px 4px;
     border:1px solid var(--color-border);border-radius:8px;
     background:var(--color-white);color:var(--color-taupe);font-size:12px;cursor:pointer;
-    font-family:'Noto Sans KR',sans-serif;transition:all .2s;
+    font-family:var(--font-sans);transition:all .2s;
 }
 .ed-zoom-btn.active{ background:var(--color-ink);border-color:var(--color-ink);color:var(--color-white);font-weight:500; }
 
@@ -1213,7 +1213,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
     display:flex;align-items:center;gap:6px;
     padding:9px 14px;border:1.5px solid var(--color-border);border-radius:10px;
     background:var(--color-white);font-size:13px;color:var(--color-ink);cursor:pointer;transition:all .2s;
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
 }
 .ed-navi-chip:has(input:checked){ border-color:var(--color-rose);background:#fff5f7;box-shadow:0 0 0 1px #c4748a22; }
 .ed-navi-chip input{ display:none; }
@@ -1254,7 +1254,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
 }
 .addr-modal-search input{
     flex:1;padding:10px 12px;border:1px solid var(--color-border);border-radius:8px;
-    font-size:13px;font-family:'Noto Sans KR',sans-serif;
+    font-size:13px;font-family:var(--font-sans);
 }
 .addr-modal-search button{
     padding:10px 18px;background:#e8a87c;border:none;border-radius:8px;
@@ -1332,7 +1332,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .map-search-title{
     font-size:16px;font-weight:600;
     color:var(--color-ink);
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
 }
 .map-search-close{
     width:32px;height:32px;border:none;background:none;
@@ -1351,7 +1351,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
     border:1.5px solid var(--color-border);
     border-radius:8px;
     font-size:14px;
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     outline:none;transition:border-color .2s;
 }
 .map-search-input:focus{ border-color:var(--color-rose); }
@@ -1361,7 +1361,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
     color:var(--color-white);border:none;
     border-radius:8px;
     font-size:14px;cursor:pointer;
-    font-family:'Noto Sans KR',sans-serif;
+    font-family:var(--font-sans);
     transition:background .2s;white-space:nowrap;
     font-weight:500;
 }
@@ -1407,7 +1407,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
     border:1.5px solid var(--color-border);
     border-radius:8px;
     font-size:13px;color:var(--color-brown);
-    cursor:pointer;font-family:'Noto Sans KR',sans-serif;
+    cursor:pointer;font-family:var(--font-sans);
     transition:all .2s;white-space:nowrap;
 }
 .map-result-select-btn:hover{
