@@ -936,6 +936,20 @@ if (removeEndingPhotoBtn) {
     });
 }
 
+/* 엔딩 문구 샘플 칩 — 누르면 textarea 값을 채울 뿐 확정이 아니라 계속 고쳐 쓸 수 있다 */
+var endingCaptionChipsEl = document.getElementById('endingCaptionChips');
+if (endingCaptionChipsEl) {
+    endingCaptionChipsEl.addEventListener('click', function(e) {
+        var chip = e.target.closest('.ed-suggest-chip');
+        if (!chip) return;
+        var ta = document.getElementById('endingCaptionInput');
+        if (!ta) return;
+        ta.value = chip.dataset.text;
+        ta.dispatchEvent(new Event('input', { bubbles: true }));
+        ta.focus();
+    });
+}
+
 var galImages = [];
 function addGalThumb(dataUrl) {
     galImages.push(dataUrl);

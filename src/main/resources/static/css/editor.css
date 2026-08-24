@@ -1692,3 +1692,12 @@ textarea.ed-input{resize:none;line-height:1.75;}
 }
 .ed-font-tick{font-size:15px;color:#b98a8a;flex-shrink:0;visibility:hidden;}
 .ed-font-opt.active .ed-font-tick{visibility:visible;}
+
+/* ── 엔딩 문구 샘플 칩 ── */
+.ed-caption-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.ed-suggest-chip{
+    padding:6px 12px;border:1.5px solid var(--color-border);border-radius:999px;
+    background:var(--color-white);font-size:12px;color:var(--color-taupe);cursor:pointer;
+    font-family:var(--font-sans);transition:all .15s;white-space:nowrap;
+}
+.ed-suggest-chip:hover{border-color:var(--color-rose);color:var(--color-ink);background:#fff5f7;}

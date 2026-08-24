@@ -118,4 +118,24 @@ class EndingSectionLivePreviewTest {
 
         assertThat(js).contains("ending: function()");
     }
+
+    /** 문구 샘플 칩 — 빈 textarea 하나만 두면 새로 쓰기 부담이 커서 눌러 채우는 샘플을 뒀다.
+        데이터가 마크업과 JS 양쪽에 다 있어야 실제로 눌렀을 때 채워진다 */
+    @Test
+    void captionSuggestionChips_areWiredToTheTextarea() throws Exception {
+        String html = editorHtml();
+        String js = new String(
+            getClass().getClassLoader()
+                .getResourceAsStream("static/js/editor.js")
+                .readAllBytes(),
+            StandardCharsets.UTF_8);
+
+        assertThat(html).contains("id=\"endingCaptionChips\"").contains("id=\"endingCaptionInput\"");
+        long chipCount = html.split("class=\"ed-suggest-chip\"", -1).length - 1;
+        assertThat(chipCount).as("샘플 칩이 있어야 한다").isGreaterThanOrEqualTo(3);
+
+        assertThat(js)
+            .as("칩 클릭이 textarea 값을 채우는 핸들러가 있어야 한다")
+            .contains("endingCaptionChips").contains("endingCaptionInput");
+    }
 }
