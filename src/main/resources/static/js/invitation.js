@@ -276,6 +276,132 @@ function initPetals() {
     }
 }
 
+/* ── 인사말 타이핑 효과 ──
+   greetingTitleHtml/greetingTextHtml 은 서버에서 이스케이프된 텍스트 + <br> 만 담고 있어
+   (WeddingController#addFormattedFields) 자식 노드가 텍스트 노드와 <br> 뿐이다.
+   그 구조를 그대로 펼쳐 문자 단위로 다시 붙여 넣는다 — innerHTML 문자열을 잘라 붙이면
+   "&amp;" 같은 엔티티가 타이핑 중간에 깨져 보인다. */
+function initGreetingTypewriter() {
+    var card = document.querySelector('.greet-card');
+    var titleEl = document.querySelector('.greet-title');
+    var textEl  = document.querySelector('.greet-text');
+    if (!card || (!titleEl && !textEl)) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    function flatten(el) {
+        var tokens = [];
+        el.childNodes.forEach(function(n) {
+            if (n.nodeType === Node.TEXT_NODE) {
+                Array.from(n.textContent).forEach(function(ch) { tokens.push({ t: 'c', v: ch }); });
+            } else if (n.nodeName === 'BR') {
+                tokens.push({ t: 'br' });
+            }
+        });
+        return tokens;
+    }
+
+    function typeInto(el, speed, onDone) {
+        var tokens = flatten(el);
+        if (!tokens.length) { if (onDone) onDone(); return; }
+        el.innerHTML = '';
+        el.classList.add('typing');
+        var textNode = document.createTextNode('');
+        el.appendChild(textNode);
+        var i = 0;
+        (function step() {
+            if (i >= tokens.length) {
+                el.classList.remove('typing');
+                if (onDone) onDone();
+                return;
+            }
+            var tok = tokens[i++];
+            if (tok.t === 'br') {
+                el.appendChild(document.createElement('br'));
+                textNode = document.createTextNode('');
+                el.appendChild(textNode);
+            } else {
+                textNode.textContent += tok.v;
+            }
+            setTimeout(step, speed);
+        })();
+    }
+
+    var started = false;
+    var obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (!entry.isIntersecting || started) return;
+            started = true;
+            obs.disconnect();
+            if (titleEl) {
+                typeInto(titleEl, 55, function() { if (textEl) typeInto(textEl, 22); });
+            } else if (textEl) {
+                typeInto(textEl, 22);
+            }
+        });
+    }, { threshold: 0.25 });
+    obs.observe(card);
+}
+
+/* ── 컨페티 버스트 ──
+   히어로의 ♡ 장식(이미 heartBeat 로 펄스 중)이나 신랑·신부 이름을 탭하면
+   작은 하트·별이 튀어나온다. 테마마다 히어로 마크업이 달라서(design-basic/
+   forever/the_marriage/our_story(_pink)/married) 후보를 여러 개 걸어두고
+   실제로 화면에 보이는 것에만 건다.
+   prefers-reduced-motion 에서는 탭 버스트를 만들지 않는다(하트 펄스 자체는 기존 CSS 담당). */
+function initHeartBurst() {
+    var candidates = document.querySelectorAll(
+        '.hero-heart-left, .hero-heart-right, .hero-design-names, .forever-name-sep, .hbn-shell'
+    );
+    if (!candidates.length) return;
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    candidates.forEach(function(el) {
+        if (el.offsetParent === null) return; // 현재 테마에서 숨겨진 후보는 건너뜀
+        el.classList.add('heart-tap');
+        el.addEventListener('click', function(e) {
+            if (reduced) return;
+            heartBurstAt(e.clientX, e.clientY);
+        });
+    });
+}
+
+function heartBurstAt(x, y) {
+    var glyphs = ['♥', '✦'];
+    var colors = ['#c4748a', '#e8a0b0', '#d4bfa0', '#f2dde5'];
+    var count = 10;
+    for (var i = 0; i < count; i++) {
+        var p = document.createElement('span');
+        p.className = 'heart-burst-particle';
+        p.textContent = glyphs[i % glyphs.length];
+        var angle = (Math.PI * 2 * i / count) + (Math.random() * 0.4 - 0.2);
+        var dist  = 40 + Math.random() * 50;
+        var dx = Math.cos(angle) * dist;
+        var dy = Math.sin(angle) * dist - 20;
+        p.style.cssText =
+            'left:' + x + 'px;top:' + y + 'px;color:' + colors[i % colors.length] + ';' +
+            '--dx:' + dx + 'px;--dy:' + dy + 'px;font-size:' + (10 + Math.random() * 8) + 'px;';
+        document.body.appendChild(p);
+        (function(node) { setTimeout(function() { if (node.parentNode) node.remove(); }, 1000); })(p);
+    }
+}
+
+/* ── 스크롤 진행률 바 ── */
+function initScrollProgress() {
+    var bar = document.getElementById('scrollProgress');
+    if (!bar) return;
+    var ticking = false;
+    function update() {
+        var doc = document.documentElement;
+        var scrollable = doc.scrollHeight - doc.clientHeight;
+        var pct = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+        bar.style.width = pct + '%';
+        ticking = false;
+    }
+    window.addEventListener('scroll', function() {
+        if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+    update();
+}
+
 /* ── 스크롤 인터섹션 옵저버 (핵심 스크롤 효과) ── */
 function initScrollEffects() {
     // 0) 고급 스크롤 효과 자동 적용 (모바일 청첩장 스타일)
@@ -657,6 +783,9 @@ window.initPage = function(data) {
     initGallery();
     initPetals();
     initScrollEffects();
+    initGreetingTypewriter();
+    initHeartBurst();
+    initScrollProgress();
     bindEvents();
     initGuestbook();
 

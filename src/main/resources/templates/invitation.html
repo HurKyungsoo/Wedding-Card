@@ -69,6 +69,14 @@
 </head>
 <body>
 
+<!-- 오프닝 인트로 — 순수 CSS 애니메이션으로 진행/종료되므로 JS 실패에도 화면이 막히지 않는다 -->
+<div class="intro-screen" id="introScreen">
+    <div class="intro-line"></div>
+    <div class="intro-names" th:text="${(wedding.displayOrder == 'bride') ? (wedding.brideName + ' · ' + wedding.groomName) : (wedding.groomName + ' · ' + wedding.brideName)}">신랑 · 신부</div>
+    <div class="intro-date" th:text="${!#strings.isEmpty(wedding.weddingDate) ? #strings.replace(wedding.weddingDate, '-', '.') : ''}">2026.10.24</div>
+</div>
+<div class="scroll-progress" id="scrollProgress"></div>
+
 <div class="petals" id="petals"></div>
 <div class="toast" id="toast">복사되었습니다 ✓</div>
 
@@ -197,7 +205,7 @@
         <div class="sec-label reveal">Greeting</div>
         <div class="sec-title reveal delay-1">인사말</div>
         <div class="greet-card reveal-scale delay-2">
-            <div class="greet-title reveal-blur" th:utext="${greetingTitleHtml}">인사말 제목</div>
+            <div class="greet-title" th:utext="${greetingTitleHtml}">인사말 제목</div>
             <div class="greet-text" th:utext="${greetingTextHtml}">인사말 내용</div>
             <div class="greet-sign" th:text="${(wedding.displayOrder == 'bride') ? (wedding.brideName + ' & ' + wedding.groomName) : (wedding.groomName + ' & ' + wedding.brideName)}">신랑 & 신부</div>
         </div>

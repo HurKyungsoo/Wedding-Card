@@ -41,6 +41,53 @@ body{
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--color-ink-warm);color:#f9f3ee;font-size:13px;padding:10px 28px;border-radius:20px;letter-spacing:1px;z-index:9999;opacity:0;transition:all .35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 
+/* ── 오프닝 인트로 ──
+   JS 없이 순수 CSS 애니메이션만으로 열리고 닫힌다 — 스크립트가 실패해도
+   화면이 영영 덮인 채로 남는 일은 없다. */
+.intro-screen{
+    position:fixed;inset:0;z-index:9999;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:var(--color-cream);
+    animation:introSequence 2.6s ease forwards;
+}
+.intro-line{width:32px;height:1px;background:var(--color-gold);margin-bottom:14px;opacity:0;animation:introTextIn .6s ease .15s forwards;}
+.intro-names{font-family:var(--font-serif);font-size:21px;font-weight:300;color:var(--color-ink);letter-spacing:3px;opacity:0;animation:introTextIn .8s ease .3s forwards;}
+.intro-date{font-family:var(--font-sans);font-size:11px;color:var(--color-taupe);letter-spacing:3px;margin-top:10px;opacity:0;animation:introTextIn .8s ease .5s forwards;}
+@keyframes introTextIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+@keyframes introSequence{
+    0%{opacity:1;}
+    75%{opacity:1;}
+    100%{opacity:0;visibility:hidden;pointer-events:none;}
+}
+@media(prefers-reduced-motion:reduce){
+    .intro-screen{animation:none;opacity:0;visibility:hidden;pointer-events:none;}
+}
+
+/* ── 스크롤 진행률 바 ── */
+.scroll-progress{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--color-gold),var(--color-rose));z-index:2000;pointer-events:none;}
+@media(prefers-reduced-motion:reduce){
+    .scroll-progress{transition:none;}
+}
+
+/* ── 인사말 타이핑 커서 ── */
+.greet-title.typing::after,.greet-text.typing::after{
+    content:'';display:inline-block;width:1px;height:0.95em;background:currentColor;
+    margin-left:2px;vertical-align:-0.1em;animation:typingBlink .9s step-end infinite;
+}
+@keyframes typingBlink{50%{opacity:0;}}
+
+/* ── 컨페티 버스트 (하트 펄스 자체는 .hero-heart-left/right 의 기존 heartBeat 애니메이션을 그대로 씀) ── */
+.heart-tap{cursor:pointer;}
+.heart-burst-particle{
+    position:fixed;z-index:3000;pointer-events:none;
+    transform:translate(-50%,-50%);
+    animation:heartBurstFly .9s ease-out forwards;
+}
+@keyframes heartBurstFly{
+    0%{opacity:1;transform:translate(-50%,-50%) scale(0.6);}
+    100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.1);}
+}
+
 /* ════════════════════════════════════════
    HERO — 풀블리드 사진 스타일
    ════════════════════════════════════════ */
