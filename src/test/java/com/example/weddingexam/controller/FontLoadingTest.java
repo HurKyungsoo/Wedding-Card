@@ -47,15 +47,14 @@ class FontLoadingTest {
         return Files.readString(Path.of("src/main/resources", p), StandardCharsets.UTF_8);
     }
 
-    /** edit.html 의 글꼴 드롭다운에 실제로 들어 있는 option value 들 */
-    private static Set<String> dropdownValues() throws Exception {
-        String html = read("templates/admin/edit.html");
-        int from = html.indexOf("id=\"fontSelect\"");
-        assertThat(from).as("fontSelect 드롭다운을 찾지 못했다").isGreaterThan(0);
-        int to = html.indexOf("</select>", from);
-        Matcher m = Pattern.compile("<option value=\"([a-z_]+)\"").matcher(html.substring(from, to));
+    /**
+     * 사용자가 실제로 고를 수 있는 값들.
+     * 목록 마크업은 서버가 내려주는 FONT_CHOICES 로 렌더되므로 그것이 곧 드롭다운이다 —
+     * 템플릿에 이름을 또 적지 않기 위해 그렇게 만들었다.
+     */
+    private static Set<String> dropdownValues() {
         Set<String> vals = new LinkedHashSet<>();
-        while (m.find()) vals.add(m.group(1));
+        for (WeddingDto.FontChoice f : WeddingDto.getFontChoices()) vals.add(f.key());
         return vals;
     }
 
@@ -103,9 +102,58 @@ class FontLoadingTest {
 
     /** 새로 넣은 세 글꼴이 실제로 목록에 있다 */
     @Test
-    void newKoreanFonts_areOffered() throws Exception {
+    void newKoreanFonts_areOffered() {
         assertThat(dropdownValues())
             .contains("pretendard", "maru_buri", "gyeonggi_batang");
+    }
+
+    /**
+     * ★ 목록의 각 줄이 "그 글꼴로" 렌더돼야 한다.
+     * 이 선택기의 존재 이유가 그것이다 — 이름만 늘어놓을 거면 네이티브 select 로 충분했다.
+     */
+    @Test
+    void editorRendersEveryChoice_inItsOwnTypeface() throws Exception {
+        String html = mockMvc.perform(get("/admin/edit"))
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8)
+                .replaceAll("\\s+", " ")
+                .replace("&#39;", "'");   // Thymeleaf 가 속성 안 작은따옴표를 이스케이프한다
+
+        for (WeddingDto.FontChoice f : WeddingDto.getFontChoices()) {
+            assertThat(html)
+                .as("'%s' 가 글꼴 목록에 렌더되지 않았다", f.key())
+                .contains("data-font=\"" + f.key() + "\"");
+        }
+        // 줄마다 style="font-family:..." 이 붙어 있어야 실제 그 서체로 보인다
+        assertThat(html).contains("font-family:'Maru Buri'");
+        assertThat(html).contains("font-family:'Gyeonggi Batang'");
+        assertThat(html).contains("font-family:'Pretendard'");
+    }
+
+    /** 편집기는 고르기 전에 모양을 보여줘야 하므로 선택지를 전부 받아둔다 */
+    @Test
+    void editorPage_loadsEveryFontItOffers() throws Exception {
+        String html = mockMvc.perform(get("/admin/edit"))
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(html).as("마루부리 CSS 가 편집기에 없다").contains(MARU);
+        assertThat(html).as("경기천년바탕 CSS 가 편집기에 없다").contains(GYEONGGI);
+        assertThat(html).as("프리텐다드가 편집기에 없다").contains("orioncactus/pretendard");
+        for (String fam : new String[]{"Gowun+Batang", "Nanum+Myeongjo", "Song+Myung", "Gowun+Dodum"}) {
+            assertThat(html).as("%s 가 편집기에 없어 목록에서 폴백된다", fam).contains(fam);
+        }
+    }
+
+    /** 글자 크기는 종전 그대로 작게/보통/크게 — 글꼴 선택기를 바꾸면서 딸려 바뀌면 안 된다 */
+    @Test
+    void fontSizeControl_isUnchanged() throws Exception {
+        String html = mockMvc.perform(get("/admin/edit"))
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(html).contains("id=\"fontSizeSelect\"").contains("name=\"mainFontSize\"");
+        for (String v : new String[]{"sm", "md", "lg"}) {
+            assertThat(html).contains("value=\"" + v + "\"");
+        }
+        assertThat(html).contains("작게").contains("보통").contains("크게");
     }
 
     /* ── 로딩: 고른 사람만 받는다 ── */

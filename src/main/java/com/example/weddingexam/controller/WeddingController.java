@@ -157,6 +157,7 @@ public class WeddingController {
         model.addAttribute("currentUser", principal.getEntity());
         model.addAttribute("accounts", editableAccounts(editable, published.getId()));
         model.addAttribute("kakaoAppKey", kakaoAppKey);
+        model.addAttribute("fontChoices", WeddingDto.getFontChoices());
         return "admin/edit";
     }
 
@@ -207,6 +208,7 @@ public class WeddingController {
                 ? editableAccounts(editable, published.getId())
                 : accountService.findAll());
         model.addAttribute("kakaoAppKey", kakaoAppKey);
+        model.addAttribute("fontChoices", WeddingDto.getFontChoices());
         return "admin/edit";
     }
 

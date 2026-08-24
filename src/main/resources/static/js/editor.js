@@ -94,7 +94,8 @@ var PICKER_GROUPS = [
     { hiddenId: 'mapDetailVal',     itemSelector: '#mapDetailTabs .ed-tab', dataAttr: 'val' },
     { hiddenId: 'mapZoomInput',     itemSelector: '.ed-zoom-btn',           dataAttr: 'val' },
     { hiddenId: 'galTypeVal',       itemSelector: '.gal-type-card',         dataAttr: 'galtype' },
-    { hiddenId: 'galScrollVal',     itemSelector: '#galScrollTabs .ed-tab', dataAttr: 'val' }
+    { hiddenId: 'galScrollVal',     itemSelector: '#galScrollTabs .ed-tab', dataAttr: 'val' },
+    { hiddenId: 'fontVal',          itemSelector: '.ed-font-opt',           dataAttr: 'font' }
 ];
 
 function resyncPickerVisuals() {
@@ -105,6 +106,103 @@ function resyncPickerVisuals() {
         document.querySelectorAll(g.itemSelector).forEach(function(el) {
             el.classList.toggle('active', String(el.dataset[g.dataAttr]) === val);
         });
+    });
+    /* 글꼴 선택기는 active 클래스만으로는 부족하다 — 닫힌 버튼도 다시 그려야 한다 */
+    syncFontPickLabel();
+}
+
+/* ──────────────────────────────────────
+   글꼴 선택기
+   — 목록의 각 줄이 실제 그 글꼴로 렌더된다(네이티브 select 로는 안 되는 것).
+     값은 히든 #fontVal 이 들고, 폼 수집·되돌리기는 다른 픽커와 같은 방식으로 돈다.
+────────────────────────────────────── */
+
+/** 닫힌 버튼을 지금 고른 글꼴의 견본으로 맞춘다 */
+function syncFontPickLabel() {
+    var hidden = document.getElementById('fontVal');
+    var cur    = document.getElementById('fontPickCur');
+    if (!hidden || !cur) return;
+    var opt = document.querySelector('.ed-font-opt[data-font="' + hidden.value + '"]');
+    if (!opt) return;
+    var sample = opt.querySelector('.ed-font-sample');
+    cur.textContent = sample ? sample.textContent : '';
+    cur.style.fontFamily = opt.style.fontFamily;   /* 이름이 아니라 모양으로 보여준다 */
+}
+
+function closeFontPick() {
+    var list = document.getElementById('fontPickList');
+    var btn  = document.getElementById('fontPickBtn');
+    if (!list || !btn) return;
+    list.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+}
+
+/* position:fixed 라 뷰포트 기준 좌표를 직접 잡아야 한다 —
+   섹션(.ed-section)이 overflow:hidden 이라 absolute 로는 목록이 잘렸다.
+   아래쪽 공간이 모자라면 버튼 위로 뒤집는다. */
+function positionFontList() {
+    var btn  = document.getElementById('fontPickBtn');
+    var list = document.getElementById('fontPickList');
+    if (!btn || !list) return;
+    var r = btn.getBoundingClientRect();
+    var maxH = 290;
+    var spaceBelow = window.innerHeight - r.bottom - 8;
+    var openUp = spaceBelow < 160 && r.top > spaceBelow;
+
+    list.style.left  = r.left + 'px';
+    list.style.width = r.width + 'px';
+    if (openUp) {
+        list.style.maxHeight = Math.min(maxH, r.top - 8) + 'px';
+        list.style.top    = '';
+        list.style.bottom = (window.innerHeight - r.top + 4) + 'px';
+    } else {
+        list.style.maxHeight = Math.min(maxH, spaceBelow) + 'px';
+        list.style.bottom = '';
+        list.style.top    = (r.bottom + 4) + 'px';
+    }
+}
+
+function initFontPicker() {
+    var pick   = document.getElementById('fontPick');
+    var btn    = document.getElementById('fontPickBtn');
+    var list   = document.getElementById('fontPickList');
+    var hidden = document.getElementById('fontVal');
+    if (!pick || !btn || !list || !hidden) return;
+
+    syncFontPickLabel();
+
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var open = list.hidden;
+        if (open) positionFontList();
+        list.hidden = !open;
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (open) {
+            var act = list.querySelector('.ed-font-opt.active');
+            if (act) act.scrollIntoView({ block: 'nearest' });
+        }
+    });
+
+    /* 미리보기 영역 스크롤·창 크기 변경 중엔 버튼이 움직이므로 목록도 같이 따라간다 */
+    window.addEventListener('resize', function() { if (!list.hidden) positionFontList(); });
+    document.addEventListener('scroll', function() { if (!list.hidden) positionFontList(); }, true);
+
+    list.addEventListener('click', function(e) {
+        var opt = e.target.closest('.ed-font-opt');
+        if (!opt) return;
+        hidden.value = opt.dataset.font;
+        resyncPickerVisuals();
+        closeFontPick();
+        /* 히든 입력은 스스로 이벤트를 내지 않는다 —
+           editForm 의 change 위임 리스너가 받아야 미리보기·임시저장이 돈다 */
+        hidden.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!pick.contains(e.target)) closeFontPick();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeFontPick();
     });
 }
 
@@ -2121,6 +2219,7 @@ window.addEventListener('load', function() {
     /* 탭/카드형 픽커들의 활성 표시를 방금 복원된 히든 입력값에 맞춰 동기화
        (되돌리기 버튼에서만 호출되던 것을 최초 로드 시에도 실행 — 안 하면 저장된 값과 무관하게
        템플릿에 하드코딩된 기본 탭이 항상 활성으로 보임: 지도 잠금/자세히보기가 대표적 사례) */
+    initFontPicker();          /* resyncPickerVisuals 가 라벨을 만지므로 그 전에 붙여둔다 */
     resyncPickerVisuals();
     syncRelationSelects();
 

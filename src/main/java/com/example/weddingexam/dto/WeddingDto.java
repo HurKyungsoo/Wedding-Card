@@ -199,6 +199,41 @@ public class WeddingDto {
     /** 청첩장 전역 글꼴(mainFont) 선택값을 실제 CSS font-family 스택으로 변환 — 테마 고유 타이틀 서체는 이 값과 무관하게 고정 */
     public String getMainFontCss() { return MAIN_FONT_CSS.getOrDefault(mainFont != null ? mainFont : "noto", MAIN_FONT_CSS.get("noto")); }
 
+    /** 키 하나의 CSS 스택 — 편집기 글꼴 목록이 각 줄을 그 글꼴로 렌더할 때 쓴다 */
+    public static String fontCssFor(String key) {
+        return MAIN_FONT_CSS.getOrDefault(key != null ? key : "noto", MAIN_FONT_CSS.get("noto"));
+    }
+
+    /**
+     * 편집기 글꼴 목록의 표시 순서와 이름.
+     * 목록을 템플릿에 직접 쓰지 않고 여기서 내려보내는 이유 —
+     * 글꼴이 등록돼야 하는 자리가 이미 넷(드롭다운·서버 표·미리보기 표·폰트 로딩)이고,
+     * 템플릿에 이름을 또 적으면 다섯이 된다. FontLoadingTest 가 이 목록을 기준으로 검사한다.
+     *
+     * @param script 'ko'/'en' — 드롭다운 그룹 구분
+     */
+    public record FontChoice(String key, String label, String note, String script, boolean recommended) {
+        /** 목록 한 줄에 그 글꼴로 찍히는 견본 문구 */
+        public String sample() { return "[" + label + "] 우리, 결혼합니다."; }
+        public String css()    { return fontCssFor(key); }
+    }
+    private static final java.util.List<FontChoice> FONT_CHOICES = java.util.List.of(
+        new FontChoice("noto",           "기본",         "Noto Serif KR",  "ko", false),
+        new FontChoice("gowun_batang",   "고운바탕",     "부드러운 명조",   "ko", true),
+        new FontChoice("nanum",          "나눔명조",     "단정한 명조",     "ko", false),
+        new FontChoice("song_myung",     "송명",         "굵고 또렷한 명조", "ko", false),
+        new FontChoice("maru_buri",      "마루부리",     "여백이 큰 명조",   "ko", false),
+        new FontChoice("gyeonggi_batang","경기천년바탕", "고전적인 바탕",   "ko", false),
+        new FontChoice("gowun_dodum",    "고운돋움",     "담백한 고딕",     "ko", false),
+        new FontChoice("pretendard",     "프리텐다드",   "또렷한 고딕",     "ko", false),
+        new FontChoice("nanum_pen",      "나눔손글씨 펜", "손글씨",         "ko", false),
+        new FontChoice("playfair",       "Playfair Display",    "",         "en", false),
+        new FontChoice("eb_garamond",    "EB Garamond",         "우아한 세리프", "en", false),
+        new FontChoice("cormorant",      "Cormorant Garamond",  "이탤릭",   "en", false),
+        new FontChoice("dancing",        "Dancing Script",      "손글씨",   "en", false)
+    );
+    public static java.util.List<FontChoice> getFontChoices() { return FONT_CHOICES; }
+
     /**
      * 한글 폰트는 구글폰트 CSS 한 벌이 50~90KB씩 한다(영문은 다 합쳐도 35KB).
      * 그래서 항상 로드하는 기본 묶음에는 넣지 않고, 그 청첩장이 실제로 고른 것만 덧붙인다.

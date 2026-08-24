@@ -48,14 +48,16 @@ class EditorFormRestoreTest {
                 .andReturn().getResponse().getContentAsString();
         String norm = html.replaceAll("\\s+", " ");
 
-        assertThat(norm).contains("value=\"playfair\" selected");
+        // 글꼴은 select 가 아니라 히든 입력이 값을 든다 — 목록의 각 줄을 실제 그 글꼴로
+        // 렌더해야 해서 커스텀 드롭다운으로 바꿨다. 복원돼야 한다는 것 자체는 그대로다.
+        assertThat(norm).containsPattern("id=\"fontVal\"[^>]*value=\"playfair\"");
         assertThat(norm).contains("value=\"lg\" selected");
         assertThat(norm).contains("value=\"warm\" selected");
         assertThat(norm).contains("value=\"fog\" selected");
         assertThat(norm).contains("#123456");
 
         // 저장하지 않은 선택지가 잘못 선택돼 있으면 안 된다
-        assertThat(norm).doesNotContain("value=\"noto\" selected");
+        assertThat(norm).doesNotContainPattern("id=\"fontVal\"[^>]*value=\"noto\"");
         assertThat(norm).doesNotContain("value=\"vintage\" selected");
     }
 

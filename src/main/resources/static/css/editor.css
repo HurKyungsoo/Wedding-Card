@@ -1638,3 +1638,57 @@ textarea.ed-input{resize:none;line-height:1.75;}
         scroll-behavior:auto !important;
     }
 }
+
+/* ── 글꼴 선택기 ───────────────────────────────────────────────
+   네이티브 select 는 option 을 그 글꼴로 그려주지 않아서(모바일은 특히)
+   이름만 보고 골라야 했다. 각 줄을 실제 그 글꼴로 렌더하는 목록으로 바꿨다. */
+.ed-font-row{display:flex;gap:8px;align-items:flex-start;}
+.ed-fontpick{position:relative;flex:2;min-width:0;}
+.ed-font-size{flex:1;min-width:74px;}
+
+.ed-fontpick-btn{
+    width:100%;height:38px;
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:0 11px;
+    background:#fff;border:1px solid #dcd4cc;border-radius:8px;
+    font-size:13px;color:#3a342c;text-align:left;cursor:pointer;
+    transition:border-color .15s,box-shadow .15s;
+}
+.ed-fontpick-btn:hover{border-color:#c3b8ac;}
+.ed-fontpick-btn[aria-expanded="true"]{border-color:#b98a8a;box-shadow:0 0 0 3px rgba(185,138,138,.12);}
+.ed-fontpick-btn .ti{font-size:15px;color:#a89c90;flex-shrink:0;transition:transform .18s;}
+.ed-fontpick-btn[aria-expanded="true"] .ti{transform:rotate(180deg);}
+/* 닫힌 버튼도 고른 글꼴로 보여준다 — 무엇을 골랐는지 이름보다 이게 빠르다 */
+.ed-fontpick-cur{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;}
+
+/* 섹션(.ed-section)이 overflow:hidden 이라 absolute 로 두면 목록이 잘린다.
+   fixed 로 빼내고 위치는 JS 가 버튼 기준으로 잡는다(positionFontList). */
+.ed-fontpick-list{
+    position:fixed;z-index:60;
+    margin:0;padding:5px;list-style:none;
+    max-height:290px;overflow-y:auto;overscroll-behavior:contain;
+    background:#fff;border:1px solid #e0d8d0;border-radius:10px;
+    box-shadow:0 10px 28px rgba(0,0,0,.13);
+}
+.ed-fontpick-list[hidden]{display:none;}
+.ed-fontpick-group{
+    padding:7px 9px 4px;font-size:10.5px;letter-spacing:.4px;
+    color:#a89c90;font-family:'Noto Sans KR',sans-serif;
+}
+.ed-font-opt{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:9px 10px;border-radius:7px;cursor:pointer;
+    font-size:15px;line-height:1.35;color:#332e28;
+    transition:background .12s;
+}
+.ed-font-opt:hover{background:#f6f1ec;}
+.ed-font-opt.active{background:#f3ebe6;}
+.ed-font-sample{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* 추천 표시는 견본 글자에 섞이면 안 된다 — 다른 서체·크기로 떼어 놓는다 */
+.ed-font-opt.recommend .ed-font-sample::after{
+    content:'추천';margin-left:7px;padding:1px 6px;
+    font-family:'Noto Sans KR',sans-serif;font-size:9.5px;vertical-align:middle;
+    color:#8a6520;background:rgba(214,150,60,.16);border-radius:9px;
+}
+.ed-font-tick{font-size:15px;color:#b98a8a;flex-shrink:0;visibility:hidden;}
+.ed-font-opt.active .ed-font-tick{visibility:visible;}

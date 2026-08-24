@@ -9,6 +9,12 @@
 <title>청첩장 편집</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;1,400&family=Cormorant+Garamond:ital,wght@1,400&family=Dancing+Script:wght@600&family=Great+Vibes&family=Pinyon+Script&family=Sacramento&family=Patrick+Hand&display=swap" rel="stylesheet">
+<!-- 글꼴 목록이 각 줄을 실제 그 글꼴로 보여주므로, 편집기도 선택지를 전부 받아야 한다.
+     하객 화면과 달리 여기는 청첩장 주인 한 사람만 보는 화면이라 미리 다 받아도 된다
+     (하객은 자기 청첩장이 고른 것만 받는다 — WeddingDto.getExtraFontStylesheets). -->
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Gowun+Batang:wght@400;700&family=Song+Myung&family=Gowun+Dodum&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" th:each="href : ${T(com.example.weddingexam.dto.WeddingDto).allFontStylesheets}" th:href="${href}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <!-- 메인 사진 크롭 (Cropper.js v1 — img.cropper 인스턴스 API) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
@@ -307,31 +313,50 @@
                     </div>
                 </div>
 
-                <!-- 글꼴 선택 -->
+                <!-- 글꼴 선택 ─────────────────────────────────────────────
+                     네이티브 select 는 option 을 그 글꼴로 그려주지 않는다(특히 모바일).
+                     이름만 늘어놓으면 "고운바탕과 마루부리가 뭐가 다른지"를 고를 때 알 수 없어서,
+                     각 줄을 실제 그 글꼴로 렌더하는 목록으로 바꿨다.
+                     목록 자체는 WeddingDto.FONT_CHOICES 에서 내려온다 — 여기 이름을 또 적으면
+                     글꼴 하나 추가할 때 고쳐야 할 자리가 다섯 곳이 된다.
+                     글자 크기는 종전 그대로 작게/보통/크게. -->
                 <div class="ed-row">
                     <span class="ed-label">글꼴 선택</span>
-                    <div class="ed-ctrl" style="display:flex;gap:8px;">
-                        <select class="ed-select" id="fontSelect" name="mainFont" style="flex:2;"
-                                th:with="cur=${wedding.mainFont ?: 'noto'}">
-                            <optgroup label="한글">
-                                <option value="noto"         th:selected="${cur == 'noto'}">기본 (Noto Serif KR)</option>
-                                <option value="nanum"        th:selected="${cur == 'nanum'}">나눔명조 (단정한 명조)</option>
-                                <option value="gowun_batang" th:selected="${cur == 'gowun_batang'}">고운바탕 (부드러운 명조) ★ 추천</option>
-                                <option value="song_myung"   th:selected="${cur == 'song_myung'}">송명 (굵고 또렷한 명조)</option>
-                                <option value="maru_buri"       th:selected="${cur == 'maru_buri'}">마루부리 (여백이 큰 명조)</option>
-                                <option value="gyeonggi_batang" th:selected="${cur == 'gyeonggi_batang'}">경기천년바탕 (고전적인 바탕)</option>
-                                <option value="gowun_dodum"  th:selected="${cur == 'gowun_dodum'}">고운돋움 (담백한 고딕)</option>
-                                <option value="pretendard"   th:selected="${cur == 'pretendard'}">프리텐다드 (또렷한 고딕)</option>
-                                <option value="nanum_pen"    th:selected="${cur == 'nanum_pen'}">나눔손글씨 펜 (손글씨)</option>
-                            </optgroup>
-                            <optgroup label="영문">
-                                <option value="playfair"     th:selected="${cur == 'playfair'}">Playfair Display</option>
-                                <option value="eb_garamond"  th:selected="${cur == 'eb_garamond'}">EB Garamond (우아한 세리프)</option>
-                                <option value="cormorant"    th:selected="${cur == 'cormorant'}">Cormorant Garamond (이탤릭)</option>
-                                <option value="dancing"      th:selected="${cur == 'dancing'}">Dancing Script (손글씨)</option>
-                            </optgroup>
-                        </select>
-                        <select class="ed-select" id="fontSizeSelect" name="mainFontSize" style="flex:1;"
+                    <div class="ed-ctrl ed-font-row">
+                        <div class="ed-fontpick" id="fontPick">
+                            <!-- 폼 값은 이 히든이 들고 있다 (PICKER_GROUPS 관용구) -->
+                            <input type="hidden" id="fontVal" name="mainFont"
+                                   th:value="${wedding.mainFont ?: 'noto'}">
+                            <button type="button" class="ed-fontpick-btn" id="fontPickBtn"
+                                    aria-haspopup="listbox" aria-expanded="false">
+                                <span class="ed-fontpick-cur" id="fontPickCur">우리, 결혼합니다.</span>
+                                <i class="ti ti-chevron-down" aria-hidden="true"></i>
+                            </button>
+                            <ul class="ed-fontpick-list" id="fontPickList" role="listbox" hidden>
+                                <li class="ed-fontpick-group" role="presentation">한글</li>
+                                <th:block th:each="f : ${fontChoices}" th:if="${f.script == 'ko'}">
+                                    <li class="ed-font-opt" role="option"
+                                        th:classappend="${f.recommended} ? ' recommend' : ''"
+                                        th:attr="data-font=${f.key}"
+                                        th:style="'font-family:' + ${f.css}"
+                                        th:title="${f.note}">
+                                        <span class="ed-font-sample" th:text="${f.sample}">우리, 결혼합니다.</span>
+                                        <i class="ti ti-check ed-font-tick" aria-hidden="true"></i>
+                                    </li>
+                                </th:block>
+                                <li class="ed-fontpick-group" role="presentation">영문</li>
+                                <th:block th:each="f : ${fontChoices}" th:if="${f.script == 'en'}">
+                                    <li class="ed-font-opt" role="option"
+                                        th:attr="data-font=${f.key}"
+                                        th:style="'font-family:' + ${f.css}"
+                                        th:title="${f.note}">
+                                        <span class="ed-font-sample" th:text="${f.label}">Playfair</span>
+                                        <i class="ti ti-check ed-font-tick" aria-hidden="true"></i>
+                                    </li>
+                                </th:block>
+                            </ul>
+                        </div>
+                        <select class="ed-select ed-font-size" id="fontSizeSelect" name="mainFontSize"
                                 th:with="cur=${wedding.mainFontSize ?: 'md'}">
                             <option value="sm" th:selected="${cur == 'sm'}">작게</option>
                             <option value="md" th:selected="${cur == 'md'}" selected>보통</option>
