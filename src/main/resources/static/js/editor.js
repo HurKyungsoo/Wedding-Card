@@ -245,11 +245,36 @@ var SECTION_REVERT_HOOKS = {
         if (zone) zone.style.display = has ? 'none' : '';
         if (thumb) thumb.style.display = has ? '' : 'none';
         if (img) img.src = has ? 'data:image/jpeg;base64,' + b64.value : '';
+    },
+    gal: function() {
+        /* 히든 galleryImagesInput 값은 revertSection()이 이미 복원해줬다 —
+           썸네일 목록은 galImages 배열을 그 값으로 다시 채우고 renderGalThumbs()를
+           불러야 화면에 반영된다(페이지 최초 로드 때와 같은 방식) */
+        var input = document.getElementById('galleryImagesInput');
+        var saved = input ? input.value : '';
+        galImages = saved ? saved.split('|||').filter(function(s) { return s.trim(); }) : [];
+        renderGalThumbs();
+    },
+    acct: function() {
+        /* input/textarea 순회만으로는 스냅샷 이후 새로 추가한 계좌 행이 안 지워진다 —
+           acctData 자체를 스냅샷으로 되돌리고 두 탭을 통째로 다시 그린다 */
+        if (!savedAcctSnapshot) return;
+        acctData.groom = JSON.parse(JSON.stringify(savedAcctSnapshot.groom));
+        acctData.bride = JSON.parse(JSON.stringify(savedAcctSnapshot.bride));
+        renderAcctList('groom');
+        renderAcctList('bride');
     }
 };
 
+/* 계좌 스냅샷 — 갤러리(hidden input 하나)와 달리 acctData는 groom/bride 배열 전체가
+   상태라 위 input/textarea 순회만으로는 "새로 추가한 행" 자체를 못 지운다.
+   captureSectionSnapshot()과 같은 시점에 깊은 복사를 떠 둔다. */
+var savedAcctSnapshot = null;
+
 /* 페이지 로드(서버 값 복원)가 모두 끝난 뒤 폼 필드 값을 스냅샷으로 저장 */
 function captureSectionSnapshot() {
+    savedAcctSnapshot = JSON.parse(JSON.stringify(acctData));
+
     var form = document.getElementById('editForm');
     if (!form) return;
     form.querySelectorAll('input, textarea, select').forEach(function(el) {
@@ -1833,11 +1858,6 @@ document.addEventListener('keydown', function(e) {
 /* ──────────────────────────────────────
    지도 (카카오)
 ────────────────────────────────────── */
-var kakaoMap = null;
-/* SDK 제거됨 — 정적 이미지 방식 사용 */
-function initKakaoMap(lat, lng) {}
-function searchAddress() {}
-
 /* ── 지도 줌 선택 ── */
 var ZOOM_LEVEL = {'20M':3,'30M':4,'50M':5,'100M':6,'250M':7,'500M':8};
 var currentZoomVal = '50M'; /* 현재 줌 값 저장 */
@@ -2081,21 +2101,6 @@ function _drawAdminMap(container, lat, lng, level, name) {
             removable: false
         });
         info.open(_adminMap, _adminMarker);
-    }
-}
-
-/* Daum 우편번호 서비스로 폴백 검색 (인증 불필요) */
-function searchWithDaumPostcode(q, btn) {
-    if (btn) { btn.disabled = false; btn.textContent = '검색'; }
-    /* Daum 우편번호 팝업 열기 */
-    if (typeof daum === 'undefined' || !daum.Postcode) {
-        /* Daum 스크립트 동적 로드 */
-        var s = document.createElement('script');
-        s.src = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
-        s.onload = function() { openDaumPostcode(); };
-        document.head.appendChild(s);
-    } else {
-        openDaumPostcode();
     }
 }
 

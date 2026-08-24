@@ -1139,45 +1139,6 @@
         var hh = p[0] > 12 ? p[0]-12 : p[0]===0 ? 12 : p[0];
         return ampm + ' ' + hh + '시 ' + (p[1] ? p[1] : '00') + '분';
     }
-    /* 섹션 전체 블록(구분선 + 섹션) 표시/숨김 */
-    function showHideSection(selector, visible) {
-        var show = (visible === true || visible === 'true' || visible === 1);
-        /* 해당 selector를 포함하는 모든 요소 찾기 */
-        qa(selector).forEach(function(el) {
-            el.style.display = show ? '' : 'none';
-            /* 바로 앞 section-divider도 같이 */
-            var prev = el.previousElementSibling;
-            while (prev) {
-                if (prev.classList.contains('section-divider')) {
-                    prev.style.display = show ? '' : 'none';
-                    break;
-                }
-                /* divider가 아닌 다른 요소가 나오면 중단 */
-                if (!prev.classList.contains('section-divider')) break;
-                prev = prev.previousElementSibling;
-            }
-        });
-    }
-
-    /* 섹션 하나의 구분선+본체 쌍을 함께 제어 */
-    function showHidePair(mainSel, visible) {
-        var show = (visible === true || visible === 'true' || visible === 1);
-        var el = q(mainSel);
-        if (!el) return;
-        /* 현재 요소 숨김/표시 */
-        el.style.display = show ? '' : 'none';
-        /* 바로 앞 section-divider */
-        var prev = el.previousElementSibling;
-        if (prev && prev.classList.contains('section-divider')) {
-            prev.style.display = show ? '' : 'none';
-        }
-        /* 다음 형제 중 같은 th:if 조건을 가진 섹션도 함께 (인사말처럼 divider+sec 쌍) */
-        var next = el.nextElementSibling;
-        if (next && !next.classList.contains('section-divider') &&
-            next.style !== undefined) {
-            /* 같은 가시성 조건이 적용된 연속 섹션 */
-        }
-    }
 
     window.addEventListener('message', function(e) {
         if (!e.data || e.data.type !== 'WEDDING_LIVE_UPDATE') return;
@@ -1660,14 +1621,6 @@
         }
 
         /* 전화번호 실시간 업데이트 */
-        var phoneMap = {
-            groomPhone:       '[data-name]:nth-of-type(1)',   /* 신랑 */
-            groomFatherPhone: null,
-            groomMotherPhone: null,
-            bridePhone:       null,
-            brideFatherPhone: null,
-            brideMotherPhone: null
-        };
         var phonePairs = [
             ['groomPhone',       'groomName',       0],
             ['groomFatherPhone', 'groomFatherName', 1],
