@@ -64,6 +64,12 @@ public class WeddingDto {
     private Boolean rsvpEnabled;
     private Boolean guestbookVisible;
 
+    /** 엔딩(마지막 인사) 섹션 — 방명록·공유하기 직전, 사진 한 장 + 문구로 마무리하는 클로징 섹션 */
+    private Boolean endingVisible;
+    private String endingPhotoBase64;
+    private String endingCaption;
+    private String endingEffect;
+
     /** 섹션 표시 순서 — 콤마 구분(예: "greet,cal,dday,hosts,gal,map,acct,rsvp"). 비어 있으면 템플릿 기본 순서 */
     private String sectionOrder;
 
@@ -300,6 +306,10 @@ public class WeddingDto {
     public String getBgm() { return bgm; } public void setBgm(String v) { this.bgm = v; }
     public Boolean getRsvpEnabled() { return rsvpEnabled; } public void setRsvpEnabled(Boolean v) { this.rsvpEnabled = v; }
     public Boolean getGuestbookVisible() { return guestbookVisible; } public void setGuestbookVisible(Boolean v) { this.guestbookVisible = v; }
+    public Boolean getEndingVisible() { return endingVisible; } public void setEndingVisible(Boolean v) { this.endingVisible = v; }
+    public String getEndingPhotoBase64() { return endingPhotoBase64; } public void setEndingPhotoBase64(String v) { this.endingPhotoBase64 = v; }
+    public String getEndingCaption() { return endingCaption; } public void setEndingCaption(String v) { this.endingCaption = v; }
+    public String getEndingEffect() { return endingEffect; } public void setEndingEffect(String v) { this.endingEffect = v; }
     public String getSectionOrder() { return sectionOrder; } public void setSectionOrder(String v) { this.sectionOrder = v; }
     public java.util.List<com.example.weddingexam.account.AccountDto> getAccounts() { return accounts; }
     public void setAccounts(java.util.List<com.example.weddingexam.account.AccountDto> v) { this.accounts = v; }
@@ -383,6 +393,10 @@ public class WeddingDto {
         public Builder mainPhotoScale(Double v) { d.mainPhotoScale=v; return this; }
         public Builder rsvpEnabled(Boolean v) { d.rsvpEnabled=v; return this; }
         public Builder guestbookVisible(Boolean v) { d.guestbookVisible=v; return this; }
+        public Builder endingVisible(Boolean v) { d.endingVisible=v; return this; }
+        public Builder endingPhotoBase64(String v) { d.endingPhotoBase64=v; return this; }
+        public Builder endingCaption(String v) { d.endingCaption=v; return this; }
+        public Builder endingEffect(String v) { d.endingEffect=v; return this; }
         public Builder sectionOrder(String v) { d.sectionOrder=v; return this; }
         public WeddingDto build() { return d; }
     }
