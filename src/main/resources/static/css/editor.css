@@ -1025,8 +1025,8 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-ph,
 .ed-dt-marriage-photo{
     flex-shrink:0;
-    background-color:#cdcdcd;
-    background-image:conic-gradient(#bcbcbc 25%,transparent 0 50%,#bcbcbc 0 75%,transparent 0);
+    background-color:#f2f2f2;
+    background-image:conic-gradient(#e4e4e4 25%,transparent 0 50%,#e4e4e4 0 75%,transparent 0);
     background-size:23px 23px;
 }
 .ed-dt-fade{position:absolute;left:0;right:0;bottom:0;height:45%;pointer-events:none;}
@@ -1061,6 +1061,10 @@ textarea.ed-input{resize:none;line-height:1.75;}
 /* 4. Getting Married — 어두운 사진(랜딩은 brightness .82) + 좌하단 흰 타이틀 + 날짜 */
 .ed-dt-married-title{position:absolute;left:4.9cqw;right:0;bottom:20%;text-align:left;font-family:'Great Vibes','Dancing Script',cursive;font-size:18.5cqw;color:var(--color-white);line-height:.88;letter-spacing:-.3cqw;}
 .ed-dt-married-big{font-size:23.5cqw;margin-top:-1.2cqw;}
+/* 흰 글씨 테마라 격자를 한 톤만 낮추고, 하단 그라데이션 + 글자 그림자로 대비 확보 */
+.ed-dt-married{background-color:#dcdcdc;background-image:conic-gradient(#cdcdcd 25%,transparent 0 50%,#cdcdcd 0 75%,transparent 0);}
+.ed-dt-married .ed-dt-fade-dark{height:55%;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.42) 100%);}
+.ed-dt-married-title,.ed-dt-married-date{text-shadow:0 1px 6px rgba(0,0,0,.35);}
 .ed-dt-married-date{position:absolute;left:0;right:0;bottom:4%;text-align:center;font-family:'Patrick Hand',sans-serif;font-size:6.2cqw;letter-spacing:.9cqw;color:var(--color-white);}
 
 /* 5. 아치형 — 베이지 배경 + 스크립트 + 이름(한 줄) + 아치 사진 + 민트 날짜 + 장소 */
