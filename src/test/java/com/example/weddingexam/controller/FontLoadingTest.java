@@ -82,6 +82,60 @@ class FontLoadingTest {
         }
     }
 
+    /** invitation.html 안 JS enFontMap 의 키 → 영문 패밀리 */
+    private static java.util.Map<String, String> jsEnFontMap() throws Exception {
+        String html = read("templates/invitation.html");
+        int from = html.indexOf("var enFontMap = {");
+        assertThat(from).as("enFontMap 을 찾지 못했다").isGreaterThan(0);
+        int to = html.indexOf("};", from);
+        Matcher m = Pattern.compile("([a-z_]+)\\s*:\\s*\"([^\"]+)\"").matcher(html.substring(from, to));
+        java.util.Map<String, String> map = new java.util.LinkedHashMap<>();
+        while (m.find()) map.put(m.group(1), m.group(2));
+        return map;
+    }
+
+    /** ★ 영문 글꼴 표도 서버와 미리보기가 같아야 한다 */
+    @Test
+    void englishFontMaps_agree() throws Exception {
+        assertThat(jsEnFontMap()).isEqualTo(WeddingDto.getEnFontFamilies());
+    }
+
+    /** 영문 목록의 모든 글꼴이 영문 표에 있어야 한다 — 없으면 골라도 아무 일이 없다 */
+    @Test
+    void everyEnglishChoice_hasFamily() {
+        for (WeddingDto.FontChoice f : WeddingDto.getFontChoices()) {
+            if ("en".equals(f.script())) {
+                assertThat(WeddingDto.getEnFontFamilies()).as("영문 글꼴 '%s' 가 영문 표에 없다", f.key()).containsKey(f.key());
+            }
+        }
+    }
+
+    /** 영문 글꼴을 고르면 "영문 패밀리, 한글 스택" 순서로 이어진다. 안 고르면 종전과 같다 */
+    @Test
+    void englishFont_isPrependedToKoreanStack() {
+        WeddingDto dto = new WeddingDto();
+        dto.setMainFont("gowun_batang");
+        String ko = dto.getMainFontCss();
+        assertThat(ko).isEqualTo("'Gowun Batang', 'Noto Serif KR', serif");
+
+        dto.setMainFontEn("playfair");
+        assertThat(dto.getMainFontCss()).isEqualTo("'Playfair Display', " + ko);
+
+        dto.setMainFontEn("");          // "한글 글꼴과 같게"
+        assertThat(dto.getMainFontCss()).isEqualTo(ko);
+    }
+
+    /** 편집기에 한글·영문 선택기가 따로 있고, 영문 쪽엔 "한글 글꼴과 같게"(빈 값)가 있다 */
+    @Test
+    void editorHasSeparateKoreanAndEnglishPickers() throws Exception {
+        String html = mockMvc.perform(get("/admin/edit"))
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8)
+                .replaceAll("\\s+", " ");
+        assertThat(html).contains("id=\"fontVal\"").contains("name=\"mainFont\"");
+        assertThat(html).contains("id=\"fontValEn\"").contains("name=\"mainFontEn\"");
+        assertThat(html).contains("data-font=\"\"");
+    }
+
     /** 드롭다운에 있는 값은 전부 두 표에 있어야 한다 — 없으면 고르는 순간 폴백된다 */
     @Test
     void everyDropdownFont_isMapped() throws Exception {

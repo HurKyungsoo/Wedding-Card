@@ -1786,10 +1786,19 @@
                 maru_buri:       "'Maru Buri', 'Noto Serif KR', serif",
                 gyeonggi_batang: "'Gyeonggi Batang', 'Noto Serif KR', serif"
             };
+            /* 영문 글꼴 — 스택 맨 앞에 붙인다. 영문 글꼴엔 한글이 없어 한글은 뒤의 한글 글꼴로 그려진다.
+               ⚠ WeddingDto.EN_FONT_FAMILY 와 값이 같아야 한다 (FontLoadingTest 가 검사) */
+            var enFontMap = {
+                playfair:    "'Playfair Display'",
+                eb_garamond: "'EB Garamond', 'Cormorant Garamond'",
+                cormorant:   "'Cormorant Garamond'",
+                dancing:     "'Dancing Script'"
+            };
             var ff = fontMap[d.mainFont];
+            var en = d.mainFontEn ? enFontMap[d.mainFontEn] : null;
             if (ff) {
                 var wc = document.querySelector('.wc');
-                if (wc) wc.style.setProperty('--main-font', ff);
+                if (wc) wc.style.setProperty('--main-font', en ? en + ', ' + ff : ff);
             }
         }
 

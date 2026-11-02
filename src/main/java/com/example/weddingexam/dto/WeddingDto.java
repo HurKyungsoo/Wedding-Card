@@ -61,6 +61,8 @@ public class WeddingDto {
     private Double mainPhotoPosX, mainPhotoPosY;
     private Double mainPhotoScale;
     private String mainDesign, mainFont, mainFontSize, mainFontColor, colorEffect, mainEffect, bgm;
+    /** 영문 글꼴(선택) — null/빈 값이면 한글 글꼴(mainFont)을 그대로 쓴다 */
+    private String mainFontEn;
     private Boolean rsvpEnabled;
     private Boolean guestbookVisible;
 
@@ -185,6 +187,7 @@ public class WeddingDto {
     }
     public String getMainDesign() { return mainDesign; } public void setMainDesign(String v) { this.mainDesign = v; }
     public String getMainFont() { return mainFont; } public void setMainFont(String v) { this.mainFont = v; }
+    public String getMainFontEn() { return mainFontEn; } public void setMainFontEn(String v) { this.mainFontEn = v; }
 
     private static final java.util.Map<String, String> MAIN_FONT_CSS = java.util.Map.ofEntries(
         java.util.Map.entry("noto",         "'Noto Serif KR', serif"),
@@ -202,8 +205,29 @@ public class WeddingDto {
         java.util.Map.entry("maru_buri",      "'Maru Buri', 'Noto Serif KR', serif"),
         java.util.Map.entry("gyeonggi_batang","'Gyeonggi Batang', 'Noto Serif KR', serif")
     );
-    /** 청첩장 전역 글꼴(mainFont) 선택값을 실제 CSS font-family 스택으로 변환 — 테마 고유 타이틀 서체는 이 값과 무관하게 고정 */
-    public String getMainFontCss() { return MAIN_FONT_CSS.getOrDefault(mainFont != null ? mainFont : "noto", MAIN_FONT_CSS.get("noto")); }
+    /**
+     * 영문 글꼴 — 스택 맨 앞에 붙이는 패밀리 이름만(폴백 없이).
+     * 영문 글꼴에는 한글 글리프가 없으므로 브라우저가 한글은 뒤따르는 한글 글꼴로 그린다.
+     * 그래서 "영문 글꼴, 한글 글꼴 스택" 순서로 이어 붙이기만 하면 영문·숫자와 한글을 따로 고른 효과가 난다.
+     * ⚠ invitation.html 의 enFontMap 과 값이 같아야 한다 (FontLoadingTest 가 검사).
+     */
+    private static final java.util.Map<String, String> EN_FONT_FAMILY = java.util.Map.of(
+        "playfair",    "'Playfair Display'",
+        "eb_garamond", "'EB Garamond', 'Cormorant Garamond'",
+        "cormorant",   "'Cormorant Garamond'",
+        "dancing",     "'Dancing Script'"
+    );
+    public static java.util.Map<String, String> getEnFontFamilies() { return EN_FONT_FAMILY; }
+
+    /**
+     * 청첩장 전역 글꼴 스택 — 테마 고유 타이틀 서체는 이 값과 무관하게 고정.
+     * 영문 글꼴을 따로 골랐으면 그 패밀리를 한글 글꼴 스택 앞에 붙인다.
+     */
+    public String getMainFontCss() {
+        String ko = MAIN_FONT_CSS.getOrDefault(mainFont != null ? mainFont : "noto", MAIN_FONT_CSS.get("noto"));
+        String en = mainFontEn != null ? EN_FONT_FAMILY.get(mainFontEn) : null;
+        return en != null ? en + ", " + ko : ko;
+    }
 
     /** 키 하나의 CSS 스택 — 편집기 글꼴 목록이 각 줄을 그 글꼴로 렌더할 때 쓴다 */
     public static String fontCssFor(String key) {
@@ -382,6 +406,7 @@ public class WeddingDto {
         public Builder photoFilter(String v) { d.photoFilter=v; return this; }
         public Builder mainDesign(String v) { d.mainDesign=v; return this; }
         public Builder mainFont(String v) { d.mainFont=v; return this; }
+        public Builder mainFontEn(String v) { d.mainFontEn=v; return this; }
         public Builder mainFontSize(String v) { d.mainFontSize=v; return this; }
         public Builder mainFontColor(String v) { d.mainFontColor=v; return this; }
         public Builder colorEffect(String v) { d.colorEffect=v; return this; }

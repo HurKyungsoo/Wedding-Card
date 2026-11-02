@@ -65,6 +65,8 @@ public class WeddingEntity {
     /** 메인 사진 확대 배율 — CSS transform:scale() 값(1.0 = 원본), 미설정/1.0이면 확대 없음 */
     private Double mainPhotoScale;
     private String mainDesign, mainFont, mainFontSize, mainFontColor, colorEffect, mainEffect, bgm;
+    /** 영문 글꼴(선택) — null/빈 값이면 한글 글꼴(mainFont)을 그대로 쓴다 */
+    private String mainFontEn;
     private Boolean rsvpEnabled;
     /** 방명록 섹션 표시 여부 */
     private Boolean guestbookVisible;
@@ -169,6 +171,7 @@ public class WeddingEntity {
     public Double getMainPhotoScale() { return mainPhotoScale; } public void setMainPhotoScale(Double v) { this.mainPhotoScale=v; }
     public String getMainDesign() { return mainDesign; } public void setMainDesign(String v) { this.mainDesign=v; }
     public String getMainFont() { return mainFont; } public void setMainFont(String v) { this.mainFont=v; }
+    public String getMainFontEn() { return mainFontEn; } public void setMainFontEn(String v) { this.mainFontEn=v; }
     public String getMainFontSize() { return mainFontSize; } public void setMainFontSize(String v) { this.mainFontSize=v; }
     public String getMainFontColor() { return mainFontColor; } public void setMainFontColor(String v) { this.mainFontColor=v; }
     public String getColorEffect() { return colorEffect; } public void setColorEffect(String v) { this.colorEffect=v; }
@@ -209,7 +212,7 @@ public class WeddingEntity {
             .galleryVisible(galleryVisible).accountVisible(accountVisible).galleryImages(galleryImages).galleryType(galleryType).galleryScrollGuide(galleryScrollGuide)
             .photoFilter(photoFilter).mainPhotoBase64(mainPhotoBase64)
             .mainPhotoPosX(mainPhotoPosX).mainPhotoPosY(mainPhotoPosY).mainPhotoScale(mainPhotoScale)
-            .mainDesign(mainDesign).mainFont(mainFont).mainFontSize(mainFontSize).mainFontColor(mainFontColor)
+            .mainDesign(mainDesign).mainFont(mainFont).mainFontEn(mainFontEn).mainFontSize(mainFontSize).mainFontColor(mainFontColor)
             .colorEffect(colorEffect).mainEffect(mainEffect).bgm(bgm)
             .displayOrder(displayOrder)
             .rsvpEnabled(rsvpEnabled).guestbookVisible(guestbookVisible)
@@ -254,7 +257,7 @@ public class WeddingEntity {
         e.setPhotoFilter(d.getPhotoFilter()); e.setMainPhotoBase64(d.getMainPhotoBase64());
         e.setMainPhotoPosX(d.getMainPhotoPosX()); e.setMainPhotoPosY(d.getMainPhotoPosY());
         e.setMainPhotoScale(d.getMainPhotoScale());
-        e.setMainDesign(d.getMainDesign()); e.setMainFont(d.getMainFont()); e.setMainFontSize(d.getMainFontSize());
+        e.setMainDesign(d.getMainDesign()); e.setMainFont(d.getMainFont()); e.setMainFontEn(d.getMainFontEn()); e.setMainFontSize(d.getMainFontSize());
         e.setMainFontColor(d.getMainFontColor()); e.setColorEffect(d.getColorEffect());
         e.setMainEffect(d.getMainEffect()); e.setBgm(d.getBgm());
         if (d.getDisplayOrder() != null) e.setDisplayOrder(d.getDisplayOrder());

@@ -331,8 +331,11 @@
                      목록 자체는 WeddingDto.FONT_CHOICES 에서 내려온다 — 여기 이름을 또 적으면
                      글꼴 하나 추가할 때 고쳐야 할 자리가 다섯 곳이 된다.
                      글자 크기는 종전 그대로 작게/보통/크게. -->
+                <!-- 한글 글꼴 / 영문 글꼴을 따로 고른다.
+                     영문 글꼴에는 한글 글자가 없어서, 스택을 "영문, 한글" 순서로 이으면
+                     영문·숫자는 영문 글꼴로, 한글은 한글 글꼴로 그려진다 (WeddingDto.getMainFontCss). -->
                 <div class="ed-row">
-                    <span class="ed-label">글꼴 선택</span>
+                    <span class="ed-label">한글 글꼴</span>
                     <div class="ed-ctrl ed-font-row">
                         <div class="ed-fontpick" id="fontPick">
                             <!-- 폼 값은 이 히든이 들고 있다 (PICKER_GROUPS 관용구) -->
@@ -344,7 +347,6 @@
                                 <i class="ti ti-chevron-down" aria-hidden="true"></i>
                             </button>
                             <ul class="ed-fontpick-list" id="fontPickList" role="listbox" hidden>
-                                <li class="ed-fontpick-group" role="presentation">한글</li>
                                 <th:block th:each="f : ${fontChoices}" th:if="${f.script == 'ko'}">
                                     <li class="ed-font-opt" role="option"
                                         th:classappend="${f.recommended} ? ' recommend' : ''"
@@ -352,16 +354,6 @@
                                         th:style="'font-family:' + ${f.css}"
                                         th:title="${f.note}">
                                         <span class="ed-font-sample" th:text="${f.sample}">우리, 결혼합니다.</span>
-                                        <i class="ti ti-check ed-font-tick" aria-hidden="true"></i>
-                                    </li>
-                                </th:block>
-                                <li class="ed-fontpick-group" role="presentation">영문</li>
-                                <th:block th:each="f : ${fontChoices}" th:if="${f.script == 'en'}">
-                                    <li class="ed-font-opt" role="option"
-                                        th:attr="data-font=${f.key}"
-                                        th:style="'font-family:' + ${f.css}"
-                                        th:title="${f.note}">
-                                        <span class="ed-font-sample" th:text="${f.label}">Playfair</span>
                                         <i class="ti ti-check ed-font-tick" aria-hidden="true"></i>
                                     </li>
                                 </th:block>
@@ -374,6 +366,39 @@
                             <option value="lg" th:selected="${cur == 'lg'}">크게</option>
                         </select>
                     </div>
+                </div>
+                <div class="ed-row">
+                    <span class="ed-label">영문 글꼴</span>
+                    <div class="ed-ctrl ed-font-row">
+                        <div class="ed-fontpick" id="fontPickEn">
+                            <!-- 빈 값 = 한글 글꼴을 그대로 쓴다 -->
+                            <input type="hidden" id="fontValEn" name="mainFontEn"
+                                   th:value="${wedding.mainFontEn ?: ''}">
+                            <button type="button" class="ed-fontpick-btn" id="fontPickBtnEn"
+                                    aria-haspopup="listbox" aria-expanded="false">
+                                <span class="ed-fontpick-cur" id="fontPickCurEn">한글 글꼴과 같게</span>
+                                <i class="ti ti-chevron-down" aria-hidden="true"></i>
+                            </button>
+                            <ul class="ed-fontpick-list" id="fontPickListEn" role="listbox" hidden>
+                                <li class="ed-font-opt" role="option" data-font="">
+                                    <span class="ed-font-sample">한글 글꼴과 같게</span>
+                                    <i class="ti ti-check ed-font-tick" aria-hidden="true"></i>
+                                </li>
+                                <th:block th:each="f : ${fontChoices}" th:if="${f.script == 'en'}">
+                                    <li class="ed-font-opt" role="option"
+                                        th:attr="data-font=${f.key}"
+                                        th:style="'font-family:' + ${f.css}"
+                                        th:title="${f.note}">
+                                        <span class="ed-font-sample" th:text="${f.label} + ' — 2026. 11. 02 Saturday'">Playfair</span>
+                                        <i class="ti ti-check ed-font-tick" aria-hidden="true"></i>
+                                    </li>
+                                </th:block>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="ed-hint">
+                    ⓘ 영문 글꼴은 날짜·요일 같은 영문과 숫자에만 적용되고, 한글은 한글 글꼴로 보입니다.
                 </div>
 
                 <!-- 글꼴 색상 -->
