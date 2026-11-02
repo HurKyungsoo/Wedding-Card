@@ -174,7 +174,8 @@
                      th:style="${wedding.mainPhotoImgStyle}">
                 <div class="forever-arch-placeholder"
                      th:if="${wedding.mainPhotoBase64 == null or #strings.isEmpty(wedding.mainPhotoBase64)}">
-                    <span>📷</span>
+                    <i class="ti ti-camera"></i>
+                    <span>사진을 업로드하세요</span>
                 </div>
             </div>
             <div class="forever-date" id="foreverDate"
@@ -1021,7 +1022,7 @@
         if (!has && !archPh && arch) {
             archPh = document.createElement('div');
             archPh.className = 'forever-arch-placeholder';
-            archPh.innerHTML = '<span>📷</span>';
+            archPh.innerHTML = '<i class="ti ti-camera"></i><span>사진을 업로드하세요</span>';
             arch.appendChild(archPh);
         }
         if (archPh) archPh.style.display = has ? 'none' : '';

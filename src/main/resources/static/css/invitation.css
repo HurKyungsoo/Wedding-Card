@@ -1611,16 +1611,20 @@ body{
     object-position: center top;
     display: block;
 }
+/* 다른 테마(.hero-fullphoto-placeholder)와 같은 카메라 아이콘 + 안내 문구 */
 .forever-arch-placeholder{
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 40px;
-    background: #e8e4de;
+    gap: 10px;
+    background: #f0ece6;
     color: #b0a898;
 }
+.forever-arch-placeholder i{font-size:40px;opacity:0.4;}
+.forever-arch-placeholder span{font-size:12px;letter-spacing:2px;opacity:0.6;}
 
 /* 날짜 — 민트/그린 큰 폰트, 전역 글꼴 선택을 따름 */
 .forever-date{
