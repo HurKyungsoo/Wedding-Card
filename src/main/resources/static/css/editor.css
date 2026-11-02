@@ -1069,35 +1069,6 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-marriage-photo{width:100%;flex:1;margin-top:5px;background:#ececec;min-height:0;}
 .ed-dt-marriage-info{font-family:var(--font-sans);font-size:4px;color:#6a6a6a;text-align:center;line-height:1.5;margin-top:4px;}
 
-/* ── 썸네일 사진 ──
-   회색 블록만으로는 "미완성 화면"처럼 보여서, 랜딩 페이지에 쓰는 샘플 사진을
-   사진 자리에 깐다. 레이아웃(구조 차이)은 그대로 두고 회색 블록만 사진으로 바꾼 것. */
-.ed-dt-photo-ph{background:#ececec url('/images/theme-basic.webp') center 30%/cover no-repeat;}
-.ed-dt-fill,.ed-dt-pink{background:#ececec url('/images/theme-story.webp') center 12%/cover no-repeat;}
-.ed-dt-married{background:#ececec url('/images/theme-married.webp') center 20%/cover no-repeat;}
-.ed-dt-forever-arch{background:#ddd url('/images/theme-forever.webp') center 25%/cover no-repeat;}
-.ed-dt-marriage-photo{background:#ececec url('/images/theme-basic.webp') center 30%/cover no-repeat;}
-/* 사진 위에 글자가 얹히는 테마는 대비 확보 */
-.ed-dt-fill::before{
-    content:'';position:absolute;inset:0;
-    background:linear-gradient(to top,rgba(255,255,255,.92) 0%,rgba(255,255,255,.6) 40%,rgba(255,255,255,0) 70%);
-    pointer-events:none;
-}
-/* Getting Married 는 실제 테마도 어두운 사진 위 흰 글씨라 썸네일도 같게 */
-.ed-dt-married::before{
-    content:'';position:absolute;inset:0;
-    background:linear-gradient(to top,rgba(0,0,0,.55) 0%,rgba(0,0,0,.15) 50%,rgba(0,0,0,0) 75%);
-    pointer-events:none;
-}
-.ed-dt-married .ed-dt-married-big{color:var(--color-white);}
-.ed-dt-married .ed-dt-datebar-married{color:rgba(255,255,255,.9);}
-.ed-dt-pink::before{
-    content:'';position:absolute;inset:0;
-    background:linear-gradient(to top,rgba(255,255,255,.9) 0%,rgba(255,255,255,.4) 45%,rgba(255,255,255,0) 70%);
-    pointer-events:none;
-}
-.ed-dt-fill > *,.ed-dt-pink > *,.ed-dt-married > *{z-index:1;}
-
 /* 글꼴 색상 행 */
 .ed-color-row{display:flex;align-items:center;gap:8px;}
 .ed-color-hex{
