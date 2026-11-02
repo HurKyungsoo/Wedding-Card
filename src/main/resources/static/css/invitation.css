@@ -2154,10 +2154,13 @@ body{ -webkit-overflow-scrolling:touch; }
 }
 
 /* 지도 — full-width, 카드 없이 */
+/* 지도·내비게이션도 다른 섹션 카드(.cal-card, .acct-card …)처럼 둥근 카드로 */
 .map-full{
     width:100%;
     position:relative;
     overflow:hidden;
+    border-radius:18px;
+    border:0.5px solid rgba(180,160,130,0.18);
 }
 
 /* 지도 래퍼 — Static Map img 컨테이너 */
@@ -2190,6 +2193,9 @@ body{ -webkit-overflow-scrolling:touch; }
 .map-navi-section{
     padding:24px 18px 8px;
     background:var(--color-white);
+    border-radius:18px;
+    border:0.5px solid rgba(180,160,130,0.18);
+    margin-top:12px;
 }
 .map-navi-title{
     font-size:15px;font-weight:600;
