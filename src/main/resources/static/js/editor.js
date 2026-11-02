@@ -98,7 +98,29 @@ var PICKER_GROUPS = [
     { hiddenId: 'fontVal',          itemSelector: '.ed-font-opt',           dataAttr: 'font' }
 ];
 
+/* ──────────────────────────────────────
+   세례명 입력칸 — 값이 없으면 숨기고 "+ 세례명" 버튼만 보여준다.
+   세례명은 쓰는 사람이 적은데 성함 칸 옆에 같은 크기로 있으면
+   이름을 세례명 칸에 잘못 넣는 일이 생겼다. 값이 있으면 처음부터 펼친다.
+────────────────────────────────────── */
+function syncBaptismVisibility() {
+    document.querySelectorAll('.ed-baptism-input').forEach(function(input) {
+        var btn = input.parentNode.querySelector('.ed-baptism-add');
+        if (!btn) return;
+        var has = input.value.trim() !== '';
+        input.classList.toggle('collapsed', !has);
+        btn.style.display = has ? 'none' : '';
+    });
+}
+function showBaptism(btn) {
+    var input = btn.parentNode.querySelector('.ed-baptism-input');
+    input.classList.remove('collapsed');
+    btn.style.display = 'none';
+    input.focus();
+}
+
 function resyncPickerVisuals() {
+    syncBaptismVisibility();   /* 되돌리기로 세례명 값이 바뀌어도 표시를 맞춘다 */
     PICKER_GROUPS.forEach(function(g) {
         var hidden = document.getElementById(g.hiddenId);
         if (!hidden) return;

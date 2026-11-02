@@ -492,6 +492,15 @@ textarea.ed-input{resize:none;line-height:1.75;}
     color:var(--color-brown);
 }
 .ed-baptism-input::placeholder{color:#bbb;}
+.ed-baptism-input.collapsed{display:none;}
+.ed-baptism-add{
+    flex-shrink:0;
+    padding:0 12px;border-radius:8px;
+    border:1px dashed var(--color-border);background:transparent;
+    color:#9a8a74;font-size:12px;cursor:pointer;white-space:nowrap;
+    transition:border-color .15s,color .15s;
+}
+.ed-baptism-add:hover{border-color:var(--color-taupe);color:var(--color-ink);}
 
 /* ── 표시순서 안내 문구 블록 ── */
 .ed-order-notice{
@@ -1734,10 +1743,12 @@ textarea.ed-input{resize:none;line-height:1.75;}
    - 미리보기는 그 빈자리에 absolute 로 고정 — 폼을 스크롤해도 폰은 제자리.
    - 넓은 화면에서 좌우 여백은 전부 같은 회색 배경이라, 좌/우 패널이 나뉘어 보이던 느낌이 없다. */
 @media (min-width:1025px){
-    .ed-root{
-        --ed-phone:360px;
+    :root{
+        --ed-phone:400px;   /* 실시간 미리보기 폭 — 360 은 답답해서 400 으로 */
         --ed-gap:48px;
         --ed-form:720px;
+    }
+    .ed-root{
         --ed-left:max(24px, calc((100% - var(--ed-phone) - var(--ed-gap) - var(--ed-form)) / 2));
         background:#efedea;
     }
@@ -1769,5 +1780,5 @@ textarea.ed-input{resize:none;line-height:1.75;}
     .ed-section{border:none;box-shadow:0 1px 3px rgba(0,0,0,.04);border-radius:16px;}
     /* 헤더도 같은 폭에 맞춰 로고는 폰 왼쪽 끝, 버튼은 폼 오른쪽 끝과 줄을 맞춘다.
        헤더는 fixed 라 % 가 화면 폭 기준 — .ed-root 의 --ed-left 와 같은 계산 */
-    .ed-header{padding:0 max(1.8rem, calc((100% - 360px - 48px - 720px) / 2));}
+    .ed-header{padding:0 max(1.8rem, calc((100% - var(--ed-phone) - var(--ed-gap) - var(--ed-form)) / 2));}
 }

@@ -444,6 +444,7 @@
                         <div class="ed-ctrl ed-inline-inputs">
                             <input class="ed-input ed-name-input" type="text" th:field="*{groomName}" placeholder="신랑 성함">
                             <input class="ed-input ed-baptism-input" type="text" th:field="*{groomBaptism}" placeholder="세례명 (선택)">
+                            <button type="button" class="ed-baptism-add" onclick="showBaptism(this)">+ 세례명</button>
                         </div>
                     </div>
                 </div>
@@ -455,6 +456,7 @@
                         <div class="ed-ctrl ed-inline-inputs">
                             <input class="ed-input ed-name-input" type="text" th:field="*{brideName}" placeholder="신부 성함">
                             <input class="ed-input ed-baptism-input" type="text" th:field="*{brideBaptism}" placeholder="세례명 (선택)">
+                            <button type="button" class="ed-baptism-add" onclick="showBaptism(this)">+ 세례명</button>
                         </div>
                     </div>
                 </div>
