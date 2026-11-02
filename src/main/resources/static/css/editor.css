@@ -129,14 +129,17 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-sans);}
     overflow:hidden;
 }
 
-/* ── 왼쪽: 청첩장 미리보기 (폰 프레임 우측 정렬 → 중앙 경계 쪽) ── */
+/* ── 왼쪽: 청첩장 미리보기 ──
+   예전엔 width:46% + 우측 정렬이라 넓은 화면일수록 폰 왼쪽에 빈 공간이 커지고
+   그만큼 편집 폼이 좁아졌다. 폰 폭(360px)만큼만 차지하게 바꾸고 남는 폭은 폼에 준다. */
 .ed-preview{
-    width:46%;min-width:340px;flex-shrink:0;
+    /* 폰 360px + 좌우 패딩(2.4rem×2) + iframe max-width 여유(1rem) */
+    flex:0 0 auto;width:calc(360px + 5.8rem);min-width:0;
     background:linear-gradient(180deg,#e8e4dd 0%,#e2ded7 100%);
     display:flex;flex-direction:column;
-    align-items:flex-end;
+    align-items:center;
     border-right:1px solid #d8d0c8;
-    padding:1.6rem 2rem 0 1.4rem;
+    padding:1.6rem 2.4rem 0;
     overflow:hidden;
 }
 
@@ -225,8 +228,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-sans);}
 /* 편집 폼 — 왼쪽(중앙 경계) 쪽으로 붙임 */
 .ed-main form,
 .ed-main #editForm{
-    max-width:620px;
-    margin:0 auto 0 0;
+    max-width:760px;
+    margin:0 auto;
 }
 
 /* 메뉴 열릴 때 오른쪽 패딩 확보 */
@@ -259,9 +262,11 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-sans);}
     transition:box-shadow .25s, border-color .25s;
 }
 .ed-section:hover{box-shadow:0 3px 14px rgba(0,0,0,0.08);}
+/* 열린 섹션 강조는 좌측 분홍 바 하나로 충분하다 — 테두리·그림자·헤더·아이콘까지
+   전부 분홍이면 화면 전체가 분홍이 되어 정작 "게시하기"가 안 보인다 */
 .ed-section.open{
-    border-color:#e4c8d0;
-    box-shadow:0 3px 18px rgba(196,116,138,.12);
+    border-color:var(--color-border);
+    box-shadow:0 3px 18px rgba(0,0,0,.07);
 }
 .ed-sec-hd{
     display:flex;align-items:center;justify-content:space-between;
@@ -282,9 +287,9 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-sans);}
 .ed-sec-title{font-size:13px;font-weight:600;color:var(--color-ink);letter-spacing:.1px;}
 .ed-chevron{color:#ccc;font-size:14px;transition:transform .25s, color .25s;}
 .ed-section.open > .ed-sec-hd > .ed-chevron,
-.ed-section.open > .ed-sec-hd > .ed-sec-hd-left ~ .ed-chevron{transform:rotate(0deg);color:var(--color-rose);}
+.ed-section.open > .ed-sec-hd > .ed-sec-hd-left ~ .ed-chevron{transform:rotate(0deg);color:#a09080;}
 .ed-section.collapsed > .ed-sec-hd > .ed-chevron{transform:rotate(-90deg);}
-.ed-section.open > .ed-sec-hd{background:linear-gradient(to right,#fff8f9,var(--color-white));}
+.ed-section.open > .ed-sec-hd{background:var(--color-white);}
 .ed-sec-bd{padding:.9rem 1.3rem 1.4rem;border-top:1px solid #f5efe9;}
 
 .ed-sec-undo-btn{
@@ -304,7 +309,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-sans);}
     font-size:16px;flex-shrink:0;
     transition:background .2s, color .2s;
 }
-.ed-section.open .ed-sec-icon{background:#fde8ed;color:var(--color-rose);}
+.ed-section.open .ed-sec-icon{background:var(--color-bg-soft);color:var(--color-ink);}
 
 /* ── 인라인 행 ── */
 .ed-row{
@@ -465,9 +470,10 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-heart.pink{color:#e8a0b0;}
 
 /* ── 성함 + 세례명 입력 행 ── */
+/* 성함이 주 입력, 세례명은 선택 입력 — 폭도 그 비중대로 */
 .ed-name-input{
-    width:120px;
-    flex:0 0 120px;
+    width:auto;min-width:0;
+    flex:1.4 1 0;
     font-weight:500;
     color:var(--color-charcoal);
     background:var(--color-white);
@@ -477,7 +483,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
     font-size:13px;
 }
 .ed-baptism-input{
-    flex:1;
+    flex:1 1 0;min-width:0;
     background:#f5f5f5;
     border:1px solid var(--color-border-soft);
     border-radius:8px;
@@ -486,6 +492,15 @@ textarea.ed-input{resize:none;line-height:1.75;}
     color:var(--color-brown);
 }
 .ed-baptism-input::placeholder{color:#bbb;}
+.ed-baptism-input.collapsed{display:none;}
+.ed-baptism-add{
+    flex-shrink:0;
+    padding:0 12px;border-radius:8px;
+    border:1px dashed var(--color-border);background:transparent;
+    color:#9a8a74;font-size:12px;cursor:pointer;white-space:nowrap;
+    transition:border-color .15s,color .15s;
+}
+.ed-baptism-add:hover{border-color:var(--color-taupe);color:var(--color-ink);}
 
 /* ── 표시순서 안내 문구 블록 ── */
 .ed-order-notice{
@@ -1009,58 +1024,75 @@ textarea.ed-input{resize:none;line-height:1.75;}
    흰 배경 + 평평한 회색 사진 블록 + 실제 레이아웃의 축소판.
    장식(그라데이션·아이콘·하트)을 넣지 않는다 — 100×140에서는 노이즈만 되고,
    여러 장을 늘어놓았을 때 테마 간 "구조 차이"가 안 읽힌다. */
-.ed-dt-ph{background:#ececec;flex-shrink:0;}
-
-/* 1. 기본 — 사진(상단) + 이름 + 날짜 + 장소 */
-.ed-dt-basic{background:var(--color-white);justify-content:flex-start;}
-.ed-dt-photo-ph{width:100%;height:80px;background:#ececec;border-radius:0;margin-bottom:9px;}
-.ed-dt-basic-row{display:flex;align-items:center;justify-content:center;gap:7px;}
-.ed-dt-basic-name{font-family:var(--font-serif);font-size:7px;color:#3a3a3a;letter-spacing:0.5px;}
-.ed-dt-basic-div{width:1px;height:9px;background:#ccc;}
-.ed-dt-basic-date{font-family:var(--font-serif);font-size:5px;color:#7a7a7a;letter-spacing:0.3px;margin-top:6px;}
-.ed-dt-basic-place{font-family:var(--font-serif);font-size:4.5px;font-weight:300;color:#9a9a9a;letter-spacing:0.3px;margin-top:2px;}
-
-/* 2·3. Our story — 사진이 카드를 채우고 그 위에 타이틀/날짜 */
-.ed-dt-fill,.ed-dt-pink{background:#ececec;}
-.ed-dt-bigtext{font-family:'Cormorant Garamond',serif;font-size:15px;color:#3a3a3a;line-height:1.1;text-align:center;font-weight:600;}
-.ed-dt-datebar{position:absolute;bottom:10px;font-size:4.5px;color:#6a6a6a;letter-spacing:0.3px;}
-.ed-dt-bigtext-story{font-family:'Dancing Script',cursive;font-weight:600;font-size:20px;color:#2a2a2a;text-align:center;line-height:1.0;position:absolute;bottom:30px;left:4px;right:4px;}
-.ed-dt-datebar-story{font-family:var(--font-sans);color:#5a5a5a;position:absolute;bottom:7px;left:0;right:0;text-align:center;line-height:1.5;}
-.ed-dt-script{font-family:'Pinyon Script',cursive;font-size:16px;text-align:center;line-height:1.1;}
-/* 핑크만 색을 남긴다 — 안 그러면 Our story 두 종을 썸네일로 구분할 수 없다 */
-.ed-dt-script-center{
-    font-family:'Pinyon Script',cursive;font-size:17px;color:#d9527a;
-    text-align:center;line-height:1.0;position:absolute;bottom:30px;left:4px;right:4px;
+/* 1~5 는 랜딩 페이지 테마 카드(index.html #themes, 162px 폭)에서 사진만 뺀 구성.
+   랜딩의 px 값을 1.62 로 나눠 cqw 로 옮겼다 — 썸네일 폭(100/90/82px)이 바뀌어도
+   글자·간격 비율이 그대로 유지된다. 사진 자리는 회색 블록, 그라데이션은 랜딩 그대로. */
+.ed-design-thumb{container-type:size;}
+/* 사진 자리 = 투명 격자(체커보드). 모든 테마 공통 — "여기에 사진이 들어간다"는 표시.
+   Getting Married 의 흰 글씨도 읽힐 만큼의 명도로 맞췄다.
+   칸 크기는 px — 썸네일 자신(컨테이너)에는 cqw 를 쓸 수 없다 */
+.ed-dt-ph,
+.ed-dt-marriage-photo{
+    flex-shrink:0;
+    background-color:#f2f2f2;
+    background-image:conic-gradient(#e4e4e4 25%,transparent 0 50%,#e4e4e4 0 75%,transparent 0);
+    background-size:23px 23px;
 }
-.ed-dt-datebar-pink-center{
-    position:absolute;bottom:7px;left:4px;right:4px;
-    font-family:var(--font-serif);font-size:4.5px;color:#c47a90;
-    letter-spacing:0.3px;line-height:1.6;text-align:center;
-}
+.ed-dt-fade{position:absolute;left:0;right:0;bottom:0;height:45%;pointer-events:none;}
+.ed-dt-fade-white{background:linear-gradient(180deg,transparent 0%,rgba(255,255,255,.4) 45%,rgba(255,255,255,.88) 72%,rgba(255,255,255,.98) 100%);}
+.ed-dt-fade-pink{background:linear-gradient(180deg,transparent 0%,rgba(253,220,225,.35) 40%,rgba(253,235,238,.82) 70%,rgba(253,240,243,.97) 100%);}
+.ed-dt-fade-dark{height:38%;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.38) 100%);}
 
-/* 4. Getting Married — 사진 위 좌하단 타이틀 */
-.ed-dt-married{background:#ececec;overflow:hidden;}
-.ed-dt-married-big{font-family:'Great Vibes','Dancing Script',cursive;font-size:18px;color:#3a3a3a;position:absolute;bottom:20px;left:8px;line-height:0.95;text-align:left;font-weight:400;}
-.ed-dt-datebar-married{color:#6a6a6a;font-family:var(--font-sans);}
+/* 1. 기본 — 사진(62%) + Groom/Bride 이름 + 날짜 + 장소 */
+.ed-dt-basic{background:#fdfaf8;justify-content:flex-start;}
+.ed-dt-basic-photo{width:100%;flex:0 0 62%;}
+.ed-dt-basic-info{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3.7cqw;padding:4cqw 6cqw;text-align:center;}
+.ed-dt-basic-row{display:flex;align-items:center;justify-content:center;gap:6.2cqw;}
+.ed-dt-basic-person{display:flex;flex-direction:column;align-items:center;gap:1.2cqw;}
+.ed-dt-basic-label{font-family:'Cormorant Garamond',serif;font-size:3.7cqw;letter-spacing:1.2cqw;text-transform:uppercase;color:#C4956A;line-height:1;}
+.ed-dt-basic-name{font-family:var(--font-serif);font-size:7.4cqw;color:var(--color-black);letter-spacing:1.2cqw;line-height:1;}
+.ed-dt-basic-div{width:1px;height:12.3cqw;background:#C4956A;}
+.ed-dt-basic-date{font-family:'EB Garamond','Cormorant Garamond',serif;font-size:5.2cqw;color:var(--color-charcoal);letter-spacing:.4cqw;line-height:1.1;}
+.ed-dt-basic-place{font-family:var(--font-serif);font-size:4.6cqw;font-weight:300;color:#5a5a58;letter-spacing:.25cqw;line-height:1.1;}
 
-/* 5. 아치형 — 실제 forever-layout을 그대로 축소.
-   배경 베이지(#F5F2EC), 이름은 세로로 쌓임, 날짜는 민트그린 — 이 세 가지가
-   이 테마의 정체성이라 다른 썸네일처럼 단색 흰색으로 만들면 실제와 딴판이 된다. */
-.ed-dt-forever{background:#F5F2EC;position:relative;flex-direction:column;justify-content:center;align-items:center;gap:0;padding:8px 6px;}
-.ed-dt-forever-script{font-family:'Sacramento',cursive;font-size:11px;color:var(--color-charcoal);text-align:center;line-height:1.15;margin-bottom:4px;}
-/* 실제와 동일하게 세로 배치 (신랑 / & / 신부) */
-.ed-dt-forever-names{display:flex;flex-direction:column;align-items:center;gap:0;font-family:var(--font-serif);font-size:6px;color:var(--color-charcoal);letter-spacing:0.5px;line-height:1.35;margin-bottom:5px;}
-.ed-dt-forever-amp{color:var(--color-charcoal);font-size:5.5px;}
-.ed-dt-forever-arch{width:38px;aspect-ratio:3/4;border-radius:999px 999px 0 0;background:#ddd;border:none;margin-bottom:5px;}
-.ed-dt-forever-date{font-family:var(--font-serif);font-size:6px;font-weight:500;color:#6FAF8A;letter-spacing:0.6px;margin-bottom:2px;}
-.ed-dt-forever-place{font-family:var(--font-serif);font-size:4.5px;color:#5a5a58;letter-spacing:0.8px;}
+/* 2. Our story — 사진 꽉 채움 + 흰 그라데이션 + 큰 타이틀 + 이름 + 날짜 */
+.ed-dt-story-title{position:absolute;left:0;right:0;bottom:28%;padding:0 5cqw;text-align:center;font-family:'Great Vibes','Dancing Script',cursive;font-size:18.5cqw;color:var(--color-black);line-height:.92;text-shadow:0 1px 10px rgba(255,255,255,.9);}
+.ed-dt-story-names{position:absolute;left:0;right:0;bottom:16%;text-align:center;font-family:'Cormorant Garamond',serif;font-size:6.2cqw;color:var(--color-charcoal);letter-spacing:1.2cqw;}
+.ed-dt-story-names i{color:rgba(0,0,0,.5);}
+.ed-dt-story-date{position:absolute;left:0;right:0;bottom:7%;text-align:center;font-family:'Cormorant Garamond',serif;font-size:5.2cqw;color:#5a5a58;letter-spacing:.9cqw;}
+
+/* 3. Our story (핑크) — 핑크 그라데이션 + 핑크 타이틀 + 날짜·장소 */
+.ed-dt-pink-title{position:absolute;left:0;right:0;bottom:28%;padding:0 5cqw;text-align:center;font-family:'Dancing Script',cursive;font-weight:600;font-size:17.3cqw;color:#ff9a9a;line-height:.95;text-shadow:0 1px 10px rgba(255,255,255,.6);}
+.ed-dt-pink-info{position:absolute;left:0;right:0;bottom:13%;text-align:center;font-family:'Pretendard','Noto Sans KR',sans-serif;}
+.ed-dt-pink-date{font-size:4.9cqw;color:#e06080;letter-spacing:.5cqw;}
+.ed-dt-pink-place{font-size:4.6cqw;color:#c87090;letter-spacing:.3cqw;margin-top:1.2cqw;}
+
+/* 4. Getting Married — 어두운 사진(랜딩은 brightness .82) + 좌하단 흰 타이틀 + 날짜 */
+.ed-dt-married-title{position:absolute;left:4.9cqw;right:0;bottom:20%;text-align:left;font-family:'Great Vibes','Dancing Script',cursive;font-size:18.5cqw;color:var(--color-white);line-height:.88;letter-spacing:-.3cqw;}
+.ed-dt-married-big{font-size:23.5cqw;margin-top:-1.2cqw;}
+/* 흰 글씨 테마라 격자를 한 톤만 낮추고, 하단 그라데이션 + 글자 그림자로 대비 확보 */
+.ed-dt-married{background-color:#dcdcdc;background-image:conic-gradient(#cdcdcd 25%,transparent 0 50%,#cdcdcd 0 75%,transparent 0);}
+.ed-dt-married .ed-dt-fade-dark{height:55%;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.42) 100%);}
+.ed-dt-married-title,.ed-dt-married-date{text-shadow:0 1px 6px rgba(0,0,0,.35);}
+.ed-dt-married-date{position:absolute;left:0;right:0;bottom:4%;text-align:center;font-family:'Patrick Hand',sans-serif;font-size:6.2cqw;letter-spacing:.9cqw;color:var(--color-white);}
+
+/* 5. 아치형 — 베이지 배경 + 스크립트 + 이름(한 줄) + 아치 사진 + 민트 날짜 + 장소 */
+/* 썸네일 자신(컨테이너)에는 cqw 를 못 쓴다 — 자기 자신이 아니라 바깥 컨테이너 기준이 되므로 % 로 */
+.ed-dt-forever{background:#F5F2EC;justify-content:center;gap:2%;padding:5% 8.6%;}
+.ed-dt-forever-script{font-family:'Dancing Script',cursive;font-size:10.5cqw;color:var(--color-charcoal);text-align:center;line-height:1.2;white-space:nowrap;}  /* 실제 테마처럼 한 줄 */
+/* 실제 테마처럼 신랑 / & / 신부 세로로 쌓기 */
+.ed-dt-forever-names{display:flex;flex-direction:column;align-items:center;gap:.8cqw;font-family:var(--font-serif);font-size:7.4cqw;color:var(--color-charcoal);letter-spacing:1.85cqw;line-height:1;}
+.ed-dt-forever-amp{font-size:6.2cqw;color:#E8A0B4;letter-spacing:0;}
+.ed-dt-forever-arch{width:42cqw;height:46cqw;border-radius:25cqw 25cqw 0 0;box-shadow:inset 0 0 0 1px #c9c2b6;}  /* 연한 격자가 베이지 배경에 묻혀서 1px 테두리로 아치 윤곽을 살린다 */  /* 이름이 세로 3줄이 된 만큼 아치를 줄여 140px 안에 맞춤 */
+.ed-dt-forever-date{font-family:'Cormorant Garamond',serif;font-size:8.6cqw;color:#6FAF8A;letter-spacing:1.2cqw;line-height:1;}
+.ed-dt-forever-place{font-family:'Cormorant Garamond','EB Garamond',serif;font-size:4.6cqw;color:#5a5a58;letter-spacing:1.2cqw;text-transform:uppercase;line-height:1;}
 
 /* 6. THE MARRIAGE — 라벨 + 큰 날짜 + 이름 + 사진 + 일시·장소 */
 .ed-dt-marriage{background:var(--color-white);flex-direction:column;justify-content:flex-start;align-items:center;padding:9px 6px 6px;gap:0;}
 .ed-dt-marriage-label{font-family:var(--font-sans);font-size:4px;font-weight:500;letter-spacing:1px;color:#9aa5b2;}
 .ed-dt-marriage-date{font-family:var(--font-sans);font-size:16px;font-weight:300;color:#5a5a5a;line-height:1.1;margin-top:2px;}
 .ed-dt-marriage-names{font-family:var(--font-sans);font-size:4.5px;font-weight:600;color:#3a3a3a;margin-top:4px;}
-.ed-dt-marriage-photo{width:100%;flex:1;margin-top:5px;background:#ececec;min-height:0;}
+.ed-dt-marriage-photo{width:100%;flex:1;margin-top:5px;min-height:0;}
 .ed-dt-marriage-info{font-family:var(--font-sans);font-size:4px;color:#6a6a6a;text-align:center;line-height:1.5;margin-top:4px;}
 
 /* 글꼴 색상 행 */
@@ -1068,16 +1100,16 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-color-hex{
     flex:1;max-width:130px;
     font-family:monospace;font-size:12px;
-    background:var(--color-ink);color:var(--color-white);
-    border:none;text-align:left;
+    background:var(--color-white);color:var(--color-ink);
+    border:1px solid var(--color-border);text-align:left;
 }
 .ed-color-reset{
     width:34px;height:34px;border-radius:7px;
-    background:#888;border:none;color:var(--color-white);
+    background:var(--color-bg-alt);border:1px solid var(--color-border);color:#7a6a58;
     cursor:pointer;display:flex;align-items:center;justify-content:center;
     font-size:14px;transition:background .2s;
 }
-.ed-color-reset:hover{background:#666;}
+.ed-color-reset:hover{background:var(--color-bg-soft);color:var(--color-ink);}
 .ed-color-swatch{
     width:34px;height:34px;border-radius:7px;
     border:none;cursor:pointer;
@@ -1543,8 +1575,8 @@ textarea.ed-input{resize:none;line-height:1.75;}
 /* ── 태블릿 (≤ 1024px) ── */
 @media (max-width:1024px){
     .ed-preview{
-        width:42%;
-        min-width:280px;
+        width:calc(320px + 3.8rem);
+        padding:1.2rem 1.4rem 0;
     }
     .ed-preview iframe{
         width:320px;
@@ -1564,7 +1596,6 @@ textarea.ed-input{resize:none;line-height:1.75;}
     .ed-design-card{
         flex:0 0 90px;
     }
-    .ed-dt-photo-ph{width:54px;height:44px;}
 }
 
 /* ── 모바일 (≤ 720px) — 세로 스택 ── */
@@ -1611,7 +1642,6 @@ textarea.ed-input{resize:none;line-height:1.75;}
     .ed-design-card{
         flex:0 0 82px;
     }
-    .ed-dt-photo-ph{width:48px;height:38px;}
     .nav-panel{
         width:200px;
     }
@@ -1703,3 +1733,53 @@ textarea.ed-input{resize:none;line-height:1.75;}
     font-family:var(--font-sans);transition:all .15s;white-space:nowrap;
 }
 .ed-suggest-chip:hover{border-color:var(--color-rose);color:var(--color-ink);background:#fff5f7;}
+
+/* ════════════════════════════════════════
+   가운데 집중형 레이아웃 (데스크톱 > 1024px)
+   ════════════════════════════════════════
+   폰 미리보기(360) + 간격(48) + 편집 폼(720)을 한 덩어리로 보고 화면 가운데에 둔다.
+   - 스크롤 컨테이너는 그대로 .ed-main 하나 (scroll spy·섹션 이동 JS 를 건드리지 않기 위해).
+     대신 .ed-main 을 화면 전체 폭으로 펼쳐서 스크롤바가 창 오른쪽 끝에 오게 하고,
+     왼쪽 패딩으로 미리보기 자리를 비워둔다.
+   - 미리보기는 그 빈자리에 absolute 로 고정 — 폼을 스크롤해도 폰은 제자리.
+   - 넓은 화면에서 좌우 여백은 전부 같은 회색 배경이라, 좌/우 패널이 나뉘어 보이던 느낌이 없다. */
+@media (min-width:1025px){
+    :root{
+        --ed-phone:400px;   /* 실시간 미리보기 폭 — 360 은 답답해서 400 으로 */
+        --ed-gap:48px;
+        --ed-form:720px;
+    }
+    .ed-root{
+        --ed-left:max(24px, calc((100% - var(--ed-phone) - var(--ed-gap) - var(--ed-form)) / 2));
+        background:#efedea;
+    }
+    .ed-center{display:block;position:relative;height:100%;}
+    .ed-preview{
+        position:absolute;top:0;bottom:0;left:var(--ed-left);z-index:2;
+        width:var(--ed-phone);
+        padding:1.6rem 0 1.2rem;
+        background:transparent;border-right:none;
+        align-items:stretch;
+    }
+    .ed-preview iframe,
+    .ed-preview-badge,
+    .ed-preview-bottom{width:100%;max-width:100%;}
+    .ed-preview iframe{
+        border-radius:28px 28px 0 0;
+        box-shadow:0 18px 50px rgba(44,30,20,.14),0 0 0 1px rgba(0,0,0,.05);
+    }
+    .ed-preview-bottom{border-radius:0 0 28px 28px;background:rgba(255,255,255,.7);}
+    .ed-main{
+        height:100%;
+        background:transparent;
+        padding:1.6rem 2rem 4rem calc(var(--ed-left) + var(--ed-phone) + var(--ed-gap));
+    }
+    .ed-main form,
+    .ed-main #editForm{max-width:var(--ed-form);margin:0;}
+    /* 메뉴 패널이 열려도 가운데 덩어리는 움직이지 않는다 — 패널은 위에 겹쳐 뜸 */
+    .ed-main.panel-open{padding-right:2rem;}
+    .ed-section{border:none;box-shadow:0 1px 3px rgba(0,0,0,.04);border-radius:16px;}
+    /* 헤더도 같은 폭에 맞춰 로고는 폰 왼쪽 끝, 버튼은 폼 오른쪽 끝과 줄을 맞춘다.
+       헤더는 fixed 라 % 가 화면 폭 기준 — .ed-root 의 --ed-left 와 같은 계산 */
+    .ed-header{padding:0 max(1.8rem, calc((100% - var(--ed-phone) - var(--ed-gap) - var(--ed-form)) / 2));}
+}
