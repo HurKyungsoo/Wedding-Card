@@ -2154,13 +2154,18 @@ body{ -webkit-overflow-scrolling:touch; }
 }
 
 /* 지도 — full-width, 카드 없이 */
-/* 지도·내비게이션도 다른 섹션 카드(.cal-card, .acct-card …)처럼 둥근 카드로 */
+/* 지도 + 내비게이션을 하나로 이어진 둥근 카드로 (다른 섹션의 .cal-card, .acct-card 와 같은 모서리·테두리).
+   감싸는 쪽에서 둥글리면 내비 버튼을 전부 꺼서 내비 영역이 숨겨져도 지도 카드 모서리가 그대로 둥글다 */
+.map-navi-card{
+    border-radius:18px;
+    border:0.5px solid rgba(180,160,130,0.18);
+    overflow:hidden;
+    background:var(--color-white);
+}
 .map-full{
     width:100%;
     position:relative;
     overflow:hidden;
-    border-radius:18px;
-    border:0.5px solid rgba(180,160,130,0.18);
 }
 
 /* 지도 래퍼 — Static Map img 컨테이너 */
@@ -2193,9 +2198,6 @@ body{ -webkit-overflow-scrolling:touch; }
 .map-navi-section{
     padding:24px 18px 8px;
     background:var(--color-white);
-    border-radius:18px;
-    border:0.5px solid rgba(180,160,130,0.18);
-    margin-top:12px;
 }
 .map-navi-title{
     font-size:15px;font-weight:600;

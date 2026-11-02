@@ -554,7 +554,9 @@
             <div class="map-addr-text" th:text="${wedding.mapAddressRoad}">도로명주소</div>
         </div>
 
-        <!-- 지도 full-width (카드 없이) -->
+        <!-- 지도 + 내비게이션을 하나의 둥근 카드로 묶는다 -->
+        <div class="map-navi-card">
+        <!-- 지도 full-width -->
         <div class="map-full reveal-scale delay-3"
              th:attr="data-lat=${wedding.mapLat},data-lng=${wedding.mapLng},data-place=${wedding.mapPlaceName},data-addr=${wedding.mapAddressRoad}">
 
@@ -614,6 +616,7 @@
                     </a>
                 </div>
         </div>
+        </div><!-- /.map-navi-card -->
     </div>
 
     <!-- ⑧ 마음 전하실 곳 -->
