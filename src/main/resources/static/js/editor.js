@@ -372,7 +372,9 @@ function revertSection(evt, sectionKey) {
         'd-mon-y':        d2 + ' · ' + MON[d.getMonth()] + ' · ' + y,  /* Getting Married */
         'y-m-d-plain':    y + '. ' + m2 + '. ' + d2,             /* 아치형 — 실제 forever-date와 동일 */
         'm-d':            (d.getMonth() + 1) + '.' + d2,         /* THE MARRIAGE 큰 날짜 */
-        'y-m-d':          y + '. ' + m2 + '. ' + d2 + '.'
+        'y-m-d':          y + '. ' + m2 + '. ' + d2 + '.',
+        'ymd-dow-pm':     y + '.' + m2 + '.' + d2 + ' ' + DOW[d.getDay()] + ' 2:00 PM',  /* 기본 (랜딩과 동일 형식) */
+        'y-dot-m-dot-d':  y + ' · ' + m2 + ' · ' + d2                                    /* Our story · Getting Married · 아치형 */
     };
 
     document.querySelectorAll('[data-thumb-date]').forEach(function(el) {

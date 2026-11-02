@@ -235,47 +235,58 @@
                 <!-- 디자인 템플릿 가로 스크롤 -->
                 <div style="font-size:11.5px;font-weight:500;color:#6a5a50;letter-spacing:.1px;margin:2px 0 8px;">테마 디자인 선택</div>
                 <div class="ed-design-scroll" id="designScroll">
+                    <!-- 썸네일 1~5 는 랜딩(index.html #themes) 카드에서 사진만 뺀 구성.
+                         사진 자리는 회색 블록(.ed-dt-ph), 글자 크기는 cqw 라 썸네일 크기가 바뀌어도 비율 유지 -->
                     <div class="ed-design-card active" data-design="basic" onclick="pickDesign(this,'basic')">
                         <div class="ed-design-thumb ed-dt-basic">
-                            <div class="ed-dt-photo-ph"></div>
-                            <div class="ed-dt-basic-row">
-                                <span class="ed-dt-basic-name">신랑</span>
-                                <span class="ed-dt-basic-div"></span>
-                                <span class="ed-dt-basic-name">신부</span>
+                            <div class="ed-dt-ph ed-dt-basic-photo"></div>
+                            <div class="ed-dt-basic-info">
+                                <div class="ed-dt-basic-row">
+                                    <div class="ed-dt-basic-person"><span class="ed-dt-basic-label">Groom</span><span class="ed-dt-basic-name">신랑</span></div>
+                                    <span class="ed-dt-basic-div"></span>
+                                    <div class="ed-dt-basic-person"><span class="ed-dt-basic-label">Bride</span><span class="ed-dt-basic-name">신부</span></div>
+                                </div>
+                                <div class="ed-dt-basic-date" data-thumb-date="ymd-dow-pm">2026.10.24 SAT 2:00 PM</div>
+                                <div class="ed-dt-basic-place">웨딩홀</div>
                             </div>
-                            <div class="ed-dt-basic-date" data-thumb-date="m-dot-d-dot-y">10 · 24 · 2026</div>
-                            <div class="ed-dt-basic-place">웨딩홀</div>
                         </div>
                         <span class="ed-design-name">기본</span>
                     </div>
                     <div class="ed-design-card" data-design="our_story" onclick="pickDesign(this,'our_story')">
-                        <div class="ed-design-thumb ed-dt-fill">
-                            <div class="ed-dt-bigtext ed-dt-bigtext-story">Our story<br>begins</div>
-                            <div class="ed-dt-datebar ed-dt-datebar-story"><span data-thumb-date="ymd-dow-time">2026.06.19 FRI 13:00</span><br>웨딩홀</div>
+                        <div class="ed-design-thumb ed-dt-ph ed-dt-story">
+                            <div class="ed-dt-fade ed-dt-fade-white"></div>
+                            <div class="ed-dt-story-title">Our story<br>begins</div>
+                            <div class="ed-dt-story-names">신랑 <i>&amp;</i> 신부</div>
+                            <div class="ed-dt-story-date" data-thumb-date="y-dot-m-dot-d">2026 · 10 · 24</div>
                         </div>
                         <span class="ed-design-name">Our story begins</span>
                     </div>
                     <div class="ed-design-card" data-design="our_story_pink" onclick="pickDesign(this,'our_story_pink')">
-                        <div class="ed-design-thumb ed-dt-pink">
-                            <div class="ed-dt-script ed-dt-script-center">Our story<br>begins</div>
-                            <div class="ed-dt-datebar ed-dt-datebar-pink-center"><span data-thumb-date="ymd-dow-time">2026.07.01 WED 13:00</span><br>웨딩홀</div>
+                        <div class="ed-design-thumb ed-dt-ph ed-dt-pink">
+                            <div class="ed-dt-fade ed-dt-fade-pink"></div>
+                            <div class="ed-dt-pink-title">Our story<br>begins</div>
+                            <div class="ed-dt-pink-info">
+                                <div class="ed-dt-pink-date" data-thumb-date="ymd-dow-time">2026.10.24 SAT 13:00</div>
+                                <div class="ed-dt-pink-place">웨딩홀</div>
+                            </div>
                         </div>
                         <span class="ed-design-name">Our story (핑크)</span>
                     </div>
                     <div class="ed-design-card" data-design="married" onclick="pickDesign(this,'married')">
-                        <div class="ed-design-thumb ed-dt-married">
-                            <div class="ed-dt-married-big">Getting<br>Married</div>
-                            <div class="ed-dt-datebar ed-dt-datebar-married" data-thumb-date="d-mon-y">24 · MAY · 2026</div>
+                        <div class="ed-design-thumb ed-dt-ph ed-dt-married">
+                            <div class="ed-dt-fade ed-dt-fade-dark"></div>
+                            <div class="ed-dt-married-title"><div>Getting</div><div class="ed-dt-married-big">Married</div></div>
+                            <div class="ed-dt-married-date" data-thumb-date="y-dot-m-dot-d">2026 · 10 · 24</div>
                         </div>
                         <span class="ed-design-name">Getting Married</span>
                     </div>
                     <div class="ed-design-card" data-design="forever" onclick="pickDesign(this,'forever')">
                         <div class="ed-design-thumb ed-dt-forever">
                             <div class="ed-dt-forever-script">We're getting<br>married!</div>
-                            <div class="ed-dt-forever-names"><span class="ed-dt-forever-name">신랑</span><span class="ed-dt-forever-amp">&amp;</span><span class="ed-dt-forever-name">신부</span></div>
-                            <div class="ed-dt-forever-arch"></div>
-                            <div class="ed-dt-forever-date" data-thumb-date="y-m-d-plain">2026. 06. 27</div>
-                            <div class="ed-dt-forever-place">웨딩홀</div>
+                            <div class="ed-dt-forever-names">신랑<span class="ed-dt-forever-amp">&amp;</span>신부</div>
+                            <div class="ed-dt-ph ed-dt-forever-arch"></div>
+                            <div class="ed-dt-forever-date" data-thumb-date="y-dot-m-dot-d">2026 · 10 · 24</div>
+                            <div class="ed-dt-forever-place">WEDDING HALL</div>
                         </div>
                         <span class="ed-design-name">아치형</span>
                     </div>
