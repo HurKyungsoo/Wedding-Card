@@ -399,7 +399,7 @@
 
                 <!-- 신랑/신부 표시 순서 -->
                 <div class="ed-row" style="align-items:flex-start;">
-                    <span class="ed-label" style="padding-top:10px;">신랑/신부 표시순서</span>
+                    <span class="ed-label" style="padding-top:10px;">표시 순서</span>
                     <div class="ed-ctrl">
                         <div class="ed-tabs" id="orderTabs">
                             <button type="button" class="ed-tab active" data-val="groom" onclick="pickTab(this,'orderTabs','orderVal')">신랑측 먼저</button>
@@ -431,8 +431,8 @@
                     <div class="ed-person-title"><span class="ed-heart blue">♥</span> 신랑정보</div>
                     <div class="ed-row">
                         <div class="ed-ctrl ed-inline-inputs">
-                            <input class="ed-input ed-name-input" type="text" th:field="*{groomName}" placeholder="신랑성함">
-                            <input class="ed-input ed-baptism-input" type="text" th:field="*{groomBaptism}" placeholder="신랑 세례명을 입력해주세요.">
+                            <input class="ed-input ed-name-input" type="text" th:field="*{groomName}" placeholder="신랑 성함">
+                            <input class="ed-input ed-baptism-input" type="text" th:field="*{groomBaptism}" placeholder="세례명 (선택)">
                         </div>
                     </div>
                 </div>
@@ -442,8 +442,8 @@
                     <div class="ed-person-title"><span class="ed-heart pink">♥</span> 신부정보</div>
                     <div class="ed-row">
                         <div class="ed-ctrl ed-inline-inputs">
-                            <input class="ed-input ed-name-input" type="text" th:field="*{brideName}" placeholder="신부성함">
-                            <input class="ed-input ed-baptism-input" type="text" th:field="*{brideBaptism}" placeholder="신부 세례명을 입력해주세요.">
+                            <input class="ed-input ed-name-input" type="text" th:field="*{brideName}" placeholder="신부 성함">
+                            <input class="ed-input ed-baptism-input" type="text" th:field="*{brideBaptism}" placeholder="세례명 (선택)">
                         </div>
                     </div>
                 </div>
