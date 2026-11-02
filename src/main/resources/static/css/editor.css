@@ -1763,4 +1763,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
     /* 메뉴 패널이 열려도 가운데 덩어리는 움직이지 않는다 — 패널은 위에 겹쳐 뜸 */
     .ed-main.panel-open{padding-right:2rem;}
     .ed-section{border:none;box-shadow:0 1px 3px rgba(0,0,0,.04);border-radius:16px;}
+    /* 헤더도 같은 폭에 맞춰 로고는 폰 왼쪽 끝, 버튼은 폼 오른쪽 끝과 줄을 맞춘다.
+       헤더는 fixed 라 % 가 화면 폭 기준 — .ed-root 의 --ed-left 와 같은 계산 */
+    .ed-header{padding:0 max(1.8rem, calc((100% - 360px - 48px - 720px) / 2));}
 }
