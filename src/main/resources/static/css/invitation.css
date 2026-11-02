@@ -2184,12 +2184,11 @@ body{ -webkit-overflow-scrolling:touch; }
 
 /* 내비게이션 — 지도 밖 별도 섹션
    예전엔 같은 셀렉터가 세 군데 겹쳐 정의돼 있었다 — 여기 하나로 합침.
-   360px 폰 폭에 버튼 3개가 들어가야 하므로 min-width:0 으로 flex 아이템이
-   글자 폭 아래로 줄어들 수 있게 하고, 아이콘/간격을 조금 줄였다 */
-/* 좌우 패딩 0 — 바깥 .sec 가 이미 28.8px 씩 패딩을 주고 있어서
-   여기서 16px 을 더 빼면 360px 폰에서 버튼 줄이 270px 밖에 안 남았다 */
+   아이콘을 글자 위로 올린 세로형 버튼: 가로로 [아이콘+글자]를 늘어놓으면
+   360px 폰에서 "네이버지도"가 버튼 밖으로 넘쳤다. 세로형이면 버튼 폭이
+   글자 폭만 있으면 돼서 360px 에서도 여유 있게 들어간다. */
 .map-navi-section{
-    padding:20px 0 4px;
+    padding:24px 18px 8px;
     background:var(--color-white);
 }
 .map-navi-title{
@@ -2199,28 +2198,28 @@ body{ -webkit-overflow-scrolling:touch; }
 }
 .map-navi-desc{
     font-size:13px;color:#666;
-    margin-bottom:14px;
+    margin-bottom:16px;
     font-family:var(--font-sans);
 }
 .map-navi-row{
-    display:flex;gap:6px;
-    padding-bottom:16px;
+    display:flex;gap:10px;
+    padding-bottom:20px;
 }
 .map-navi-btn{
     flex:1 1 0;min-width:0;
-    display:flex;align-items:center;justify-content:center;gap:5px;
-    padding:10px 4px;
-    border-radius:10px;
-    font-size:12px;font-weight:500;letter-spacing:-.2px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+    padding:14px 6px 12px;
+    border-radius:14px;
+    font-size:12px;font-weight:500;
     text-decoration:none;color:var(--color-ink);
     border:1.5px solid #e8e8e8;
     background:var(--color-white);
     transition:all .15s;
     font-family:var(--font-sans);
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    white-space:nowrap;
 }
-/* 아이콘은 템플릿에 inline style(26px)로 박혀 있어서 !important 로만 줄일 수 있다 */
-.map-navi-btn img{width:22px !important;height:22px !important;}
+/* 아이콘은 템플릿에 inline style(26px)로 박혀 있어서 !important 로만 바꿀 수 있다 */
+.map-navi-btn img{width:30px !important;height:30px !important;border-radius:8px !important;}
 .map-navi-btn:hover{ border-color:var(--color-rose);color:var(--color-rose); }
 .map-navi-btn:active{ opacity:.75;transform:scale(.97); }
 .kakao-navi{ border-color:var(--color-kakao); }
