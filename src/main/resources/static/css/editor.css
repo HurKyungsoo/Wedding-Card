@@ -1078,11 +1078,12 @@ textarea.ed-input{resize:none;line-height:1.75;}
 
 /* 5. 아치형 — 베이지 배경 + 스크립트 + 이름(한 줄) + 아치 사진 + 민트 날짜 + 장소 */
 /* 썸네일 자신(컨테이너)에는 cqw 를 못 쓴다 — 자기 자신이 아니라 바깥 컨테이너 기준이 되므로 % 로 */
-.ed-dt-forever{background:#F5F2EC;justify-content:center;gap:2.4%;padding:5% 8.6%;}
+.ed-dt-forever{background:#F5F2EC;justify-content:center;gap:2%;padding:5% 8.6%;}
 .ed-dt-forever-script{font-family:'Dancing Script',cursive;font-size:10.5cqw;color:var(--color-charcoal);text-align:center;line-height:1.2;white-space:nowrap;}  /* 실제 테마처럼 한 줄 */
-.ed-dt-forever-names{display:flex;align-items:center;gap:3.7cqw;font-family:var(--font-serif);font-size:7.4cqw;color:var(--color-charcoal);letter-spacing:1.85cqw;line-height:1;}
+/* 실제 테마처럼 신랑 / & / 신부 세로로 쌓기 */
+.ed-dt-forever-names{display:flex;flex-direction:column;align-items:center;gap:.8cqw;font-family:var(--font-serif);font-size:7.4cqw;color:var(--color-charcoal);letter-spacing:1.85cqw;line-height:1;}
 .ed-dt-forever-amp{font-size:6.2cqw;color:#E8A0B4;letter-spacing:0;}
-.ed-dt-forever-arch{width:45.7cqw;height:50cqw;border-radius:27cqw 27cqw 0 0;background-size:11px 11px;}
+.ed-dt-forever-arch{width:42cqw;height:46cqw;border-radius:25cqw 25cqw 0 0;background-size:11px 11px;}  /* 이름이 세로 3줄이 된 만큼 아치를 줄여 140px 안에 맞춤 */
 .ed-dt-forever-date{font-family:'Cormorant Garamond',serif;font-size:8.6cqw;color:#6FAF8A;letter-spacing:1.2cqw;line-height:1;}
 .ed-dt-forever-place{font-family:'Cormorant Garamond','EB Garamond',serif;font-size:4.6cqw;color:#5a5a58;letter-spacing:1.2cqw;text-transform:uppercase;line-height:1;}
 
