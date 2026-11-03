@@ -274,13 +274,14 @@
     .lp-bx h3 i { color: var(--color-gold); font-size: 19px; }
     .lp-bx p { font-size: 13px; color: #94857a; line-height: 1.75; font-weight: 300; margin-top: 6px; }
     .lp-bx-ui { margin-top: auto; }
-    .lp-bx-row { display: flex; gap: 22px; align-items: center; }
+    .lp-bx-row { display: flex; gap: 22px; align-items: stretch; flex: 1; }
+    .lp-bx-row > .txt { align-self: center; }
     .lp-bx-row > .txt { flex: 0 0 210px; }
-    .lp-bx-row > .lp-bx-ui { flex: 1; margin-top: 0; }
+    .lp-bx-row > .lp-bx-ui { flex: 1; margin-top: 0; display: flex; flex-direction: column; }
 
     /* 지도 */
     .lp-map {
-      height: 168px; border-radius: 14px; position: relative; overflow: hidden; background-color: #eef0e8;
+      flex: 1; min-height: 168px; border-radius: 14px; position: relative; overflow: hidden; background-color: #eef0e8;
       background-image:
         linear-gradient(90deg, transparent 47%, #fff 47%, #fff 53%, transparent 53%),
         linear-gradient(0deg, transparent 58%, #fff 58%, #fff 63%, transparent 63%),
@@ -335,7 +336,7 @@
     .lp-dday strong { color: var(--color-rose); font-weight: 600; }
 
     /* 갤러리 */
-    .lp-gal { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; height: 168px; }
+    .lp-gal { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; flex: 1; min-height: 168px; }
     .lp-gal span { border-radius: 10px; background-size: cover; background-position: center 25%; }
     .lp-gal span:first-child { grid-row: span 2; }
 
@@ -699,7 +700,7 @@
             <p>주소만 검색하면 지도가 들어가요. 하객은 버튼 한 번으로 카카오내비·티맵·네이버 지도 길안내를 바로 시작해요.</p>
           </div>
           <div class="lp-bx-ui" aria-hidden="true">
-            <div class="lp-map"><i class="ti ti-map-pin-filled lp-map-pin"></i><span class="lp-map-tag">그랜드 웨딩홀</span></div>
+            <div class="lp-map"><i class="ti ti-map-pin lp-map-pin"></i><span class="lp-map-tag">그랜드 웨딩홀</span></div>
             <div class="lp-navi">
               <span><b style="background:#fee500;"></b>카카오내비</span>
               <span><b style="background:#3d6af2;"></b>티맵</span>
@@ -716,7 +717,7 @@
         </div>
         <div class="lp-bx-ui" aria-hidden="true">
           <div class="lp-kakao">
-            <span class="lp-kakao-av"><i class="ti ti-heart-filled"></i></span>
+            <span class="lp-kakao-av">♥</span>
             <div class="lp-kakao-card">
               <div class="ph"></div>
               <div class="bd"><div class="t">민준 ♥ 서연 결혼합니다</div><div class="s">저희 결혼식에 초대합니다 💌</div><div class="btn">청첩장 보기</div></div>
