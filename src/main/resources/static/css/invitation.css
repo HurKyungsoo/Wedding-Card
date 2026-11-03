@@ -2726,6 +2726,11 @@ body{ -webkit-overflow-scrolling:touch; }
 .hero.design-forever .forever-arch{ width:min(82%, 290px, calc(39.5dvh - 54px)); max-width:none; margin-bottom:max(1.4rem, calc(9dvh - 34px)); }
 /* 날짜·예식장은 아치에서 조금 더 떨어뜨려 여유 있게 (키 큰 폰일수록 간격이 커짐) */
 .hero.design-forever .forever-date{ margin-bottom:max(.4rem, calc(2.4dvh - 10px)); }
+/* 글꼴을 따로 고르지 않았으면 날짜 숫자는 경기천년바탕 (고르면 그 글꼴을 따른다) */
+.wc.font-default .hero.design-forever .forever-date{
+    font-family:'Gyeonggi Batang', var(--main-font, var(--font-serif));
+    font-weight:400;
+}
 
 /* ── 1. 기본 ── */
 .hero.design-basic .hero-fullphoto::after{

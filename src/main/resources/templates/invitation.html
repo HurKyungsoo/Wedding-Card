@@ -100,7 +100,7 @@
      DOM 은 지우지 않고 클래스로 숨긴다 — 섹션 순서 JS 등이 이 요소들을 기준점으로 쓴다. -->
 <div class="wc" th:style="|--main-font: ${wedding.mainFontCss};|"
      th:with="live=${!editorPreview}, hasDate=${!#strings.isEmpty(wedding.weddingDate)}, hasTime=${!#strings.isEmpty(wedding.weddingTime)}, hasPlace=${!#strings.isEmpty(wedding.weddingPlace) or !#strings.isEmpty(wedding.mapPlaceName)}, hasAddr=${!#strings.isEmpty(wedding.weddingAddress) or !#strings.isEmpty(wedding.mapAddressRoad)}, hasMap=${wedding.mapLat != null and wedding.mapLng != null}, hasGallery=${!#strings.isEmpty(wedding.galleryImages)}, hasParents=${!#strings.isEmpty(wedding.groomFatherName) or !#strings.isEmpty(wedding.groomMotherName) or !#strings.isEmpty(wedding.brideFatherName) or !#strings.isEmpty(wedding.brideMotherName)}"
-     th:classappend="${live ? 'is-live' + (hasDate ? '' : ' no-date') + (hasPlace ? '' : ' no-place') : ''}">
+     th:classappend="${(live ? 'is-live' + (hasDate ? '' : ' no-date') + (hasPlace ? '' : ' no-place') : '') + (wedding.defaultMainFont ? ' font-default' : '')}">
 
     <!-- ① HERO -->
     <div class="hero" id="heroSection" th:classappend="${(wedding.mainDesign != null ? 'design-' + wedding.mainDesign : 'design-basic') + (wedding.mainFontSize != null and !#strings.isEmpty(wedding.mainFontSize) ? ' fs-' + wedding.mainFontSize : '')}">
@@ -1868,7 +1868,11 @@ window.__WEDDING_STYLE = {
             var en = d.mainFontEn ? enFontMap[d.mainFontEn] : null;
             if (ff) {
                 var wc = document.querySelector('.wc');
-                if (wc) wc.style.setProperty('--main-font', en ? en + ', ' + ff : ff);
+                if (wc) {
+                    wc.style.setProperty('--main-font', en ? en + ', ' + ff : ff);
+                    /* 글꼴을 따로 고르지 않은 상태 — 아치형 날짜 숫자를 경기천년바탕으로 (WeddingDto.isDefaultMainFont 와 같은 기준) */
+                    wc.classList.toggle('font-default', d.mainFont === 'noto' && !d.mainFontEn);
+                }
             }
         }
 
