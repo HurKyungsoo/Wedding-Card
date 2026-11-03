@@ -316,9 +316,9 @@ var SECTION_REVERT_HOOKS = {
     acct: function() {
         /* input/textarea 순회만으로는 스냅샷 이후 새로 추가한 계좌 행이 안 지워진다 —
            acctData 자체를 스냅샷으로 되돌리고 두 탭을 통째로 다시 그린다 */
-        if (!savedMeSnapshot) return;
-        acctData.groom = JSON.parse(JSON.stringify(savedMeSnapshot.groom));
-        acctData.bride = JSON.parse(JSON.stringify(savedMeSnapshot.bride));
+        if (!savedAcctSnapshot) return;
+        acctData.groom = JSON.parse(JSON.stringify(savedAcctSnapshot.groom));
+        acctData.bride = JSON.parse(JSON.stringify(savedAcctSnapshot.bride));
         renderAcctList('groom');
         renderAcctList('bride');
     }
@@ -327,11 +327,11 @@ var SECTION_REVERT_HOOKS = {
 /* 계좌 스냅샷 — 갤러리(hidden input 하나)와 달리 acctData는 groom/bride 배열 전체가
    상태라 위 input/textarea 순회만으로는 "새로 추가한 행" 자체를 못 지운다.
    captureSectionSnapshot()과 같은 시점에 깊은 복사를 떠 둔다. */
-var savedMeSnapshot = null;
+var savedAcctSnapshot = null;
 
 /* 페이지 로드(서버 값 복원)가 모두 끝난 뒤 폼 필드 값을 스냅샷으로 저장 */
 function captureSectionSnapshot() {
-    savedMeSnapshot = JSON.parse(JSON.stringify(acctData));
+    savedAcctSnapshot = JSON.parse(JSON.stringify(acctData));
 
     var form = document.getElementById('editForm');
     if (!form) return;
