@@ -122,6 +122,7 @@ function showBaptism(btn) {
 
 function resyncPickerVisuals() {
     syncBaptismVisibility();   /* 되돌리기로 세례명 값이 바뀌어도 표시를 맞춘다 */
+    syncDateTimeUI();          /* 날짜·시간 버튼/선택도 원래 입력값에 맞춘다 */
     PICKER_GROUPS.forEach(function(g) {
         var hidden = document.getElementById(g.hiddenId);
         if (!hidden) return;
@@ -2642,4 +2643,86 @@ function goToWeddingDate() {
                 showEditorToast('저장하지 못했어요. 다시 눌러 주세요.', 'error');
             });
     });
+})();
+
+
+/* ── 예식 날짜·시간 입력 (원래 입력에 값을 넣고 input/change 를 흘려 보낸다) ──
+   저장·미리보기·썸네일 코드는 전부 원래 입력(#weddingDate, #weddingTime)을 읽으므로,
+   여기선 그 값을 바꾸고 이벤트만 일으킨다. 되돌리기로 값이 바뀌면 syncDateTimeUI() 로 다시 맞춘다. */
+var syncDateTimeUI = function() {};
+(function dateTimeInputs() {
+    var dIn = document.getElementById('weddingDate');
+    var tIn = document.getElementById('weddingTime');
+    var dBtn = document.getElementById('dateBtn');
+    var dLabel = document.getElementById('dateLabel');
+    var dDday = document.getElementById('dateDday');
+    var ampm = document.getElementById('ampmTabs');
+    var hSel = document.getElementById('tmHour');
+    var mSel = document.getElementById('tmMin');
+    if (!dIn || !tIn || !dBtn || !ampm || !hSel || !mSel) return;
+    var DOW = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
+
+    function fire(el) {
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    /* 날짜 */
+    function paintDate() {
+        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dIn.value || '');
+        if (!m) { dLabel.textContent = '날짜를 골라 주세요'; dLabel.classList.add('empty'); dDday.textContent = ''; return; }
+        var d = new Date(+m[1], +m[2] - 1, +m[3]);
+        dLabel.textContent = m[1] + '년 ' + (+m[2]) + '월 ' + (+m[3]) + '일 ' + DOW[d.getDay()];
+        dLabel.classList.remove('empty');
+        var today = new Date(); today.setHours(0, 0, 0, 0);
+        var diff = Math.round((d - today) / 86400000);
+        dDday.textContent = diff > 0 ? 'D-' + diff : diff === 0 ? 'D-Day' : '';
+    }
+    dBtn.addEventListener('click', function() {
+        if (dIn.showPicker) { try { dIn.showPicker(); return; } catch (e) {} }
+        dIn.focus(); dIn.click();
+    });
+    dIn.addEventListener('input', paintDate);
+    dIn.addEventListener('change', paintDate);
+
+    /* 시간 — 원래 값이 10분 단위가 아니면(예: 12:15) 그 분을 목록에 끼워 넣어 그대로 보여준다 */
+    function setTab(v) {
+        ampm.querySelectorAll('.ed-tab').forEach(function(b) { b.classList.toggle('active', b.dataset.v === v); });
+    }
+    function curAmpm() {
+        var a = ampm.querySelector('.ed-tab.active');
+        return a ? a.dataset.v : '';
+    }
+    function paintTime() {
+        var m = /^(\d{1,2}):(\d{2})/.exec(tIn.value || '');
+        if (!m) { setTab(''); hSel.value = ''; mSel.value = ''; return; }
+        var h = +m[1], mm = m[2];
+        setTab(h < 12 ? 'am' : 'pm');
+        hSel.value = String((h % 12) || 12);
+        if (![].some.call(mSel.options, function(o) { return o.value === mm; })) {
+            var o = document.createElement('option'); o.textContent = mm; o.value = mm;
+            mSel.appendChild(o);
+        }
+        mSel.value = mm;
+    }
+    function commitTime() {
+        if (!hSel.value) return;                     /* 시를 고르기 전엔 값을 만들지 않는다 */
+        if (!curAmpm()) setTab('pm');                /* 예식은 대개 오후 — 처음 고를 때 기본값 */
+        if (!mSel.value) mSel.value = '00';
+        var h = +hSel.value % 12 + (curAmpm() === 'pm' ? 12 : 0);
+        var v = String(h).padStart(2, '0') + ':' + mSel.value;
+        if (tIn.value !== v) { tIn.value = v; fire(tIn); }
+    }
+    ampm.addEventListener('click', function(e) {
+        var b = e.target.closest('.ed-tab');
+        if (!b) return;
+        setTab(b.dataset.v);
+        commitTime();
+    });
+    hSel.addEventListener('change', commitTime);
+    mSel.addEventListener('change', commitTime);
+    tIn.addEventListener('change', paintTime);
+
+    syncDateTimeUI = function() { paintDate(); paintTime(); };
+    syncDateTimeUI();
 })();

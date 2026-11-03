@@ -511,16 +511,40 @@
                 <i class="ti ti-chevron-up ed-chevron"></i>
             </div>
             <div class="ed-sec-bd" id="bd-wedding">
+                <!-- 날짜·시간 — 브라우저 기본 입력(연도-월-일 / -- --:--)은 칸마다 눌러 타이핑해야 해서 불편했다.
+                     날짜는 넓은 버튼을 누르면 달력이 열리고 '2026년 11월 11일 수요일'로 보여준다.
+                     시간은 오전/오후 + 시 + 분(10분 단위)을 고른다.
+                     실제 값은 그대로 원래 입력(type=date/time, name 동일)에 들어가므로 저장·미리보기 코드는 그대로다 (editor.js dateTimeInputs). -->
                 <div class="ed-row">
                     <span class="ed-label">날짜</span>
-                    <div class="ed-ctrl">
-                        <input class="ed-input" type="date" th:field="*{weddingDate}">
+                    <div class="ed-ctrl ed-dt-wrap">
+                        <input class="ed-input ed-dt-native" type="date" th:field="*{weddingDate}" tabindex="-1" aria-hidden="true">
+                        <button type="button" class="ed-dt-btn" id="dateBtn">
+                            <i class="ti ti-calendar-event"></i>
+                            <span id="dateLabel" class="ed-dt-label">날짜를 골라 주세요</span>
+                            <span id="dateDday" class="ed-dt-dday"></span>
+                        </button>
                     </div>
                 </div>
                 <div class="ed-row">
                     <span class="ed-label">시간</span>
-                    <div class="ed-ctrl">
-                        <input class="ed-input" type="time" th:field="*{weddingTime}">
+                    <div class="ed-ctrl ed-tm-wrap">
+                        <input class="ed-input ed-dt-native" type="time" th:field="*{weddingTime}" tabindex="-1" aria-hidden="true">
+                        <div class="ed-tabs ed-ampm" id="ampmTabs">
+                            <button type="button" class="ed-tab" data-v="am">오전</button>
+                            <button type="button" class="ed-tab" data-v="pm">오후</button>
+                        </div>
+                        <select class="ed-input ed-select ed-tm-sel" id="tmHour" aria-label="시">
+                            <option value="">시</option>
+                            <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
+                            <option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
+                        </select>
+                        <span class="ed-tm-unit">시</span>
+                        <select class="ed-input ed-select ed-tm-sel" id="tmMin" aria-label="분">
+                            <option value="">분</option>
+                            <option>00</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option>
+                        </select>
+                        <span class="ed-tm-unit">분</span>
                     </div>
                 </div>
                 <div class="ed-row">
