@@ -1840,13 +1840,17 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-forever-date{margin-top:7.5cqw;font-size:8cqw;font-family:'Gyeonggi Batang','Cormorant Garamond',serif;}
 .ed-dt-forever-place{margin-top:1.6cqw;margin-bottom:auto;}
 
-/* 6. THE MARRIAGE — 미색 배경, 라벨 양옆 선(세이지), 이탤릭 &, 액자 사진 */
-.ed-dt-marriage{background:#f5f1eb;}
-.ed-dt-marriage-label{display:flex;align-items:center;gap:2px;color:#7d8c74;}
-.ed-dt-marriage-label::before,.ed-dt-marriage-label::after{content:'';width:7px;height:1px;background:#b7c1ae;}
-.ed-dt-marriage-names{font-weight:500;}
+/* 6. THE MARRIAGE — 실제 첫 화면 비율에 맞춤(라벨 3% · 날짜 8~15% · 이름 16~20% · 사진 23~86% · 하단 89~98%)
+   사진은 실제처럼 세로형(가로:세로 ≈ 0.65), 미색 배경·세이지 라인·이탤릭 &·액자.
+   썸네일 크기가 화면 폭에 따라 100×140 / 90×126 / 82×114 로 바뀌어서 높이 기준(cqh)으로 잡는다.
+   (패딩은 썸네일 자신에 걸려서 cqh 를 쓸 수 없어 % — 폭 기준) */
+.ed-dt-marriage{background:#f5f1eb;padding:4% 6% 3%;}
+.ed-dt-marriage-label{display:flex;align-items:center;gap:1.4cqh;color:#7d8c74;font-size:2.6cqh;line-height:2.9cqh;}
+.ed-dt-marriage-label::before,.ed-dt-marriage-label::after{content:'';width:5cqh;height:1px;background:#b7c1ae;}
+.ed-dt-marriage-date{margin-top:1.4cqh;font-size:7.1cqh;line-height:7.1cqh;}
+.ed-dt-marriage-names{margin-top:1.4cqh;font-size:3.2cqh;line-height:3.6cqh;font-weight:400;}
 .ed-dt-marriage-names i{font-family:'Cormorant Garamond',serif;font-style:italic;color:#9a8f80;}
-.ed-dt-marriage-photo{width:64%;margin:8px auto 3px;position:relative;border-radius:1px;box-shadow:0 0 0 2px #fff,0 3px 7px rgba(80,60,40,.18);}
+.ed-dt-marriage-photo{flex:0 0 auto;width:43.5cqh;height:66cqh;margin-top:2.9cqh;position:relative;border-radius:1px;box-shadow:0 0 0 2px #fff,0 3px 7px rgba(80,60,40,.18);}
 .ed-dt-marriage-photo::before{content:'';position:absolute;inset:3px;border:1px solid rgba(255,255,255,.65);}
-.ed-dt-marriage-info{margin-top:6px;}
-.ed-dt-marriage-info::before{content:'';display:block;width:8px;height:1px;background:#b7c1ae;margin:0 auto 3px;}
+.ed-dt-marriage-info{margin-top:2.9cqh;font-size:2.9cqh;line-height:3.6cqh;}
+.ed-dt-marriage-info::before{content:'';display:block;width:5.7cqh;height:1px;background:#b7c1ae;margin:0 auto 1.4cqh;}
