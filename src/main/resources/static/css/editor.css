@@ -1789,6 +1789,9 @@ textarea.ed-input{resize:none;line-height:1.75;}
         transform-origin:0 0;transform:scale(.9);
     }
     .ed-preview-bottom{width:auto;max-width:100%;background:transparent;border:0;padding:12px 0 0;backdrop-filter:none;}
+    /* 옆 미리보기가 이미 실제 폰 비율이라 '전체 미리보기'는 같은 화면을 한 번 더 띄울 뿐 — 데스크톱에선 뺀다.
+       태블릿·모바일에선 미리보기가 좁거나 화면 절반이라 그대로 둔다. */
+    #fullPrevBtn{display:none;}
 }
 /* 태블릿·모바일 — 틀을 없는 것처럼(display:contents) 두어 iframe 이 예전처럼 .ed-preview 의 flex 자식으로 늘어난다 */
 @media (max-width:1024px){
