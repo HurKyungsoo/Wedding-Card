@@ -1324,14 +1324,16 @@ body{
 .hero.design-our_story_pink .hero-fullphoto-img{
     object-position:center 18%;
 }
-/* 핑크 테마 하단 그라데이션 — 더 핑크하게 (대비 확보를 위해 중간 지점부터 더 진하게) */
+/* 핑크 테마 하단 그라데이션.
+   예전엔 높이 55%·맨 아래 98% 불투명이라 사진 아래쪽(꽃다발·드레스)이 분홍 막에 가려졌다.
+   날짜·장소 글씨 뒤만 밝게 받쳐줄 정도로 줄였다 (높이 48%, 맨 아래 90%) */
 .hero.design-our_story_pink .hero-fullphoto::after{
     background:linear-gradient(180deg,
         transparent 0%,
-        rgba(253,240,243,0.6) 50%,
-        rgba(253,240,243,0.9) 80%,
-        rgba(253,240,243,0.98) 100%) !important;
-    height:55% !important;
+        rgba(253,240,243,0.35) 45%,
+        rgba(253,240,243,0.72) 78%,
+        rgba(253,240,243,0.9) 100%) !important;
+    height:48% !important;
 }
 .hero.design-our_story_pink .hero-design-title{
     font-family:'Pinyon Script',cursive !important;  /* 2번(Dancing Script)·married(Great Vibes)와 구분되는 독자 서체 */
