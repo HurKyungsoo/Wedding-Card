@@ -48,8 +48,8 @@ function renderDraftStatus() {
           '저장됨 · 하객 화면 미반영', '하객 화면과 같음');
     if (status) {
         status.title = dirty
-            ? savedAgo + ' 자동저장됨. "게시하기"를 눌러야 하객 화면에 반영됩니다.'
-            : '편집 중인 내용이 하객 화면에 모두 반영되어 있습니다.';
+            ? savedAgo + ' 자동저장됨. 누르면 지금 바로 저장합니다. "게시하기"를 눌러야 하객 화면에 반영됩니다.'
+            : '편집 중인 내용이 하객 화면에 모두 반영되어 있습니다. 바꾼 뒤 누르면 지금 바로 저장합니다.';
     }
 
     paint(document.getElementById('previewBadge'), document.getElementById('previewBadgeText'),
@@ -1348,9 +1348,12 @@ function scheduleLive(ms) {
     /* 백그라운드 자동저장 (조용히, 새로고침 없음) */
     clearTimeout(saveTimer);
     saveTimer = setTimeout(autoSaveAndRefresh, 2500);
+    savePending = true;
 }
+var savePending = false;
 
 function autoSave() {
+    savePending = false;
     fetch('/api/admin/autosave', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(collectData())})
         .then(function(r){ return r.json(); })
         .then(function(res){ if (res && res.success) markDraftSaved(); })
@@ -1359,6 +1362,7 @@ function autoSave() {
 
 /* 백그라운드 자동저장 — iframe 새로고침 없이 조용히 임시저장만 (게스트 화면에는 반영되지 않음) */
 function autoSaveAndRefresh() {
+    savePending = false;
     var data = collectData();
     fetch('/api/admin/autosave', {
         method:'POST',
@@ -1422,7 +1426,7 @@ document.getElementById('editForm').addEventListener('change', function() { sche
         /* postMessage로 즉시 반영 — 스크롤 건드리지 않음 */
         sendLive();
         /* 백그라운드 자동저장 (조용히) */
-        saveTimer = setTimeout(autoSave, 500);
+        saveTimer = setTimeout(autoSave, 500); savePending = true;
     });
 });
 
@@ -2565,4 +2569,37 @@ window.addEventListener('load', function() {
     document.addEventListener('keydown', function(e) { if (e.key === 'Escape') set(false); });
     // 메뉴 안 항목을 누르면 닫는다 (가이드 다시 보기 등)
     box.querySelector('.ed-me-menu').addEventListener('click', function(e) { if (e.target.closest('.ed-me-item')) set(false); });
+})();
+
+
+/* ── 헤더 저장 상태 — 누르면 바로 임시저장 ──
+   평소엔 입력 2.5초 뒤에 자동저장된다. 기다리지 않고 지금 저장하고 싶을 때 누른다.
+   바뀐 게 없으면(하객 화면과 같고 저장 대기도 없음) 저장하지 않는다 —
+   저장하면 내용이 같아도 '하객 화면 미반영' 상태가 되어 버린다. */
+(function saveNow() {
+    var btn = document.getElementById('draftStatus');
+    var label = document.getElementById('draftStatusLabel');
+    if (!btn) return;
+    btn.addEventListener('click', function() {
+        if (btn.classList.contains('saving')) return;
+        if (!lastDraftSavedAt && !savePending) {
+            showEditorToast('바뀐 내용이 없어요 — 하객 화면과 같아요');
+            return;
+        }
+        clearTimeout(saveTimer);
+        savePending = false;
+        btn.classList.add('saving');
+        if (label) label.textContent = '저장 중…';
+        fetch('/api/admin/autosave', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(collectData())})
+            .then(function(r){ return r.json(); })
+            .then(function(res){
+                btn.classList.remove('saving');
+                if (res && res.success) { markDraftSaved(); showEditorToast('✓ 임시저장했어요 — 하객에게 보이려면 \'게시하기\''); }
+                else { renderDraftStatus(); showEditorToast('저장하지 못했어요. 다시 눌러 주세요.', 'error'); }
+            })
+            .catch(function(){
+                btn.classList.remove('saving'); renderDraftStatus();
+                showEditorToast('저장하지 못했어요. 다시 눌러 주세요.', 'error');
+            });
+    });
 })();

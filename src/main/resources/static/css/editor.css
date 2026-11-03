@@ -231,6 +231,15 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-sans);}
 }
 .ed-draft-status.dirty{color:#96702a;}
 .ed-draft-status.clean{color:#a09080;}
+/* 누르면 바로 저장 — 버튼이지만 평소엔 상태 표시처럼 보이고, 올리면 저장 아이콘이 나타난다 */
+button.ed-draft-status{border:none;background:none;font-family:inherit;cursor:pointer;padding:6px 8px;border-radius:8px;transition:color .25s,background-color .2s;}
+button.ed-draft-status:hover{background:#f8f2ec;}
+button.ed-draft-status:focus-visible{outline:2px solid var(--color-rose);outline-offset:2px;}
+.ed-status-save{font-size:14px;opacity:0;width:0;margin-left:-6px;transition:opacity .2s,width .2s,margin .2s;}
+button.ed-draft-status:hover .ed-status-save,button.ed-draft-status:focus-visible .ed-status-save{opacity:.8;width:14px;margin-left:0;}
+button.ed-draft-status.saving{color:#96702a;}
+button.ed-draft-status.saving .ed-status-mark{animation:edSavePulse .8s ease-in-out infinite;}
+@keyframes edSavePulse{50%{opacity:.3;}}
 
 /* 게시 버튼이 상태를 싣는다 — 항상 같은 분홍이면 언제 눌러야 하는지 알려주지 못한다 */
 .ed-btn-solid.has-changes{position:relative;}
@@ -671,25 +680,11 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-save-msg{text-align:center;font-size:11px;margin-top:5px;min-height:16px;color:#6a8a5a;}
 
 /* ── 저장/취소 버튼 ── */
-.ed-bottom-btns{display:flex;gap:10px;margin-top:1.5rem;padding-bottom:2rem;}
-.ed-btn-cancel{
-    flex:1;padding:13px;border-radius:12px;
-    border:1px solid var(--color-border);background:var(--color-white);
-    color:var(--color-taupe);font-size:13px;cursor:pointer;
-    text-align:center;text-decoration:none;
-    font-family:var(--font-sans);transition:all .2s;
-    display:flex;align-items:center;justify-content:center;
-    letter-spacing:.1px;
-}
-.ed-btn-cancel:hover{border-color:var(--color-rose);color:var(--color-rose);background:#fff5f7;}
-.ed-bottom-btns .ed-btn-solid{
-    border-radius:12px;
-    padding:13px 28px;
-    font-size:13.5px;
-    font-weight:600;
-    letter-spacing:.2px;
-    box-shadow:0 4px 20px rgba(196,116,138,.35);
-}
+/* 폼 끝 안내 (예전 하단 '취소 · 게시하기' 자리) */
+.ed-end-note{display:flex;gap:10px;align-items:flex-start;margin:1.5rem 0 2rem;padding:16px 18px;border-radius:14px;background:#fbf6f1;border:1px solid #efe6dc;}
+.ed-end-note > i{font-size:20px;color:var(--color-rose);flex-shrink:0;margin-top:1px;}
+.ed-end-note b{display:block;font-size:13px;font-weight:500;color:var(--color-ink);}
+.ed-end-note span{display:block;font-size:12px;color:#9a8a7c;margin-top:3px;}
 
 /* ── 오른쪽 네비 ── */
 .ed-nav{
