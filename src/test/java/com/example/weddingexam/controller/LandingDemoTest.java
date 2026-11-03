@@ -48,6 +48,15 @@ class LandingDemoTest {
             .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
     }
 
+    /** 랜딩이 끝까지 렌더된다 — 스크립트 속 [[ 같은 글자 때문에 Thymeleaf 가 중간에 멈추면 </html> 이 안 나온다 */
+    @Test
+    void landing_rendersToTheEnd() throws Exception {
+        String h = html("/");
+        assertThat(h).contains("id=\"edDemo\"");
+        assertThat(h).contains("const NAMES");
+        assertThat(h.trim()).endsWith("</html>");
+    }
+
     /** 사진·갤러리가 채워진 실제 청첩장 화면이고, 고른 테마로 열린다 */
     @Test
     void demo_rendersSampleWithPhotoAndRequestedTheme() throws Exception {

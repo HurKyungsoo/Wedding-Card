@@ -977,7 +977,8 @@
     }, { threshold: 0.45 }).observe(demo);
 
     /* ── 저절로 시연 ── */
-    const NAMES = [['김민준', '이서연'], ['박도윤', '최하은']];
+    // ⚠ 대괄호 두 개를 붙여 쓰면 Thymeleaf 가 [[...]] 인라인 식으로 읽어 페이지 렌더가 중간에 깨진다
+    const NAMES = [ ['김민준', '이서연'], ['박도윤', '최하은'] ];
     function mark(step) { items.forEach(function(li) { li.classList.toggle('on', li.dataset.step === step); }); }
     function pulse(el) { if (!el) return; el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
     function type(input, text, done) {
