@@ -361,6 +361,14 @@
       .lp-bx.w2 { grid-column: auto; }
     }
 
+    /* ── 푸터 ── */
+    .lp-foot { background: var(--color-cream); border-top: 1px solid var(--color-border-soft); padding: 40px 0 36px; }
+    .lp-foot-in { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px 32px; }
+    .lp-foot-logo { font-family: var(--font-serif); font-size: 16px; font-weight: 600; color: var(--color-ink-deepest); letter-spacing: 1.5px; text-decoration: none; }
+    .lp-foot-tag { font-size: 12px; color: #8a7a6e; margin-top: 6px; font-weight: 300; }
+    .lp-foot-copy { font-size: 12px; color: #8a7a6e; }
+    @media (max-width: 640px) { .lp-foot-in { flex-direction: column; align-items: flex-start; } }
+
     /* ── 반응형 ── */
     @media (max-width: 960px) {
       .lp-wrap { padding: 0 32px; }
@@ -399,7 +407,6 @@
     <div style="display:flex;align-items:center;gap:36px;">
       <a href="#themes" class="nav-link" style="text-decoration:none;color:#7a6a60;font-size:13px;font-weight:300;letter-spacing:0.5px;transition:color 0.2s;">테마</a>
       <a href="#editor" class="nav-link" style="text-decoration:none;color:#7a6a60;font-size:13px;font-weight:300;letter-spacing:0.5px;transition:color 0.2s;">편집기</a>
-      <a href="/superadmin" class="nav-link" style="text-decoration:none;color:#c0b0a8;font-size:12px;transition:color 0.2s;">관리자</a>
       <a href="/my/create" class="lp-dark-btn" style="background:var(--color-ink-deepest);color:var(--color-white);text-decoration:none;padding:10px 24px;border-radius:24px;font-size:13px;font-weight:500;letter-spacing:0.5px;transition:background 0.2s;">시작하기</a>
     </div>
   </div>
@@ -439,7 +446,7 @@
             테마 보기 <i class="ti ti-arrow-right" style="font-size:14px;"></i>
           </a>
         </div>
-        <p data-reveal data-delay="4" style="margin-top:20px;font-size:12px;color:#c0b0a8;letter-spacing:0.5px;">카드 등록 불필요 · 바로 시작</p>
+        <p data-reveal data-delay="4" style="margin-top:20px;font-size:12px;color:#9a8a7c;letter-spacing:0.5px;">카드 등록 불필요 · 바로 시작</p>
       </div>
 
       <!-- 첫 화면 폰 — 사진이 아니라 실제 샘플 청첩장(/demo)이 들어 있고, 천천히 저절로 스크롤되며
@@ -834,16 +841,16 @@
   </div>
 </section>
 
-<!-- ── FOOTER ── -->
-<footer style="background:var(--color-cream);border-top:1px solid var(--color-border-soft);padding:36px 0;">
-  <div class="lp-wrap" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
-    <a href="/" style="font-family:var(--font-serif);font-size:16px;font-weight:600;color:var(--color-ink-deepest);letter-spacing:1.5px;text-decoration:none;">WeddingCard</a>
-    <div style="display:flex;gap:28px;align-items:center;flex-wrap:wrap;">
-      <a href="/my/create" class="nav-link" style="text-decoration:none;color:#9a8a78;font-size:13px;font-weight:300;transition:color 0.2s;">청첩장 만들기</a>
-      <a href="/admin/edit" class="nav-link" style="text-decoration:none;color:#9a8a78;font-size:13px;font-weight:300;transition:color 0.2s;">편집기</a>
-      <a href="/superadmin" class="nav-link" style="text-decoration:none;color:#c8c0b8;font-size:12px;transition:color 0.2s;">관리자</a>
+<!-- ── FOOTER ──
+     링크 목록은 빼고 로고·소개·연도만 둔다.
+     연도는 서버 시각으로 찍고, 작은 글자는 크림 배경 위에서 읽히는 대비로 올렸다. -->
+<footer class="lp-foot">
+  <div class="lp-wrap lp-foot-in">
+    <div>
+      <a href="/" class="lp-foot-logo">WeddingCard</a>
+      <p class="lp-foot-tag">5분 안에 완성하는 모바일 청첩장</p>
     </div>
-    <p style="font-size:12px;color:#c8c0b8;font-weight:300;">© 2025 WeddingCard</p>
+    <p class="lp-foot-copy">© <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}">2026</span> WeddingCard</p>
   </div>
 </footer>
 
