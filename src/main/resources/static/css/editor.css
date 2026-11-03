@@ -1846,7 +1846,7 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-marriage-label::before,.ed-dt-marriage-label::after{content:'';width:7px;height:1px;background:#b7c1ae;}
 .ed-dt-marriage-names{font-weight:500;}
 .ed-dt-marriage-names i{font-family:'Cormorant Garamond',serif;font-style:italic;color:#9a8f80;}
-.ed-dt-marriage-photo{width:calc(100% - 6px);margin:7px 3px 2px;position:relative;border-radius:1px;box-shadow:0 0 0 2px #fff,0 3px 7px rgba(80,60,40,.18);}
+.ed-dt-marriage-photo{width:64%;margin:8px auto 3px;position:relative;border-radius:1px;box-shadow:0 0 0 2px #fff,0 3px 7px rgba(80,60,40,.18);}
 .ed-dt-marriage-photo::before{content:'';position:absolute;inset:3px;border:1px solid rgba(255,255,255,.65);}
-.ed-dt-marriage-info{margin-top:5px;}
+.ed-dt-marriage-info{margin-top:6px;}
 .ed-dt-marriage-info::before{content:'';display:block;width:8px;height:1px;background:#b7c1ae;margin:0 auto 3px;}
