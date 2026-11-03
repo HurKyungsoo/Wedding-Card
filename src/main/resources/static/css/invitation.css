@@ -2660,3 +2660,26 @@ body{ -webkit-overflow-scrolling:touch; }
 .hero.fs-sm{ --fs-scale: .88; }
 .hero.fs-md{ --fs-scale: 1; }
 .hero.fs-lg{ --fs-scale: 1.15; }
+
+/* ════════════════════════════════════════
+   실제 청첩장(하객이 여는 링크)에서 빈 칸·편집용 안내 숨기기
+   .wc.is-live 는 편집기 미리보기(?preview=1)가 아닐 때만 붙는다 — 미리보기에서는
+   "사진을 업로드하세요" 같은 안내가 그대로 보여야 무엇을 채워야 하는지 알 수 있다.
+   ════════════════════════════════════════ */
+.live-empty{ display:none !important; }
+
+/* 사진이 없을 때 — 배경색 자리는 두되 카메라 아이콘·"사진을 업로드하세요"는 하객에게 안 보인다 */
+.wc.is-live .hero-fullphoto-placeholder > *,
+.wc.is-live .forever-arch-placeholder > *{ display:none !important; }
+
+/* 날짜를 안 넣었으면 히어로의 견본 날짜(2026.06.20 SAT 13:00 등)를 숨긴다 */
+.wc.is-live.no-date .hero-design-date,
+.wc.is-live.no-date .hdci-date,
+.wc.is-live.no-date .hero-top-date,
+.wc.is-live.no-date .hero-bottom-date,
+.wc.is-live.no-date .forever-date{ display:none !important; }
+
+/* 예식장을 안 넣었으면 견본 장소("웨딩홀")를 숨긴다 */
+.wc.is-live.no-place .hdci-place,
+.wc.is-live.no-place .hero-bottom-place,
+.wc.is-live.no-place .forever-place-wrap{ display:none !important; }
