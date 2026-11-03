@@ -244,7 +244,7 @@ body{
 }
 .hero-bottom-date{
     font-family:var(--font-sans);
-    font-size:13px;
+    font-size:calc(13px * var(--fs-scale, 1));
     font-weight:300;
     color:#3a3a38;
     letter-spacing:0.5px;
@@ -253,7 +253,7 @@ body{
 }
 .hero-bottom-place{
     font-family:var(--font-sans);
-    font-size:13px;
+    font-size:calc(13px * var(--fs-scale, 1));
     font-weight:300;
     color:#7a7a78;
     letter-spacing:0.5px;
@@ -985,7 +985,7 @@ body{
 /* ── 날짜 ── */
 .hero.design-basic .hero-bottom-date{
     font-family: 'Cormorant Garamond', 'EB Garamond', serif;
-    font-size: 13px;
+    font-size: calc(13px * var(--fs-scale, 1));
     font-weight: 400;
     color: #C4956A;
     letter-spacing: 1.5px;
@@ -996,7 +996,7 @@ body{
 /* ── 장소 ── */
 .hero.design-basic .hero-bottom-place{
     font-family:var(--main-font, var(--font-serif));
-    font-size: 13px;
+    font-size: calc(13px * var(--fs-scale, 1));
     font-weight: 400;
     color: #3a3228;
     letter-spacing: 1px;
@@ -1083,7 +1083,7 @@ body{
 }
 .hero.design-the_marriage .hero-bottom-date{
     font-family:var(--font-sans);
-    font-size:15px;
+    font-size:calc(15px * var(--fs-scale, 1));
     font-weight:400;
     color:#3a3a3a;
     letter-spacing:0.2px;
@@ -1092,7 +1092,7 @@ body{
 }
 .hero.design-the_marriage .hero-bottom-place{
     font-family:var(--font-sans);
-    font-size:14.5px;
+    font-size:calc(14.5px * var(--fs-scale, 1));
     font-weight:400;
     color:#3a3a3a;
     letter-spacing:0.2px;
@@ -1105,7 +1105,7 @@ body{
    예전엔 기본 테마만 서체를 고정해서 글꼴을 바꿔도 이름·날짜·장소가 그대로였다 */
 .hero.design-basic .hero-bottom-date{
     font-family:var(--main-font, var(--font-serif)) !important;
-    font-size: 14.5px;
+    font-size: calc(14.5px * var(--fs-scale, 1));
     font-weight: 400;
     color: var(--color-charcoal);
     letter-spacing: 0.8px;
@@ -1116,7 +1116,7 @@ body{
 /* ★ 하단 장소 — 글꼴 선택을 따름 */
 .hero.design-basic .hero-bottom-place{
     font-family:var(--main-font, var(--font-serif)) !important;
-    font-size: 13px;
+    font-size: calc(13px * var(--fs-scale, 1));
     font-weight: 300;
     color: #5a5a58;
     letter-spacing: 0.5px;
@@ -1219,7 +1219,7 @@ body{
     pointer-events:none;
 }
 .hero-design-date span{
-    font-size:13px;
+    font-size:calc(13px * var(--fs-scale, 1));
     letter-spacing:3px;
     color:var(--color-ink);
     font-family:'Cormorant Garamond',serif;
@@ -1229,7 +1229,7 @@ body{
 .hero.design-married .hero-design-date span{
     font-family:var(--main-font, var(--font-serif));
     color:var(--color-white);
-    font-size:14px;
+    font-size:calc(14px * var(--fs-scale, 1));
     font-weight:400;
     letter-spacing:3px;
     text-shadow:0 1px 8px rgba(0,0,0,0.45);
@@ -1300,7 +1300,7 @@ body{
 }
 .hero.design-our_story .hdci-date{
     font-family:var(--main-font, var(--font-serif));
-    font-size:15px;
+    font-size:calc(15px * var(--fs-scale, 1));
     color:#111;
     letter-spacing:0.5px;
     font-weight:400;
@@ -1308,7 +1308,7 @@ body{
 }
 .hero.design-our_story .hdci-place{
     font-family:var(--main-font, var(--font-serif));
-    font-size:13px;
+    font-size:calc(13px * var(--fs-scale, 1));
     color:#111;
     letter-spacing:0.5px;
     font-weight:400;
@@ -1376,7 +1376,7 @@ body{
 }
 .hero.design-our_story_pink .hdci-date{
     font-family:var(--main-font, var(--font-serif));
-    font-size:12px;
+    font-size:calc(12px * var(--fs-scale, 1));
     color:#d9527a;
     letter-spacing:1px;
     font-weight:400;
@@ -1386,7 +1386,7 @@ body{
 }
 .hero.design-our_story_pink .hdci-place{
     font-family:var(--main-font, var(--font-serif));
-    font-size:11px;
+    font-size:calc(11px * var(--fs-scale, 1));
     color:#d9527a;
     letter-spacing:0.5px;
     font-weight:400;
@@ -1472,7 +1472,7 @@ body{
     z-index:3;
     pointer-events:none;
     font-family:'Cormorant Garamond',serif;
-    font-size:18px;
+    font-size:calc(18px * var(--fs-scale, 1));
     letter-spacing:3px;
     color:var(--color-ink);
     font-weight:500;
@@ -1487,7 +1487,7 @@ body{
     font-family:'Cormorant Garamond',serif;
     font-style:normal;
     font-weight:400;
-    font-size:17px;
+    font-size:calc(17px * var(--fs-scale, 1));
     letter-spacing:3px;
     color:#000000;
 }
@@ -1507,7 +1507,7 @@ body{
 .hero.design-our_story_pink .hero-design-names{
     color:#e68a9a;
     font-family:var(--font-serif);
-    font-size:16px;
+    font-size:calc(16px * var(--fs-scale, 1));
     bottom:15% !important;
     text-align:center;
 }
@@ -1575,7 +1575,7 @@ body{
 .forever-name-groom,
 .forever-name-bride{
     font-family: var(--main-font, var(--font-serif));
-    font-size: 22px;
+    font-size: calc(22px * var(--fs-scale, 1));
     font-weight: 400;
     color: var(--color-charcoal);
     letter-spacing: 8px;
@@ -1630,7 +1630,7 @@ body{
 /* 날짜 — 민트/그린 큰 폰트, 전역 글꼴 선택을 따름 */
 .forever-date{
     font-family: var(--main-font, var(--font-serif));
-    font-size: 30px;
+    font-size: calc(30px * var(--fs-scale, 1));
     font-weight: 500;
     color: #6FAF8A;
     letter-spacing: 3px;
@@ -1648,7 +1648,7 @@ body{
 .forever-place1,
 .forever-place2{
     font-family: var(--main-font, var(--font-serif));
-    font-size: 12px;
+    font-size: calc(12px * var(--fs-scale, 1));
     font-weight: 400;
     color: #5a5a58;
     letter-spacing: 3px;
@@ -2649,3 +2649,14 @@ body{ -webkit-overflow-scrolling:touch; }
     word-break:keep-all;padding:0 0.4rem;
 }
 .ending-caption:empty{display:none;}
+
+
+/* ════════════════════════════════════════
+   글꼴 크기 (작게/보통/크게) — 모든 테마 공통
+   예전엔 기본·THE MARRIAGE 두 테마에만 규칙이 있어서 나머지 4개 테마는 크기를 바꿔도 그대로였다.
+   이름·날짜·장소 글자의 font-size 를 calc(원래값 * var(--fs-scale)) 로 바꿔 두고 여기서 배율만 정한다.
+   (테마 고유 영문 타이틀은 디자인 요소라 배율 대상에서 뺐다)
+   ════════════════════════════════════════ */
+.hero.fs-sm{ --fs-scale: .88; }
+.hero.fs-md{ --fs-scale: 1; }
+.hero.fs-lg{ --fs-scale: 1.15; }
