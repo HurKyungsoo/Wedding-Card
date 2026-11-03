@@ -2521,3 +2521,31 @@ window.addEventListener('load', function() {
     /* 여기까지가 서버 값 복원 — 이제 스냅샷을 떠 두고 이후의 사용자 편집만 되돌리기 대상으로 삼는다 */
     captureSectionSnapshot();
 });
+
+
+/* ── 미리보기 폰 크기 맞추기 (데스크톱) ──
+   iframe 은 실제 폰 크기(390×844)로 그리고, 폰 틀이 쓸 수 있는 높이·폭에 맞춰 배율만 바꾼다.
+   태블릿·모바일(≤1024px)에선 CSS 가 틀을 없애므로 여기서 넣은 크기·배율을 지운다. */
+(function fitPreviewPhone() {
+    var wrap = document.getElementById('edPhone');
+    var frame = document.getElementById('liveFrame');
+    if (!wrap || !frame) return;
+    var screen = wrap.querySelector('.ed-phone-screen');
+    var desktop = window.matchMedia('(min-width:1025px)');
+    var W = 390, H = 844, BEZEL = 20;
+    function fit() {
+        if (!desktop.matches) {
+            screen.style.width = screen.style.height = frame.style.transform = '';
+            return;
+        }
+        var s = Math.min(1, (wrap.clientHeight - BEZEL) / H, (wrap.clientWidth - BEZEL) / W);
+        s = Math.max(s, 0.5);
+        screen.style.width = Math.round(W * s) + 'px';
+        screen.style.height = Math.round(H * s) + 'px';
+        frame.style.transform = 'scale(' + s.toFixed(4) + ')';
+    }
+    if (window.ResizeObserver) new ResizeObserver(fit).observe(wrap);
+    window.addEventListener('resize', fit);
+    if (desktop.addEventListener) desktop.addEventListener('change', fit);
+    fit();
+})();

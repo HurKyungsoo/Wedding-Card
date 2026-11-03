@@ -1765,6 +1765,34 @@ textarea.ed-input{resize:none;line-height:1.75;}
     /* 헤더도 같은 폭에 맞춰 로고는 폰 왼쪽 끝, 버튼은 폼 오른쪽 끝과 줄을 맞춘다.
        헤더는 fixed 라 % 가 화면 폭 기준 — .ed-root 의 --ed-left 와 같은 계산 */
     .ed-header{padding:0 max(1.8rem, calc((100% - var(--ed-phone) - var(--ed-gap) - var(--ed-form)) / 2));}
+
+    /* ── 미리보기를 폰 모양으로 ──
+       예전엔 테두리 없는 카드가 화면 높이만큼 늘어나 실제 폰보다 뭉툭했다.
+       iframe 을 실제 폰 크기(390×844)로 그리고, 남는 높이에 맞춰 통째로 줄여(transform) 폰 비율을 지킨다.
+       줄이는 배율은 editor.js fitPreviewPhone 이 정한다. */
+    .ed-preview{align-items:center;}
+    .ed-preview-badge{width:auto;max-width:100%;align-self:center;}
+    .ed-phone{
+        position:relative;flex:1 1 auto;min-height:0;width:100%;
+        display:flex;justify-content:center;align-items:flex-start;
+    }
+    .ed-phone-body{
+        position:relative;padding:10px;border-radius:50px;
+        background:linear-gradient(165deg,#2d2824 0%,#171210 100%);
+        box-shadow:0 22px 44px rgba(44,30,20,.16),inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1px rgba(0,0,0,.28);
+    }
+    .ed-phone-screen{position:relative;overflow:hidden;border-radius:40px;background:var(--color-white);width:351px;height:760px;}
+    .ed-preview .ed-phone-screen iframe{
+        position:absolute;left:0;top:0;
+        width:390px;max-width:none;height:844px;flex:none;
+        border-radius:0;box-shadow:none;
+        transform-origin:0 0;transform:scale(.9);
+    }
+    .ed-preview-bottom{width:auto;max-width:100%;background:transparent;border:0;padding:12px 0 0;backdrop-filter:none;}
+}
+/* 태블릿·모바일 — 틀을 없는 것처럼(display:contents) 두어 iframe 이 예전처럼 .ed-preview 의 flex 자식으로 늘어난다 */
+@media (max-width:1024px){
+    .ed-phone,.ed-phone-body,.ed-phone-screen{display:contents;}
 }
 
 /* ── 게시 전 필수 항목 확인 창 ── */

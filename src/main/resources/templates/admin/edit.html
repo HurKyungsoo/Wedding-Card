@@ -139,9 +139,13 @@
         </div>
         <!-- preview=1 — 편집기 미리보기는 조회수/방문로그에 집계하지 않는다.
              전체 미리보기와 refreshPreview()도 이 주소(INVITATION_URL)를 그대로 물려받는다. -->
+        <!-- 데스크톱에선 폰 모양 틀 안에 실제 폰 크기(390×844)로 그리고 높이에 맞춰 줄인다 (editor.js fitPreviewPhone).
+             태블릿·모바일에선 세 겹 틀이 display:contents 라 예전처럼 iframe 이 그대로 늘어난다. -->
+        <div class="ed-phone" id="edPhone"><div class="ed-phone-body"><div class="ed-phone-screen">
         <iframe id="liveFrame"
                 th:src="${wedding.slug != null ? '/w/' + wedding.slug + '?preview=1' : '/wedding/' + wedding.id + '?preview=1'}"
                 title="실시간 미리보기"></iframe>
+        </div></div></div>
         <div class="ed-preview-bottom">
             <label class="ed-scroll-label" id="scrollToggleLabel">
                 <div class="ed-mini-toggle on" id="scrollToggle"></div>
