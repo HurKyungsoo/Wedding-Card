@@ -61,6 +61,9 @@ public class WeddingController {
         String place = sample.getMapPlaceName() != null && !sample.getMapPlaceName().isBlank()
             ? sample.getMapPlaceName() : sample.getWeddingPlace();
         model.addAttribute("sampleMapPlace", place);
+        // 카카오톡·슬랙 링크 미리보기(og:image)는 절대 주소여야 한다
+        model.addAttribute("baseUrl",
+            org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString());
         return "index";
     }
 
