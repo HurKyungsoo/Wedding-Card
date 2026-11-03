@@ -95,7 +95,8 @@ var PICKER_GROUPS = [
     { hiddenId: 'mapZoomInput',     itemSelector: '.ed-zoom-btn',           dataAttr: 'val' },
     { hiddenId: 'galTypeVal',       itemSelector: '.gal-type-card',         dataAttr: 'galtype' },
     { hiddenId: 'galScrollVal',     itemSelector: '#galScrollTabs .ed-tab', dataAttr: 'val' },
-    { hiddenId: 'fontVal',          itemSelector: '.ed-font-opt',           dataAttr: 'font' }
+    { hiddenId: 'fontVal',          itemSelector: '#fontPickList .ed-font-opt',   dataAttr: 'font' },
+    { hiddenId: 'fontValEn',        itemSelector: '#fontPickListEn .ed-font-opt', dataAttr: 'font' }
 ];
 
 /* ──────────────────────────────────────
@@ -139,32 +140,44 @@ function resyncPickerVisuals() {
      값은 히든 #fontVal 이 들고, 폼 수집·되돌리기는 다른 픽커와 같은 방식으로 돈다.
 ────────────────────────────────────── */
 
+/* 한글 글꼴 / 영문 글꼴 두 개의 선택기 — 마크업 구조가 같아 id 접미사만 다르다 */
+var FONT_PICKERS = [
+    { pick: 'fontPick',   btn: 'fontPickBtn',   list: 'fontPickList',   hidden: 'fontVal',   cur: 'fontPickCur' },
+    { pick: 'fontPickEn', btn: 'fontPickBtnEn', list: 'fontPickListEn', hidden: 'fontValEn', cur: 'fontPickCurEn' }
+];
+
 /** 닫힌 버튼을 지금 고른 글꼴의 견본으로 맞춘다 */
 function syncFontPickLabel() {
-    var hidden = document.getElementById('fontVal');
-    var cur    = document.getElementById('fontPickCur');
-    if (!hidden || !cur) return;
-    var opt = document.querySelector('.ed-font-opt[data-font="' + hidden.value + '"]');
-    if (!opt) return;
-    var sample = opt.querySelector('.ed-font-sample');
-    cur.textContent = sample ? sample.textContent : '';
-    cur.style.fontFamily = opt.style.fontFamily;   /* 이름이 아니라 모양으로 보여준다 */
+    FONT_PICKERS.forEach(function(p) {
+        var hidden = document.getElementById(p.hidden);
+        var cur    = document.getElementById(p.cur);
+        var list   = document.getElementById(p.list);
+        if (!hidden || !cur || !list) return;
+        var opt = list.querySelector('.ed-font-opt[data-font="' + hidden.value + '"]');
+        if (!opt) return;
+        var sample = opt.querySelector('.ed-font-sample');
+        cur.textContent = sample ? sample.textContent : '';
+        cur.style.fontFamily = opt.style.fontFamily;   /* 이름이 아니라 모양으로 보여준다 */
+    });
 }
 
-function closeFontPick() {
-    var list = document.getElementById('fontPickList');
-    var btn  = document.getElementById('fontPickBtn');
-    if (!list || !btn) return;
-    list.hidden = true;
-    btn.setAttribute('aria-expanded', 'false');
+function closeFontPick(except) {
+    FONT_PICKERS.forEach(function(p) {
+        if (except && except === p) return;
+        var list = document.getElementById(p.list);
+        var btn  = document.getElementById(p.btn);
+        if (!list || !btn) return;
+        list.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+    });
 }
 
 /* position:fixed 라 뷰포트 기준 좌표를 직접 잡아야 한다 —
    섹션(.ed-section)이 overflow:hidden 이라 absolute 로는 목록이 잘렸다.
    아래쪽 공간이 모자라면 버튼 위로 뒤집는다. */
-function positionFontList() {
-    var btn  = document.getElementById('fontPickBtn');
-    var list = document.getElementById('fontPickList');
+function positionFontList(p) {
+    var btn  = document.getElementById(p.btn);
+    var list = document.getElementById(p.list);
     if (!btn || !list) return;
     var r = btn.getBoundingClientRect();
     var maxH = 290;
@@ -184,44 +197,67 @@ function positionFontList() {
     }
 }
 
-function initFontPicker() {
-    var pick   = document.getElementById('fontPick');
-    var btn    = document.getElementById('fontPickBtn');
-    var list   = document.getElementById('fontPickList');
-    var hidden = document.getElementById('fontVal');
-    if (!pick || !btn || !list || !hidden) return;
+/* 예전엔 글꼴 목록 하나에 한글·영문이 섞여 있어서 mainFont 에 영문 키(playfair 등)가
+   저장된 청첩장이 있다. 한글 목록엔 그 키가 없으므로, 열 때 영문 칸으로 옮겨준다.
+   (한글 noto + 영문 playfair = 예전 playfair 스택과 같은 모양) */
+function migrateLegacyEnglishMainFont() {
+    var ko = document.getElementById('fontVal');
+    var en = document.getElementById('fontValEn');
+    if (!ko || !en) return;
+    var inKoList = document.querySelector('#fontPickList .ed-font-opt[data-font="' + ko.value + '"]');
+    var inEnList = document.querySelector('#fontPickListEn .ed-font-opt[data-font="' + ko.value + '"]');
+    if (!inKoList && inEnList) {
+        if (!en.value) en.value = ko.value;
+        ko.value = 'noto';
+    }
+}
 
+function initFontPicker() {
+    migrateLegacyEnglishMainFont();
     syncFontPickLabel();
 
-    btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var open = list.hidden;
-        if (open) positionFontList();
-        list.hidden = !open;
-        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-        if (open) {
-            var act = list.querySelector('.ed-font-opt.active');
-            if (act) act.scrollIntoView({ block: 'nearest' });
-        }
-    });
+    FONT_PICKERS.forEach(function(p) {
+        var pick   = document.getElementById(p.pick);
+        var btn    = document.getElementById(p.btn);
+        var list   = document.getElementById(p.list);
+        var hidden = document.getElementById(p.hidden);
+        if (!pick || !btn || !list || !hidden) return;
 
-    /* 미리보기 영역 스크롤·창 크기 변경 중엔 버튼이 움직이므로 목록도 같이 따라간다 */
-    window.addEventListener('resize', function() { if (!list.hidden) positionFontList(); });
-    document.addEventListener('scroll', function() { if (!list.hidden) positionFontList(); }, true);
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var open = list.hidden;
+            closeFontPick(p);                     /* 다른 선택기는 닫는다 */
+            if (open) positionFontList(p);
+            list.hidden = !open;
+            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            if (open) {
+                var act = list.querySelector('.ed-font-opt.active');
+                if (act) act.scrollIntoView({ block: 'nearest' });
+            }
+        });
 
-    list.addEventListener('click', function(e) {
-        var opt = e.target.closest('.ed-font-opt');
-        if (!opt) return;
-        hidden.value = opt.dataset.font;
-        resyncPickerVisuals();
-        closeFontPick();
-        /* 히든 입력은 스스로 이벤트를 내지 않는다 —
-           editForm 의 change 위임 리스너가 받아야 미리보기·임시저장이 돈다 */
-        hidden.dispatchEvent(new Event('change', { bubbles: true }));
+        /* 미리보기 영역 스크롤·창 크기 변경 중엔 버튼이 움직이므로 목록도 같이 따라간다 */
+        window.addEventListener('resize', function() { if (!list.hidden) positionFontList(p); });
+        document.addEventListener('scroll', function() { if (!list.hidden) positionFontList(p); }, true);
+
+        list.addEventListener('click', function(e) {
+            var opt = e.target.closest('.ed-font-opt');
+            if (!opt) return;
+            hidden.value = opt.dataset.font;
+            resyncPickerVisuals();
+            closeFontPick();
+            /* 히든 입력은 스스로 이벤트를 내지 않는다 —
+               editForm 의 change 위임 리스너가 받아야 미리보기·임시저장이 돈다 */
+            hidden.dispatchEvent(new Event('change', { bubbles: true }));
+        });
     });
 
     document.addEventListener('click', function(e) {
-        if (!pick.contains(e.target)) closeFontPick();
+        var inside = FONT_PICKERS.some(function(p) {
+            var el = document.getElementById(p.pick);
+            return el && el.contains(e.target);
+        });
+        if (!inside) closeFontPick();
     });
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeFontPick();

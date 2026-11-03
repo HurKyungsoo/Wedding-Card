@@ -960,7 +960,7 @@ body{
     color: #C4956A;
 }
 .hero.design-basic .hbn-name{
-    font-family:var(--font-serif);
+    font-family:var(--main-font, var(--font-serif));   /* 글꼴 선택을 따름 (다른 테마와 동일) */
     font-size: 28px;
     font-weight: 400;
     color: var(--color-black);
@@ -995,7 +995,7 @@ body{
 
 /* ── 장소 ── */
 .hero.design-basic .hero-bottom-place{
-    font-family:var(--font-serif);
+    font-family:var(--main-font, var(--font-serif));
     font-size: 13px;
     font-weight: 400;
     color: #3a3228;
@@ -1101,9 +1101,10 @@ body{
 
 
 
-/* ★ 하단 날짜 — 기본 테마 고유 서체 고정(Noto Serif KR), 글꼴 선택 영향 없음 */
+/* ★ 하단 날짜 — 다른 테마처럼 글꼴 선택을 따른다 (선택 없으면 Noto Serif KR).
+   예전엔 기본 테마만 서체를 고정해서 글꼴을 바꿔도 이름·날짜·장소가 그대로였다 */
 .hero.design-basic .hero-bottom-date{
-    font-family:var(--font-serif) !important;
+    font-family:var(--main-font, var(--font-serif)) !important;
     font-size: 14.5px;
     font-weight: 400;
     color: var(--color-charcoal);
@@ -1112,9 +1113,9 @@ body{
     line-height: 1.7;
 }
 
-/* ★ 하단 장소 — 기본 테마 고유 서체 고정(Noto Serif KR), 글꼴 선택 영향 없음 */
+/* ★ 하단 장소 — 글꼴 선택을 따름 */
 .hero.design-basic .hero-bottom-place{
-    font-family:var(--font-serif) !important;
+    font-family:var(--main-font, var(--font-serif)) !important;
     font-size: 13px;
     font-weight: 300;
     color: #5a5a58;
