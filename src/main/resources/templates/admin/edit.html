@@ -453,9 +453,9 @@
                             <button type="button" class="ed-tab" data-val="bride" onclick="pickTab(this,'orderTabs','orderVal')">신부측 먼저</button>
                         </div>
                         <input type="hidden" id="orderVal" name="displayOrder" value="groom">
-                        <div class="ed-order-notice">
-                            <p><i class="ti ti-info-circle"></i> 순서 변경 시 미리보기 및 청첩장 내에서 확인이 가능합니다.</p>
-                            <p><i class="ti ti-info-circle"></i> 변경항목은 아래와 같습니다.</p>
+                        <!-- 예전엔 큰 안내 상자가 늘 펼쳐져 있었다 — 궁금할 때만 열어 보게 접는다 -->
+                        <details class="ed-order-notice ed-fold">
+                            <summary><i class="ti ti-info-circle"></i> 순서가 바뀌는 곳 보기</summary>
                             <div class="ed-order-list">
                                 <div class="ed-order-col">
                                     <span>- 인트로</span>
@@ -469,7 +469,7 @@
                                     <span>- 연락하기</span>
                                 </div>
                             </div>
-                        </div>
+                        </details>
                     </div>
                 </div>
 
@@ -610,104 +610,6 @@
                     </div>
                 </div>
 
-                <div class="ed-hosts-divider"></div>
-
-                <!-- ♥ 신랑측 부모님 -->
-                <div class="ed-hosts-group">
-                    <!-- 아버지 -->
-                    <div class="ed-row ed-hosts-row">
-                        <span class="ed-label"><span class="ed-heart blue">♥</span> 아버지</span>
-                        <div class="ed-ctrl" style="flex-direction:column;gap:6px;">
-                            <div class="ed-inline-inputs">
-                                <label class="ed-check-inline"><input type="checkbox" th:field="*{groomFatherDeceased}"> 고인</label>
-                                <input class="ed-input" type="text" th:field="*{groomFatherName}" placeholder="신랑 아버지 성함" style="flex:1;">
-                                <input class="ed-input" type="text" th:field="*{groomFatherBaptism}" placeholder="신랑 아버지 세례명" style="flex:1.2;">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 어머니 -->
-                    <div class="ed-row ed-hosts-row">
-                        <span class="ed-label"><span class="ed-heart blue">♥</span> 어머니</span>
-                        <div class="ed-ctrl">
-                            <div class="ed-inline-inputs">
-                                <label class="ed-check-inline"><input type="checkbox" th:field="*{groomMotherDeceased}"> 고인</label>
-                                <input class="ed-input" type="text" th:field="*{groomMotherName}" placeholder="신랑 어머니 성함" style="flex:1;">
-                                <input class="ed-input" type="text" th:field="*{groomMotherBaptism}" placeholder="신랑 어머니 세례명" style="flex:1.2;">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 관계 -->
-                    <div class="ed-row ed-hosts-row">
-                        <span class="ed-label"><span class="ed-heart blue">♥</span> 관계</span>
-                        <div class="ed-ctrl">
-                            <div class="ed-inline-inputs">
-                                <select class="ed-input ed-select" id="groomRelationSelect" style="flex:0 0 90px;" onchange="syncRelation('groom',this.value)">
-                                    <option value="">직접입력</option>
-                                    <option value="장남">장남</option>
-                                    <option value="차남">차남</option>
-                                    <option value="삼남">삼남</option>
-                                    <option value="아들">아들</option>
-                                </select>
-                                <input class="ed-input" type="text" th:field="*{groomRelation}" id="groomRelationInput" placeholder="ex) 장남 차남 아들 등" style="flex:1;">
-                            </div>
-                            <div class="ed-hosts-notice">
-                                <p><i class="ti ti-info-circle"></i> 부모님 성함은 입력하지 않아도 됩니다.</p>
-                                <p><i class="ti ti-info-circle"></i> 세례명은 입력하지 않아도 됩니다.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="ed-hosts-divider"></div>
-
-                <!-- ♥ 신부측 부모님 -->
-                <div class="ed-hosts-group">
-                    <!-- 아버지 -->
-                    <div class="ed-row ed-hosts-row">
-                        <span class="ed-label"><span class="ed-heart pink">♥</span> 아버지</span>
-                        <div class="ed-ctrl">
-                            <div class="ed-inline-inputs">
-                                <label class="ed-check-inline"><input type="checkbox" th:field="*{brideFatherDeceased}"> 고인</label>
-                                <input class="ed-input" type="text" th:field="*{brideFatherName}" placeholder="신부 아버지 성함" style="flex:1;">
-                                <input class="ed-input" type="text" th:field="*{brideFatherBaptism}" placeholder="신부 아버지 세례명" style="flex:1.2;">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 어머니 -->
-                    <div class="ed-row ed-hosts-row">
-                        <span class="ed-label"><span class="ed-heart pink">♥</span> 어머니</span>
-                        <div class="ed-ctrl">
-                            <div class="ed-inline-inputs">
-                                <label class="ed-check-inline"><input type="checkbox" th:field="*{brideMotherDeceased}"> 고인</label>
-                                <input class="ed-input" type="text" th:field="*{brideMotherName}" placeholder="신부 어머니 성함" style="flex:1;">
-                                <input class="ed-input" type="text" th:field="*{brideMotherBaptism}" placeholder="신부 어머니 세례명" style="flex:1.2;">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 관계 -->
-                    <div class="ed-row ed-hosts-row">
-                        <span class="ed-label"><span class="ed-heart pink">♥</span> 관계</span>
-                        <div class="ed-ctrl">
-                            <div class="ed-inline-inputs">
-                                <select class="ed-input ed-select" id="brideRelationSelect" style="flex:0 0 90px;" onchange="syncRelation('bride',this.value)">
-                                    <option value="">직접입력</option>
-                                    <option value="장녀">장녀</option>
-                                    <option value="차녀">차녀</option>
-                                    <option value="삼녀">삼녀</option>
-                                    <option value="딸">딸</option>
-                                </select>
-                                <input class="ed-input" type="text" th:field="*{brideRelation}" id="brideRelationInput" placeholder="ex) 장녀 차녀 딸 등" style="flex:1;">
-                            </div>
-                            <div class="ed-hosts-notice">
-                                <p><i class="ti ti-info-circle"></i> 부모님 성함은 입력하지 않아도 됩니다.</p>
-                                <p><i class="ti ti-info-circle"></i> 세례명은 입력하지 않아도 됩니다.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="ed-hosts-divider"></div>
-
                 <!-- 연락하기 팝업 -->
                 <div class="ed-row">
                     <span class="ed-label">연락하기 팝업</span>
@@ -717,41 +619,98 @@
                             <button type="button" class="ed-tab" data-val="false" onclick="pickTab(this,'contactTabs','contactInput')">사용안함</button>
                         </div>
                         <input type="hidden" th:field="*{contactPopupEnabled}" id="contactInput">
-                        <div class="ed-hosts-notice" style="margin-top:8px;">
-                            <p><i class="ti ti-info-circle"></i> 연락처는 원하시는 분만 입력하실 수 있습니다.</p>
+                    </div>
+                </div>
+
+                <!-- 예전엔 부모님 성함(신랑측·신부측)과 전화번호 6칸이 따로 두 번 나와 섹션이 920px 가까이 됐다.
+                     사람마다 한 줄(고인 · 성함 · 세례명 · 전화번호)로 묶고, 안내는 위에 한 번만. -->
+                <p class="ed-hp-note"><i class="ti ti-info-circle"></i> 성함·세례명·전화번호는 넣고 싶은 것만 적으면 돼요. 전화번호는 '연락하기'를 쓸 때만 보여요.</p>
+
+                <!-- ♥ 신랑측 — 본인 연락처 · 아버지 · 어머니 · 관계를 한 카드에 -->
+                <div class="ed-hp-card">
+                    <div class="ed-hp-title"><span class="ed-heart blue">♥</span> 신랑측</div>
+                    <div class="ed-hp-row">
+                        <span class="ed-hp-who">신랑 본인</span>
+                        <div class="ed-hp-fields">
+                            <input class="ed-input ed-phone-input" type="tel" inputmode="tel" th:field="*{groomPhone}" placeholder="신랑 전화번호" style="flex:1;">
+                        </div>
+                    </div>
+                    <div class="ed-hp-row">
+                        <span class="ed-hp-who">아버지</span>
+                        <div class="ed-hp-fields">
+                            <label class="ed-check-inline"><input type="checkbox" th:field="*{groomFatherDeceased}"> 고인</label>
+                            <input class="ed-input ed-name-input" type="text" th:field="*{groomFatherName}" placeholder="성함">
+                            <input class="ed-input ed-baptism-input" type="text" th:field="*{groomFatherBaptism}" placeholder="세례명">
+                            <button type="button" class="ed-baptism-add" onclick="showBaptism(this)">+ 세례명</button>
+                            <input class="ed-input ed-phone-input" type="tel" inputmode="tel" th:field="*{groomFatherPhone}" placeholder="전화번호">
+                        </div>
+                    </div>
+                    <div class="ed-hp-row">
+                        <span class="ed-hp-who">어머니</span>
+                        <div class="ed-hp-fields">
+                            <label class="ed-check-inline"><input type="checkbox" th:field="*{groomMotherDeceased}"> 고인</label>
+                            <input class="ed-input ed-name-input" type="text" th:field="*{groomMotherName}" placeholder="성함">
+                            <input class="ed-input ed-baptism-input" type="text" th:field="*{groomMotherBaptism}" placeholder="세례명">
+                            <button type="button" class="ed-baptism-add" onclick="showBaptism(this)">+ 세례명</button>
+                            <input class="ed-input ed-phone-input" type="tel" inputmode="tel" th:field="*{groomMotherPhone}" placeholder="전화번호">
+                        </div>
+                    </div>
+                    <div class="ed-hp-row">
+                        <span class="ed-hp-who">관계</span>
+                        <div class="ed-hp-fields">
+                            <select class="ed-input ed-select" id="groomRelationSelect" style="flex:0 0 96px;" onchange="syncRelation('groom',this.value)">
+                                <option value="">직접입력</option>
+                                <option value="장남">장남</option>
+                                <option value="차남">차남</option>
+                                <option value="삼남">삼남</option>
+                                <option value="아들">아들</option>
+                            </select>
+                            <input class="ed-input" type="text" th:field="*{groomRelation}" id="groomRelationInput" placeholder="ex) 장남 차남 아들 등" style="flex:1;">
                         </div>
                     </div>
                 </div>
 
-                <!-- 신랑측 전화번호 -->
-                <div class="ed-hosts-group" style="margin-top:4px;">
-                    <div class="ed-row ed-hosts-row">
-                        <span class="ed-label"><span class="ed-heart blue">♥</span> 신랑</span>
-                        <input class="ed-input" type="tel" th:field="*{groomPhone}" placeholder="신랑 전화번호 입력" style="flex:1;">
+                <!-- ♥ 신부측 — 본인 연락처 · 아버지 · 어머니 · 관계를 한 카드에 -->
+                <div class="ed-hp-card">
+                    <div class="ed-hp-title"><span class="ed-heart pink">♥</span> 신부측</div>
+                    <div class="ed-hp-row">
+                        <span class="ed-hp-who">신부 본인</span>
+                        <div class="ed-hp-fields">
+                            <input class="ed-input ed-phone-input" type="tel" inputmode="tel" th:field="*{bridePhone}" placeholder="신부 전화번호" style="flex:1;">
+                        </div>
                     </div>
-                    <div class="ed-row ed-hosts-row">
-                        <span class="ed-label"><span class="ed-heart blue">♥</span> 신랑 아버지</span>
-                        <input class="ed-input" type="tel" th:field="*{groomFatherPhone}" placeholder="신랑 아버지 전화번호" style="flex:1;">
+                    <div class="ed-hp-row">
+                        <span class="ed-hp-who">아버지</span>
+                        <div class="ed-hp-fields">
+                            <label class="ed-check-inline"><input type="checkbox" th:field="*{brideFatherDeceased}"> 고인</label>
+                            <input class="ed-input ed-name-input" type="text" th:field="*{brideFatherName}" placeholder="성함">
+                            <input class="ed-input ed-baptism-input" type="text" th:field="*{brideFatherBaptism}" placeholder="세례명">
+                            <button type="button" class="ed-baptism-add" onclick="showBaptism(this)">+ 세례명</button>
+                            <input class="ed-input ed-phone-input" type="tel" inputmode="tel" th:field="*{brideFatherPhone}" placeholder="전화번호">
+                        </div>
                     </div>
-                    <div class="ed-row ed-hosts-row">
-                        <span class="ed-label"><span class="ed-heart blue">♥</span> 신랑 어머니</span>
-                        <input class="ed-input" type="tel" th:field="*{groomMotherPhone}" placeholder="신랑 어머니 전화번호" style="flex:1;">
+                    <div class="ed-hp-row">
+                        <span class="ed-hp-who">어머니</span>
+                        <div class="ed-hp-fields">
+                            <label class="ed-check-inline"><input type="checkbox" th:field="*{brideMotherDeceased}"> 고인</label>
+                            <input class="ed-input ed-name-input" type="text" th:field="*{brideMotherName}" placeholder="성함">
+                            <input class="ed-input ed-baptism-input" type="text" th:field="*{brideMotherBaptism}" placeholder="세례명">
+                            <button type="button" class="ed-baptism-add" onclick="showBaptism(this)">+ 세례명</button>
+                            <input class="ed-input ed-phone-input" type="tel" inputmode="tel" th:field="*{brideMotherPhone}" placeholder="전화번호">
+                        </div>
                     </div>
-                </div>
-
-                <!-- 신부측 전화번호 -->
-                <div class="ed-hosts-group" style="margin-top:4px;">
-                    <div class="ed-row ed-hosts-row">
-                        <span class="ed-label"><span class="ed-heart pink">♥</span> 신부</span>
-                        <input class="ed-input" type="tel" th:field="*{bridePhone}" placeholder="신부 전화번호 입력" style="flex:1;">
-                    </div>
-                    <div class="ed-row ed-hosts-row">
-                        <span class="ed-label"><span class="ed-heart pink">♥</span> 신부 아버지</span>
-                        <input class="ed-input" type="tel" th:field="*{brideFatherPhone}" placeholder="신부 아버지 전화번호" style="flex:1;">
-                    </div>
-                    <div class="ed-row ed-hosts-row">
-                        <span class="ed-label"><span class="ed-heart pink">♥</span> 신부 어머니</span>
-                        <input class="ed-input" type="tel" th:field="*{brideMotherPhone}" placeholder="신부 어머니 전화번호" style="flex:1;">
+                    <div class="ed-hp-row">
+                        <span class="ed-hp-who">관계</span>
+                        <div class="ed-hp-fields">
+                            <select class="ed-input ed-select" id="brideRelationSelect" style="flex:0 0 96px;" onchange="syncRelation('bride',this.value)">
+                                <option value="">직접입력</option>
+                                <option value="장녀">장녀</option>
+                                <option value="차녀">차녀</option>
+                                <option value="삼녀">삼녀</option>
+                                <option value="딸">딸</option>
+                            </select>
+                            <input class="ed-input" type="text" th:field="*{brideRelation}" id="brideRelationInput" placeholder="ex) 장녀 차녀 딸 등" style="flex:1;">
+                        </div>
                     </div>
                 </div>
 
@@ -775,6 +734,11 @@
             <div class="ed-sec-bd" id="bd-cal" style="display:none;">
                 <!-- 이 섹션의 유일한 값 — 밖에 두면 "되돌리기"가 아무것도 되돌리지 못한다 -->
                 <input type="hidden" th:field="*{calendarStyle}" id="calStyleInput">
+                <!-- 날짜가 없으면 미리보기의 달력가 빈 상자로 나온다 — 무엇을 채워야 하는지 바로 알려준다 -->
+                <div class="ed-need-date" data-need-date th:style="${#strings.isEmpty(wedding.weddingDate)} ? '' : 'display:none'">
+                    <span><i class="ti ti-calendar-question"></i> 예식 날짜를 넣으면 달력가 보여요</span>
+                    <button type="button" onclick="goToWeddingDate()">날짜 입력 <i class="ti ti-arrow-right"></i></button>
+                </div>
                 <div class="ed-row">
                     <span class="ed-label">스타일</span>
                     <div class="ed-ctrl">
@@ -816,6 +780,12 @@
                 <i class="ti ti-chevron-down ed-chevron"></i>
             </div>
             <div class="ed-sec-bd" id="bd-dday" style="display:none;">
+                <!-- 날짜가 없으면 미리보기의 D-Day가 빈 상자로 나온다 — 무엇을 채워야 하는지 바로 알려준다 -->
+                <div class="ed-need-date" data-need-date th:style="${#strings.isEmpty(wedding.weddingDate)} ? '' : 'display:none'">
+                    <span><i class="ti ti-calendar-question"></i> 예식 날짜를 넣으면 D-Day가 보여요</span>
+                    <button type="button" onclick="goToWeddingDate()">날짜 입력 <i class="ti ti-arrow-right"></i></button>
+                </div>
+
                 <!-- 이 섹션의 유일한 값 — 밖에 두면 "되돌리기"가 아무것도 되돌리지 못한다 -->
                 <input type="hidden" th:field="*{ddayStyle}" id="ddayStyleInput">
                 <div class="ed-row">
@@ -905,14 +875,16 @@
                 <div class="ed-row">
                     <span class="ed-label">이미지 첨부</span>
                     <div class="ed-ctrl">
-                        <button type="button" class="gal-upload-btn" id="galZone">
-                            <i class="ti ti-cloud-upload"></i> 이미지 첨부하기
+                        <!-- 메인 사진처럼 끌어다 놓을 수 있는 넓은 영역 (예전엔 작은 버튼 하나) -->
+                        <button type="button" class="gal-upload-btn gal-drop" id="galZone">
+                            <i class="ti ti-photo-plus"></i>
+                            <span class="gal-drop-t">사진을 끌어다 놓거나 눌러서 고르세요</span>
+                            <span class="gal-drop-s">여러 장을 한 번에 올릴 수 있어요 · 최대 60장</span>
                         </button>
                         <input type="file" id="galFile" accept="image/*" multiple style="display:none;">
                     </div>
                 </div>
                 <div class="ed-hint">
-                    ⓘ 최소 1장, 최대 60장 업로드 가능합니다.<br>
                     ⓘ PC, 모바일 등 사용환경에 따라 미리보기와 다르게 보여질 수 있습니다.
                 </div>
 
@@ -1105,8 +1077,7 @@
                 <div id="acctPanelBride" style="display:none;"></div>
                 <button type="button" class="ed-btn-ghost" id="acctAddBtnGroom" onclick="addAcctRow('groom')"><i class="ti ti-plus"></i> 신랑측 계좌 추가</button>
                 <button type="button" class="ed-btn-ghost" id="acctAddBtnBride" onclick="addAcctRow('bride')" style="display:none;"><i class="ti ti-plus"></i> 신부측 계좌 추가</button>
-                <button type="button" class="ed-btn-save-acct" onclick="saveAllAccounts()"><i class="ti ti-device-floppy"></i> 계좌 저장</button>
-                <div id="acctSaveMsg" class="ed-save-msg"></div>
+                <!-- 예전 '계좌 저장' 버튼은 뺐다 — 다른 섹션처럼 입력하면 자동 임시저장된다 (addAcctRow·삭제도 scheduleLive) -->
             </div>
         </div>
 

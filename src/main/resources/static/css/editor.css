@@ -668,15 +668,6 @@ textarea.ed-input{resize:none;line-height:1.75;}
     font-family:var(--font-sans);margin-bottom:.5rem;transition:all .2s;
 }
 .ed-btn-ghost:hover{border-color:var(--color-rose);color:var(--color-rose);background:#fff5f7;}
-.ed-btn-save-acct{
-    width:100%;padding:11px;border:none;border-radius:10px;
-    background:linear-gradient(135deg,var(--color-rose),#e07890);
-    color:var(--color-white);font-size:12.5px;font-weight:500;cursor:pointer;
-    font-family:var(--font-sans);display:flex;align-items:center;
-    justify-content:center;gap:5px;transition:all .2s;
-    box-shadow:0 2px 10px rgba(196,116,138,.3);
-}
-.ed-btn-save-acct:hover{background:linear-gradient(135deg,#b46478,#d06880);transform:translateY(-1px);box-shadow:0 4px 16px rgba(196,116,138,.4);}
 .ed-save-msg{text-align:center;font-size:11px;margin-top:5px;min-height:16px;color:#6a8a5a;}
 
 /* ── 저장/취소 버튼 ── */
@@ -1915,6 +1906,49 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-marriage-photo::before{content:'';position:absolute;inset:3px;border:1px solid rgba(255,255,255,.65);}
 .ed-dt-marriage-info{margin-top:2.9cqh;font-size:2.9cqh;line-height:3.6cqh;}
 .ed-dt-marriage-info::before{content:'';display:block;width:5.7cqh;height:1px;background:#b7c1ae;margin:0 auto 1.4cqh;}
+
+/* ── 혼주·연락처: 측마다 카드 하나, 사람마다 한 줄 ── */
+.ed-hp-note{font-size:11.5px;color:#a09080;display:flex;gap:5px;align-items:flex-start;margin:4px 0 12px;line-height:1.6;}
+.ed-hp-note i{font-size:13px;margin-top:2px;flex-shrink:0;}
+.ed-hp-card{border:1px solid #efe6dc;border-radius:12px;padding:12px 14px 6px;margin-bottom:12px;background:#fdfbf9;}
+.ed-hp-title{font-size:12.5px;font-weight:600;color:var(--color-ink);margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.ed-hp-row{display:flex;align-items:center;gap:10px;padding:5px 0;}
+.ed-hp-who{flex:0 0 54px;font-size:12px;color:#8a7a6c;}
+.ed-hp-fields{flex:1;min-width:0;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.ed-hp-fields .ed-name-input{flex:1 1 110px;min-width:90px;}
+.ed-hp-fields .ed-baptism-input{flex:1 1 90px;}
+.ed-hp-fields .ed-phone-input{flex:1.2 1 130px;min-width:120px;}
+.ed-hp-fields .ed-baptism-add{align-self:stretch;}
+
+/* ── 캘린더 스타일: 가로 스크롤(4번째 카드가 잘려 보였다) → 한눈에 보이는 격자 ── */
+.cal-style-scroll{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));overflow:visible;cursor:default;}
+.cal-style-scroll:active{cursor:default;}
+.cal-style-card{flex:none;min-width:0;}
+
+/* ── 날짜가 없을 때 캘린더·D-Day 섹션 안내 ── */
+.ed-need-date{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;padding:10px 12px;border-radius:10px;background:#fdf6ee;border:1px solid #f1e3d0;font-size:12px;color:#96702a;}
+.ed-need-date button{border:none;background:none;color:var(--color-rose);font:inherit;font-size:12px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;}
+.ed-need-date button:hover{text-decoration:underline;}
+
+/* ── 갤러리 업로드: 끌어다 놓는 넓은 영역 ── */
+.gal-upload-btn.gal-drop{
+    width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    padding:22px 12px;border:1.5px dashed #e3c9cf;border-radius:12px;background:#fffafb;
+    color:#a85d72;cursor:pointer;transition:background-color .2s,border-color .2s;font-family:var(--font-sans);
+}
+.gal-upload-btn.gal-drop:hover,.gal-upload-btn.gal-drop.drag{background:#fdf0f3;border-color:var(--color-rose);}
+.gal-drop > i{font-size:24px;}
+.gal-drop-t{font-size:13px;color:#7a5a62;}
+.gal-drop-s{font-size:11.5px;color:#b0a194;}
+
+/* ── 접히는 안내 (표시 순서) ── */
+.ed-order-notice.ed-fold{padding:0;background:none;border:none;margin-top:8px;}
+.ed-fold > summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:#a09080;padding:2px 0;}
+.ed-fold > summary::-webkit-details-marker{display:none;}
+.ed-fold > summary:hover{color:var(--color-rose);}
+.ed-fold > summary i{font-size:13px;color:var(--color-gold);}
+.ed-fold[open] > summary{margin-bottom:6px;}
+.ed-fold .ed-order-list{padding:10px 12px;border-radius:10px;background:#faf8f5;border:1px solid var(--color-border-soft);}
 
 /* ── 예식 정보: 장소 검색 (지도 섹션과 같은 검색창을 연다) ── */
 .ed-place-search{
