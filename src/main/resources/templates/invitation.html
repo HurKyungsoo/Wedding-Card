@@ -32,13 +32,15 @@
           th:href="'https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500&family=Noto+Sans+KR:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Pinyon+Script&family=Sacramento&family=Patrick+Hand' + ${wedding.extraFontFamilies} + '&display=swap'">
     <!-- 구글폰트에 없는 글꼴(마루부리·경기천년바탕) — 위와 같은 규칙으로 고른 것만 받는다.
          이쪽 CSS 도 unicode-range subset 이라 실제 쓰인 글자 조각만 내려간다. -->
-    <th:block th:each="href : ${loadAllFonts} ? ${T(com.example.weddingexam.dto.WeddingDto).allFontStylesheets} : ${wedding.extraFontStylesheets}">
+    <th:block th:each="href : (${loadAllFonts} or ${demo == true}) ? ${T(com.example.weddingexam.dto.WeddingDto).allFontStylesheets} : ${wedding.extraFontStylesheets}">
         <link rel="stylesheet" th:href="${href}">
     </th:block>
     <!-- Pretendard — 한글 기본 폰트. invitation.css 본문이 쓰므로 항상 로드한다 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <link rel="stylesheet" th:href="@{/css/tokens.css}">
+    <!-- 체험용 샘플(/demo) — 검색에 안 잡히게 -->
+    <meta th:if="${demo == true}" name="robots" content="noindex">
     <link rel="stylesheet" th:href="@{/css/invitation.css}">
     <!-- 카카오 JS SDK (지도 렌더링용) -->
 <script th:inline="javascript">
@@ -100,7 +102,7 @@
      DOM 은 지우지 않고 클래스로 숨긴다 — 섹션 순서 JS 등이 이 요소들을 기준점으로 쓴다. -->
 <div class="wc" th:style="|--main-font: ${wedding.mainFontCss};|"
      th:with="live=${!editorPreview}, hasDate=${!#strings.isEmpty(wedding.weddingDate)}, hasTime=${!#strings.isEmpty(wedding.weddingTime)}, hasPlace=${!#strings.isEmpty(wedding.weddingPlace) or !#strings.isEmpty(wedding.mapPlaceName)}, hasAddr=${!#strings.isEmpty(wedding.weddingAddress) or !#strings.isEmpty(wedding.mapAddressRoad)}, hasMap=${wedding.mapLat != null and wedding.mapLng != null}, hasGallery=${!#strings.isEmpty(wedding.galleryImages)}, hasParents=${!#strings.isEmpty(wedding.groomFatherName) or !#strings.isEmpty(wedding.groomMotherName) or !#strings.isEmpty(wedding.brideFatherName) or !#strings.isEmpty(wedding.brideMotherName)}"
-     th:classappend="${(live ? 'is-live' + (hasDate ? '' : ' no-date') + (hasPlace ? '' : ' no-place') : '') + (wedding.defaultMainFont ? ' font-default' : '')}">
+     th:classappend="${(live ? 'is-live' + (hasDate ? '' : ' no-date') + (hasPlace ? '' : ' no-place') : ' is-editor') + (wedding.defaultMainFont ? ' font-default' : '')}">
 
     <!-- ① HERO -->
     <div class="hero" id="heroSection" th:classappend="${(wedding.mainDesign != null ? 'design-' + wedding.mainDesign : 'design-basic') + (wedding.mainFontSize != null and !#strings.isEmpty(wedding.mainFontSize) ? ' fs-' + wedding.mainFontSize : '')}">
@@ -2568,6 +2570,23 @@ window.__WEDDING_STYLE = {
             setTimeout(renderHearts, 50);
         }
     });
+})();
+</script>
+<!-- 체험용 샘플(/demo) — 방명록·참석 응답은 화면만 보여주고 실제로는 보내지 않는다.
+     두 폼 모두 응답의 error 를 그대로 안내문으로 보여주므로 같은 모양으로 돌려준다. -->
+<script th:if="${demo == true}">
+(function () {
+    var origFetch = window.fetch;
+    window.fetch = function (url, opts) {
+        var u = typeof url === 'string' ? url : (url && url.url) || '';
+        var method = ((opts && opts.method) || 'GET').toUpperCase();
+        if (method !== 'GET' && /\/api\/(rsvp|guestbook)/.test(u)) {
+            return Promise.resolve(new Response(
+                JSON.stringify({ error: '체험용 샘플이라 실제로 저장되지는 않아요.' }),
+                { status: 400, headers: { 'Content-Type': 'application/json' } }));
+        }
+        return origFetch.apply(this, arguments);
+    };
 })();
 </script>
 </body>

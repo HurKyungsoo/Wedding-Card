@@ -70,10 +70,17 @@ public class WeddingService {
      */
     @Transactional
     public WeddingDto createForUser(Long userId) {
+        return createForUser(userId, null);
+    }
+
+    /** design 이 있으면 그 테마로 시작한다(랜딩 "이 테마로 만들기"). 검증은 호출하는 쪽에서 */
+    @Transactional
+    public WeddingDto createForUser(Long userId, String design) {
         if (repo.countByUserId(userId) >= MAX_WEDDINGS_PER_USER)
             throw new IllegalStateException("청첩장은 최대 " + MAX_WEDDINGS_PER_USER + "개까지 만들 수 있습니다.");
         WeddingDto dto = blankDto();
         dto.setUserId(userId);
+        if (design != null) dto.setMainDesign(design);
         return save(dto);
     }
 

@@ -2761,3 +2761,29 @@ body{ -webkit-overflow-scrolling:touch; }
     content:''; position:absolute; inset:10px; z-index:3; pointer-events:none;
     border:1px solid rgba(255,255,255,.6);
 }
+
+/* ── 편집 미리보기 — 메인 사진을 아직 안 올렸으면 테마 예시 사진을 대신 보여준다 ──
+   회색 칸과 "사진을 업로드하세요"만 있으면 테마가 실제로 어떻게 보일지 감이 오지 않는다.
+   미리보기(.is-editor)에서만 배경으로 깔 뿐 저장되지 않고, 실제 청첩장(.is-live)에는 나가지 않는다.
+   사진을 올리면 이 자리 자체가 사라진다(applyMainPhotoPresence). */
+.wc.is-editor .hero-fullphoto-placeholder,
+.wc.is-editor .forever-arch-placeholder{
+    background:#e9e3da url('/images/demo/story.jpg') center 20% / cover no-repeat;
+}
+.wc.is-editor .hero.design-basic .hero-fullphoto-placeholder,
+.wc.is-editor .hero.design-the_marriage .hero-fullphoto-placeholder{ background-image:url('/images/demo/basic.jpg'); background-position:center 30%; }
+.wc.is-editor .hero.design-married .hero-fullphoto-placeholder{ background-image:url('/images/demo/married.jpg'); }
+.wc.is-editor .forever-arch-placeholder{ background-image:url('/images/demo/forever.jpg'); background-position:center 30%; position:relative; }
+.wc.is-editor .hero-fullphoto-placeholder > *,
+.wc.is-editor .forever-arch-placeholder > *{ display:none; }
+/* 예시 사진이라는 표시 — 실제 사진으로 착각하지 않게 */
+.wc.is-editor .hero-fullphoto-placeholder::after,
+.wc.is-editor .forever-arch-placeholder::after{
+    content:'샘플 사진 · 사진을 올리면 바뀌어요';
+    position:absolute; left:50%; transform:translateX(-50%);
+    top:14px; z-index:6; white-space:nowrap;
+    font-family:'Pretendard','Noto Sans KR',sans-serif; font-size:11px; letter-spacing:.2px;
+    color:#fff; background:rgba(43,36,32,.72); padding:5px 11px; border-radius:999px;
+    pointer-events:none;
+}
+.wc.is-editor .forever-arch-placeholder::after{ content:'샘플 사진'; top:auto; bottom:12px; }
