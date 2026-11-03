@@ -24,7 +24,6 @@
     .lp-wrap { max-width: 1120px; margin: 0 auto; padding: 0 56px; }
     .lp-hero-grid { display: grid; grid-template-columns: 54fr 46fr; gap: 72px; align-items: center; }
     .lp-hero-ctas { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
-    .lp-feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     /* 테마 캐러셀이 양옆으로 넓게 펼쳐지므로 이 섹션만 조금 넓힌다 */
     #themes .lp-wrap { max-width: 1180px; }
     .lp-hero-visual { display: flex; justify-content: center; align-items: center; }
@@ -261,6 +260,100 @@
       .lp-ed-panel { flex: 0 0 auto; width: min(100%, 340px); margin: -48px 0 0; }
     }
 
+    /* ── 기능 모음 (벤토) ──
+       기능 이름만 늘어놓던 카드 4장 대신, 하객이 실제로 보게 될 화면 조각을 작게 그려 보여준다.
+       전부 HTML/CSS 로 그린 예시 화면이다 (실제 데이터·후기 아님). */
+    .lp-bento { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .lp-bx {
+      background: #fff; border-radius: 22px; border: 1px solid #ece4da; padding: 26px 26px 24px;
+      display: flex; flex-direction: column; gap: 18px; overflow: hidden; position: relative;
+      box-shadow: 0 2px 12px rgba(44,30,20,0.04);
+    }
+    .lp-bx.w2 { grid-column: span 2; }
+    .lp-bx h3 { font-family: var(--font-serif); font-size: 17px; font-weight: 400; color: var(--color-ink-deepest); display: flex; align-items: center; gap: 8px; }
+    .lp-bx h3 i { color: var(--color-gold); font-size: 19px; }
+    .lp-bx p { font-size: 13px; color: #94857a; line-height: 1.75; font-weight: 300; margin-top: 6px; }
+    .lp-bx-ui { margin-top: auto; }
+    .lp-bx-row { display: flex; gap: 22px; align-items: center; }
+    .lp-bx-row > .txt { flex: 0 0 210px; }
+    .lp-bx-row > .lp-bx-ui { flex: 1; margin-top: 0; }
+
+    /* 지도 */
+    .lp-map {
+      height: 168px; border-radius: 14px; position: relative; overflow: hidden; background-color: #eef0e8;
+      background-image:
+        linear-gradient(90deg, transparent 47%, #fff 47%, #fff 53%, transparent 53%),
+        linear-gradient(0deg, transparent 58%, #fff 58%, #fff 63%, transparent 63%),
+        linear-gradient(28deg, transparent 70%, #f7f3ea 70%, #f7f3ea 73%, transparent 73%),
+        radial-gradient(circle at 18% 28%, #dfe8d4 0 34px, transparent 35px),
+        radial-gradient(circle at 82% 78%, #d9e6ee 0 46px, transparent 47px);
+    }
+    .lp-map-pin { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -100%); color: var(--color-rose); font-size: 34px; filter: drop-shadow(0 4px 6px rgba(168,93,114,0.35)); }
+    .lp-map-tag { position: absolute; left: 50%; top: 52%; transform: translate(-50%, 8px); background: #fff; border-radius: 8px; padding: 4px 9px; font-size: 11px; color: #4a3d34; box-shadow: 0 3px 10px rgba(44,30,20,0.12); white-space: nowrap; }
+    .lp-navi { display: flex; gap: 8px; margin-top: 10px; }
+    .lp-navi span { flex: 1; height: 34px; border-radius: 9px; border: 1px solid #ece4da; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; color: #5d5047; }
+    .lp-navi b { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+
+    /* 카카오톡 공유 */
+    .lp-kakao { background: #b2c7d9; border-radius: 14px; padding: 14px 12px 14px 14px; display: flex; gap: 8px; align-items: flex-start; }
+    .lp-kakao-av { flex: 0 0 30px; height: 30px; border-radius: 11px; background: #fee500; display: flex; align-items: center; justify-content: center; font-size: 15px; color: #3c1e1e; }
+    .lp-kakao-card { flex: 1; background: #fff; border-radius: 4px 12px 12px 12px; overflow: hidden; max-width: 196px; }
+    .lp-kakao-card .ph { height: 92px; background: url('/images/share-thumbnail.jpg') center / cover; }
+    .lp-kakao-card .bd { padding: 9px 11px 10px; }
+    .lp-kakao-card .t { font-size: 12.5px; color: #222; font-weight: 500; }
+    .lp-kakao-card .s { font-size: 11px; color: #888; margin-top: 2px; }
+    .lp-kakao-card .btn { margin-top: 8px; height: 28px; border-radius: 6px; background: #f2f2f2; font-size: 11.5px; color: #333; display: flex; align-items: center; justify-content: center; }
+
+    /* 참석 여부 */
+    .lp-rsvp { border: 1px solid #ece4da; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 9px; }
+    .lp-seg { display: grid; grid-template-columns: 1fr 1fr; background: #f6f1eb; border-radius: 9px; padding: 3px; font-size: 12px; text-align: center; color: #9a8a7c; }
+    .lp-seg span { padding: 6px 0; border-radius: 7px; }
+    .lp-seg span.on { background: #fff; color: var(--color-ink-deepest); box-shadow: 0 1px 4px rgba(44,30,20,0.08); }
+    .lp-rsvp-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #6f6056; }
+    .lp-cnt { display: flex; align-items: center; gap: 10px; }
+    .lp-cnt b { width: 22px; height: 22px; border-radius: 50%; border: 1px solid #e2d8ce; display: flex; align-items: center; justify-content: center; font-weight: 400; color: #9a8a7c; }
+    .lp-rsvp-btn { height: 34px; border-radius: 9px; background: var(--color-ink-deepest); color: #fff; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+
+    /* 계좌 */
+    .lp-acct { border: 1px solid #ece4da; border-radius: 14px; overflow: hidden; }
+    .lp-acct-h { padding: 10px 14px; background: #faf6f1; font-size: 12px; color: #6f6056; display: flex; justify-content: space-between; }
+    .lp-acct-b { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+    .lp-acct-b .n { font-size: 12.5px; color: #3a2e22; }
+    .lp-acct-b .a { font-size: 12px; color: #9a8a7c; letter-spacing: 0.3px; }
+    .lp-acct-btns { display: flex; gap: 6px; }
+    .lp-acct-btns span { flex: 1; height: 30px; border-radius: 8px; font-size: 11.5px; display: flex; align-items: center; justify-content: center; gap: 4px; border: 1px solid #ece4da; color: #5d5047; }
+    .lp-acct-btns span.pay { background: #fee500; border-color: #fee500; color: #3c1e1e; }
+
+    /* 달력 + D-day */
+    .lp-cal { border: 1px solid #ece4da; border-radius: 14px; padding: 12px 12px 14px; }
+    .lp-cal-h { text-align: center; font-family: var(--font-serif); font-size: 13px; color: #3a2e22; margin-bottom: 8px; letter-spacing: 1px; }
+    .lp-cal-g { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px 0; text-align: center; font-size: 10.5px; color: #6f6056; }
+    .lp-cal-g .w { color: #b5a698; font-size: 9.5px; }
+    .lp-cal-g .su { color: #d0798e; }
+    .lp-cal-g .d { width: 22px; height: 22px; line-height: 22px; margin: 0 auto; border-radius: 50%; background: var(--color-rose); color: #fff; }
+    .lp-dday { margin-top: 10px; text-align: center; font-size: 12px; color: #6f6056; }
+    .lp-dday strong { color: var(--color-rose); font-weight: 600; }
+
+    /* 갤러리 */
+    .lp-gal { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; height: 168px; }
+    .lp-gal span { border-radius: 10px; background-size: cover; background-position: center 25%; }
+    .lp-gal span:first-child { grid-row: span 2; }
+
+    /* 방명록 */
+    .lp-gb { display: flex; flex-direction: column; gap: 8px; }
+    .lp-gb div { border: 1px solid #ece4da; border-radius: 12px; padding: 10px 12px; font-size: 12px; color: #5d5047; line-height: 1.55; }
+    .lp-gb b { display: block; font-size: 11px; color: #b0a194; font-weight: 400; margin-bottom: 2px; }
+
+    @media (max-width: 960px) {
+      .lp-bento { grid-template-columns: 1fr 1fr; }
+      .lp-bx-row { flex-direction: column; align-items: stretch; }
+      .lp-bx-row > .txt { flex: none; }
+    }
+    @media (max-width: 640px) {
+      .lp-bento { grid-template-columns: 1fr; }
+      .lp-bx.w2 { grid-column: auto; }
+    }
+
     /* ── 반응형 ── */
     @media (max-width: 960px) {
       .lp-wrap { padding: 0 32px; }
@@ -273,7 +366,6 @@
     }
     @media (max-width: 640px) {
       .lp-wrap { padding: 0 20px; }
-      .lp-feat-grid { grid-template-columns: 1fr; }
       .lp-hero-deco { display: none; }
       .lp-nav-inner { padding: 0 20px !important; }
       .lp-stats-wrap { flex-direction: column; }
@@ -590,45 +682,124 @@
   </div>
 </section>
 
-<!-- ── FEATURES ── -->
-<section style="padding:108px 0;background:#f5f0e8;">
+<!-- ── FEATURES ── 하객이 보게 될 화면 조각을 작게 그려서 보여주는 벤토. 그림은 전부 예시 화면이다. -->
+<section id="features" style="padding:108px 0;background:#f5f0e8;">
   <div class="lp-wrap">
-    <div data-reveal style="text-align:center;margin-bottom:64px;">
+    <div data-reveal style="text-align:center;margin-bottom:56px;">
       <div style="font-size:10px;letter-spacing:5px;color:var(--color-gold);font-weight:500;text-transform:uppercase;margin-bottom:14px;">FEATURES</div>
-      <h2 style="font-family:var(--font-serif);font-size:clamp(26px,3.5vw,40px);font-weight:300;color:var(--color-ink-deepest);">주요 기능</h2>
+      <h2 style="font-family:var(--font-serif);font-size:clamp(26px,3.5vw,40px);font-weight:300;color:var(--color-ink-deepest);">하객에게 필요한 건 다 담았어요</h2>
+      <p style="font-size:14px;color:#9a8a78;margin-top:12px;font-weight:300;">아래 그림은 청첩장 속 화면을 옮겨 그린 예시예요</p>
     </div>
-    <div class="lp-feat-grid">
+    <div class="lp-bento">
 
-      <div class="feat-card" data-reveal data-delay="1" style="background:rgba(255,255,255,0.72);border-radius:20px;padding:36px 32px;border:1px solid rgba(232,226,218,0.9);box-shadow:0 2px 12px rgba(44,30,20,0.04);">
-        <div style="width:52px;height:52px;background:#fdf4ec;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-          <i class="ti ti-map-pin" style="font-size:26px;color:var(--color-gold);"></i>
+      <div class="lp-bx w2 feat-card" data-reveal data-delay="1">
+        <div class="lp-bx-row">
+          <div class="txt">
+            <h3><i class="ti ti-map-pin"></i>오시는 길</h3>
+            <p>주소만 검색하면 지도가 들어가요. 하객은 버튼 한 번으로 카카오내비·티맵·네이버 지도 길안내를 바로 시작해요.</p>
+          </div>
+          <div class="lp-bx-ui" aria-hidden="true">
+            <div class="lp-map"><i class="ti ti-map-pin-filled lp-map-pin"></i><span class="lp-map-tag">그랜드 웨딩홀</span></div>
+            <div class="lp-navi">
+              <span><b style="background:#fee500;"></b>카카오내비</span>
+              <span><b style="background:#3d6af2;"></b>티맵</span>
+              <span><b style="background:#03c75a;"></b>네이버 지도</span>
+            </div>
+          </div>
         </div>
-        <div style="font-family:var(--font-serif);font-size:17px;font-weight:400;color:var(--color-ink-deepest);margin-bottom:10px;">카카오맵 연동</div>
-        <div style="font-size:14px;color:#9a8a78;line-height:1.85;font-weight:300;">예식장 위치 안내와 내비게이션 연결을 한 번에 처리합니다.</div>
       </div>
 
-      <div class="feat-card" data-reveal data-delay="2" style="background:rgba(255,255,255,0.72);border-radius:20px;padding:36px 32px;border:1px solid rgba(232,226,218,0.9);box-shadow:0 2px 12px rgba(44,30,20,0.04);">
-        <div style="width:52px;height:52px;background:#fdf4ec;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-          <i class="ti ti-checkbox" style="font-size:26px;color:var(--color-gold);"></i>
+      <div class="lp-bx feat-card" data-reveal data-delay="2">
+        <div>
+          <h3><i class="ti ti-message-circle"></i>카카오톡 공유</h3>
+          <p>제목과 초대 문구가 담긴 카드로 보내고, 링크 복사도 돼요.</p>
         </div>
-        <div style="font-family:var(--font-serif);font-size:17px;font-weight:400;color:var(--color-ink-deepest);margin-bottom:10px;">RSVP 참석 확인</div>
-        <div style="font-size:14px;color:#9a8a78;line-height:1.85;font-weight:300;">하객 참석 여부를 실시간으로 확인하고 관리합니다.</div>
+        <div class="lp-bx-ui" aria-hidden="true">
+          <div class="lp-kakao">
+            <span class="lp-kakao-av"><i class="ti ti-heart-filled"></i></span>
+            <div class="lp-kakao-card">
+              <div class="ph"></div>
+              <div class="bd"><div class="t">민준 ♥ 서연 결혼합니다</div><div class="s">저희 결혼식에 초대합니다 💌</div><div class="btn">청첩장 보기</div></div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="feat-card" data-reveal data-delay="3" style="background:rgba(255,255,255,0.72);border-radius:20px;padding:36px 32px;border:1px solid rgba(232,226,218,0.9);box-shadow:0 2px 12px rgba(44,30,20,0.04);">
-        <div style="width:52px;height:52px;background:#fdf4ec;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-          <i class="ti ti-photo" style="font-size:26px;color:var(--color-gold);"></i>
+      <div class="lp-bx feat-card" data-reveal data-delay="1">
+        <div>
+          <h3><i class="ti ti-checkbox"></i>참석 여부 받기</h3>
+          <p>하객이 남긴 응답은 관리 화면에서 명단으로 확인해요.</p>
         </div>
-        <div style="font-family:var(--font-serif);font-size:17px;font-weight:400;color:var(--color-ink-deepest);margin-bottom:10px;">사진 갤러리</div>
-        <div style="font-size:14px;color:#9a8a78;line-height:1.85;font-weight:300;">커플 사진을 아름다운 슬라이드 갤러리로 전시합니다.</div>
+        <div class="lp-bx-ui" aria-hidden="true">
+          <div class="lp-rsvp">
+            <div class="lp-seg"><span class="on">참석</span><span>불참</span></div>
+            <div class="lp-rsvp-row">참석 인원<span class="lp-cnt"><b>−</b>2명<b>+</b></span></div>
+            <div class="lp-rsvp-btn">참석 여부 전달하기</div>
+          </div>
+        </div>
       </div>
 
-      <div class="feat-card" data-reveal data-delay="4" style="background:rgba(255,255,255,0.72);border-radius:20px;padding:36px 32px;border:1px solid rgba(232,226,218,0.9);box-shadow:0 2px 12px rgba(44,30,20,0.04);">
-        <div style="width:52px;height:52px;background:#fdf4ec;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-          <i class="ti ti-credit-card" style="font-size:26px;color:var(--color-gold);"></i>
+      <div class="lp-bx feat-card" data-reveal data-delay="2">
+        <div>
+          <h3><i class="ti ti-credit-card"></i>마음 전하실 곳</h3>
+          <p>계좌 복사와 카카오페이 송금을 한곳에.</p>
         </div>
-        <div style="font-family:var(--font-serif);font-size:17px;font-weight:400;color:var(--color-ink-deepest);margin-bottom:10px;">계좌 송금</div>
-        <div style="font-size:14px;color:#9a8a78;line-height:1.85;font-weight:300;">카카오페이 링크와 계좌 정보를 깔끔하게 안내합니다.</div>
+        <div class="lp-bx-ui" aria-hidden="true">
+          <div class="lp-acct">
+            <div class="lp-acct-h"><span>신랑측</span><i class="ti ti-chevron-up"></i></div>
+            <div class="lp-acct-b">
+              <div><div class="n">신랑 김민준</div><div class="a">국민 123456-01-234567</div></div>
+              <div class="lp-acct-btns"><span><i class="ti ti-copy"></i>복사</span><span class="pay">pay</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lp-bx feat-card" data-reveal data-delay="3">
+        <div>
+          <h3><i class="ti ti-calendar-heart"></i>달력 · D-day</h3>
+          <p>예식일까지 남은 날을 함께 세어요.</p>
+        </div>
+        <div class="lp-bx-ui" aria-hidden="true">
+          <div class="lp-cal">
+            <div class="lp-cal-h">2026 · 10</div>
+            <div class="lp-cal-g">
+              <span class="w su">일</span><span class="w">월</span><span class="w">화</span><span class="w">수</span><span class="w">목</span><span class="w">금</span><span class="w">토</span>
+              <span class="su">18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span><span class="d">24</span></span>
+              <span class="su">25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span><span>31</span>
+            </div>
+            <div class="lp-dday">민준 ♥ 서연 예식일까지 <strong>D-24</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lp-bx w2 feat-card" data-reveal data-delay="1">
+        <div class="lp-bx-row">
+          <div class="txt">
+            <h3><i class="ti ti-photo"></i>사진 갤러리</h3>
+            <p>여러 장을 한 번에 올리고 끌어서 순서를 바꿔요. 슬라이드·격자·모자이크·썸네일 스와이프 중에서 골라요.</p>
+          </div>
+          <div class="lp-bx-ui" aria-hidden="true">
+            <div class="lp-gal">
+              <span style="background-image:url('/images/demo/story.jpg');"></span>
+              <span style="background-image:url('/images/demo/basic.jpg');"></span>
+              <span style="background-image:url('/images/demo/married.jpg');"></span>
+              <span style="background-image:url('/images/demo/forever.jpg');"></span>
+              <span style="background-image:url('/images/demo/basic.jpg');background-position:center 60%;"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lp-bx feat-card" data-reveal data-delay="2">
+        <div>
+          <h3><i class="ti ti-message-heart"></i>방명록</h3>
+          <p>축하 메시지를 남기고 함께 봐요.</p>
+        </div>
+        <div class="lp-bx-ui lp-gb" aria-hidden="true">
+          <div><b>대학 동기</b>결혼 진심으로 축하해! 예식장에서 보자</div>
+          <div><b>회사 선배</b>두 분 행복하세요 🎉</div>
+        </div>
       </div>
 
     </div>
@@ -977,7 +1148,7 @@
     }, { threshold: 0.45 }).observe(demo);
 
     /* ── 저절로 시연 ── */
-    // ⚠ 대괄호 두 개를 붙여 쓰면 Thymeleaf 가 [[...]] 인라인 식으로 읽어 페이지 렌더가 중간에 깨진다
+    // ⚠ 대괄호 두 개를 붙여 쓰면 Thymeleaf 가 인라인 식으로 읽어 페이지 렌더가 중간에 깨진다
     const NAMES = [ ['김민준', '이서연'], ['박도윤', '최하은'] ];
     function mark(step) { items.forEach(function(li) { li.classList.toggle('on', li.dataset.step === step); }); }
     function pulse(el) { if (!el) return; el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
