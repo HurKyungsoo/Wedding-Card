@@ -2723,7 +2723,7 @@ body{ -webkit-overflow-scrolling:touch; }
 .hero.design-forever .forever-place-wrap{ margin-bottom:auto; }
 /* 예식장이 비어 숨겨지면 날짜가 묶음의 끝이 된다 */
 .wc.is-live.no-place .hero.design-forever .forever-date{ margin-bottom:auto; }
-.hero.design-forever .forever-arch{ width:min(82%, 290px, 34dvh); max-width:none; margin-bottom:max(1.4rem, calc(9dvh - 34px)); }
+.hero.design-forever .forever-arch{ width:min(82%, 290px, calc(39.5dvh - 54px)); max-width:none; margin-bottom:max(1.4rem, calc(9dvh - 34px)); }
 /* 날짜·예식장은 아치에서 조금 더 떨어뜨려 여유 있게 (키 큰 폰일수록 간격이 커짐) */
 .hero.design-forever .forever-date{ margin-bottom:max(.4rem, calc(2.4dvh - 10px)); }
 
@@ -2768,8 +2768,16 @@ body{ -webkit-overflow-scrolling:touch; }
 }
 
 /* ── 5. 아치형 ── */
+/* 이름에 포인트 — 조금 크고 진하게, 가운데 &는 필기체 분홍 + 양옆 가는 선 */
 .hero.design-forever .forever-name-groom,
-.hero.design-forever .forever-name-bride{ letter-spacing:5px; }
+.hero.design-forever .forever-name-bride{ letter-spacing:5px; font-size:calc(24px * var(--fs-scale, 1)); font-weight:500; }
+.hero.design-forever .forever-name-sep{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Great Vibes','Dancing Script',cursive; font-size:34px; line-height:.9;
+    color:#d98aa3; letter-spacing:0; margin:2px 0;
+}
+.hero.design-forever .forever-name-sep::before,
+.hero.design-forever .forever-name-sep::after{ content:''; width:34px; height:1px; background:#e8c3cf; }
 .hero.design-forever .forever-place1,
 .hero.design-forever .forever-place2{ font-size:calc(13px * var(--fs-scale, 1)); }
 .hero.design-forever .forever-place2{ letter-spacing:1px; }

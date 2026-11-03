@@ -187,7 +187,7 @@
             <div class="forever-date" id="foreverDate"
                  th:data-date="${wedding.weddingDate}"
                  th:data-time="${wedding.weddingTime}"
-                 th:text="${!#strings.isEmpty(wedding.weddingDate) ? #strings.replace(wedding.weddingDate, '-', '. ') : ''}">2026. 06. 27</div>
+                 th:text="${!#strings.isEmpty(wedding.weddingDate) ? #strings.replace(wedding.weddingDate, '-', ' · ') : ''}">2026 · 06 · 27</div>
             <div class="forever-place-wrap">
                 <div class="forever-place1" th:text="${wedding.weddingPlace}">MARRIAGE WEDDING HALL</div>
                 <div class="forever-place2"
@@ -2120,7 +2120,8 @@ window.__WEDDING_STYLE = {
         if (placeEl && place !== undefined) placeEl.textContent = place || '웨딩홀';
 
         /* 새 forever-layout */
-        if (newDateEl && formatted) newDateEl.textContent = formatted;
+        /* 아치형 날짜는 랜딩 카드와 같은 가운데 점 형식 (2026 · 12 · 19) */
+        if (newDateEl && formatted) newDateEl.textContent = formatted.replace(/\. /g, ' · ');
         if (newPlace1El && place !== undefined) newPlace1El.textContent = (place || '').toUpperCase();
         if (newPlace2El && mapPlaceName !== undefined) newPlace2El.textContent = (mapPlaceName || '').toUpperCase();
     }
