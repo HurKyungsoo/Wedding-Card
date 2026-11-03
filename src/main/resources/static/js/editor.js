@@ -1394,8 +1394,92 @@ document.getElementById('editForm').addEventListener('change', function() { sche
 /* ──────────────────────────────────────
    게시 버튼 → 임시저장 내용을 게스트 화면에 실제로 반영
 ────────────────────────────────────── */
+/* ──────────────────────────────────────
+   게시 전 필수 항목 확인
+   — 이름·날짜·예식장이 빈 채로 게시되면 하객이 받는 청첩장에 ", 결혼합니다." 처럼 빈 자리가 남는다.
+     비어 있으면 무엇이 비었는지 보여주고 그 칸으로 바로 데려간다. 그래도 게시할지는 사용자가 정한다.
+────────────────────────────────────── */
+var PUBLISH_REQUIRED = [
+    { label: '신랑 성함',  sec: 'basic',   sel: '[name="groomName"]',
+      ok: function(d) { return !!(d.groomName || '').trim(); } },
+    { label: '신부 성함',  sec: 'basic',   sel: '[name="brideName"]',
+      ok: function(d) { return !!(d.brideName || '').trim(); } },
+    { label: '예식 날짜',  sec: 'wedding', sel: '[name="weddingDate"]',
+      ok: function(d) { return !!(d.weddingDate || '').trim(); } },
+    { label: '예식장',     sec: 'wedding', sel: '[name="weddingPlace"]',
+      ok: function(d) { return !!((d.weddingPlace || '').trim() || (d.mapPlaceName || '').trim()); } }
+];
+
+function closePublishCheck() {
+    var m = document.getElementById('publishCheck');
+    if (m) m.remove();
+}
+
+/** 다 채워졌으면 true. 아니면 확인 창을 띄우고 false — proceed 는 "그래도 게시"를 눌렀을 때 호출 */
+function checkBeforePublish(proceed) {
+    var data = collectData();
+    var missing = PUBLISH_REQUIRED.filter(function(r) { return !r.ok(data); });
+    if (!missing.length) return true;
+
+    closePublishCheck();
+    var wrap = document.createElement('div');
+    wrap.id = 'publishCheck';
+    wrap.className = 'ed-pubcheck-overlay';
+    wrap.innerHTML =
+        '<div class="ed-pubcheck" role="dialog" aria-modal="true" aria-labelledby="pubcheckTitle">' +
+            '<div class="ed-pubcheck-title" id="pubcheckTitle">아직 비어 있는 항목이 있어요</div>' +
+            '<div class="ed-pubcheck-desc">비워 둔 채 게시하면 하객이 받는 청첩장에 빈 자리로 보입니다.</div>' +
+            '<ul class="ed-pubcheck-list"></ul>' +
+            '<div class="ed-pubcheck-actions">' +
+                '<button type="button" class="ed-pubcheck-btn ghost" data-act="force">그래도 게시</button>' +
+                '<button type="button" class="ed-pubcheck-btn solid" data-act="close">채우러 가기</button>' +
+            '</div>' +
+        '</div>';
+    var list = wrap.querySelector('.ed-pubcheck-list');
+    missing.forEach(function(r) {
+        var li = document.createElement('li');
+        var b  = document.createElement('button');
+        b.type = 'button';
+        b.className = 'ed-pubcheck-item';
+        b.innerHTML = '<span></span><i class="ti ti-chevron-right" aria-hidden="true"></i>';
+        b.querySelector('span').textContent = r.label;
+        b.addEventListener('click', function() { closePublishCheck(); goToField(r); });
+        li.appendChild(b);
+        list.appendChild(li);
+    });
+    wrap.addEventListener('click', function(e) {
+        var act = e.target.closest('[data-act]');
+        if (e.target === wrap || (act && act.dataset.act === 'close')) {
+            closePublishCheck();
+            if (act) goToField(missing[0]);
+        } else if (act && act.dataset.act === 'force') {
+            closePublishCheck();
+            proceed();
+        }
+    });
+    document.body.appendChild(wrap);
+    wrap.querySelector('[data-act="close"]').focus();
+    return false;
+}
+
+/** 해당 섹션을 펼쳐 스크롤하고 입력칸에 포커스 */
+function goToField(r) {
+    scrollToSection(r.sec);
+    setTimeout(function() {
+        var el = document.querySelector(r.sel);
+        if (el) { el.focus({ preventScroll: true }); el.classList.add('ed-field-flash');
+                  setTimeout(function(){ el.classList.remove('ed-field-flash'); }, 1600); }
+    }, 450);
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closePublishCheck();
+});
+
 document.getElementById('topSaveBtn').addEventListener('click', function() {
     var btn = this;
+    if (!btn._skipCheck && !checkBeforePublish(function() {
+        btn._skipCheck = true; btn.click(); btn._skipCheck = false;
+    })) return;
     btn.disabled = true;
     btn.textContent = '게시 중...';
 
@@ -1431,6 +1515,9 @@ var bottomSaveBtn = document.getElementById('bottomSaveBtn');
 if (bottomSaveBtn) {
     bottomSaveBtn.addEventListener('click', function() {
         var btn = this;
+        if (!btn._skipCheck && !checkBeforePublish(function() {
+            btn._skipCheck = true; btn.click(); btn._skipCheck = false;
+        })) return;
         btn.disabled = true;
         btn.innerHTML = '<i class="ti ti-loader-2" style="font-size:14px;animation:spin 1s linear infinite;"></i> 게시 중...';
 

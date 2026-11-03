@@ -80,6 +80,8 @@ public class WeddingController {
         // 하객 화면은 그 청첩장이 고른 것만 받는다(한글 폰트 CSS가 한 벌에 50~90KB).
         // 인증과 무관 — 폰트를 더 받는 것뿐이라 preview 파라미터만 본다.
         model.addAttribute("loadAllFonts", "1".equals(preview));
+        // 편집기 미리보기 여부 — 실제 청첩장에서는 빈 칸·편집용 안내("사진을 업로드하세요")를 숨긴다
+        model.addAttribute("editorPreview", "1".equals(preview));
         return "invitation";
     }
 
@@ -231,6 +233,8 @@ public class WeddingController {
         model.addAttribute("accounts", accounts);
         model.addAttribute("kakaoAppKey", kakaoAppKey);
         model.addAttribute("loadAllFonts", "1".equals(preview));
+        // 편집기 미리보기 여부 — 실제 청첩장에서는 빈 칸·편집용 안내("사진을 업로드하세요")를 숨긴다
+        model.addAttribute("editorPreview", "1".equals(preview));
         return "invitation";
     }
 
