@@ -511,16 +511,42 @@
                 <i class="ti ti-chevron-up ed-chevron"></i>
             </div>
             <div class="ed-sec-bd" id="bd-wedding">
+                <!-- 날짜·시간 — 브라우저 기본 입력(연도-월-일 / -- --:--)은 칸마다 눌러 타이핑해야 해서 불편했다.
+                     날짜는 연·월·일을 각각 고르고(요일·D-day 표시), 달력 버튼으로도 고를 수 있다.
+                     시간은 오전/오후 + 시 + 분(10분 단위)을 고른다.
+                     실제 값은 그대로 원래 입력(type=date/time, name 동일)에 들어가므로 저장·미리보기 코드는 그대로다 (editor.js dateTimeInputs). -->
                 <div class="ed-row">
                     <span class="ed-label">날짜</span>
-                    <div class="ed-ctrl">
-                        <input class="ed-input" type="date" th:field="*{weddingDate}">
+                    <div class="ed-ctrl ed-dt-wrap">
+                        <input class="ed-input ed-dt-native" type="date" th:field="*{weddingDate}" tabindex="-1" aria-hidden="true">
+                        <!-- 연·월·일을 바로 고른다 — 달력에서 화살표로 한 달씩 넘기지 않아도 된다. 달력 버튼은 보조로 남긴다 -->
+                        <select class="ed-input ed-select ed-dt-sel" id="dtYear" aria-label="연도"><option value="">연도</option></select>
+                        <select class="ed-input ed-select ed-dt-sel" id="dtMonth" aria-label="월"><option value="">월</option></select>
+                        <select class="ed-input ed-select ed-dt-sel" id="dtDay" aria-label="일"><option value="">일</option></select>
+                        <button type="button" class="ed-dt-cal" id="dateBtn" title="달력에서 고르기"><i class="ti ti-calendar-event"></i></button>
+                        <span id="dateLabel" class="ed-dt-label"></span>
+                        <span id="dateDday" class="ed-dt-dday"></span>
                     </div>
                 </div>
                 <div class="ed-row">
                     <span class="ed-label">시간</span>
-                    <div class="ed-ctrl">
-                        <input class="ed-input" type="time" th:field="*{weddingTime}">
+                    <div class="ed-ctrl ed-tm-wrap">
+                        <input class="ed-input ed-dt-native" type="time" th:field="*{weddingTime}" tabindex="-1" aria-hidden="true">
+                        <div class="ed-tabs ed-ampm" id="ampmTabs">
+                            <button type="button" class="ed-tab" data-v="am">오전</button>
+                            <button type="button" class="ed-tab" data-v="pm">오후</button>
+                        </div>
+                        <select class="ed-input ed-select ed-tm-sel" id="tmHour" aria-label="시">
+                            <option value="">시</option>
+                            <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
+                            <option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
+                        </select>
+                        <span class="ed-tm-unit">시</span>
+                        <select class="ed-input ed-select ed-tm-sel" id="tmMin" aria-label="분">
+                            <option value="">분</option>
+                            <option>00</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option>
+                        </select>
+                        <span class="ed-tm-unit">분</span>
                     </div>
                 </div>
                 <div class="ed-row">

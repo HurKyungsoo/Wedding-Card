@@ -1960,3 +1960,33 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-place-search:focus-visible{outline:2px solid var(--color-rose);outline-offset:2px;}
 .ed-place-search i{font-size:14px;}
 .ed-hint-line{font-size:11.5px;color:#a09080;margin-top:6px;}
+
+/* ── 예식 날짜·시간 입력 ── */
+.ed-dt-wrap,.ed-tm-wrap{position:relative;}
+/* 원래 입력은 값만 들고 있고 화면에선 숨긴다 — 달력(showPicker)이 이 자리에 열리도록 크기는 남긴다 */
+.ed-dt-native{position:absolute !important;left:0;bottom:0;width:1px !important;height:1px !important;opacity:0;pointer-events:none;padding:0 !important;border:0 !important;}
+.ed-dt-btn{
+    width:100%;display:flex;align-items:center;gap:8px;height:40px;padding:0 14px;
+    border:1px solid var(--color-border);border-radius:10px;background:var(--color-white);
+    font-family:var(--font-sans);font-size:13.5px;color:var(--color-ink);cursor:pointer;text-align:left;
+    transition:border-color .2s,box-shadow .2s;
+}
+.ed-dt-btn:hover{border-color:var(--color-rose);}
+.ed-dt-btn:focus-visible{outline:none;border-color:var(--color-rose);box-shadow:0 0 0 3px rgba(196,116,138,.14);}
+.ed-dt-btn > i{font-size:17px;color:var(--color-rose);}
+.ed-dt-label.empty{color:#b5a698;}
+.ed-dt-dday{margin-left:auto;font-size:11.5px;color:#a85d72;background:#fbf1ee;border-radius:999px;padding:2px 9px;}
+.ed-dt-dday:empty{display:none;}
+.ed-tm-wrap{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.ed-ampm{flex:0 0 auto;}
+.ed-tm-sel{flex:0 0 78px;width:78px;height:38px;}
+.ed-tm-unit{font-size:12.5px;color:#8a7a6c;margin-right:4px;}
+
+/* 날짜: 연·월·일 선택 + 달력 버튼 + 요일·D-day */
+.ed-dt-wrap{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.ed-dt-sel{height:38px;flex:0 0 auto;}
+#dtYear{width:96px;} #dtMonth{width:76px;} #dtDay{width:76px;}
+.ed-dt-cal{width:38px;height:38px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-white);color:var(--color-rose);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:17px;}
+.ed-dt-cal:hover{border-color:var(--color-rose);background:#fff5f7;}
+.ed-dt-wrap .ed-dt-label{font-size:12.5px;color:#6f6056;margin-left:4px;}
+.ed-dt-wrap .ed-dt-dday{margin-left:0;}
