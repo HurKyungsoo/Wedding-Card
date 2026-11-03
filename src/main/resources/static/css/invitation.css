@@ -2092,39 +2092,36 @@ body{ -webkit-overflow-scrolling:touch; }
    아이콘을 글자 위로 올린 세로형 버튼: 가로로 [아이콘+글자]를 늘어놓으면
    360px 폰에서 "네이버지도"가 버튼 밖으로 넘쳤다. 세로형이면 버튼 폭이
    글자 폭만 있으면 돼서 360px 에서도 여유 있게 들어간다. */
+/* 길안내 버튼 — 예전엔 제목·설명·세로형 큰 버튼으로 약 200px 을 차지했다.
+   제목을 빼고 한 줄 안내 + 아이콘 옆 글자 가로형 버튼으로 줄여 절반 높이로 */
 .map-navi-section{
-    padding:24px 18px 8px;
+    padding:14px 14px 0;
     background:transparent;   /* 카드(.map-navi-card) 배경을 그대로 쓴다 */
 }
-.map-navi-title{
-    font-size:15px;font-weight:600;
-    color:var(--color-black);margin-bottom:6px;
-    font-family:var(--font-sans);
-}
 .map-navi-desc{
-    font-size:13px;color:#666;
-    margin-bottom:16px;
+    font-size:12px;color:#888;
+    margin-bottom:10px;text-align:center;
     font-family:var(--font-sans);
 }
 .map-navi-row{
-    display:flex;gap:10px;
-    padding-bottom:20px;
+    display:flex;gap:6px;
+    padding-bottom:14px;
 }
 .map-navi-btn{
-    flex:1 1 0;min-width:0;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
-    padding:14px 6px 12px;
-    border-radius:14px;
+    flex:1 1 0;min-width:0;height:40px;
+    display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;
+    padding:0 4px;
+    border-radius:10px;
     font-size:12px;font-weight:500;
     text-decoration:none;color:var(--color-ink);
-    border:1.5px solid #e8e8e8;
+    border:1px solid #e8e8e8;
     background:var(--color-white);
     transition:all .15s;
     font-family:var(--font-sans);
     white-space:nowrap;
 }
 /* 아이콘은 템플릿에 inline style(26px)로 박혀 있어서 !important 로만 바꿀 수 있다 */
-.map-navi-btn img{width:30px !important;height:30px !important;border-radius:8px !important;}
+.map-navi-btn img{width:20px !important;height:20px !important;border-radius:5px !important;}
 .map-navi-btn:hover{ border-color:var(--color-rose);color:var(--color-rose); }
 .map-navi-btn:active{ opacity:.75;transform:scale(.97); }
 .kakao-navi{ border-color:var(--color-kakao); }
