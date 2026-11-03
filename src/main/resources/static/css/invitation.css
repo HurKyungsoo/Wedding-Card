@@ -2817,3 +2817,34 @@ body{ -webkit-overflow-scrolling:touch; }
 .hero.design-the_marriage .hero-top-date{ font-size:min(56px, 7dvh); margin-bottom:2dvh; }
 .hero.design-the_marriage .hero-bottom{ padding-top:2.4dvh; padding-bottom:2.6dvh; }
 
+
+/* ── 6. THE MARRIAGE — 밋밋함 보완: 미색 배경 + 인화사진 액자 + 세이지 포인트 ──
+   첫 화면만 흰색이던 배경을 투명하게 해서 아래 섹션과 같은 미색(#f5f1eb)으로 이어지게 한다.
+   숫자(12.19, 하단 날짜)는 기존 글꼴 유지. */
+.hero.design-the_marriage{ background:transparent; }
+.hero.design-the_marriage .hero-top,
+.hero.design-the_marriage .hero-bottom{ background:transparent !important; }
+/* 라벨 양옆 가는 선 */
+.hero.design-the_marriage .hero-top-label{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    color:#7d8c74 !important;
+}
+.hero.design-the_marriage .hero-top-label::before,
+.hero.design-the_marriage .hero-top-label::after{ content:''; width:26px; height:1px; background:#b7c1ae; }
+/* 이름 사이 쉼표 → 이탤릭 & */
+.hero.design-the_marriage .hero-top-names .name-sep{ font-size:0; }
+.hero.design-the_marriage .hero-top-names .name-sep::before{
+    content:'&'; font-size:15px; font-family:'Cormorant Garamond',serif; font-style:italic;
+    margin:0 6px; color:#9a8f80;
+}
+.hero.design-the_marriage .hero-bottom-date::before{ background:#b7c1ae !important; }
+/* 사진 — 흰 테두리 + 그림자(인화사진), 안쪽 가는 흰 선(액자) */
+.hero.design-the_marriage .hero-fullphoto{
+    border-radius:3px;
+    box-shadow:0 0 0 7px #fff, 0 12px 30px rgba(80,60,40,.18), 0 1px 3px 7px rgba(80,60,40,.06);
+    margin:7px calc(1.1rem + 7px);
+}
+.hero.design-the_marriage .hero-fullphoto::before{
+    content:''; position:absolute; inset:10px; z-index:3; pointer-events:none;
+    border:1px solid rgba(255,255,255,.6);
+}
