@@ -410,40 +410,69 @@ function revertSection(evt, sectionKey) {
 })();
 
 /* ──────────────────────────────────────
-   테마 썸네일 날짜 — 접속한 날짜로 통일
+   테마 썸네일 날짜 — 예식 날짜, 없으면 접속한 날짜
    ──────────────────────────────────────
-   테마마다 하드코딩된 날짜가 제각각(2026.06.19 / 24·MAY·2026 / JUN·27 …)이라
-   나란히 놓고 보면 테마 차이가 아니라 날짜 차이가 먼저 눈에 들어왔다.
-   전부 오늘 날짜로 맞춰서, 썸네일 간 차이가 오직 "레이아웃"만 남게 한다.
-   data-thumb-date 값이 그 자리의 표기 형식이다. */
-(function fillThumbDates() {
+   테마마다 하드코딩된 날짜가 제각각이면 나란히 놓고 볼 때 테마 차이보다 날짜 차이가
+   먼저 눈에 들어와서, 전부 같은 날짜로 맞춘다.
+   예식 날짜·시간을 넣었으면 그 값으로, 안 넣었으면 오늘 날짜(시간은 견본 값)로 채우고,
+   입력을 바꾸면 바로 다시 채운다. data-thumb-date 값이 그 자리의 표기 형식이다. */
+(function thumbDates() {
     var MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
     var DOW = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-    var d   = new Date();
-    var y   = d.getFullYear();
-    var m2  = String(d.getMonth() + 1).padStart(2, '0');
-    var d2  = String(d.getDate()).padStart(2, '0');
+    var DOW_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var dateInput = document.getElementById('weddingDate');
+    var timeInput = document.getElementById('weddingTime');
 
-    var FORMATS = {
-        'm-dot-d-dot-y':  m2 + ' · ' + d2 + ' · ' + y,          /* 기본 */
-        'ymd-dow-time':   y + '.' + m2 + '.' + d2 + ' ' + DOW[d.getDay()] + ' 13:00',
-        'd-mon-y':        d2 + ' · ' + MON[d.getMonth()] + ' · ' + y,  /* Getting Married */
-        'y-m-d-plain':    y + '. ' + m2 + '. ' + d2,
-        'm-d':            (d.getMonth() + 1) + '.' + d2,         /* THE MARRIAGE 큰 날짜 */
-        'y-m-d':          y + '. ' + m2 + '. ' + d2 + '.',
-        'ymd-dow-pm':     y + '.' + m2 + '.' + d2 + ' ' + DOW[d.getDay()] + ' 2:00 PM',  /* 기본 (랜딩과 동일 형식) */
-        'y-dot-m-dot-d':  y + ' · ' + m2 + ' · ' + d2,                                   /* Our story · 아치형 */
-        /* Getting Married — 실제 화면처럼 세 칸(24TH / OCT / 2026) */
-        'd-th':           d.getDate() + ((d.getDate() % 10 === 1 && d.getDate() !== 11) ? 'ST' : (d.getDate() % 10 === 2 && d.getDate() !== 12) ? 'ND' : (d.getDate() % 10 === 3 && d.getDate() !== 13) ? 'RD' : 'TH'),
-        'mon':            MON[d.getMonth()],
-        'yyyy':           String(y),
-        /* THE MARRIAGE 하단 */
-        'ymd-dowfull-pm': y + '. ' + m2 + '. ' + d2 + '. ' + ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()] + ' 2:00 PM'
-    };
+    /* 'YYYY-MM-DD' → 로컬 날짜. new Date('YYYY-MM-DD') 는 UTC 로 읽혀 하루 밀릴 수 있다 */
+    function pickDate() {
+        var v = dateInput && dateInput.value;
+        var m = v && /^(\d{4})-(\d{2})-(\d{2})$/.exec(v);
+        return m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date();
+    }
+    /* 시간 미입력이면 견본 값(13:00 / 2:00 PM)을 그대로 쓴다 */
+    function pickTime() {
+        var v = timeInput && timeInput.value;
+        var m = v && /^(\d{1,2}):(\d{2})/.exec(v);
+        if (!m) return { h24: '13:00', h12: '2:00 PM' };
+        var h = +m[1], mm = m[2];
+        return { h24: String(h).padStart(2, '0') + ':' + mm,
+                 h12: ((h % 12) || 12) + ':' + mm + ' ' + (h < 12 ? 'AM' : 'PM') };
+    }
 
-    document.querySelectorAll('[data-thumb-date]').forEach(function(el) {
-        var fmt = FORMATS[el.dataset.thumbDate];
-        if (fmt) el.textContent = fmt;
+    function fill() {
+        var d   = pickDate();
+        var t   = pickTime();
+        var y   = d.getFullYear();
+        var m2  = String(d.getMonth() + 1).padStart(2, '0');
+        var d2  = String(d.getDate()).padStart(2, '0');
+        var day = d.getDate();
+        var th  = (day % 10 === 1 && day !== 11) ? 'ST' : (day % 10 === 2 && day !== 12) ? 'ND' : (day % 10 === 3 && day !== 13) ? 'RD' : 'TH';
+
+        var FORMATS = {
+            'm-dot-d-dot-y':  m2 + ' · ' + d2 + ' · ' + y,
+            'ymd-dow-time':   y + '.' + m2 + '.' + d2 + ' ' + DOW[d.getDay()] + ' ' + t.h24,   /* Our story · 핑크 */
+            'd-mon-y':        d2 + ' · ' + MON[d.getMonth()] + ' · ' + y,
+            'y-m-d-plain':    y + '. ' + m2 + '. ' + d2,
+            'm-d':            (d.getMonth() + 1) + '.' + d2,                                   /* THE MARRIAGE 큰 날짜 */
+            'y-m-d':          y + '. ' + m2 + '. ' + d2 + '.',
+            'ymd-dow-pm':     y + '.' + m2 + '.' + d2 + ' ' + DOW[d.getDay()] + ' ' + t.h12,   /* 기본 */
+            'y-dot-m-dot-d':  y + ' · ' + m2 + ' · ' + d2,                                     /* 아치형 */
+            'd-th':           day + th,                                                        /* Getting Married 세 칸 */
+            'mon':            MON[d.getMonth()],
+            'yyyy':           String(y),
+            'ymd-dowfull-pm': y + '. ' + m2 + '. ' + d2 + '. ' + DOW_FULL[d.getDay()] + ' ' + t.h12  /* THE MARRIAGE 하단 */
+        };
+        document.querySelectorAll('[data-thumb-date]').forEach(function(el) {
+            var fmt = FORMATS[el.dataset.thumbDate];
+            if (fmt) el.textContent = fmt;
+        });
+    }
+
+    fill();
+    [dateInput, timeInput].forEach(function(inp) {
+        if (!inp) return;
+        inp.addEventListener('input', fill);
+        inp.addEventListener('change', fill);
     });
 })();
 
