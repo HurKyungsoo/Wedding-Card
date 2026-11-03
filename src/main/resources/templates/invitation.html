@@ -98,7 +98,7 @@
 <div class="wc" th:style="|--main-font: ${wedding.mainFontCss};|">
 
     <!-- ① HERO -->
-    <div class="hero" id="heroSection" th:classappend="${wedding.mainDesign != null} ? 'design-' + ${wedding.mainDesign} : 'design-basic'">
+    <div class="hero" id="heroSection" th:classappend="${(wedding.mainDesign != null ? 'design-' + wedding.mainDesign : 'design-basic') + (wedding.mainFontSize != null and !#strings.isEmpty(wedding.mainFontSize) ? ' fs-' + wedding.mainFontSize : '')}">
 
         <!-- 상단 텍스트 영역 (사진 위, 흰 배경) -->
         <div class="hero-top">
@@ -155,7 +155,8 @@
             </div>
 
             <!-- 효과 레이어 (fog/wave/paper) — z-index:2, 오버레이 텍스트(z-index:3) 아래 -->
-            <div id="effectLayer" class="effect-layer"></div>
+            <div id="effectLayer" class="effect-layer"
+                 th:classappend="${wedding.mainEffect != null and wedding.mainEffect != 'none'} ? 'eff-' + ${wedding.mainEffect} : ''"></div>
         </div>
 
         <!-- ★ design-forever 전용 레이아웃 (배경색 + 아치사진 + 텍스트) -->
@@ -886,7 +887,17 @@
     import QRCodeLib from 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/+esm';
     window.QRCode = QRCodeLib;
 </script>
-<script th:src="@{/js/invitation.js(v=20260629)}"></script>
+<script th:src="@{/js/invitation.js}"></script>
+<!-- 하객 화면 첫 로드용 저장값 — applyStyleSettings() 가 읽는다 -->
+<script th:inline="javascript">
+window.__WEDDING_STYLE = {
+    mainFontColor: /*[[${wedding.mainFontColor}]]*/ null,
+    mainFontSize:  /*[[${wedding.mainFontSize}]]*/ null,
+    colorEffect:   /*[[${wedding.colorEffect}]]*/ null,
+    mainEffect:    /*[[${wedding.mainEffect}]]*/ null,
+    photoFilter:   /*[[${wedding.photoFilter}]]*/ null
+};
+</script>
 <script th:inline="javascript">
     /* 저장된 섹션 순서 — 편집기에서 드래그한 결과. 비어 있으면 템플릿 기본 순서를 그대로 쓴다 */
     window._savedSectionOrder = (function() {
@@ -953,12 +964,13 @@
 
     /* 사진 필터 + 유색효과 합산 적용 */
     function applyPhotoFilter() {
-        var img = q('.hero-fullphoto-img');
-        if (!img) return;
         var parts = [];
         if (window._livePhotoFilter && window._livePhotoFilter !== 'none') parts.push(window._livePhotoFilter);
         if (window._liveColorEff) parts.push(window._liveColorEff);
-        img.style.filter = parts.join(' ') || '';
+        /* 아치형 테마는 사진이 .forever-arch-img 에 따로 있다 — 거기도 같이 */
+        qa('.hero-fullphoto-img, .forever-arch-img').forEach(function(img) {
+            img.style.filter = parts.join(' ') || '';
+        });
     }
     function setText(sel, val) {
         if (val === undefined || val === null) return;
@@ -1143,6 +1155,110 @@
         var hh = p[0] > 12 ? p[0]-12 : p[0]===0 ? 12 : p[0];
         return ampm + ' ' + hh + '시 ' + (p[1] ? p[1] : '00') + '분';
     }
+
+    /* ── 글꼴 색상·크기·색감 보정·연출 효과 ──
+       예전엔 이 네 가지가 편집기 postMessage 핸들러 안에만 있어서,
+       편집기 미리보기에선 적용되는데 하객이 보는 실제 청첩장(서버 렌더)에는 전혀 반영되지 않았다.
+       한 함수로 빼서 편집기 실시간 반영과 페이지 첫 로드가 같은 코드를 타게 한다. */
+    function applyStyleSettings(d) {
+        /* ── 11. 메인 글꼴 색상 ── */
+        if (d.mainFontColor !== undefined && d.mainFontColor) {
+            /* 기본형 히어로 텍스트 */
+            qa('.hero-top-names, .hero-top-date, .hero-marriage-label, #heroDateShort').forEach(function(el) {
+                el.style.color = d.mainFontColor;
+            });
+            /* 기본 테마 하단 이름 · 아치형 이름 — 예전엔 목록에 빠져 있어 색을 바꿔도 그대로였다.
+               날짜·장소는 테마가 정한 보조 색(골드/민트/회색)을 유지한다 */
+            qa('.hbn-name, .forever-names, .forever-names span').forEach(function(el) {
+                el.style.color = d.mainFontColor;
+            });
+            /* 디자인 테마 타이틀 + 날짜 */
+            var dTitle = document.getElementById('heroDesignTitle');
+            var dDate  = document.getElementById('heroDesignDate');
+            var heroEl3 = document.getElementById('heroSection');
+            var isOurStoryTheme = heroEl3 && (
+                heroEl3.classList.contains('design-our_story') ||
+                heroEl3.classList.contains('design-our_story_pink')
+            );
+
+            if (dTitle) {
+                if (!isOurStoryTheme) {
+                    /* our_story/pink 외 테마는 인라인 색상 적용 */
+                    dTitle.style.color = d.mainFontColor;
+                    dTitle.style.mixBlendMode = 'normal';
+                } else if (heroEl3.classList.contains('design-our_story_pink')) {
+                    /* our_story_pink — 타이틀 색상은 CSS 고정(#ff9a9a), hdci만 변경 */
+                    qa('.hdci-date, .hdci-place').forEach(function(el) {
+                        el.style.color = d.mainFontColor;
+                    });
+                } else {
+                    /* our_story — 타이틀 색상 적용, 폰트는 Dancing Script 유지 */
+                    dTitle.style.color = d.mainFontColor;
+                    dTitle.style.mixBlendMode = 'normal';
+                }
+            }
+            if (dDate) {
+                dDate.style.color = d.mainFontColor;
+                qa('#heroDesignDate span').forEach(function(s){ s.style.color = d.mainFontColor; });
+            }
+            /* 디자인 테마 하단 날짜/장소 (핑크 테마용) */
+            qa('.hero-design-info, .hero-design-info span, .hero-design-place').forEach(function(el) {
+                el.style.color = d.mainFontColor;
+            });
+            /* forever 테마 하단 타이틀 + 중앙 정보 */
+            var fBottom = document.getElementById('heroDesignTitleBottom');
+            if (fBottom) fBottom.style.color = d.mainFontColor;
+            qa('#heroDesignCenterInfo, .hdci-date, .hdci-place').forEach(function(el) {
+                el.style.color = d.mainFontColor;
+            });
+            /* 디자인 테마 이름 */
+            var dNames = document.getElementById('heroDesignNames');
+            if (dNames) {
+                dNames.style.color = d.mainFontColor;
+                qa('#heroDesignNames span').forEach(function(s){ s.style.color = d.mainFontColor; });
+            }
+        }
+
+        /* ── 12b. 글꼴 크기 ── */
+        if (d.mainFontSize !== undefined && d.mainFontSize) {
+            var heroEl = document.getElementById('heroSection');
+            if (heroEl) {
+                heroEl.classList.remove('fs-sm', 'fs-md', 'fs-lg');
+                heroEl.classList.add('fs-' + d.mainFontSize);
+            }
+        }
+
+        /* ── 12c. 유색효과 (사진 필터와 합산) ── */
+        if (d.colorEffect !== undefined) {
+            var cMap = {
+                warm:    'sepia(0.15) saturate(1.4) hue-rotate(-12deg)',
+                cool:    'sepia(0.08) saturate(0.82) hue-rotate(18deg) brightness(1.04)',
+                vintage: 'sepia(0.4) contrast(0.88) brightness(1.06) saturate(0.78)'
+            };
+            window._liveColorEff = (d.colorEffect && d.colorEffect !== 'none')
+                ? (cMap[d.colorEffect] || '') : '';
+            applyPhotoFilter();
+        }
+
+        /* ── 12d. 메인 효과 (fog/wave/paper) ── */
+        if (d.mainEffect !== undefined) {
+            var effLayer = document.getElementById('effectLayer');
+            if (effLayer) {
+                effLayer.className = 'effect-layer';
+                if (d.mainEffect && d.mainEffect !== 'none') {
+                    effLayer.classList.add('eff-' + d.mainEffect);
+                }
+            }
+        }
+
+    }
+
+    /* 첫 로드 — 저장된 값으로 한 번 적용 (편집기 미리보기에서는 곧이어 실시간 값으로 덮인다).
+       값은 바로 위 th:inline="javascript" 스크립트가 window.__WEDDING_STYLE 로 넘겨준다
+       (이 스크립트 블록은 인라인 모드가 아니라서 [[...]] 를 여기 직접 쓰면 값이 주석으로만 찍힌다) */
+    var initStyle = window.__WEDDING_STYLE || {};
+    window._livePhotoFilter = initStyle.photoFilter;
+    applyStyleSettings(initStyle);
 
     window.addEventListener('message', function(e) {
         if (!e.data || e.data.type !== 'WEDDING_LIVE_UPDATE') return;
@@ -1711,58 +1827,7 @@
             }
         }
 
-        /* ── 11. 메인 글꼴 색상 ── */
-        if (d.mainFontColor !== undefined && d.mainFontColor) {
-            /* 기본형 히어로 텍스트 */
-            qa('.hero-top-names, .hero-top-date, .hero-marriage-label, #heroDateShort').forEach(function(el) {
-                el.style.color = d.mainFontColor;
-            });
-            /* 디자인 테마 타이틀 + 날짜 */
-            var dTitle = document.getElementById('heroDesignTitle');
-            var dDate  = document.getElementById('heroDesignDate');
-            var heroEl3 = document.getElementById('heroSection');
-            var isOurStoryTheme = heroEl3 && (
-                heroEl3.classList.contains('design-our_story') ||
-                heroEl3.classList.contains('design-our_story_pink')
-            );
-
-            if (dTitle) {
-                if (!isOurStoryTheme) {
-                    /* our_story/pink 외 테마는 인라인 색상 적용 */
-                    dTitle.style.color = d.mainFontColor;
-                    dTitle.style.mixBlendMode = 'normal';
-                } else if (heroEl3.classList.contains('design-our_story_pink')) {
-                    /* our_story_pink — 타이틀 색상은 CSS 고정(#ff9a9a), hdci만 변경 */
-                    qa('.hdci-date, .hdci-place').forEach(function(el) {
-                        el.style.color = d.mainFontColor;
-                    });
-                } else {
-                    /* our_story — 타이틀 색상 적용, 폰트는 Dancing Script 유지 */
-                    dTitle.style.color = d.mainFontColor;
-                    dTitle.style.mixBlendMode = 'normal';
-                }
-            }
-            if (dDate) {
-                dDate.style.color = d.mainFontColor;
-                qa('#heroDesignDate span').forEach(function(s){ s.style.color = d.mainFontColor; });
-            }
-            /* 디자인 테마 하단 날짜/장소 (핑크 테마용) */
-            qa('.hero-design-info, .hero-design-info span, .hero-design-place').forEach(function(el) {
-                el.style.color = d.mainFontColor;
-            });
-            /* forever 테마 하단 타이틀 + 중앙 정보 */
-            var fBottom = document.getElementById('heroDesignTitleBottom');
-            if (fBottom) fBottom.style.color = d.mainFontColor;
-            qa('#heroDesignCenterInfo, .hdci-date, .hdci-place').forEach(function(el) {
-                el.style.color = d.mainFontColor;
-            });
-            /* 디자인 테마 이름 */
-            var dNames = document.getElementById('heroDesignNames');
-            if (dNames) {
-                dNames.style.color = d.mainFontColor;
-                qa('#heroDesignNames span').forEach(function(s){ s.style.color = d.mainFontColor; });
-            }
-        }
+        applyStyleSettings(d);   /* 11·12b·12c·12d — 아래 함수로 분리 (첫 로드에도 같은 코드를 쓴다) */
 
         /* ── 12. 메인 글꼴 ──
            전역 CSS 변수(--main-font) 하나로 일괄 적용. 테마 고유 타이틀(2번/핑크/married/아치형 손글씨)은
@@ -1799,38 +1864,6 @@
             if (ff) {
                 var wc = document.querySelector('.wc');
                 if (wc) wc.style.setProperty('--main-font', en ? en + ', ' + ff : ff);
-            }
-        }
-
-        /* ── 12b. 글꼴 크기 ── */
-        if (d.mainFontSize !== undefined && d.mainFontSize) {
-            var heroEl = document.getElementById('heroSection');
-            if (heroEl) {
-                heroEl.classList.remove('fs-sm', 'fs-md', 'fs-lg');
-                heroEl.classList.add('fs-' + d.mainFontSize);
-            }
-        }
-
-        /* ── 12c. 유색효과 (사진 필터와 합산) ── */
-        if (d.colorEffect !== undefined) {
-            var cMap = {
-                warm:    'sepia(0.15) saturate(1.4) hue-rotate(-12deg)',
-                cool:    'sepia(0.08) saturate(0.82) hue-rotate(18deg) brightness(1.04)',
-                vintage: 'sepia(0.4) contrast(0.88) brightness(1.06) saturate(0.78)'
-            };
-            window._liveColorEff = (d.colorEffect && d.colorEffect !== 'none')
-                ? (cMap[d.colorEffect] || '') : '';
-            applyPhotoFilter();
-        }
-
-        /* ── 12d. 메인 효과 (fog/wave/paper) ── */
-        if (d.mainEffect !== undefined) {
-            var effLayer = document.getElementById('effectLayer');
-            if (effLayer) {
-                effLayer.className = 'effect-layer';
-                if (d.mainEffect && d.mainEffect !== 'none') {
-                    effLayer.classList.add('eff-' + d.mainEffect);
-                }
             }
         }
 
