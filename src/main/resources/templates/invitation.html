@@ -95,7 +95,12 @@
 <div class="toast" id="toast">복사되었습니다 ✓</div>
 
 
-<div class="wc" th:style="|--main-font: ${wedding.mainFontCss};|">
+<!-- live = 하객이 여는 실제 청첩장 (편집기 미리보기 ?preview=1 이 아님).
+     실제 청첩장에서는 값이 없는 칸·섹션과 "사진을 업로드하세요" 같은 편집용 안내를 숨긴다.
+     DOM 은 지우지 않고 클래스로 숨긴다 — 섹션 순서 JS 등이 이 요소들을 기준점으로 쓴다. -->
+<div class="wc" th:style="|--main-font: ${wedding.mainFontCss};|"
+     th:with="live=${!editorPreview}, hasDate=${!#strings.isEmpty(wedding.weddingDate)}, hasTime=${!#strings.isEmpty(wedding.weddingTime)}, hasPlace=${!#strings.isEmpty(wedding.weddingPlace) or !#strings.isEmpty(wedding.mapPlaceName)}, hasAddr=${!#strings.isEmpty(wedding.weddingAddress) or !#strings.isEmpty(wedding.mapAddressRoad)}, hasMap=${wedding.mapLat != null and wedding.mapLng != null}, hasGallery=${!#strings.isEmpty(wedding.galleryImages)}, hasParents=${!#strings.isEmpty(wedding.groomFatherName) or !#strings.isEmpty(wedding.groomMotherName) or !#strings.isEmpty(wedding.brideFatherName) or !#strings.isEmpty(wedding.brideMotherName)}"
+     th:classappend="${live ? 'is-live' + (hasDate ? '' : ' no-date') + (hasPlace ? '' : ' no-place') : ''}">
 
     <!-- ① HERO -->
     <div class="hero" id="heroSection" th:classappend="${(wedding.mainDesign != null ? 'design-' + wedding.mainDesign : 'design-basic') + (wedding.mainFontSize != null and !#strings.isEmpty(wedding.mainFontSize) ? ' fs-' + wedding.mainFontSize : '')}">
@@ -228,35 +233,35 @@
     </div>
 
     <!-- ③ 일시 및 장소 -->
-    <div class="section-divider">
+    <div class="section-divider" th:classappend="${live and !hasDate and !hasTime and !hasPlace and !hasAddr} ? 'live-empty'">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
-    <div class="sec">
+    <div class="sec" th:classappend="${live and !hasDate and !hasTime and !hasPlace and !hasAddr} ? 'live-empty'">
         <div class="sec-label reveal">Date &amp; Venue</div>
         <div class="sec-title reveal delay-1">일시 및 장소</div>
         <div class="info-block">
-            <div class="info-item">
+            <div class="info-item" th:classappend="${live and !hasDate} ? 'live-empty'">
                 <div class="info-icon"><i class="ti ti-calendar-event"></i></div>
                 <div class="info-detail">
                     <div class="info-label-txt">DATE</div>
                     <div class="info-val-txt" id="infoDate" th:data-date="${wedding.weddingDate}">날짜</div>
                 </div>
             </div>
-            <div class="info-item">
+            <div class="info-item" th:classappend="${live and !hasTime} ? 'live-empty'">
                 <div class="info-icon"><i class="ti ti-clock"></i></div>
                 <div class="info-detail">
                     <div class="info-label-txt">TIME</div>
                     <div class="info-val-txt" id="infoTime" th:data-time="${wedding.weddingTime}">시간</div>
                 </div>
             </div>
-            <div class="info-item">
+            <div class="info-item" th:classappend="${live and #strings.isEmpty(wedding.weddingPlace)} ? 'live-empty'">
                 <div class="info-icon"><i class="ti ti-building"></i></div>
                 <div class="info-detail">
                     <div class="info-label-txt">HALL</div>
                     <div class="info-val-txt" th:text="${wedding.weddingPlace}">홀</div>
                 </div>
             </div>
-            <div class="info-item">
+            <div class="info-item" th:classappend="${live and #strings.isEmpty(wedding.weddingAddress)} ? 'live-empty'">
                 <div class="info-icon"><i class="ti ti-map-pin"></i></div>
                 <div class="info-detail">
                     <div class="info-label-txt">ADDRESS</div>
@@ -277,10 +282,10 @@
     </div>
 
     <!-- ④ 달력 -->
-    <div th:style="${wedding.calendarVisible} ? '' : 'display:none'" class="section-divider" data-vis="calendar">
+    <div th:style="${wedding.calendarVisible} ? '' : 'display:none'" class="section-divider" data-vis="calendar" th:classappend="${live and (!hasDate)} ? 'live-empty'">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
-    <div th:style="${wedding.calendarVisible} ? '' : 'display:none'" class="sec" data-vis="calendar">
+    <div th:style="${wedding.calendarVisible} ? '' : 'display:none'" class="sec" data-vis="calendar" th:classappend="${live and (!hasDate)} ? 'live-empty'">
         <div class="sec-label reveal">Calendar</div>
         <div class="sec-title reveal delay-1">달력</div>
         <!-- 캘린더 스타일별 래퍼 — JS가 calendarStyle에 따라 클래스 적용 -->
@@ -317,10 +322,10 @@
     </div>
 
     <!-- D-Day -->
-    <div th:style="${wedding.ddayVisible} ? '' : 'display:none'" class="section-divider" data-vis="dday">
+    <div th:style="${wedding.ddayVisible} ? '' : 'display:none'" class="section-divider" data-vis="dday" th:classappend="${live and (!hasDate)} ? 'live-empty'">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
-    <div th:style="${wedding.ddayVisible} ? '' : 'display:none'" class="sec" data-vis="dday">
+    <div th:style="${wedding.ddayVisible} ? '' : 'display:none'" class="sec" data-vis="dday" th:classappend="${live and (!hasDate)} ? 'live-empty'">
         <div class="sec-label reveal">D-Day</div>
         <div class="dday-card reveal-scale delay-1"
              id="ddayCard"
@@ -375,10 +380,10 @@
     </div>
 
     <!-- ⑤ 혼주 -->
-    <div th:style="${wedding.hostsVisible} ? '' : 'display:none'" class="section-divider" data-vis="hosts">
+    <div th:style="${wedding.hostsVisible} ? '' : 'display:none'" class="section-divider" data-vis="hosts" th:classappend="${live and (!hasParents)} ? 'live-empty'">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
-    <div th:style="${wedding.hostsVisible} ? '' : 'display:none'" class="sec" data-vis="hosts">
+    <div th:style="${wedding.hostsVisible} ? '' : 'display:none'" class="sec" data-vis="hosts" th:classappend="${live and (!hasParents)} ? 'live-empty'">
         <div class="sec-label reveal">Family</div>
         <div class="sec-title reveal delay-1">혼주</div>
         <div class="hosts-wrap reveal delay-1" th:attr="data-order=${wedding.displayOrder != null ? wedding.displayOrder : 'groom'}">
@@ -509,10 +514,10 @@
     </div>
 
     <!-- ⑥ 갤러리 -->
-    <div th:style="${wedding.galleryVisible} ? '' : 'display:none'" class="section-divider" data-vis="gallery">
+    <div th:style="${wedding.galleryVisible} ? '' : 'display:none'" class="section-divider" data-vis="gallery" th:classappend="${live and (!hasGallery)} ? 'live-empty'">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
-    <div th:style="${wedding.galleryVisible} ? '' : 'display:none'" class="sec" data-vis="gallery">
+    <div th:style="${wedding.galleryVisible} ? '' : 'display:none'" class="sec" data-vis="gallery" th:classappend="${live and (!hasGallery)} ? 'live-empty'">
         <div class="sec-label reveal">Gallery</div>
         <div class="sec-title reveal delay-1">갤러리</div>
         <div class="gallery-outer reveal-zoom delay-2" id="galleryOuter"
@@ -542,10 +547,10 @@
     </div>
 
     <!-- ⑦ 지도 -->
-    <div th:style="${wedding.mapVisible} ? '' : 'display:none'" class="section-divider" data-vis="map">
+    <div th:style="${wedding.mapVisible} ? '' : 'display:none'" class="section-divider" data-vis="map" th:classappend="${live and (!hasMap and !hasPlace and !hasAddr)} ? 'live-empty'">
         <div class="div-line"></div><div class="div-icon">✦</div><div class="div-line"></div>
     </div>
-    <div th:style="${wedding.mapVisible} ? '' : 'display:none'" class="sec" data-vis="map">
+    <div th:style="${wedding.mapVisible} ? '' : 'display:none'" class="sec" data-vis="map" th:classappend="${live and (!hasMap and !hasPlace and !hasAddr)} ? 'live-empty'">
         <div class="sec-label reveal">LOCATION</div>
         <div class="sec-title reveal delay-1">오시는 길</div>
 
@@ -556,7 +561,7 @@
         </div>
 
         <!-- 지도 + 내비게이션을 하나의 둥근 카드로 묶는다 -->
-        <div class="map-navi-card">
+        <div class="map-navi-card" th:classappend="${live and !hasMap} ? 'live-empty'">
         <!-- 지도 full-width -->
         <div class="map-full reveal-scale delay-3"
              th:attr="data-lat=${wedding.mapLat},data-lng=${wedding.mapLng},data-place=${wedding.mapPlaceName},data-addr=${wedding.mapAddressRoad}">
