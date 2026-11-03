@@ -1783,3 +1783,35 @@ textarea.ed-input{resize:none;line-height:1.75;}
        헤더는 fixed 라 % 가 화면 폭 기준 — .ed-root 의 --ed-left 와 같은 계산 */
     .ed-header{padding:0 max(1.8rem, calc((100% - var(--ed-phone) - var(--ed-gap) - var(--ed-form)) / 2));}
 }
+
+/* ── 게시 전 필수 항목 확인 창 ── */
+.ed-pubcheck-overlay{
+    position:fixed;inset:0;z-index:3000;
+    background:rgba(28,24,20,.38);
+    display:flex;align-items:center;justify-content:center;
+    padding:1rem;
+}
+.ed-pubcheck{
+    width:100%;max-width:380px;
+    background:var(--color-white);border-radius:18px;
+    padding:1.5rem 1.4rem 1.2rem;
+    box-shadow:0 20px 60px rgba(0,0,0,.18);
+}
+.ed-pubcheck-title{font-size:16px;font-weight:600;color:var(--color-ink);margin-bottom:6px;}
+.ed-pubcheck-desc{font-size:12.5px;color:#7a6a58;line-height:1.6;margin-bottom:14px;}
+.ed-pubcheck-list{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:6px;}
+.ed-pubcheck-item{
+    width:100%;display:flex;align-items:center;justify-content:space-between;
+    padding:11px 14px;border-radius:10px;
+    border:1px solid var(--color-border-soft);background:var(--color-cream);
+    font-size:13.5px;color:var(--color-ink);cursor:pointer;
+    transition:border-color .15s,background .15s;
+}
+.ed-pubcheck-item:hover{border-color:var(--color-rose);background:#fff;}
+.ed-pubcheck-item .ti{color:#b0a496;}
+.ed-pubcheck-actions{display:flex;gap:8px;justify-content:flex-end;}
+.ed-pubcheck-btn{padding:9px 16px;border-radius:20px;font-size:13px;cursor:pointer;}
+.ed-pubcheck-btn.ghost{border:1px solid var(--color-border);background:transparent;color:#7a6a58;}
+.ed-pubcheck-btn.solid{border:none;background:var(--color-rose);color:#fff;}
+/* 확인 창에서 항목을 눌러 이동했을 때 해당 입력칸을 잠깐 강조 */
+.ed-field-flash{box-shadow:0 0 0 3px rgba(196,116,138,.35) !important;border-color:var(--color-rose) !important;transition:box-shadow .3s;}
