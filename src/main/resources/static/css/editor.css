@@ -1806,10 +1806,13 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-basic-label{color:#b8865a;}
 
 /* 2. Our story — 실제 서체(Dancing Script), 날짜를 맨 아래로 */
-.ed-dt-story-title{font-family:'Dancing Script',cursive;font-weight:600;font-size:16.5cqw;bottom:25%;}
-.ed-dt-story-names{bottom:14.5%;font-family:var(--font-serif);font-size:5.4cqw;letter-spacing:1.6cqw;color:#1a1a1a;}
+.ed-dt-story-title{font-family:'Dancing Script',cursive;font-weight:600;font-size:16.5cqw;bottom:26.5%;}
+.ed-dt-story-names{bottom:17.5%;font-family:var(--font-serif);font-size:5.4cqw;font-weight:400;letter-spacing:1.6cqw;color:#1a1a1a;}
 .ed-dt-story-names i{font-style:normal;margin:0 1cqw;}
-.ed-dt-story-date{bottom:4.5%;}
+/* 실제처럼 날짜(요일·시간) + 예식장 두 줄을 맨 아래에 */
+.ed-dt-story-info{position:absolute;left:0;right:0;bottom:3.5%;text-align:center;}
+.ed-dt-story-info .ed-dt-story-date{position:static;font-family:var(--font-serif);font-size:4.9cqw;letter-spacing:.3cqw;color:#2a2a2a;}
+.ed-dt-story-place{font-family:var(--font-serif);font-size:4.6cqw;color:#3a3a3a;letter-spacing:.3cqw;margin-top:1.2cqw;}
 
 /* 3. 핑크 — 실제 서체(Pinyon Script)·색, 로즈톤 이름 줄, 날짜를 맨 아래로 */
 .ed-dt-pink-title{font-family:'Pinyon Script',cursive;font-weight:400;font-size:19cqw;color:#d9527a;bottom:27%;line-height:.92;}
