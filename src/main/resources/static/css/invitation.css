@@ -2714,10 +2714,18 @@ body{ -webkit-overflow-scrolling:touch; }
    아치 크기는 화면 폭과 높이 중 작은 쪽에 맞춰서, 키 작은 폰에서도 잘리지 않게 */
 .hero.design-forever .forever-layout{
     min-height:0; height:100%;
-    justify-content:center;
-    padding:2rem 1.5rem;
+    justify-content:flex-start;
+    padding:6.5dvh 1.5rem 4dvh;
 }
-.hero.design-forever .forever-arch{ width:min(82%, 290px, 34dvh); max-width:none; margin-bottom:1.4rem; }
+/* 영어 배너(We're getting married!)는 위쪽에 두고, 이름~예식장 묶음은 남은 공간의 가운데 */
+.hero.design-forever .forever-script{ margin-bottom:0; }
+.hero.design-forever .forever-names{ margin-top:auto; }
+.hero.design-forever .forever-place-wrap{ margin-bottom:auto; }
+/* 예식장이 비어 숨겨지면 날짜가 묶음의 끝이 된다 */
+.wc.is-live.no-place .hero.design-forever .forever-date{ margin-bottom:auto; }
+.hero.design-forever .forever-arch{ width:min(82%, 290px, 34dvh); max-width:none; margin-bottom:max(1.4rem, calc(9dvh - 34px)); }
+/* 날짜·예식장은 아치에서 조금 더 떨어뜨려 여유 있게 (키 큰 폰일수록 간격이 커짐) */
+.hero.design-forever .forever-date{ margin-bottom:max(.4rem, calc(2.4dvh - 10px)); }
 
 /* ── 1. 기본 ── */
 .hero.design-basic .hero-fullphoto::after{
