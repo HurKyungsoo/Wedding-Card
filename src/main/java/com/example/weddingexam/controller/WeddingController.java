@@ -2,6 +2,7 @@ package com.example.weddingexam.controller;
 
 import com.example.weddingexam.account.AccountDto;
 import com.example.weddingexam.account.AccountService;
+import com.example.weddingexam.demo.DemoPhotos;
 import com.example.weddingexam.dto.WeddingDto;
 import com.example.weddingexam.security.CustomOAuth2User;
 import com.example.weddingexam.service.WeddingService;
@@ -53,6 +54,32 @@ public class WeddingController {
         String sampleSlug = weddingService.findFirst().getSlug();
         model.addAttribute("sampleSlug", sampleSlug);
         return "index";
+    }
+
+    /* ── 체험용 샘플 청첩장 — 랜딩의 체험 폰·테마 미리보기가 iframe 으로 띄운다 ──
+       데모 청첩장(가장 먼저 만들어진 샘플)을 바탕으로 사진·갤러리만 예시로 채워 보여준다.
+       저장하지 않고, 조회수·방문 로그도 남기지 않는다(랜딩 방문마다 샘플 통계가 오르던 것 방지).
+       방명록·참석 응답은 화면만 보이고 제출은 막는다(템플릿의 demo 스크립트). */
+    @GetMapping("/demo")
+    public String demo(@RequestParam(name = "theme", required = false) String theme, Model model) {
+        WeddingDto dto = weddingService.findFirst();
+        String design = DemoPhotos.isDesign(theme) ? theme : "our_story";
+        dto.setMainDesign(design);
+        dto.setMainPhotoBase64(DemoPhotos.photoBase64(design));
+        dto.setMainPhotoPosX(null);
+        dto.setMainPhotoPosY(null);
+        dto.setMainPhotoScale(null);
+        dto.setPhotoFilter(null);
+        dto.setGalleryImages(DemoPhotos.GALLERY);
+        dto.setGalleryVisible(true);
+
+        addFormattedFields(model, dto);
+        model.addAttribute("accounts", accountService.findByWeddingId(dto.getId()));
+        model.addAttribute("kakaoAppKey", kakaoAppKey);
+        model.addAttribute("loadAllFonts", false);
+        model.addAttribute("editorPreview", false);
+        model.addAttribute("demo", true);
+        return "invitation";
     }
 
     /* ── slug 기반 공개 청첩장 ── */
@@ -110,11 +137,32 @@ public class WeddingController {
     /** 마이페이지 목록 한 줄 — 청첩장 내용 + 임시저장 상태 */
     public record MyWeddingRow(WeddingDto wedding, boolean hasDraft, LocalDateTime draftSavedAt) {}
 
+    /* ── 랜딩 "이 테마로 만들기" 진입점 (비로그인 공개) ──
+       /my/create 는 로그인이 필요하고, 로그인 성공 후에는 항상 /my/edit 로 보내도록 되어 있어
+       로그인을 거치면 고른 테마가 사라졌다. 세션에 적어 두고 로그인 성공 처리에서 이어 준다. */
+    @GetMapping("/start")
+    public String start(@RequestParam(name = "design", required = false) String design,
+                        @AuthenticationPrincipal CustomOAuth2User principal,
+                        HttpSession session) {
+        String d = DemoPhotos.isDesign(design) ? design : null;
+        if (principal != null) {
+            return "redirect:/my/create" + (d != null ? "?design=" + d : "");
+        }
+        if (d != null) session.setAttribute(PENDING_DESIGN, d);
+        return "redirect:/my/create";
+    }
+
+    /** 로그인 전에 고른 테마 — SecurityConfig 의 로그인 성공 처리가 꺼내 쓴다 */
+    public static final String PENDING_DESIGN = "pendingDesign";
+
     /* ── 새 청첩장 만들기 ── */
     @GetMapping("/my/create")
-    public String createWedding(@AuthenticationPrincipal CustomOAuth2User principal) {
+    public String createWedding(@AuthenticationPrincipal CustomOAuth2User principal,
+                                @RequestParam(name = "design", required = false) String design) {
         try {
-            WeddingDto created = weddingService.createForUser(principal.getUserId());
+            // 랜딩에서 "이 테마로 만들기"로 왔으면 그 테마가 고른 상태로 편집 화면이 열린다
+            WeddingDto created = weddingService.createForUser(principal.getUserId(),
+                DemoPhotos.isDesign(design) ? design : null);
             return "redirect:/my/edit?id=" + created.getId();
         } catch (IllegalStateException e) {
             return "redirect:/my?error=" + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);

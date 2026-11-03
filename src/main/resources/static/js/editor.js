@@ -1442,7 +1442,11 @@ var PUBLISH_REQUIRED = [
     { label: '예식 날짜',  sec: 'wedding', sel: '[name="weddingDate"]',
       ok: function(d) { return !!(d.weddingDate || '').trim(); } },
     { label: '예식장',     sec: 'wedding', sel: '[name="weddingPlace"]',
-      ok: function(d) { return !!((d.weddingPlace || '').trim() || (d.mapPlaceName || '').trim()); } }
+      ok: function(d) { return !!((d.weddingPlace || '').trim() || (d.mapPlaceName || '').trim()); } },
+    /* 미리보기에는 테마 예시 사진이 깔려 있어 사진을 올린 것처럼 보일 수 있다.
+       실제 청첩장에는 예시 사진이 나가지 않으므로 게시 전에 한 번 알려준다(그래도 게시 가능) */
+    { label: '메인 사진',  sec: 'main',    sel: '#mainPhotoZone',
+      ok: function() { var el = document.getElementById('mainPhotoBase64'); return !!(el && (el.value || '').trim()); } }
 ];
 
 function closePublishCheck() {

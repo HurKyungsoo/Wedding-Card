@@ -23,8 +23,7 @@
     .lp-hero-grid { display: grid; grid-template-columns: 54fr 46fr; gap: 72px; align-items: center; }
     .lp-hero-ctas { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
     .lp-feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .lp-themes-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-    /* 테마 카드 6장이 데스크톱에서 한 줄에 들어가도록 이 섹션만 조금 넓힌다 */
+    /* 테마 캐러셀이 양옆으로 넓게 펼쳐지므로 이 섹션만 조금 넓힌다 */
     #themes .lp-wrap { max-width: 1180px; }
     .lp-hero-visual { display: flex; justify-content: center; align-items: center; }
 
@@ -52,11 +51,6 @@
     [data-delay="6"]  { transition-delay: 0.70s !important; }
 
     /* ── 호버 ── */
-    .theme-card-wrap {
-      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), filter 0.35s ease;
-      cursor: pointer;
-    }
-    .theme-card-wrap:hover { transform: translateY(-10px); filter: drop-shadow(0 22px 40px rgba(44,30,20,0.17)); }
     .feat-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
     .feat-card:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(44,30,20,0.09) !important; }
     .nav-link:hover  { color: var(--color-ink-deepest) !important; }
@@ -70,7 +64,6 @@
     .lp-primary:active  { background: #a85369 !important; transform: translateY(1px) scale(0.985); }
     .lp-dark-btn:active { background: #000 !important; transform: translateY(1px);
                           transition: background 0.1s, transform 0.1s; }
-    .theme-card-wrap:active { transform: translateY(-6px) scale(0.985); transition-duration: 0.09s; }
     .nav-link:active { opacity: 0.6; }
 
     /* ── 키보드 포커스 ──
@@ -101,40 +94,92 @@
     @keyframes driftA { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(7%,9%) scale(1.14); } }
     @keyframes driftB { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-8%,-7%) scale(1.10); } }
 
-    /* ── 히어로 카드 스택 ──
-       예전엔 폰 목업 하나에 회색 "PHOTO" 플레이스홀더였다. 첫 화면이 제품의 빈 상태를
-       보여주고 있었던 셈. 실제 테마 사진을 넣고 뒤에 카드 두 장을 부채꼴로 깔았다. */
-    .lp-hero-stack { position: relative; width: 204px; height: 420px; }
-    .lp-hero-phone {
-      position: relative; z-index: 3;
-      animation: float 5s ease-in-out infinite;
-      filter: drop-shadow(0 48px 64px rgba(44,30,20,0.22));
+    /* ── 히어로 체험 폰 ──
+       예전엔 테마 사진을 깐 폰 목업 세 대였다. 보기만 할 수 있어서 "직접 써보면 어떤지"가
+       전달되지 않았다. 실제 샘플 청첩장(/demo)을 iframe 으로 넣어 스크롤·테마 전환을 해볼 수 있게 했다.
+       iframe 은 실제 폰 폭(390px)으로 그리고 화면 크기에 맞게 축소한다. */
+    .lp-demo { display: flex; flex-direction: column; align-items: center; gap: 18px; position: relative; }
+    .lp-demo-glow {
+      position: absolute; width: 460px; height: 460px; border-radius: 50%; top: 30px; left: 50%;
+      transform: translateX(-50%); z-index: 0; pointer-events: none;
+      background: radial-gradient(circle, rgba(196,116,138,0.20) 0%, rgba(196,116,138,0) 68%);
     }
-    /* 좌우 폰 — 가운데보다 작지만 같은 프레임을 쓴다.
-       각 폰의 중앙이 가운데 폰에 가리지 않도록 100px씩 벌려 둬야
-       가운데 정렬된 이름·날짜가 보인다. */
-    .lp-deck-phone {
-      position: absolute; top: 58px; width: 140px; z-index: 1;
+    .lp-dphone {
+      position: relative; z-index: 1; width: 262px; height: 540px; padding: 11px; border-radius: 52px;
       background: linear-gradient(165deg,#2d2824 0%,#171210 100%);
-      border-radius: 32px; padding: 7px;
-      box-shadow: 0 18px 42px rgba(44,30,20,0.22),
-                  inset 0 1px 0 rgba(255,255,255,0.08),
-                  0 0 0 1px rgba(0,0,0,0.25);
+      box-shadow: 0 40px 70px rgba(44,30,20,0.25), inset 0 1px 0 rgba(255,255,255,0.1), 0 0 0 1px rgba(0,0,0,0.28);
     }
-    .lp-deck-screen {
-      height: 276px; border-radius: 26px;
-      overflow: hidden; position: relative; background: var(--color-white);
+    .lp-dphone-screen { width: 240px; height: 518px; border-radius: 42px; overflow: hidden; position: relative; background: #f5f1eb; }
+    .lp-dphone-screen iframe { width: 390px; height: 842px; border: 0; display: block; transform: scale(0.6154); transform-origin: 0 0; }
+    /* 테마를 바꾸는 순간 깜빡임을 가리는 덮개 — 처음 불러올 때도 덮어 둔다 */
+    .lp-dphone-fade { position: absolute; inset: 0; background: #f5f1eb; opacity: 0; pointer-events: none; transition: opacity 0.35s; }
+    .lp-dphone-fade.on { opacity: 1; }
+    .lp-demo-hint { font-size: 11.5px; color: #a89a8c; letter-spacing: 0.3px; display: flex; align-items: center; gap: 6px; position: relative; z-index: 1; }
+    /* 터치 기기 — 폰 안에서 스크롤하면 페이지 스크롤이 막히므로 히어로 폰은 보기만(저절로 스크롤되는 것을 본다) */
+    @media (pointer: coarse) { .lp-demo .lp-dphone iframe { pointer-events: none; } }
+
+    /* ── 테마 캐러셀 ── */
+    .lp-cf { position: relative; height: 440px; touch-action: pan-y; }
+    .lp-cf-card {
+      position: absolute; left: 50%; top: 50%; width: 162px; height: 332px; margin: -166px 0 0 -81px;
+      transition: transform 0.55s cubic-bezier(.2,.7,.2,1), opacity 0.55s, filter 0.55s; cursor: pointer; outline: none;
     }
-    .lp-deck-l { left: -122px; transform: rotate(-7deg); animation: floatL 7s ease-in-out infinite; }
-    .lp-deck-r { right: -122px; transform: rotate(7deg);  animation: floatR 6.4s ease-in-out infinite; }
-    @keyframes floatL { 0%,100% { transform: rotate(-7deg) translateY(0); } 50% { transform: rotate(-7deg) translateY(-11px); } }
-    @keyframes floatR { 0%,100% { transform: rotate(7deg) translateY(0); }  50% { transform: rotate(7deg) translateY(-13px); } }
+    .lp-cf-card > div { transition: box-shadow 0.55s; }
+    .lp-cf-card.c0 > div { box-shadow: 0 26px 60px rgba(44,30,20,0.24), 0 0 0 1px rgba(44,30,20,0.05) !important; }
+    .lp-cf-card:focus-visible > div { box-shadow: 0 0 0 3px var(--color-rose) !important; }
+    /* 스크립트가 돌기 전 — 한 줄로 늘어놓는다 */
+    .lp-cf:not(.ready) { display: flex; justify-content: center; gap: 14px; height: auto; flex-wrap: wrap; }
+    .lp-cf:not(.ready) .lp-cf-card { position: static; margin: 0; }
+    .lp-cf:not(.ready) .lp-cf-nav { display: none; }
+    .lp-cf-nav {
+      position: absolute; top: 50%; transform: translateY(-50%); z-index: 20; width: 44px; height: 44px; border-radius: 50%;
+      border: 1px solid #e6dcd2; background: rgba(255,255,255,0.85); color: #5a4a40; font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+    }
+    .lp-cf-nav:hover { background: #fff; }
+    .lp-cf-nav.prev { left: calc(50% - 470px); }
+    .lp-cf-nav.next { right: calc(50% - 470px); }
+    .lp-cf-info { text-align: center; margin-top: 6px; }
+    .lp-cf-name { font-family: var(--font-serif); font-size: 22px; color: var(--color-ink-deepest); letter-spacing: 0.5px; }
+    .lp-cf-desc { font-size: 13.5px; color: #7a6a60; margin-top: 6px; }
+    .lp-cf-btns { display: flex; gap: 10px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+    .lp-btn-o {
+      font-family: inherit; font-size: 13px; color: var(--color-ink-deepest); padding: 10px 20px; border-radius: 999px;
+      border: 1px solid #d9cdc1; background: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .lp-btn-o:hover { border-color: var(--color-rose); }
+    .lp-btn-r {
+      font-size: 13px; color: #fff; padding: 10px 22px; border-radius: 999px; border: 0; background: var(--color-rose);
+      text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s;
+    }
+    .lp-btn-r:hover { background: #a85d72; }
+    .lp-cf-dots { display: flex; gap: 6px; justify-content: center; margin-top: 18px; }
+    .lp-cf-dot { width: 6px; height: 6px; border-radius: 50%; background: #e2d8ce; cursor: pointer; transition: width 0.3s, background 0.3s; }
+    .lp-cf-dot.on { width: 20px; border-radius: 3px; background: var(--color-rose); }
 
-    /* 좌우로 122px씩 삐져나오므로 폭이 빠듯해지면 먼저 접는다 */
-    @media (max-width: 1180px) { .lp-deck-phone { display: none; } }
-
-    /* ── 테마 카드 3D 틸트 ── */
-    .theme-card-wrap.tilting { transition: transform 0.08s linear, filter 0.35s ease; }
+    /* ── 테마 미리보기 창 ── */
+    .lp-pv {
+      position: fixed; inset: 0; z-index: 500; display: flex; align-items: center; justify-content: center; gap: 28px;
+      background: rgba(30,24,20,0.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .lp-pv.open { opacity: 1; pointer-events: auto; }
+    .lp-pv-side { display: flex; flex-direction: column; gap: 14px; color: #fff; width: 230px; }
+    .lp-pv-side .t { font-family: var(--font-serif); font-size: 24px; }
+    .lp-pv-side .d { font-size: 13.5px; opacity: 0.8; line-height: 1.6; }
+    .lp-pv-side .s { font-size: 12px; opacity: 0.65; }
+    .lp-pv-close, .lp-pv-arrow {
+      width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,0.15); color: #fff;
+      font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .lp-pv-close { position: absolute; top: 22px; right: 26px; }
+    @media (max-width: 760px) {
+      .lp-pv { flex-wrap: wrap; align-content: center; gap: 14px; }
+      .lp-pv-side { width: 100%; align-items: center; text-align: center; order: 3; }
+      .lp-pv-side .d, .lp-pv-side .s { display: none; }
+      .lp-pv-arrow { position: absolute; top: 50%; }
+      .lp-pv-arrow.pp { left: 8px; } .lp-pv-arrow.pn { right: 8px; }
+    }
 
     /* ── 네비게이션 ── */
     .lp-nav {
@@ -155,7 +200,7 @@
     @media (max-width: 960px) {
       .lp-wrap { padding: 0 32px; }
       .lp-hero-grid { grid-template-columns: 1fr; gap: 52px; text-align: center; }
-      .lp-hero-visual { display: none; }
+      .lp-hero-visual { margin-top: 8px; }
       .lp-hero-ctas { justify-content: center; }
       .lp-hero-deco { font-size: clamp(120px,35vw,220px); opacity: 0.3; }
       .lp-nav-inner { padding: 0 32px !important; }
@@ -169,23 +214,15 @@
       .lp-stats-wrap { flex-direction: column; }
       .lp-stat-item { padding: 20px 0 !important; }
       .lp-stats-divider { display: none !important; }
-      .lp-themes-row {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        justify-content: flex-start;
-        padding-bottom: 16px;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-      }
-      .lp-themes-row::-webkit-scrollbar { display: none; }
+      .lp-cf { height: 400px; }
+      .lp-cf-nav { display: none; }
     }
     @media (prefers-reduced-motion: reduce) {
       [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
-      .theme-card-wrap, .feat-card { transition: none !important; }
+      .feat-card { transition: none !important; }
       /* 떠다니는 것들은 전부 정지 — 회전은 배치라서 유지한다 */
-      .lp-hero-glow, .lp-hero-phone { animation: none !important; }
-      .lp-deck-l { animation: none !important; transform: rotate(-7deg); }
-      .lp-deck-r { animation: none !important; transform: rotate(7deg); }
+      .lp-hero-glow { animation: none !important; }
+      .lp-cf-card, .lp-dphone-fade { transition: none !important; }
     }
   </style>
 </head>
@@ -228,8 +265,8 @@
           <a href="/my/create" class="lp-primary" style="display:inline-flex;align-items:center;gap:8px;background:var(--color-rose);color:var(--color-white);text-decoration:none;padding:15px 36px;border-radius:40px;font-size:15px;font-weight:500;letter-spacing:0.3px;white-space:nowrap;transition:background 0.2s,transform 0.15s;">
             <i class="ti ti-edit" style="font-size:15px;"></i>무료로 만들기
           </a>
-          <!-- 로그인 없이 실제 완성된 청첩장을 바로 볼 수 있는 링크 — 데모 데이터가 없으면(청첩장이 하나도 없는 상태) 숨김 -->
-          <a th:if="${sampleSlug != null}" th:href="@{'/w/' + ${sampleSlug}}" target="_blank" rel="noopener"
+          <!-- 로그인 없이 완성된 청첩장(사진까지 채운 체험용 샘플)을 바로 볼 수 있는 링크 — 데모 데이터가 없으면 숨김 -->
+          <a th:if="${sampleSlug != null}" href="/demo" target="_blank" rel="noopener"
              class="nav-link" style="color:#7a6a60;text-decoration:none;font-size:14px;font-weight:300;display:inline-flex;align-items:center;gap:6px;letter-spacing:0.3px;white-space:nowrap;transition:color 0.2s;">
             <i class="ti ti-eye" style="font-size:14px;"></i>샘플 보기
           </a>
@@ -240,74 +277,19 @@
         <p data-reveal data-delay="4" style="margin-top:20px;font-size:12px;color:#c0b0a8;letter-spacing:0.5px;">카드 등록 불필요 · 바로 시작</p>
       </div>
 
-      <!-- 폰 목업 세 대 — 가운데 Our story, 좌우로 Getting Married / 기본.
-           좌우도 사진만 깔지 않고 각 테마가 적용된 화면을 그대로 넣는다.
-           폰 중앙이 가려지지 않게 배치했으므로 가운데 정렬 요소도 보인다. -->
+      <!-- 첫 화면 폰 — 사진이 아니라 실제 샘플 청첩장(/demo)이 들어 있고, 천천히 저절로 스크롤되며
+           표지부터 인사말·갤러리·지도·참석 응답까지 "어떤 청첩장을 받게 되는지"를 보여준다.
+           테마 비교는 아래 테마 섹션(캐러셀·미리보기 창)이 맡는다 — 두 곳이 같은 일을 하지 않게. -->
       <div class="lp-hero-visual" data-reveal="scale" data-delay="2">
-        <div class="lp-hero-stack">
-
-          <!-- 왼쪽 — Getting Married (글자가 왼쪽 정렬이라 드러나는 쪽과 맞다) -->
-          <div class="lp-deck-phone lp-deck-l" aria-hidden="true">
-            <div class="lp-deck-screen">
-              <img src="/images/theme-married.webp" alt=""
-                   style="width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;inset:0;filter:brightness(0.84);">
-              <div style="position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,0.42) 100%);"></div>
-              <div style="position:absolute;left:7px;right:0;bottom:13%;text-align:left;">
-                <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:25px;color:var(--color-white);line-height:0.88;letter-spacing:-0.5px;">Getting</div>
-                <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:31px;color:var(--color-white);line-height:0.88;letter-spacing:-0.5px;margin-top:-2px;">Married</div>
-              </div>
-              <!-- 실제 청첩장과 같은 세 칸 날짜 -->
-              <div style="position:absolute;left:0;right:0;bottom:3%;display:flex;justify-content:space-between;padding:0 9px;font-family:var(--font-serif);font-size:6.5px;letter-spacing:1.3px;color:var(--color-white);text-shadow:0 1px 4px rgba(0,0,0,0.45);"><span>25TH</span><span>OCT</span><span>2025</span></div>
+        <div class="lp-demo" id="heroDemo">
+          <div class="lp-demo-glow" aria-hidden="true"></div>
+          <div class="lp-dphone">
+            <div class="lp-dphone-screen">
+              <iframe src="/demo?theme=our_story" title="샘플 청첩장 미리보기"></iframe>
+              <div class="lp-dphone-fade on" aria-hidden="true"></div>
             </div>
           </div>
-
-          <!-- 오른쪽 — 기본 (실제처럼 사진이 대부분 + 아래 흰색 페이드) -->
-          <div class="lp-deck-phone lp-deck-r" aria-hidden="true">
-            <div class="lp-deck-screen" style="display:flex;flex-direction:column;background:#fff;">
-              <div style="width:100%;flex:1 1 auto;min-height:0;overflow:hidden;position:relative;">
-                <img src="/images/theme-basic.webp" alt=""
-                     style="width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block;">
-                <div style="position:absolute;left:0;right:0;bottom:0;height:20px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff);"></div>
-              </div>
-              <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 6px 12px;">
-                <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
-                  <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
-                    <span style="font-family:'Cormorant Garamond',serif;font-size:5px;letter-spacing:1.4px;text-transform:uppercase;color:#b8865a;">Groom</span>
-                    <span style="font-family:var(--font-serif);font-size:10px;color:var(--color-black);letter-spacing:2px;">지훈</span>
-                  </div>
-                  <div style="width:1px;height:16px;background:#C4956A;"></div>
-                  <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
-                    <span style="font-family:'Cormorant Garamond',serif;font-size:5px;letter-spacing:1.4px;text-transform:uppercase;color:#b8865a;">Bride</span>
-                    <span style="font-family:var(--font-serif);font-size:10px;color:var(--color-black);letter-spacing:2px;">수아</span>
-                  </div>
-                </div>
-                <div style="font-family:'EB Garamond','Cormorant Garamond',serif;font-size:6.5px;color:var(--color-charcoal);letter-spacing:0.4px;">2025. 10. 25. Saturday 2:00 PM</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 앞 폰 — 완성된 청첩장을 그대로 보여준다 -->
-          <div class="lp-hero-phone">
-            <div style="width:204px;height:420px;background:linear-gradient(165deg,#2d2824 0%,#171210 100%);border-radius:46px;padding:11px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.1),0 0 0 1px rgba(0,0,0,0.28);position:relative;">
-              <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);width:86px;height:23px;background:#080808;border-radius:12px;z-index:3;"></div>
-              <div style="width:100%;height:100%;border-radius:37px;overflow:hidden;background:#e8e4de;position:relative;">
-                <img src="/images/theme-story.webp" alt="모바일 청첩장 미리보기"
-                     style="width:100%;height:100%;object-fit:cover;object-position:center 12%;position:absolute;inset:0;">
-                <!-- 폰은 카드보다 사진이 크게 잡혀 하단에 신랑 검은 정장이 걸린다 — 그라데이션을 조금 더 일찍·짙게 -->
-                <div style="position:absolute;left:0;right:0;bottom:0;height:52%;background:linear-gradient(180deg,transparent 0%,rgba(255,255,255,0.5) 32%,rgba(255,255,255,0.9) 58%,rgba(255,255,255,0.99) 80%,var(--color-white) 100%);"></div>
-                <!-- 실제 Our story 와 같은 구성: 타이틀(Dancing Script) · 이름 · 날짜/예식장 두 줄 -->
-                <div style="position:absolute;left:0;right:0;bottom:18%;text-align:center;padding:0 10px;">
-                  <div style="font-family:'Dancing Script',cursive;font-size:38px;font-weight:600;color:var(--color-black);line-height:0.92;text-shadow:0 1px 10px rgba(255,255,255,0.7);">Our story<br>begins</div>
-                </div>
-                <div style="position:absolute;left:0;right:0;bottom:11.5%;text-align:center;font-family:var(--font-serif);font-size:10px;color:#1a1a1a;letter-spacing:2.5px;">지훈<span style="font-family:'Cormorant Garamond',serif;font-size:9px;color:#666;margin:0 6px 0 4px;letter-spacing:0;">&amp;</span>수아</div>
-                <div style="position:absolute;left:0;right:0;bottom:3.4%;text-align:center;font-family:var(--font-serif);">
-                  <div style="font-size:8.5px;color:#2a2a2a;letter-spacing:0.5px;">2025.10.25 SAT 13:00</div>
-                  <div style="font-size:8px;color:#3a3a3a;letter-spacing:0.4px;margin-top:1px;">그랜드 웨딩홀 5층 로즈홀</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
+          <div class="lp-demo-hint"><i class="ti ti-device-mobile"></i><span>실제 샘플 청첩장이에요 · 마우스를 올리면 멈추고 직접 스크롤할 수 있어요</span></div>
         </div>
       </div>
 
@@ -346,10 +328,14 @@
       <h2 style="font-family:var(--font-serif);font-size:clamp(26px,3.5vw,40px);font-weight:300;color:var(--color-ink-deepest);letter-spacing:-0.3px;">6가지 테마</h2>
       <p style="font-size:14px;color:#9a8a78;margin-top:12px;font-weight:300;">취향에 맞는 디자인을 선택하세요</p>
     </div>
-    <div class="lp-themes-row">
+    <!-- 테마 캐러셀 — 가운데 카드가 크고 양옆은 작게. 가운데를 누르면 실제 샘플을 폰 창으로 띄운다.
+         스크립트가 돌기 전(.ready 전)에는 한 줄로 늘어놓아 그대로 보이게 한다. -->
+    <div class="lp-cf" id="themeCarousel" data-reveal>
+      <button type="button" class="lp-cf-nav prev" aria-label="이전 테마"><i class="ti ti-chevron-left"></i></button>
+      <button type="button" class="lp-cf-nav next" aria-label="다음 테마"><i class="ti ti-chevron-right"></i></button>
 
       <!-- 기본 — 실제 첫 화면처럼 사진이 화면 대부분, 아래로 흰색 페이드 -->
-      <a href="/my/create" class="theme-card-wrap" data-reveal data-delay="1" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:16px;">
+      <div class="lp-cf-card" data-design="basic" data-name="기본" data-desc="사진 아래로 이름과 일시를 단정하게" role="button" tabindex="0" aria-label="기본 테마">
         <div style="width:162px;height:332px;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 10px 34px rgba(44,30,20,0.16),0 0 0 1px rgba(44,30,20,0.05);position:relative;display:flex;flex-direction:column;">
           <div style="width:100%;flex:1 1 auto;min-height:0;overflow:hidden;position:relative;">
             <img src="/images/theme-basic.webp" alt="웨딩 사진" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block;">
@@ -371,11 +357,10 @@
             <div style="font-family:var(--font-serif);font-size:7.5px;color:#5a5a58;letter-spacing:0.4px;">서울 강남구 웨딩홀</div>
           </div>
         </div>
-        <span style="font-size:12px;color:#7a6a60;font-weight:300;letter-spacing:0.5px;">기본</span>
-      </a>
+      </div>
 
       <!-- Our story — 실제처럼 타이틀(Dancing Script) · 이름 · 날짜/예식장 두 줄을 아래부터 쌓는다 -->
-      <a href="/my/create" class="theme-card-wrap" data-reveal data-delay="2" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:16px;">
+      <div class="lp-cf-card" data-design="our_story" data-name="Our story" data-desc="사진 위 필기체 타이틀, 아래로 이름·일시" role="button" tabindex="0" aria-label="Our story 테마">
         <div style="width:162px;height:332px;border-radius:20px;overflow:hidden;box-shadow:0 10px 34px rgba(44,30,20,0.16),0 0 0 1px rgba(44,30,20,0.05);position:relative;">
           <img src="/images/theme-story.webp" alt="웨딩 사진" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center 12%;position:absolute;inset:0;">
           <div style="position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(180deg,transparent 0%,rgba(255,255,255,0.45) 40%,rgba(255,255,255,0.88) 70%,rgba(255,255,255,0.98) 100%);"></div>
@@ -388,11 +373,10 @@
             <div style="font-size:6.5px;color:#3a3a3a;letter-spacing:0.3px;margin-top:1px;">그랜드 웨딩홀 5층 로즈홀</div>
           </div>
         </div>
-        <span style="font-size:12px;color:#7a6a60;font-weight:300;letter-spacing:0.5px;">Our story</span>
-      </a>
+      </div>
 
       <!-- Our story pink — 실제처럼 Pinyon Script 로즈 타이틀 · ♥ 이름 줄 · 분홍 날짜/예식장 -->
-      <a href="/my/create" class="theme-card-wrap" data-reveal data-delay="3" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:16px;">
+      <div class="lp-cf-card" data-design="our_story_pink" data-name="Our story 핑크" data-desc="로즈톤 타이틀과 하트로 사랑스럽게" role="button" tabindex="0" aria-label="Our story 핑크 테마">
         <div style="width:162px;height:332px;border-radius:20px;overflow:hidden;box-shadow:0 10px 34px rgba(44,30,20,0.16),0 0 0 1px rgba(44,30,20,0.05);position:relative;">
           <img src="/images/theme-story.webp" alt="웨딩 사진" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center 10%;position:absolute;inset:0;">
           <div style="position:absolute;left:0;right:0;bottom:0;height:48%;background:linear-gradient(180deg,transparent 0%,rgba(253,240,243,0.4) 40%,rgba(253,240,243,0.8) 72%,rgba(253,240,243,0.95) 100%);"></div>
@@ -405,11 +389,10 @@
             <div style="font-size:6.5px;color:#d9527a;letter-spacing:0.3px;margin-top:1px;">그랜드 웨딩홀 5층 로즈홀</div>
           </div>
         </div>
-        <span style="font-size:12px;color:#7a6a60;font-weight:300;letter-spacing:0.5px;">Our story (핑크)</span>
-      </a>
+      </div>
 
       <!-- Getting Married -->
-      <a href="/my/create" class="theme-card-wrap" data-reveal data-delay="4" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:16px;">
+      <div class="lp-cf-card" data-design="married" data-name="Getting Married" data-desc="꽉 찬 사진 위 흰 손글씨, 세 칸 날짜" role="button" tabindex="0" aria-label="Getting Married 테마">
         <div style="width:162px;height:332px;border-radius:20px;overflow:hidden;box-shadow:0 10px 34px rgba(44,30,20,0.16),0 0 0 1px rgba(44,30,20,0.05);position:relative;">
           <img src="/images/theme-married.webp" alt="웨딩 사진" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;inset:0;filter:brightness(0.82);">
           <div style="position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,0.38) 100%);"></div>
@@ -420,11 +403,10 @@
           <!-- 실제 청첩장과 같은 세 칸 날짜 -->
           <div style="position:absolute;left:0;right:0;bottom:3%;display:flex;justify-content:space-between;padding:0 11px;font-family:var(--font-serif);font-size:7.5px;letter-spacing:1.5px;color:var(--color-white);text-shadow:0 1px 5px rgba(0,0,0,0.45);"><span>25TH</span><span>OCT</span><span>2025</span></div>
         </div>
-        <span style="font-size:12px;color:#7a6a60;font-weight:300;letter-spacing:0.5px;">Getting Married</span>
-      </a>
+      </div>
 
       <!-- 아치형 — 실제처럼 배너는 위, 이름~예식장은 남은 공간 가운데 / 필기체 분홍 & + 양옆 선 / 날짜 경기천년바탕 -->
-      <a href="/my/create" class="theme-card-wrap" data-reveal data-delay="5" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:16px;">
+      <div class="lp-cf-card" data-design="forever" data-name="아치형" data-desc="아치 프레임 속 사진과 필기체 배너" role="button" tabindex="0" aria-label="아치형 테마">
         <div style="width:162px;height:332px;border-radius:20px;overflow:hidden;background:#F5F2EC;box-shadow:0 10px 34px rgba(44,30,20,0.16),0 0 0 1px rgba(44,30,20,0.05);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:22px 12px 14px;">
           <div style="font-family:'Sacramento',cursive;font-size:19px;color:var(--color-charcoal);text-align:center;line-height:1.2;white-space:nowrap;">We're getting married!</div>
           <div style="margin-top:auto;display:flex;flex-direction:column;align-items:center;font-family:var(--font-serif);font-size:10.5px;font-weight:500;color:var(--color-charcoal);letter-spacing:2.5px;line-height:1.3;">
@@ -438,11 +420,10 @@
           <div style="margin-top:14px;font-family:'Gyeonggi Batang','Noto Serif KR',serif;font-size:13px;color:#6FAF8A;letter-spacing:1.5px;">2025 · 10 · 25</div>
           <div style="margin-top:5px;margin-bottom:auto;font-family:'Cormorant Garamond','EB Garamond',serif;font-size:6.5px;color:#5a5a58;letter-spacing:2px;text-transform:uppercase;">POCKET HALL</div>
         </div>
-        <span style="font-size:12px;color:#7a6a60;font-weight:300;letter-spacing:0.5px;">아치형</span>
-      </a>
+      </div>
 
       <!-- THE MARRIAGE -->
-      <a href="/my/create" class="theme-card-wrap" data-reveal data-delay="6" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:16px;">
+      <div class="lp-cf-card" data-design="the_marriage" data-name="THE MARRIAGE" data-desc="큰 날짜와 액자 사진의 미니멀" role="button" tabindex="0" aria-label="THE MARRIAGE 테마">
         <div style="width:162px;height:332px;border-radius:20px;overflow:hidden;background:#f5f1eb;box-shadow:0 10px 34px rgba(44,30,20,0.16),0 0 0 1px rgba(44,30,20,0.05);display:flex;flex-direction:column;">
           <div style="flex:0 0 auto;padding:16px 10px 9px;text-align:center;">
             <div style="display:flex;align-items:center;justify-content:center;gap:5px;font-size:5.5px;letter-spacing:1.6px;color:#7d8c74;font-weight:500;"><span style="width:11px;height:1px;background:#b7c1ae;"></span>THE MARRIAGE<span style="width:11px;height:1px;background:#b7c1ae;"></span></div>
@@ -459,9 +440,17 @@
             <div style="font-size:6px;color:#777;margin-top:3px;">서울 강남구 웨딩홀</div>
           </div>
         </div>
-        <span style="font-size:12px;color:#7a6a60;font-weight:300;letter-spacing:0.5px;">THE MARRIAGE</span>
-      </a>
+      </div>
 
+    </div>
+    <div class="lp-cf-info">
+      <div class="lp-cf-name">아치형</div>
+      <div class="lp-cf-desc">아치 프레임 속 사진과 필기체 배너</div>
+      <div class="lp-cf-btns">
+        <button type="button" class="lp-btn-o" id="cfPreview"><i class="ti ti-device-mobile"></i>미리보기</button>
+        <a class="lp-btn-r" id="cfStart" href="/start?design=forever"><i class="ti ti-pencil"></i>이 테마로 만들기</a>
+      </div>
+      <div class="lp-cf-dots" aria-hidden="true"></div>
     </div>
   </div>
 </section>
@@ -586,25 +575,201 @@
     counter.observe(el);
   });
 
-  // 테마 카드 3D 틸트 — 커서 위치에 따라 기울인다.
-  // 터치 기기에서는 hover가 없어 의미가 없으므로 정밀 포인터에서만.
-  if (!reduceMotion && window.matchMedia('(pointer: fine)').matches) {
-    document.querySelectorAll('.theme-card-wrap').forEach(function(card) {
-      card.addEventListener('pointermove', function(e) {
-        const r = card.getBoundingClientRect();
-        const px = (e.clientX - r.left) / r.width - 0.5;   // -0.5 ~ 0.5
-        const py = (e.clientY - r.top) / r.height - 0.5;
-        card.classList.add('tilting');
-        // CSS :hover 의 translateY(-10px) 는 인라인 transform 에 덮이므로 여기서 같이 준다
-        card.style.transform =
-          'perspective(900px) rotateY(' + (px * 13).toFixed(2) + 'deg) rotateX(' +
-          (-py * 13).toFixed(2) + 'deg) translateY(-10px)';
-      });
-      card.addEventListener('pointerleave', function() {
-        card.classList.remove('tilting');
-        card.style.transform = '';
-      });
+  /* ── 테마별 예시 사진 — DemoPhotos.PHOTO_BY_DESIGN 과 같게 ──
+     /demo 는 처음 고른 테마의 사진만 넣어 보내므로, 테마를 바꿀 때 사진도 같이 바꿔 끼운다 */
+  const DEMO_PHOTO = {
+    basic: '/images/demo/basic.jpg', our_story: '/images/demo/story.jpg', our_story_pink: '/images/demo/story.jpg',
+    married: '/images/demo/married.jpg', forever: '/images/demo/forever.jpg', the_marriage: '/images/demo/basic.jpg'
+  };
+  const coarse = window.matchMedia('(pointer: coarse)').matches;
+
+  /** 샘플 청첩장이 든 폰 하나 — set(design) 으로 테마를 바꾼다 */
+  function bindPhone(phoneEl, initial) {
+    const iframe = phoneEl.querySelector('iframe');
+    const fade = phoneEl.querySelector('.lp-dphone-fade');
+    let current = initial, ready = false;
+    function apply(design, instant) {
+      current = design;
+      if (!ready) return;
+      fade.classList.add('on');
+      setTimeout(function() {
+        const w = iframe.contentWindow, d = iframe.contentDocument;
+        const fd = d.getElementById('foreverDate');
+        // 편집기 실시간 미리보기와 같은 메시지 — 청첩장 쪽 코드가 테마 클래스를 바꾼다
+        w.postMessage({ type: 'WEDDING_LIVE_UPDATE', payload: {
+          mainDesign: design, weddingDate: fd && fd.dataset.date, weddingTime: fd && fd.dataset.time } }, location.origin);
+        d.querySelectorAll('.hero-fullphoto-img, .forever-arch-img').forEach(function(img) { img.src = DEMO_PHOTO[design]; });
+        w.scrollTo({ top: 0, behavior: 'instant' });
+        setTimeout(function() { fade.classList.remove('on'); }, 120);
+      }, instant ? 0 : 220);
+    }
+    iframe.addEventListener('load', function() {
+      const d = iframe.contentDocument;
+      // 미리보기 안의 링크(지도·전화 등)를 눌러도 랜딩을 벗어나지 않게 새 탭으로
+      d.querySelectorAll('a[href]').forEach(function(a) { a.setAttribute('target', '_blank'); });
+      ready = true;
+      apply(current, true);
     });
+    if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete' && iframe.src) {
+      ready = true; apply(current, true);
+    }
+    return { set: function(design) { apply(design, false); }, get: function() { return current; } };
+  }
+
+  // ── 히어로 폰 — 저절로 천천히 스크롤 ──
+  // 표지에서 잠깐 멈췄다가 아래로 흘러가고, 끝에 닿으면 표지로 돌아간다.
+  // 마우스를 올리면 멈추고(직접 스크롤 가능) 내려놓고 잠시 뒤 이어간다. 모션 최소화 설정이면 움직이지 않는다.
+  const heroDemo = document.getElementById('heroDemo');
+  if (heroDemo) {
+    const phoneEl = heroDemo.querySelector('.lp-dphone');
+    bindPhone(phoneEl, 'our_story');
+    if (coarse) heroDemo.querySelector('.lp-demo-hint span').textContent = '실제 샘플 청첩장이에요';
+    const iframe = phoneEl.querySelector('iframe');
+    // 청첩장 쪽 html 에 scroll-behavior:smooth 가 걸려 있어 매 프레임 scrollTo 가 부드러운 스크롤을 새로 시작하며
+    // 제자리걸음을 한다 — 그래서 behavior:'instant' 로 직접 옮긴다
+    const SPEED = 38;          // px/초 (청첩장 기준 폭 390px)
+    const HOLD_TOP = 3600;     // 표지에서 머무는 시간 — 첫 오프닝 애니메이션(2.9s)까지 보이게
+    const HOLD_END = 1800;
+    let hovering = false, resumeAt = 0, holdUntil = 0, last = 0, y = 0, resetting = false;
+    function step(now) {
+      requestAnimationFrame(step);
+      const w = iframe.contentWindow, d = iframe.contentDocument;
+      if (!w || !d || !d.scrollingElement || d.readyState !== 'complete') { last = now; return; }
+      const dt = last ? Math.min(now - last, 100) : 0; last = now;
+      if (!holdUntil) holdUntil = now + HOLD_TOP;
+      if (resetting) return;
+      if (hovering || now < resumeAt) { y = w.scrollY; return; }   // 사용자가 직접 움직인 위치에서 이어간다
+      if (now < holdUntil) return;
+      const max = d.scrollingElement.scrollHeight - w.innerHeight;
+      if (y >= max - 1) {
+        // 끝 — 잠깐 멈췄다가 덮개로 가리고 표지로 돌아간다
+        resetting = true;
+        setTimeout(function() {
+          const fade = phoneEl.querySelector('.lp-dphone-fade');
+          fade.classList.add('on');
+          setTimeout(function() {
+            w.scrollTo({ top: 0, behavior: 'instant' }); y = 0;
+            holdUntil = performance.now() + HOLD_TOP;
+            fade.classList.remove('on');
+            resetting = false;
+          }, 380);
+        }, HOLD_END);
+        return;
+      }
+      y = Math.min(max, y + SPEED * dt / 1000);
+      w.scrollTo({ top: y, behavior: 'instant' });
+    }
+    if (!reduceMotion) requestAnimationFrame(step);
+    phoneEl.addEventListener('pointerenter', function() { hovering = true; });
+    phoneEl.addEventListener('pointerleave', function() { hovering = false; resumeAt = performance.now() + 1500; });
+  }
+
+  // ── 테마 캐러셀 ──
+  const cf = document.getElementById('themeCarousel');
+  if (cf) {
+    const cards = Array.from(cf.querySelectorAll('.lp-cf-card'));
+    const N = cards.length;
+    const nameEl = document.querySelector('.lp-cf-name'), descEl = document.querySelector('.lp-cf-desc');
+    const startEl = document.getElementById('cfStart');
+    const dotsEl = document.querySelector('.lp-cf-dots');
+    cards.forEach(function(c, i) {
+      const s = document.createElement('span'); s.className = 'lp-cf-dot';
+      s.addEventListener('click', function() { go(i); pause(); });
+      dotsEl.appendChild(s);
+    });
+    let cur = cards.findIndex(function(c) { return c.dataset.design === 'forever'; });
+    if (cur < 0) cur = 0;
+    function layout() {
+      // 화면이 좁으면 양옆 카드 간격을 줄인다 (데스크톱 기준 폭 980px)
+      const f = Math.min(1, cf.clientWidth / 980);
+      cards.forEach(function(el, i) {
+        let o = i - cur; if (o > N / 2) o -= N; if (o < -N / 2) o += N;
+        const a = Math.min(Math.abs(o), 3);
+        el.style.transform = 'translateX(' + ([0, 205, 372, 470][a] * f * Math.sign(o)) + 'px) scale(' + [1.12, 0.9, 0.74, 0.6][a] + ')';
+        el.style.opacity = [1, 0.92, 0.5, 0][a];
+        el.style.zIndex = 10 - a;
+        el.style.pointerEvents = a > 2 ? 'none' : 'auto';
+        el.style.filter = a ? 'saturate(.85)' : 'none';
+        el.classList.toggle('c0', a === 0);
+        el.setAttribute('aria-hidden', a > 2 ? 'true' : 'false');
+      });
+      const c = cards[cur];
+      nameEl.textContent = c.dataset.name;
+      descEl.textContent = c.dataset.desc;
+      startEl.href = '/start?design=' + c.dataset.design;
+      Array.from(dotsEl.children).forEach(function(d, i) { d.classList.toggle('on', i === cur); });
+    }
+    function go(i) { cur = (i + N) % N; layout(); }
+    let cfTimer = reduceMotion ? null : setInterval(function() { go(cur + 1); }, 4200);
+    function pause() { if (cfTimer) { clearInterval(cfTimer); cfTimer = null; } }
+    cf.classList.add('ready');
+    layout();
+    window.addEventListener('resize', layout);
+    cf.querySelector('.prev').addEventListener('click', function() { go(cur - 1); pause(); });
+    cf.querySelector('.next').addEventListener('click', function() { go(cur + 1); pause(); });
+    cf.addEventListener('pointerenter', pause);
+    cards.forEach(function(el, i) {
+      function pick() { pause(); if (i === cur) openPreview(cur); else go(i); }
+      el.addEventListener('click', pick);
+      el.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+    });
+    // 모바일 — 좌우로 밀어서 넘기기
+    let sx = null;
+    cf.addEventListener('pointerdown', function(e) { sx = e.clientX; });
+    cf.addEventListener('pointerup', function(e) {
+      if (sx === null) return;
+      const dx = e.clientX - sx; sx = null;
+      if (Math.abs(dx) > 40) { pause(); go(cur + (dx < 0 ? 1 : -1)); }
+    });
+    document.getElementById('cfPreview').addEventListener('click', function() { pause(); openPreview(cur); });
+
+    // ── 미리보기 창 — 처음 열 때 만든다(iframe 을 미리 불러오지 않게) ──
+    let pv = null, pvPhone = null, pvIdx = 0;
+    function pvShow(i) {
+      pvIdx = (i + N) % N;
+      const c = cards[pvIdx];
+      pv.querySelector('.t').textContent = c.dataset.name;
+      pv.querySelector('.d').textContent = c.dataset.desc;
+      pv.querySelector('.lp-btn-r').href = '/start?design=' + c.dataset.design;
+      pvPhone.set(c.dataset.design);
+      go(pvIdx);
+    }
+    function closePreview() { pv.classList.remove('open'); document.body.style.overflow = ''; }
+    function openPreview(i) {
+      if (!pv) {
+        pv = document.createElement('div');
+        pv.className = 'lp-pv';
+        pv.setAttribute('role', 'dialog');
+        pv.setAttribute('aria-modal', 'true');
+        pv.setAttribute('aria-label', '테마 미리보기');
+        pv.innerHTML =
+          '<button type="button" class="lp-pv-close" aria-label="닫기"><i class="ti ti-x"></i></button>' +
+          '<button type="button" class="lp-pv-arrow pp" aria-label="이전 테마"><i class="ti ti-chevron-left"></i></button>' +
+          '<div class="lp-dphone"><div class="lp-dphone-screen"><iframe title="테마 샘플 청첩장"></iframe><div class="lp-dphone-fade on"></div></div></div>' +
+          '<div class="lp-pv-side"><div class="t"></div><div class="d"></div>' +
+          '<a class="lp-btn-r" href="/start" style="align-self:flex-start"><i class="ti ti-pencil"></i>이 테마로 만들기</a>' +
+          '<div class="s">화면을 스크롤하면 청첩장 전체를 볼 수 있어요</div></div>' +
+          '<button type="button" class="lp-pv-arrow pn" aria-label="다음 테마"><i class="ti ti-chevron-right"></i></button>';
+        document.body.appendChild(pv);
+        const iframe = pv.querySelector('iframe');
+        pvPhone = bindPhone(pv.querySelector('.lp-dphone'), cards[i].dataset.design);
+        iframe.src = '/demo?theme=' + cards[i].dataset.design;
+        pv.querySelector('.lp-pv-close').addEventListener('click', closePreview);
+        pv.addEventListener('click', function(e) { if (e.target === pv) closePreview(); });
+        pv.querySelector('.pp').addEventListener('click', function() { pvShow(pvIdx - 1); });
+        pv.querySelector('.pn').addEventListener('click', function() { pvShow(pvIdx + 1); });
+        document.addEventListener('keydown', function(e) {
+          if (!pv.classList.contains('open')) return;
+          if (e.key === 'Escape') closePreview();
+          if (e.key === 'ArrowLeft') pvShow(pvIdx - 1);
+          if (e.key === 'ArrowRight') pvShow(pvIdx + 1);
+        });
+      }
+      pv.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      pvShow(i);
+      pv.querySelector('.lp-pv-close').focus();
+    }
   }
 </script>
 

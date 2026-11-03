@@ -44,6 +44,8 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/", "/login", "/login/**",
                     "/w/**", "/wedding/**",
+                    // 랜딩 체험 폰·테마 미리보기(/demo)와 "이 테마로 만들기" 진입점(/start)
+                    "/demo", "/start",
                     "/css/**", "/js/**", "/images/**", "/fonts/**",
                     // 파비콘류는 루트 경로라 위 정적 패턴에 안 걸린다 — 따로 열어줘야
                     // 브라우저가 탭 아이콘을 못 받고 로그인 페이지로 튕긴다
@@ -72,7 +74,18 @@ public class SecurityConfig {
                 .loginPage("/login")
                 .userInfoEndpoint(info -> info.userService(kakaoUserService))
                 .tokenEndpoint(token -> token.accessTokenResponseClient(kakaoTokenClient()))
-                .defaultSuccessUrl("/my/edit", true)
+                // 기본은 항상 편집 화면으로. 단, 랜딩에서 테마를 고르고 들어왔으면(/start) 그 테마로 새로 만든다
+                .successHandler((req, res, auth) -> {
+                    jakarta.servlet.http.HttpSession session = req.getSession(false);
+                    Object design = session != null
+                        ? session.getAttribute(com.example.weddingexam.controller.WeddingController.PENDING_DESIGN) : null;
+                    if (design != null) {
+                        session.removeAttribute(com.example.weddingexam.controller.WeddingController.PENDING_DESIGN);
+                        res.sendRedirect(req.getContextPath() + "/my/create?design=" + design);
+                    } else {
+                        res.sendRedirect(req.getContextPath() + "/my/edit");
+                    }
+                })
                 .failureHandler((req, res, ex) -> {
                     System.err.println("[OAuth2 ERROR] " + ex.getMessage());
                     Throwable c = ex.getCause();
