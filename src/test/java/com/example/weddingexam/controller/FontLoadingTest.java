@@ -261,4 +261,34 @@ class FontLoadingTest {
         assertThat(html.split("orioncactus/pretendard", -1).length - 1)
             .as("프리텐다드 링크가 중복됐다").isEqualTo(1);
     }
+
+    /** 아치형 + 기본 글꼴이면 날짜 숫자용 경기천년바탕을 받고, 글꼴을 골랐거나 다른 테마면 받지 않는다 */
+    @Test
+    void foreverDefaultFont_loadsGyeonggiBatangForDate() {
+        String gyeonggi = "GyeonggiBatang";
+        WeddingDto dto = new WeddingDto();
+        dto.setMainDesign("forever");
+        assertThat(dto.isDefaultMainFont()).isTrue();
+        assertThat(dto.getExtraFontStylesheets()).anyMatch(h -> h.contains(gyeonggi));
+
+        dto.setMainFont("noto");
+        assertThat(dto.getExtraFontStylesheets()).anyMatch(h -> h.contains(gyeonggi));
+
+        dto.setMainFont("gowun_batang");
+        assertThat(dto.isDefaultMainFont()).isFalse();
+        assertThat(dto.getExtraFontStylesheets()).noneMatch(h -> h.contains(gyeonggi));
+
+        dto.setMainFont("noto");
+        dto.setMainFontEn("cormorant");
+        assertThat(dto.getExtraFontStylesheets()).noneMatch(h -> h.contains(gyeonggi));
+
+        dto.setMainFontEn(null);
+        dto.setMainDesign("basic");
+        assertThat(dto.getExtraFontStylesheets()).noneMatch(h -> h.contains(gyeonggi));
+
+        /* 경기천년바탕을 직접 고르면 한 번만 */
+        dto.setMainDesign("forever");
+        dto.setMainFont("gyeonggi_batang");
+        assertThat(dto.getExtraFontStylesheets()).hasSize(1);
+    }
 }

@@ -21,7 +21,9 @@
     .lp-hero-grid { display: grid; grid-template-columns: 54fr 46fr; gap: 72px; align-items: center; }
     .lp-hero-ctas { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
     .lp-feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .lp-themes-row { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+    .lp-themes-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    /* 테마 카드 6장이 데스크톱에서 한 줄에 들어가도록 이 섹션만 조금 넓힌다 */
+    #themes .lp-wrap { max-width: 1180px; }
     .lp-hero-visual { display: flex; justify-content: center; align-items: center; }
 
     /* ── 히어로 장식 문자 ── */
@@ -45,6 +47,7 @@
     [data-delay="3"]  { transition-delay: 0.34s !important; }
     [data-delay="4"]  { transition-delay: 0.46s !important; }
     [data-delay="5"]  { transition-delay: 0.58s !important; }
+    [data-delay="6"]  { transition-delay: 0.70s !important; }
 
     /* ── 호버 ── */
     .theme-card-wrap {
@@ -247,11 +250,12 @@
               <img src="/images/theme-married.webp" alt=""
                    style="width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;inset:0;filter:brightness(0.84);">
               <div style="position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,0.42) 100%);"></div>
-              <div style="position:absolute;left:7px;right:0;bottom:19%;text-align:left;">
+              <div style="position:absolute;left:7px;right:0;bottom:13%;text-align:left;">
                 <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:25px;color:var(--color-white);line-height:0.88;letter-spacing:-0.5px;">Getting</div>
                 <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:31px;color:var(--color-white);line-height:0.88;letter-spacing:-0.5px;margin-top:-2px;">Married</div>
               </div>
-              <div style="position:absolute;left:0;right:0;bottom:5%;text-align:center;font-family:'Patrick Hand',sans-serif;font-size:8px;letter-spacing:1.2px;color:var(--color-white);">2025 · 10 · 25</div>
+              <!-- 실제 청첩장과 같은 세 칸 날짜 -->
+              <div style="position:absolute;left:0;right:0;bottom:3%;display:flex;justify-content:space-between;padding:0 9px;font-family:var(--font-serif);font-size:6.5px;letter-spacing:1.3px;color:var(--color-white);text-shadow:0 1px 4px rgba(0,0,0,0.45);"><span>25TH</span><span>OCT</span><span>2025</span></div>
             </div>
           </div>
 
@@ -316,7 +320,7 @@
 <div style="border-top:1px solid var(--color-border-soft);border-bottom:1px solid var(--color-border-soft);padding:52px 0;background:var(--color-cream);">
   <div class="lp-stats-wrap" style="display:flex;align-items:stretch;justify-content:center;">
     <div class="lp-stat-item" data-reveal style="text-align:center;padding:0 72px;">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;color:var(--color-gold);line-height:1;"><span data-count="5">0</span></div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;color:var(--color-gold);line-height:1;"><span data-count="6">0</span></div>
       <div style="font-size:10px;letter-spacing:3px;color:#9a8a78;margin-top:9px;font-weight:300;text-transform:uppercase;">가지 테마</div>
     </div>
     <div class="lp-stats-divider" style="width:1px;background:var(--color-border-soft);flex-shrink:0;"></div>
@@ -337,7 +341,7 @@
   <div class="lp-wrap">
     <div data-reveal style="text-align:center;margin-bottom:68px;">
       <div style="font-size:10px;letter-spacing:5px;color:var(--color-gold);font-weight:500;text-transform:uppercase;margin-bottom:14px;">THEMES</div>
-      <h2 style="font-family:var(--font-serif);font-size:clamp(26px,3.5vw,40px);font-weight:300;color:var(--color-ink-deepest);letter-spacing:-0.3px;">5가지 테마</h2>
+      <h2 style="font-family:var(--font-serif);font-size:clamp(26px,3.5vw,40px);font-weight:300;color:var(--color-ink-deepest);letter-spacing:-0.3px;">6가지 테마</h2>
       <p style="font-size:14px;color:#9a8a78;margin-top:12px;font-weight:300;">취향에 맞는 디자인을 선택하세요</p>
     </div>
     <div class="lp-themes-row">
@@ -415,11 +419,12 @@
         <div style="width:162px;height:332px;border-radius:20px;overflow:hidden;box-shadow:0 10px 34px rgba(44,30,20,0.16),0 0 0 1px rgba(44,30,20,0.05);position:relative;">
           <img src="/images/theme-married.webp" alt="웨딩 사진" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;inset:0;filter:brightness(0.82);">
           <div style="position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,0.38) 100%);"></div>
-          <div style="position:absolute;left:8px;right:0;bottom:20%;text-align:left;">
+          <div style="position:absolute;left:8px;right:0;bottom:14%;text-align:left;">
             <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:30px;font-weight:400;color:var(--color-white);line-height:0.88;letter-spacing:-0.5px;">Getting</div>
             <div style="font-family:'Great Vibes','Dancing Script',cursive;font-size:38px;font-weight:400;color:var(--color-white);line-height:0.88;letter-spacing:-0.5px;margin-top:-2px;">Married</div>
           </div>
-          <div style="position:absolute;left:0;right:0;bottom:4%;text-align:center;font-family:'Patrick Hand',sans-serif;font-size:10px;letter-spacing:1.5px;color:var(--color-white);">2025 · 10 · 25</div>
+          <!-- 실제 청첩장과 같은 세 칸 날짜 -->
+          <div style="position:absolute;left:0;right:0;bottom:3%;display:flex;justify-content:space-between;padding:0 11px;font-family:var(--font-serif);font-size:7.5px;letter-spacing:1.5px;color:var(--color-white);text-shadow:0 1px 5px rgba(0,0,0,0.45);"><span>25TH</span><span>OCT</span><span>2025</span></div>
         </div>
         <span style="font-size:12px;color:#7a6a60;font-weight:300;letter-spacing:0.5px;">Getting Married</span>
       </a>
@@ -428,7 +433,7 @@
       <a href="/my/create" class="theme-card-wrap" data-reveal data-delay="5" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:16px;">
         <div style="width:162px;height:332px;border-radius:20px;overflow:hidden;background:#F5F2EC;box-shadow:0 10px 34px rgba(44,30,20,0.16),0 0 0 1px rgba(44,30,20,0.05);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px 14px;">
           <div style="font-family:'Dancing Script',cursive;font-size:16px;color:var(--color-charcoal);text-align:center;line-height:1.25;">We're getting<br>married!</div>
-          <div style="font-family:var(--font-serif);font-size:12px;color:var(--color-charcoal);letter-spacing:3px;display:flex;align-items:center;gap:6px;">지훈<span style="font-family:var(--font-serif);color:#E8A0B4;font-size:10px;">&amp;</span>수아</div>
+          <div style="font-family:var(--font-serif);font-size:12px;color:var(--color-charcoal);letter-spacing:3px;display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.3;">지훈<span style="font-family:var(--font-serif);color:#E8A0B4;font-size:9px;">&amp;</span>수아</div>
           <div style="width:74px;height:86px;border-radius:44px 44px 0 0;overflow:hidden;background:#ddd;">
             <img src="/images/theme-forever.webp" alt="웨딩 사진" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center 25%;display:block;">
           </div>
@@ -436,6 +441,27 @@
           <div style="font-family:'Cormorant Garamond','EB Garamond',serif;font-size:7.5px;color:#5a5a58;letter-spacing:2px;text-transform:uppercase;">POCKET HALL</div>
         </div>
         <span style="font-size:12px;color:#7a6a60;font-weight:300;letter-spacing:0.5px;">아치형</span>
+      </a>
+
+      <!-- THE MARRIAGE -->
+      <a href="/my/create" class="theme-card-wrap" data-reveal data-delay="6" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:16px;">
+        <div style="width:162px;height:332px;border-radius:20px;overflow:hidden;background:#f5f1eb;box-shadow:0 10px 34px rgba(44,30,20,0.16),0 0 0 1px rgba(44,30,20,0.05);display:flex;flex-direction:column;">
+          <div style="flex:0 0 auto;padding:16px 10px 9px;text-align:center;">
+            <div style="display:flex;align-items:center;justify-content:center;gap:5px;font-size:5.5px;letter-spacing:1.6px;color:#7d8c74;font-weight:500;"><span style="width:11px;height:1px;background:#b7c1ae;"></span>THE MARRIAGE<span style="width:11px;height:1px;background:#b7c1ae;"></span></div>
+            <div style="font-family:var(--font-sans);font-size:24px;font-weight:300;color:#4a4a4a;line-height:1.15;margin-top:4px;">10.25</div>
+            <div style="font-size:7px;color:#333;margin-top:4px;letter-spacing:0.2px;">지훈 <span style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#9a8f80;">&amp;</span> 수아 결혼합니다.</div>
+          </div>
+          <div style="flex:1 1 auto;min-height:0;margin:3px 12px;border-radius:2px;overflow:hidden;position:relative;box-shadow:0 0 0 3px #fff,0 6px 14px rgba(80,60,40,0.18);">
+            <img src="/images/theme-basic.webp" alt="웨딩 사진" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block;">
+            <div style="position:absolute;inset:4px;border:1px solid rgba(255,255,255,0.6);pointer-events:none;"></div>
+          </div>
+          <div style="flex:0 0 auto;padding:9px 10px 12px;text-align:center;">
+            <div style="width:12px;height:1px;background:#b7c1ae;margin:0 auto 5px;"></div>
+            <div style="font-size:6.5px;color:#555;letter-spacing:0.3px;">2025. 10. 25. Saturday 2:00 PM</div>
+            <div style="font-size:6px;color:#777;margin-top:3px;">서울 강남구 웨딩홀</div>
+          </div>
+        </div>
+        <span style="font-size:12px;color:#7a6a60;font-weight:300;letter-spacing:0.5px;">THE MARRIAGE</span>
       </a>
 
     </div>

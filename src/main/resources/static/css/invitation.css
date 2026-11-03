@@ -1238,14 +1238,16 @@ body{
 .hero.design-our_story_pink .hero-fullphoto-img{
     object-position:center 18%;
 }
-/* 핑크 테마 하단 그라데이션 — 더 핑크하게 (대비 확보를 위해 중간 지점부터 더 진하게) */
+/* 핑크 테마 하단 그라데이션.
+   예전엔 높이 55%·맨 아래 98% 불투명이라 사진 아래쪽(꽃다발·드레스)이 분홍 막에 가려졌다.
+   날짜·장소 글씨 뒤만 밝게 받쳐줄 정도로 줄였다 (높이 48%, 맨 아래 90%) */
 .hero.design-our_story_pink .hero-fullphoto::after{
     background:linear-gradient(180deg,
         transparent 0%,
-        rgba(253,240,243,0.6) 50%,
-        rgba(253,240,243,0.9) 80%,
-        rgba(253,240,243,0.98) 100%) !important;
-    height:55% !important;
+        rgba(253,240,243,0.35) 45%,
+        rgba(253,240,243,0.72) 78%,
+        rgba(253,240,243,0.9) 100%) !important;
+    height:48% !important;
 }
 .hero.design-our_story_pink .hero-design-title{
     font-family:'Pinyon Script',cursive !important;  /* 2번(Dancing Script)·married(Great Vibes)와 구분되는 독자 서체 */
@@ -2573,3 +2575,187 @@ body{ -webkit-overflow-scrolling:touch; }
 .wc.is-live.no-place .hdci-place,
 .wc.is-live.no-place .hero-bottom-place,
 .wc.is-live.no-place .forever-place-wrap{ display:none !important; }
+
+/* ════════════════════════════════════════
+   테마 정리 (2026-11)
+   ════════════════════════════════════════ */
+
+/* ── 첫 화면(히어로) 높이 통일 — 모든 테마가 정확히 한 화면을 채운다 ──
+   예전엔 사진 전면형 4개만 height:100dvh 이고, 기본·THE MARRIAGE 는 min-height 라
+   내용이 길면 한 화면을 넘었고, 아치형도 내용 길이에 따라 넘쳤다.
+   사진 영역을 flex:1 로 두고 남는 높이를 사진이 가져가게 해서, 어떤 화면 높이에서도 딱 맞춘다. */
+.hero.design-basic,
+.hero.design-the_marriage{
+    height:100vh;
+    height:100dvh;
+    min-height:0;
+}
+/* 아치형은 기존 규칙이 height:auto !important 라서 같은 우선순위로 덮어쓴다 */
+.hero.design-forever{
+    height:100vh !important;
+    height:100dvh !important;
+}
+.hero.design-basic .hero-fullphoto{ height:auto; flex:1 1 auto; min-height:0; }
+.hero.design-basic .hero-bottom{ flex:0 0 auto; }
+.hero.design-the_marriage .hero-top,
+.hero.design-the_marriage .hero-bottom{ flex:0 0 auto; }
+.hero.design-the_marriage .hero-fullphoto{ aspect-ratio:auto; flex:1 1 auto; min-height:0; }
+/* 아치형 — 레이아웃이 히어로 높이를 그대로 쓰고 내용은 세로 가운데.
+   아치 크기는 화면 폭과 높이 중 작은 쪽에 맞춰서, 키 작은 폰에서도 잘리지 않게 */
+.hero.design-forever .forever-layout{
+    min-height:0; height:100%;
+    justify-content:flex-start;
+    padding:6.5dvh 1.5rem 4dvh;
+}
+/* 영어 배너(We're getting married!)는 위쪽에 두고, 이름~예식장 묶음은 남은 공간의 가운데 */
+.hero.design-forever .forever-script{ margin-bottom:0; }
+.hero.design-forever .forever-names{ margin-top:auto; }
+.hero.design-forever .forever-place-wrap{ margin-bottom:auto; }
+/* 예식장이 비어 숨겨지면 날짜가 묶음의 끝이 된다 */
+.wc.is-live.no-place .hero.design-forever .forever-date{ margin-bottom:auto; }
+.hero.design-forever .forever-arch{ width:min(82%, 290px, calc(39.5dvh - 54px)); max-width:none; margin-bottom:max(1.4rem, calc(9dvh - 34px)); }
+/* 날짜·예식장은 아치에서 조금 더 떨어뜨려 여유 있게 (키 큰 폰일수록 간격이 커짐) */
+.hero.design-forever .forever-date{ margin-bottom:max(.4rem, calc(2.4dvh - 10px)); }
+/* 글꼴을 따로 고르지 않았으면 날짜 숫자는 경기천년바탕 (고르면 그 글꼴을 따른다) */
+.wc.font-default .hero.design-forever .forever-date{
+    font-family:'Gyeonggi Batang', var(--main-font, var(--font-serif));
+    font-weight:400;
+}
+
+/* ── 1. 기본 ── */
+.hero.design-basic .hero-fullphoto::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:56px;
+    background:linear-gradient(180deg, rgba(255,255,255,0), #fff);
+    z-index:2; pointer-events:none;
+}
+.hero.design-basic .hero-bottom{ display:flex; flex-direction:column; justify-content:center; padding:1.4rem 1.5rem 1.8rem; }
+.hero.design-basic .hbn-label{ font-size:11px; color:#b8865a; }
+.hero.design-basic .hbn-name{ letter-spacing:6px; }
+.hero.design-basic .hero-bottom-place{ font-size:calc(14px * var(--fs-scale, 1)); font-weight:400 !important; }
+
+/* ── 2·3. Our story / 핑크 — 타이틀 아래 신랑·신부 이름 줄 ── */
+.hero.design-our_story .hero-design-names,
+.hero.design-our_story_pink .hero-design-names{
+    display:flex !important; justify-content:center; left:0; right:0;
+    bottom:calc(3.2% + 43px + 2.4dvh) !important; z-index:4;
+    font-family:var(--main-font, var(--font-serif));
+    font-size:calc(16px * var(--fs-scale, 1)); font-weight:500; letter-spacing:4px;
+    color:#1a1a1a;
+    text-shadow:0 0 10px rgba(255,255,255,.95), 0 0 3px rgba(255,255,255,.9);
+}
+.hero.design-our_story_pink .hero-design-names{ color:#b0546e; }
+.hero.design-our_story .hero-design-title{ text-shadow:0 1px 8px rgba(255,255,255,.45) !important; }
+.hero.design-our_story .hero-design-center-info,
+.hero.design-our_story_pink .hero-design-center-info{ bottom:3.2% !important; }
+/* 날짜·예식장을 맨 아래로 내려서 타이틀과 이름 사이 공간을 확보 —
+   그 자리에 있던 스크롤 안내(화살표)와 겹치므로 이 두 테마에선 숨긴다 */
+.hero.design-our_story .scroll-hint,
+.hero.design-our_story_pink .scroll-hint{ display:none !important; }
+.hero.design-our_story .hdci-date{ font-size:calc(14px * var(--fs-scale, 1)); }
+.hero.design-our_story_pink .hdci-date{ font-size:calc(14px * var(--fs-scale, 1)); }
+.hero.design-our_story_pink .hdci-place{ font-size:calc(13px * var(--fs-scale, 1)); }
+
+/* ── 4. Getting Married — 아래쪽 어둡게(날짜 가독성). 이 테마는 이름을 넣지 않는다 ── */
+.hero.design-married .hero-fullphoto::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:42%;
+    background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.5));
+    z-index:2; pointer-events:none;
+}
+
+/* ── 5. 아치형 ── */
+/* 이름에 포인트 — 조금 크고 진하게, 가운데 &는 필기체 분홍 + 양옆 가는 선 */
+.hero.design-forever .forever-name-groom,
+.hero.design-forever .forever-name-bride{ letter-spacing:5px; font-size:calc(24px * var(--fs-scale, 1)); font-weight:500; }
+.hero.design-forever .forever-name-sep{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Great Vibes','Dancing Script',cursive; font-size:34px; line-height:.9;
+    color:#d98aa3; letter-spacing:0; margin:2px 0;
+}
+.hero.design-forever .forever-name-sep::before,
+.hero.design-forever .forever-name-sep::after{ content:''; width:34px; height:1px; background:#e8c3cf; }
+.hero.design-forever .forever-place1,
+.hero.design-forever .forever-place2{ font-size:calc(13px * var(--fs-scale, 1)); }
+.hero.design-forever .forever-place2{ letter-spacing:1px; }
+
+/* ── 6. THE MARRIAGE ── */
+.hero.design-the_marriage .hero-top-names,
+.hero.design-the_marriage .hero-top-names *{ font-weight:400 !important; letter-spacing:.5px; }
+.hero.design-the_marriage .hero-bottom{ border-top:none; padding-top:1.4rem; }
+.hero.design-the_marriage .hero-bottom-date::before{
+    content:''; display:block; width:28px; height:1px; background:#c9c2b6; margin:0 auto 12px;
+}
+
+/* ── 화면 높이에 맞춘 배치 ──
+   예전엔 타이틀·이름·날짜가 각자 % 위치라 화면 비율이 바뀌면 서로 겹치거나(작은 폰에서
+   핑크 타이틀이 이름 줄을 덮음) 사이가 벌어졌다. 맨 아래 날짜부터 위로 쌓아 올리듯
+   "아래 요소 높이 + 간격" 으로 위치를 잡고, 글자 크기도 화면 폭뿐 아니라 높이에도 맞춘다. */
+
+/* Our story / 핑크 — 날짜 → 이름 → 타이틀 순서로 쌓기.
+   이름을 넣으면 타이틀·이름·날짜가 붙어 답답해 보여서, 타이틀을 조금 줄이고
+   사이 간격을 넓히고, 이름 줄은 한 단계 작게 + 자간을 넓혀 가볍게 */
+.hero.design-our_story .hero-design-names,
+.hero.design-our_story_pink .hero-design-names{
+    bottom:calc(3.2% + 43px + 3.4dvh) !important; align-items:center;
+    font-size:calc(14px * var(--fs-scale, 1)) !important; letter-spacing:4px !important; gap:0;
+}
+/* 구분 기호(&, ♥) — 공백 문자에 자간이 붙어 좌우가 비대칭이던 것을 정리 */
+.hero.design-our_story .hero-design-names .hdn-sep,
+.hero.design-our_story_pink .hero-design-names .hdn-sep{ font-size:0; letter-spacing:0; }
+.hero.design-our_story .hero-design-names .hdn-sep::before,
+.hero.design-our_story_pink .hero-design-names .hdn-sep::before{
+    font-size:calc(13px * var(--fs-scale, 1)); margin:0 14px 0 10px; letter-spacing:0;
+}
+.hero.design-our_story_pink .hero-design-names .name-groom,
+.hero.design-our_story_pink .hero-design-names .name-bride{ color:#a94a66 !important; }
+.hero.design-our_story .hero-design-title{
+    bottom:calc(3.2% + 43px + 3.4dvh + 20px + 3.2dvh) !important;
+    font-size:min(19cqw, 92px, 9.6dvh) !important;
+}
+.hero.design-our_story_pink .hero-design-title{
+    bottom:calc(3.2% + 43px + 3.4dvh + 20px + 3.4dvh) !important;
+    font-size:min(26cqw, 120px, 13dvh) !important;
+}
+
+/* Getting Married — 타이틀 크기를 화면 높이에도 맞춤 */
+.hero.design-married .hero-design-title::before{ font-size:min(22cqw, 105px, 11dvh); }
+.hero.design-married .hero-design-title::after{ font-size:min(27cqw, 130px, 13.5dvh); }
+
+/* 기본 — 아래 이름 블록 여백을 화면 높이에 비례 */
+.hero.design-basic .hero-bottom{ padding:2.2dvh 1.5rem 3dvh; }
+
+/* THE MARRIAGE — 위쪽 날짜 블록을 화면 높이에 맞춰 줄여 작은 폰에서 사진 비중 확보 */
+.hero.design-the_marriage .hero-top{ padding:3.2dvh 1.5rem 2.4dvh; }
+.hero.design-the_marriage .hero-top-date{ font-size:min(56px, 7dvh); margin-bottom:2dvh; }
+.hero.design-the_marriage .hero-bottom{ padding-top:2.4dvh; padding-bottom:2.6dvh; }
+
+
+/* ── 6. THE MARRIAGE — 밋밋함 보완: 미색 배경 + 인화사진 액자 + 세이지 포인트 ──
+   첫 화면만 흰색이던 배경을 투명하게 해서 아래 섹션과 같은 미색(#f5f1eb)으로 이어지게 한다.
+   숫자(12.19, 하단 날짜)는 기존 글꼴 유지. */
+.hero.design-the_marriage{ background:transparent; }
+.hero.design-the_marriage .hero-top,
+.hero.design-the_marriage .hero-bottom{ background:transparent !important; }
+/* 라벨 양옆 가는 선 */
+.hero.design-the_marriage .hero-top-label{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    color:#7d8c74 !important;
+}
+.hero.design-the_marriage .hero-top-label::before,
+.hero.design-the_marriage .hero-top-label::after{ content:''; width:26px; height:1px; background:#b7c1ae; }
+/* 이름 사이 쉼표 → 이탤릭 & */
+.hero.design-the_marriage .hero-top-names .name-sep{ font-size:0; }
+.hero.design-the_marriage .hero-top-names .name-sep::before{
+    content:'&'; font-size:15px; font-family:'Cormorant Garamond',serif; font-style:italic;
+    margin:0 6px; color:#9a8f80;
+}
+.hero.design-the_marriage .hero-bottom-date::before{ background:#b7c1ae !important; }
+/* 사진 — 흰 테두리 + 그림자(인화사진), 안쪽 가는 흰 선(액자) */
+.hero.design-the_marriage .hero-fullphoto{
+    border-radius:3px;
+    box-shadow:0 0 0 7px #fff, 0 12px 30px rgba(80,60,40,.18), 0 1px 3px 7px rgba(80,60,40,.06);
+    margin:7px calc(1.1rem + 7px);
+}
+.hero.design-the_marriage .hero-fullphoto::before{
+    content:''; position:absolute; inset:10px; z-index:3; pointer-events:none;
+    border:1px solid rgba(255,255,255,.6);
+}

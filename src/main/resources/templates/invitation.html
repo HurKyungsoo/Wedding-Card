@@ -100,7 +100,7 @@
      DOM 은 지우지 않고 클래스로 숨긴다 — 섹션 순서 JS 등이 이 요소들을 기준점으로 쓴다. -->
 <div class="wc" th:style="|--main-font: ${wedding.mainFontCss};|"
      th:with="live=${!editorPreview}, hasDate=${!#strings.isEmpty(wedding.weddingDate)}, hasTime=${!#strings.isEmpty(wedding.weddingTime)}, hasPlace=${!#strings.isEmpty(wedding.weddingPlace) or !#strings.isEmpty(wedding.mapPlaceName)}, hasAddr=${!#strings.isEmpty(wedding.weddingAddress) or !#strings.isEmpty(wedding.mapAddressRoad)}, hasMap=${wedding.mapLat != null and wedding.mapLng != null}, hasGallery=${!#strings.isEmpty(wedding.galleryImages)}, hasParents=${!#strings.isEmpty(wedding.groomFatherName) or !#strings.isEmpty(wedding.groomMotherName) or !#strings.isEmpty(wedding.brideFatherName) or !#strings.isEmpty(wedding.brideMotherName)}"
-     th:classappend="${live ? 'is-live' + (hasDate ? '' : ' no-date') + (hasPlace ? '' : ' no-place') : ''}">
+     th:classappend="${(live ? 'is-live' + (hasDate ? '' : ' no-date') + (hasPlace ? '' : ' no-place') : '') + (wedding.defaultMainFont ? ' font-default' : '')}">
 
     <!-- ① HERO -->
     <div class="hero" id="heroSection" th:classappend="${(wedding.mainDesign != null ? 'design-' + wedding.mainDesign : 'design-basic') + (wedding.mainFontSize != null and !#strings.isEmpty(wedding.mainFontSize) ? ' fs-' + wedding.mainFontSize : '')}">
@@ -187,7 +187,7 @@
             <div class="forever-date" id="foreverDate"
                  th:data-date="${wedding.weddingDate}"
                  th:data-time="${wedding.weddingTime}"
-                 th:text="${!#strings.isEmpty(wedding.weddingDate) ? #strings.replace(wedding.weddingDate, '-', '. ') : ''}">2026. 06. 27</div>
+                 th:text="${!#strings.isEmpty(wedding.weddingDate) ? #strings.replace(wedding.weddingDate, '-', ' · ') : ''}">2026 · 06 · 27</div>
             <div class="forever-place-wrap">
                 <div class="forever-place1" th:text="${wedding.weddingPlace}">MARRIAGE WEDDING HALL</div>
                 <div class="forever-place2"
@@ -1868,7 +1868,11 @@ window.__WEDDING_STYLE = {
             var en = d.mainFontEn ? enFontMap[d.mainFontEn] : null;
             if (ff) {
                 var wc = document.querySelector('.wc');
-                if (wc) wc.style.setProperty('--main-font', en ? en + ', ' + ff : ff);
+                if (wc) {
+                    wc.style.setProperty('--main-font', en ? en + ', ' + ff : ff);
+                    /* 글꼴을 따로 고르지 않은 상태 — 아치형 날짜 숫자를 경기천년바탕으로 (WeddingDto.isDefaultMainFont 와 같은 기준) */
+                    wc.classList.toggle('font-default', d.mainFont === 'noto' && !d.mainFontEn);
+                }
             }
         }
 
@@ -2120,7 +2124,8 @@ window.__WEDDING_STYLE = {
         if (placeEl && place !== undefined) placeEl.textContent = place || '웨딩홀';
 
         /* 새 forever-layout */
-        if (newDateEl && formatted) newDateEl.textContent = formatted;
+        /* 아치형 날짜는 랜딩 카드와 같은 가운데 점 형식 (2026 · 12 · 19) */
+        if (newDateEl && formatted) newDateEl.textContent = formatted.replace(/\. /g, ' · ');
         if (newPlace1El && place !== undefined) newPlace1El.textContent = (place || '').toUpperCase();
         if (newPlace2El && mapPlaceName !== undefined) newPlace2El.textContent = (mapPlaceName || '').toUpperCase();
     }

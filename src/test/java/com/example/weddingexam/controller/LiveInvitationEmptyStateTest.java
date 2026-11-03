@@ -46,7 +46,8 @@ class LiveInvitationEmptyStateTest {
     @Test
     void liveInvitation_marksEmptyDateAndPlace_andHidesEmptySections() throws Exception {
         String h = html("/wedding/" + emptyWedding());
-        assertThat(h).containsPattern("class=\"wc is-live no-date no-place\"");
+        // font-default 는 글꼴을 따로 고르지 않았다는 표시(아치형 날짜 글꼴용)라 같이 붙을 수 있다
+        assertThat(h).containsPattern("class=\"wc is-live no-date no-place( font-default)?\"");
         // 날짜가 없으면 달력·D-Day, 사진이 없으면 갤러리, 지도·장소가 없으면 오시는 길이 숨겨진다
         assertThat(h).containsPattern("class=\"sec live-empty\"[^>]*data-vis=\"calendar\"|data-vis=\"calendar\"[^>]*class=\"sec live-empty\"|class=\"sec live-empty\" data-vis=\"calendar\"");
         assertThat(h).contains("live-empty");
@@ -68,7 +69,7 @@ class LiveInvitationEmptyStateTest {
         d.setWeddingPlace("더채플앳청담");
         Long id = weddingService.save(d).getId();
         String h = html("/wedding/" + id);
-        assertThat(h).contains("class=\"wc is-live\"");
+        assertThat(h).containsPattern("class=\"wc is-live( font-default)?\"");
         assertThat(h).doesNotContain("no-date").doesNotContain("no-place");
     }
 

@@ -314,10 +314,20 @@ public class WeddingDto {
         "gyeonggi_batang",
         "https://cdn.jsdelivr.net/gh/fonts-archive/GyeonggiBatang/subsets/GyeonggiBatang-dynamic-subset.css"
     );
-    /** 하객 화면용 — 이 청첩장이 고른 글꼴이 별도 CDN 을 쓸 때만 한 줄. 아니면 빈 목록. */
+    /** 하객 화면용 — 이 청첩장이 고른 글꼴이 별도 CDN 을 쓸 때만 한 줄. 아니면 빈 목록.
+     *  아치형 테마는 글꼴을 따로 고르지 않았을 때 날짜 숫자를 경기천년바탕으로 그리므로 그것도 받는다. */
     public java.util.Collection<String> getExtraFontStylesheets() {
+        java.util.LinkedHashSet<String> hrefs = new java.util.LinkedHashSet<>();
         String href = MAIN_FONT_CDN_CSS.get(mainFont != null ? mainFont : "noto");
-        return href == null ? java.util.List.of() : java.util.List.of(href);
+        if (href != null) hrefs.add(href);
+        if ("forever".equals(mainDesign) && isDefaultMainFont()) hrefs.add(MAIN_FONT_CDN_CSS.get("gyeonggi_batang"));
+        return java.util.List.copyOf(hrefs);
+    }
+    /** 한글·영문 글꼴을 따로 고르지 않은 상태(기본 노토세리프) */
+    public boolean isDefaultMainFont() {
+        boolean koDefault = mainFont == null || mainFont.isEmpty() || "noto".equals(mainFont);
+        boolean enDefault = mainFontEn == null || mainFontEn.isEmpty();
+        return koDefault && enDefault;
     }
     /** 편집기 미리보기용 — 글꼴을 바꿔가며 보므로 미리 다 받아둔다. */
     public static java.util.Collection<String> getAllFontStylesheets() {
