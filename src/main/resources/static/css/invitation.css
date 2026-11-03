@@ -1,13 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500&family=Noto+Sans+KR:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Pinyon+Script&family=Sacramento&display=swap');
 
 /* ── 전역 스크롤바 숨김 + 풀화면 레이아웃 ── */
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+*{box-sizing:border-box;margin:0;padding:0;}
 
 /* 스크롤바 완전 숨김 (모바일/태블릿/데스크톱) */
 html,body,::-webkit-scrollbar{scrollbar-width:none;-ms-overflow-style:none;}
 ::-webkit-scrollbar{display:none;width:0;height:0;}
 
-html{scroll-behavior:smooth;height:100%;}
+html{height:100%;}
 body{
     background:#f5f2ec;
     display:flex;
@@ -21,7 +21,7 @@ body{
 .wc{
     width:100%;
     max-width:480px;
-    background:#f5f1eb;
+    
     position:relative;
     overflow-x:hidden;
     box-shadow:none;
@@ -159,12 +159,10 @@ body{
     letter-spacing:1px;
     margin-bottom:0.9rem;
     line-height:1.5;
-    display:flex;
-    align-items:baseline;
-    justify-content:center;
-    flex-wrap:nowrap;
-    white-space:nowrap;
-    gap:0;
+
+    
+
+    
 }
 /* We're getting married 손글씨 */
 .hero-script-wrap{
@@ -269,49 +267,20 @@ body{
 
 /* ── 공통 섹션 ── */
 .sec{padding:2.5rem 1.8rem;}
-.sec-white{background:transparent;}
-.sec-label{font-family:'EB Garamond','Cormorant Garamond',serif;font-size:11.5px;letter-spacing:5px;color:var(--color-gold);text-align:center;margin-bottom:0.4rem;font-style:italic;font-weight:400;}
-.sec-title{font-family:var(--main-font, var(--font-serif));font-size:16px;font-weight:300;color:var(--color-ink-warm);text-align:center;letter-spacing:3px;margin-bottom:1.8rem;}
 
-/* ── 스크롤 애니메이션 클래스 ── */
-/* 기본 페이드업 */
-.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease;}
-.reveal.on{opacity:1;transform:translateY(0);}
-
-/* 좌에서 슬라이드 */
-.reveal-left{opacity:0;transform:translateX(-28px);transition:opacity 0.6s ease,transform 0.6s ease;}
-.reveal-left.on{opacity:1;transform:translateX(0);}
-
-/* 우에서 슬라이드 */
-.reveal-right{opacity:0;transform:translateX(28px);transition:opacity 0.6s ease,transform 0.6s ease;}
-.reveal-right.on{opacity:1;transform:translateX(0);}
-
-/* 스케일업 */
-.reveal-scale{opacity:0;transform:scale(0.94);transition:opacity 0.55s ease,transform 0.55s cubic-bezier(0.34,1.3,0.64,1);}
-.reveal-scale.on{opacity:1;transform:scale(1);}
-
-/* 지연 클래스 */
-.delay-1{transition-delay:0.08s!important;}
-.delay-2{transition-delay:0.16s!important;}
-.delay-3{transition-delay:0.24s!important;}
-.delay-4{transition-delay:0.32s!important;}
+.sec-label{font-family:'EB Garamond','Cormorant Garamond',serif;font-size:11.5px;letter-spacing:5px;text-align:center;margin-bottom:0.4rem;font-style:italic;font-weight:400;}
+.sec-title{font-family:var(--main-font, var(--font-serif));font-size:16px;font-weight:300;text-align:center;letter-spacing:3px;margin-bottom:1.8rem;}
 
 /* JS 로드 실패 / 애니메이션 비활성 환경 대비 fallback */
 @media (prefers-reduced-motion: reduce) {
     .reveal,.reveal-left,.reveal-right,.reveal-scale{opacity:1!important;transform:none!important;transition:none!important;}
 }
 
-/* 섹션 구분선 애니메이션 */
-.section-divider .div-line{transform:scaleX(0);transform-origin:center;transition:transform 0.8s ease;}
-.section-divider.on .div-line{transform:scaleX(1);}
-.section-divider .div-icon{opacity:0;transition:opacity 0.5s 0.4s ease;}
-.section-divider.on .div-icon{opacity:0.55;}
-
 /* ── 인사말 ── */
 .greet-card{background:transparent;border-radius:16px;padding:2rem 1.5rem;border:0.5px solid rgba(180,160,130,0.2);position:relative;overflow:hidden;}
 .greet-card::before{content:'❝';font-family:Georgia,serif;font-size:60px;color:var(--color-gold);opacity:0.07;position:absolute;top:-6px;left:10px;line-height:1;}
-.greet-title{font-family:var(--main-font, var(--font-serif));font-size:15px;font-weight:400;color:var(--color-ink-warm);line-height:2.1;margin-bottom:1.2rem;text-align:center;letter-spacing:0.5px;}
-.greet-text{font-family:var(--main-font, var(--font-serif));font-size:13px;color:var(--color-brown);line-height:2.4;font-weight:300;word-break:keep-all;text-align:center;letter-spacing:0.3px;}
+.greet-title{font-family:var(--main-font, var(--font-serif));font-size:15px;font-weight:400;line-height:2.1;margin-bottom:1.2rem;text-align:center;letter-spacing:0.5px;}
+.greet-text{font-family:var(--main-font, var(--font-serif));font-size:13px;line-height:2.4;font-weight:300;word-break:keep-all;text-align:center;letter-spacing:0.3px;}
 .greet-sign{margin-top:1.5rem;font-family:'EB Garamond','Cormorant Garamond',serif;font-size:15px;color:var(--color-gold);letter-spacing:3px;font-style:italic;text-align:center;font-weight:400;}
 
 /* 타이핑 커서 효과 */
@@ -321,8 +290,8 @@ body{
 /* ── 정보 블록 ── */
 .info-block{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);overflow:hidden;backdrop-filter:blur(4px);}
 .info-item{display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:0.5px solid #f5ede4;
-  opacity:0;transform:translateX(-20px);transition:opacity 0.5s ease,transform 0.5s ease;}
-.info-item.on{opacity:1;transform:translateX(0);}
+  }
+
 .info-item:last-child{border-bottom:none;}
 .info-icon{width:34px;height:34px;background:#fdf4ec;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .info-icon i{font-size:16px;color:var(--color-gold);}
@@ -341,18 +310,10 @@ body{
 .cal-add-btn i{font-size:15px;color:var(--color-gold);}
 .cal-add-btn:active{transform:scale(0.97);background:#fdf4ec;}
 
-/* ── 달력 ── */
-.cal-card{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);padding:1.5rem;backdrop-filter:blur(4px);}
-.cal-month-title{font-family:var(--main-font, var(--font-serif));font-size:14px;color:var(--color-ink-warm);font-weight:300;letter-spacing:2px;text-align:center;margin-bottom:1.2rem;}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:2px;}
-.cal-dow{font-size:10px;color:var(--color-gold);padding:5px 0;letter-spacing:1px;}
-.cal-cell{padding:6px 2px;font-size:12px;color:var(--color-brown);font-weight:300;border-radius:50%;transition:all 0.2s;}
-.cal-cell.wed{background:var(--color-ink-warm);color:var(--color-white);font-weight:500;
-  animation:calPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;}
+.cal-cell{transition:all 0.2s;}
+
 @keyframes calPop{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
-.cal-cell.sun{color:#d4845a;}
-.cal-cell.sat{color:#7a8ab8;}
-.cal-cell.empty{color:transparent;pointer-events:none;}
+
 .dday-wrap{text-align:center;margin-top:1.2rem;}
 .dday-pill{display:inline-block;background:var(--color-ink-warm);color:#f9f3ee;font-size:11px;letter-spacing:3px;padding:7px 26px;border-radius:20px;font-weight:300;
   animation:pillIn 0.6s 0.3s cubic-bezier(0.34,1.56,0.64,1) both;}
@@ -372,7 +333,7 @@ body{
 .host-main-name{font-family:var(--main-font, var(--font-serif));font-size:17px;color:var(--color-ink-warm);font-weight:300;margin-bottom:9px;}
 .host-family{font-size:11px;color:#7a6a54;line-height:2;font-weight:300;}
 /* 관계(장남/장녀) — 이름 앞에 작게. 미입력이면 :empty 로 통째로 숨긴다 */
-.host-relation{font-size:0.72em;color:#8a7a64;margin-right:4px;letter-spacing:0.5px;}
+.host-relation{margin-right:4px;}
 /* 세례명 — 이름 뒤 괄호. 괄호를 CSS로 붙여야 값이 비었을 때 "()"만 남는 일이 없다 */
 .host-baptism{font-size:0.72em;color:#8a7a64;margin-left:3px;letter-spacing:0.3px;}
 /* 좁은 폭에서 "(바오/로)"처럼 단어 중간이나 닫는 괄호 앞에서 끊기지 않도록
@@ -411,39 +372,28 @@ body{
 .gdot.active{background:var(--color-ink-warm);width:14px;border-radius:3px;}
 
 /* ── 지도 ── */
-.map-card{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);overflow:hidden;backdrop-filter:blur(4px);}
+.map-card{backdrop-filter:blur(4px);}
 .map-visual{background:linear-gradient(135deg,#e8ddd0 0%,var(--color-tan) 100%);height:150px;display:flex;align-items:center;justify-content:center;position:relative;}
 .map-visual i{font-size:40px;color:#8a6a44;opacity:0.55;}
 /* 지도 핀 바운스 */
 .map-pin-icon{animation:pinBounce 2s ease infinite;}
 @keyframes pinBounce{0%,100%{transform:translateY(0);}40%{transform:translateY(-10px);}60%{transform:translateY(-4px);}}
 .map-info{padding:1.3rem;}
-.map-place-name{font-family:var(--main-font, var(--font-serif));font-size:15px;color:var(--color-ink-warm);font-weight:400;margin-bottom:5px;}
-.map-addr-text{font-size:12px;color:#7a6a54;line-height:1.8;font-weight:300;}
+
+.map-addr-text{font-weight:300;}
 .map-btns{display:flex;gap:6px;margin-top:1rem;flex-wrap:wrap;}
 .mbtn{flex:1;min-width:80px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:11px;padding:9px 4px;border-radius:8px;border:0.5px solid var(--color-tan);background:#fdf9f5;color:var(--color-brown);cursor:pointer;letter-spacing:0.5px;font-family:var(--font-sans);transition:all 0.2s;}
 .mbtn:hover,.mbtn:active{background:#fdf4ec;transform:scale(0.97);}
 .mbtn i{font-size:13px;color:var(--color-gold);}
 
-/* ── 계좌 ── */
-.acct-card{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);overflow:hidden;}
-.acct-item{padding:1rem 1.3rem;border-bottom:0.5px solid #f5ede4;display:flex;justify-content:space-between;align-items:center;}
-.acct-item:last-child{border-bottom:none;}
-.acct-who{font-size:10px;letter-spacing:2px;color:var(--color-gold);margin-bottom:3px;}
+.acct-who{letter-spacing:2px;}
 .acct-bank{font-size:12px;color:var(--color-brown);font-weight:300;}
-.acct-num{font-size:13px;color:var(--color-ink-warm);font-weight:400;letter-spacing:1px;}
-.copy-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--color-white);background:var(--color-ink-warm);border:none;border-radius:8px;padding:7px 14px;cursor:pointer;letter-spacing:1px;font-family:var(--font-sans);white-space:nowrap;transition:all 0.2s;}
-.copy-btn:hover{background:var(--color-brown);}
-.copy-btn:active{transform:scale(0.95);}
-.copy-btn i{font-size:14px;}
-/* 복사 성공 효과 */
-.copy-btn.copied{background:#6a8a5a;}
 
 /* ── 푸터 ── */
-.footer-sec{padding:3.5rem 2rem;text-align:center;background:#f5f0e8;border-top:0.5px solid #e8ddd0;}
-.footer-flower{font-size:15px;letter-spacing:8px;color:var(--color-gold);opacity:0.4;margin-bottom:1.2rem;}
-.footer-msg{font-family:var(--main-font, var(--font-serif));font-size:13px;color:#7a6a54;line-height:2.3;font-weight:300;letter-spacing:1px;}
-.footer-copy{font-family:'Cormorant Garamond',serif;font-size:11px;color:var(--color-gold);letter-spacing:3px;margin-top:1.8rem;font-style:italic;}
+.footer-sec{padding:3.5rem 2rem;text-align:center;border-top:0.5px solid #e8ddd0;}
+.footer-flower{font-size:15px;letter-spacing:8px;margin-bottom:1.2rem;}
+.footer-msg{font-family:var(--main-font, var(--font-serif));font-size:13px;line-height:2.3;font-weight:300;letter-spacing:1px;}
+.footer-copy{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;margin-top:1.8rem;font-style:italic;}
 
 /* ── 반응형 ── */
 @media(max-width:380px){
@@ -485,7 +435,6 @@ body{
 /* ── 카카오 지도 ── */
 .invitation-map{width:100%;height:200px;background:#e8e4de;}
 
-
 /* ════════════════════════════════════════
    공유하기 (Share)
    ════════════════════════════════════════ */
@@ -507,9 +456,9 @@ body{
 /* ════════════════════════════════════════
    계좌 송금 섹션 (청첩장)
    ════════════════════════════════════════ */
-.acct-tab-wrap{display:flex;gap:8px;margin-bottom:1.2rem;}
+.acct-tab-wrap{gap:8px;margin-bottom:1.2rem;}
 .acct-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:10px;border-radius:10px;border:0.5px solid rgba(180,160,130,0.25);background:rgba(255,255,255,0.45);font-size:13px;color:var(--color-taupe);cursor:pointer;font-family:var(--font-sans);transition:all .25s;}
-.acct-tab.active{background:var(--color-ink-warm);border-color:var(--color-ink-warm);color:#f9f3ee;font-weight:500;}
+.acct-tab.active{font-weight:500;}
 .acct-panel{}
 .acct-card{background:rgba(255,255,255,0.55);border-radius:18px;border:0.5px solid rgba(180,160,130,0.18);overflow:hidden;}
 .acct-item{display:flex;justify-content:space-between;align-items:center;padding:1.1rem 1.3rem;border-bottom:0.5px solid rgba(180,160,130,0.15);}
@@ -547,7 +496,7 @@ body{
 .cal-dow-sun{color:#d4845a;}
 .cal-dow-sat{color:#7a8ab8;}
 .cal-cell{padding:6px 2px;font-size:12px;color:var(--color-brown);font-weight:300;border-radius:50%;}
-.cal-cell.wed{background:var(--color-ink-warm);color:var(--color-white);font-weight:500;animation:calPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;}
+.cal-cell.wed{font-weight:500;animation:calPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;}
 .cal-cell.sun{color:#d4845a;}
 .cal-cell.sat{color:#7a8ab8;}
 .cal-cell.empty{color:transparent;pointer-events:none;}
@@ -646,7 +595,13 @@ body{
 .sec-white{ background:transparent; }
 .sec-gb{ background:rgba(240,236,228,0.6); }
 
-/* 카드 공통 — 반투명 유리 느낌 */
+/* 카드 공통 — 반투명 유리 느낌.
+   섹션 카드는 전부 이 세 값을 쓴다. 바꿀 땐 여기 변수만 고치면 된다. */
+:root{
+    --card-radius: 18px;
+    --card-border-color: rgba(180,160,130,0.18);
+    --card-bg: rgba(255,255,255,0.52);
+}
 .greet-card,
 .cal-card,
 .dday-card,
@@ -654,10 +609,12 @@ body{
 .acct-card,
 .info-block,
 .host-card,
-.rsvp-card{
-    background:rgba(255,255,255,0.52);
-    border-color:rgba(180,160,130,0.18);
-    border-radius:18px;
+.rsvp-card,
+.gb-card,
+.map-navi-card{
+    background:var(--card-bg);
+    border-color:var(--card-border-color);
+    border-radius:var(--card-radius);
 }
 
 /* 갤러리 배경 */
@@ -764,11 +721,6 @@ body{
 }
 .slide-in-right.visible{ opacity:1; transform:translateX(0); }
 
-/* 패럴랙스 사진 (히어로) */
-.hero-fullphoto-img{
-    will-change:transform;
-}
-
 /* 접근성: 모션 줄이기 설정 시 */
 @media (prefers-reduced-motion: reduce){
     .fade-in-up, .stagger-children > *, .scale-in, .slide-in-left, .slide-in-right{
@@ -842,20 +794,6 @@ body{
 .hero-fullphoto-img{
     will-change:transform;
 }
-
-/* 구분선 가로 확장 효과 */
-.section-divider .div-line{
-    transform:scaleX(0);
-    transform-origin:center;
-    transition:transform 1.2s cubic-bezier(0.16,1,0.3,1);
-}
-.section-divider.on .div-line{ transform:scaleX(1); }
-.section-divider .div-icon{
-    opacity:0;
-    transform:scale(0.5) rotate(-90deg);
-    transition:opacity 0.6s ease 0.5s, transform 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.5s;
-}
-.section-divider.on .div-icon{ opacity:0.4; transform:scale(1) rotate(0); }
 
 /* 카드 떠오르기 (부드러운 상승) */
 .greet-card.reveal-scale,
@@ -982,30 +920,8 @@ body{
 .hero.design-basic .hero-bottom-names[data-order="bride"] .hbn-shell { order: 2; }
 .hero.design-basic .hero-bottom-names[data-order="bride"] .hbn-bride { order: 1; }
 
-/* ── 날짜 ── */
-.hero.design-basic .hero-bottom-date{
-    font-family: 'Cormorant Garamond', 'EB Garamond', serif;
-    font-size: calc(13px * var(--fs-scale, 1));
-    font-weight: 400;
-    color: #C4956A;
-    letter-spacing: 1.5px;
-    margin-bottom: 0.3rem;
-    line-height: 1.8;
-}
-
-/* ── 장소 ── */
-.hero.design-basic .hero-bottom-place{
-    font-family:var(--main-font, var(--font-serif));
-    font-size: calc(13px * var(--fs-scale, 1));
-    font-weight: 400;
-    color: #3a3228;
-    letter-spacing: 1px;
-    line-height: 1.8;
-}
-
 /* 다른 테마에서 basic으로 전환 시 이름 블록은 basic만 보임 */
 .hero:not(.design-basic) .hero-bottom-names{ display: none !important; }
-
 
 /* ─────────────────────────────────────
    ★ design-the_marriage ("THE MARRIAGE")
@@ -1098,8 +1014,6 @@ body{
     letter-spacing:0.2px;
     line-height:1.6;
 }
-
-
 
 /* ★ 하단 날짜 — 다른 테마처럼 글꼴 선택을 따른다 (선택 없으면 Noto Serif KR).
    예전엔 기본 테마만 서체를 고정해서 글꼴을 바꿔도 이름·날짜·장소가 그대로였다 */
@@ -1227,7 +1141,7 @@ body{
 }
 /* Getting Married 테마 — 날짜는 전역 글꼴 선택을 따름, 흰색 유지 */
 .hero.design-married .hero-design-date span{
-    font-family:var(--main-font, var(--font-serif));
+    
     color:var(--color-white);
     font-size:calc(14px * var(--fs-scale, 1));
     font-weight:400;
@@ -1464,7 +1378,7 @@ body{
 .hero.design-our_story .hero-design-names,
 .hero.design-our_story_pink .hero-design-names,
 .hero.design-married .hero-design-names{
-    display:block;
+    
     position:absolute;
     left:0;right:0;
     bottom:13%;
@@ -1717,18 +1631,6 @@ body{
 /* Getting Married — 그라디언트 없이 사진 원본 그대로 (가독성은 text-shadow로만 확보) */
 .hero.design-married .hero-fullphoto::after{
     display:none;
-}
-
-/* ════════════════════════════════════════
-   모바일 청첩장 추가 효과 모음
-   ════════════════════════════════════════ */
-
-/* 1) 부드러운 관성 스크롤 */
-html{
-    scroll-behavior:smooth;
-}
-body{
-    -webkit-overflow-scrolling:touch;  /* iOS 관성 스크롤 */
 }
 
 /* 2) 섹션 진입 시 살짝 떠오르며 나타남 (기본보다 부드럽게) */
@@ -2108,30 +2010,24 @@ body{ -webkit-overflow-scrolling:touch; }
     padding:1.2rem 1.4rem 1rem;
 }
 .map-place-name{
-    font-size:16px;font-weight:600;color:var(--color-ink);
-    margin-bottom:4px;
+
     font-family:var(--main-font, var(--font-serif));
 }
 .map-addr-text{
     font-size:12px;color:var(--color-taupe);line-height:1.6;
 }
-.map-wrap{
-    width:100%;height:220px;
-    background:#e8e0d5;
-}
+
 .map-placeholder{
     display:flex;flex-direction:column;
     align-items:center;justify-content:center;
 }
 /* "자세히 보기" 배너 — 스크린샷의 핑크 배너 */
 .map-detail-btn{
-    display:block;
-    padding:12px;
-    background:#f5b8c4;
-    color:var(--color-ink);
+
+    
+    
     font-size:13px;
-    text-align:center;
-    text-decoration:none;
+
     letter-spacing:0.5px;
     transition:background .2s;
 }
@@ -2158,10 +2054,8 @@ body{ -webkit-overflow-scrolling:touch; }
 /* 지도 + 내비게이션을 하나로 이어진 둥근 카드로 (다른 섹션의 .cal-card, .acct-card 와 같은 모서리·테두리).
    감싸는 쪽에서 둥글리면 내비 버튼을 전부 꺼서 내비 영역이 숨겨져도 지도 카드 모서리가 그대로 둥글다 */
 .map-navi-card{
-    border-radius:18px;
-    border:0.5px solid rgba(180,160,130,0.18);
+    border:0.5px solid var(--card-border-color);
     overflow:hidden;
-    background:var(--color-white);
 }
 .map-full{
     width:100%;
@@ -2198,7 +2092,7 @@ body{ -webkit-overflow-scrolling:touch; }
    글자 폭만 있으면 돼서 360px 에서도 여유 있게 들어간다. */
 .map-navi-section{
     padding:24px 18px 8px;
-    background:var(--color-white);
+    background:transparent;   /* 카드(.map-navi-card) 배경을 그대로 쓴다 */
 }
 .map-navi-title{
     font-size:15px;font-weight:600;
@@ -2421,7 +2315,6 @@ body{ -webkit-overflow-scrolling:touch; }
 .ts-nav-prev{ left:6px; }
 .ts-nav-next{ right:6px; }
 
-
 .map-place-name{font-size:30px;font-weight:600;color:#111;margin-bottom:12px;text-align:center;}
 .map-detail-btn{display:block;width:100%;padding:16px;background:#e8b3b3;color:var(--color-white);text-decoration:none;text-align:center;}
 .map-wrap{min-height:380px;}
@@ -2467,7 +2360,6 @@ body{ -webkit-overflow-scrolling:touch; }
 /* design-basic 전용 크기 보정 */
 .hero.design-basic.fs-sm .hbn-name { font-size: 22px !important; }
 .hero.design-basic.fs-lg .hbn-name { font-size: 30px !important; }
-
 
 /* ════════════════════════════════════════
    효과 레이어 — fog / wave / paper
@@ -2537,8 +2429,7 @@ body{ -webkit-overflow-scrolling:touch; }
    방명록 — RSVP 카드와 같은 톤을 유지
    ════════════════════════════════════════ */
 .gb-card{
-    background:transparent;border-radius:16px;
-    border:0.5px solid rgba(180,160,130,0.18);
+    border:0.5px solid var(--card-border-color);
     padding:1.6rem 1.4rem;backdrop-filter:blur(4px);
 }
 .gb-form{display:flex;flex-direction:column;gap:8px;}
@@ -2649,7 +2540,6 @@ body{ -webkit-overflow-scrolling:touch; }
     word-break:keep-all;padding:0 0.4rem;
 }
 .ending-caption:empty{display:none;}
-
 
 /* ════════════════════════════════════════
    글꼴 크기 (작게/보통/크게) — 모든 테마 공통
