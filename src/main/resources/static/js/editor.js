@@ -48,8 +48,8 @@ function renderDraftStatus() {
           '저장됨 · 하객 화면 미반영', '하객 화면과 같음');
     if (status) {
         status.title = dirty
-            ? savedAgo + ' 자동저장됨. "게시하기"를 눌러야 하객 화면에 반영됩니다.'
-            : '편집 중인 내용이 하객 화면에 모두 반영되어 있습니다.';
+            ? savedAgo + ' 자동저장됨. 누르면 지금 바로 저장합니다. "게시하기"를 눌러야 하객 화면에 반영됩니다.'
+            : '편집 중인 내용이 하객 화면에 모두 반영되어 있습니다. 바꾼 뒤 누르면 지금 바로 저장합니다.';
     }
 
     paint(document.getElementById('previewBadge'), document.getElementById('previewBadgeText'),
@@ -1327,9 +1327,12 @@ function scheduleLive(ms) {
     /* 백그라운드 자동저장 (조용히, 새로고침 없음) */
     clearTimeout(saveTimer);
     saveTimer = setTimeout(autoSaveAndRefresh, 2500);
+    savePending = true;
 }
+var savePending = false;
 
 function autoSave() {
+    savePending = false;
     fetch('/api/admin/autosave', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(collectData())})
         .then(function(r){ return r.json(); })
         .then(function(res){ if (res && res.success) markDraftSaved(); })
@@ -1338,6 +1341,7 @@ function autoSave() {
 
 /* 백그라운드 자동저장 — iframe 새로고침 없이 조용히 임시저장만 (게스트 화면에는 반영되지 않음) */
 function autoSaveAndRefresh() {
+    savePending = false;
     var data = collectData();
     fetch('/api/admin/autosave', {
         method:'POST',
@@ -1401,7 +1405,7 @@ document.getElementById('editForm').addEventListener('change', function() { sche
         /* postMessage로 즉시 반영 — 스크롤 건드리지 않음 */
         sendLive();
         /* 백그라운드 자동저장 (조용히) */
-        saveTimer = setTimeout(autoSave, 500);
+        saveTimer = setTimeout(autoSave, 500); savePending = true;
     });
 });
 
@@ -2369,6 +2373,15 @@ function renderMapPage(page) {
     }
 }
 
+function fillIfAuto(input, value) {
+    if (!input || !value) return;
+    var cur = input.value.trim();
+    if (cur === '' || cur === (input.dataset.auto || '')) {
+        input.value = value;
+        input.dataset.auto = value;
+    }
+}
+
 function selectMapPlace(p) {
     var addr = p.road_address_name || p.address_name;
     var si = document.getElementById('mapSearchInput');
@@ -2383,6 +2396,11 @@ function selectMapPlace(p) {
     if (lati) lati.value = p.y;
     if (lngi) lngi.value = p.x;
     if (ni && p.place_name) ni.value = p.place_name;
+
+    /* 예식 정보의 예식장 이름·주소도 함께 — 비어 있거나 지난번 검색으로 채운 값 그대로일 때만.
+       사용자가 "그랜드웨딩홀 5층 로즈홀"처럼 고쳐 쓴 값은 다시 검색해도 지키기 위해 data-auto 와 비교한다. */
+    fillIfAuto(document.querySelector('[name="weddingPlace"]'), p.place_name || '');
+    fillIfAuto(document.querySelector('[name="weddingAddress"]'), addr || '');
 
     /* 지도 표시 */
     var lat = parseFloat(p.y), lng = parseFloat(p.x);
@@ -2547,4 +2565,81 @@ function goToWeddingDate() {
     d.addEventListener('input', sync);
     d.addEventListener('change', sync);
     sync();
+})();
+
+/* ── 미리보기 폰 크기 맞추기 (데스크톱) ──
+   iframe 은 실제 폰 크기(390×844)로 그리고, 폰 틀이 쓸 수 있는 높이·폭에 맞춰 배율만 바꾼다.
+   태블릿·모바일(≤1024px)에선 CSS 가 틀을 없애므로 여기서 넣은 크기·배율을 지운다. */
+(function fitPreviewPhone() {
+    var wrap = document.getElementById('edPhone');
+    var frame = document.getElementById('liveFrame');
+    if (!wrap || !frame) return;
+    var screen = wrap.querySelector('.ed-phone-screen');
+    var desktop = window.matchMedia('(min-width:1025px)');
+    var W = 390, H = 844, BEZEL = 20;
+    function fit() {
+        if (!desktop.matches) {
+            screen.style.width = screen.style.height = frame.style.transform = '';
+            return;
+        }
+        var s = Math.min(1, (wrap.clientHeight - BEZEL) / H, (wrap.clientWidth - BEZEL) / W);
+        s = Math.max(s, 0.5);
+        screen.style.width = Math.round(W * s) + 'px';
+        screen.style.height = Math.round(H * s) + 'px';
+        frame.style.transform = 'scale(' + s.toFixed(4) + ')';
+    }
+    if (window.ResizeObserver) new ResizeObserver(fit).observe(wrap);
+    window.addEventListener('resize', fit);
+    if (desktop.addEventListener) desktop.addEventListener('change', fit);
+    fit();
+})();
+
+
+/* ── 헤더 계정 메뉴 (이름 · 가이드 다시 보기 · 로그아웃) ── */
+(function accountMenu() {
+    var box = document.getElementById('edMe');
+    var btn = document.getElementById('edMeBtn');
+    if (!box || !btn) return;
+    function set(open) {
+        box.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    btn.addEventListener('click', function(e) { e.stopPropagation(); set(!box.classList.contains('open')); });
+    document.addEventListener('click', function(e) { if (!box.contains(e.target)) set(false); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') set(false); });
+    // 메뉴 안 항목을 누르면 닫는다 (가이드 다시 보기 등)
+    box.querySelector('.ed-me-menu').addEventListener('click', function(e) { if (e.target.closest('.ed-me-item')) set(false); });
+})();
+
+
+/* ── 헤더 저장 상태 — 누르면 바로 임시저장 ──
+   평소엔 입력 2.5초 뒤에 자동저장된다. 기다리지 않고 지금 저장하고 싶을 때 누른다.
+   바뀐 게 없으면(하객 화면과 같고 저장 대기도 없음) 저장하지 않는다 —
+   저장하면 내용이 같아도 '하객 화면 미반영' 상태가 되어 버린다. */
+(function saveNow() {
+    var btn = document.getElementById('draftStatus');
+    var label = document.getElementById('draftStatusLabel');
+    if (!btn) return;
+    btn.addEventListener('click', function() {
+        if (btn.classList.contains('saving')) return;
+        if (!lastDraftSavedAt && !savePending) {
+            showEditorToast('바뀐 내용이 없어요 — 하객 화면과 같아요');
+            return;
+        }
+        clearTimeout(saveTimer);
+        savePending = false;
+        btn.classList.add('saving');
+        if (label) label.textContent = '저장 중…';
+        fetch('/api/admin/autosave', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(collectData())})
+            .then(function(r){ return r.json(); })
+            .then(function(res){
+                btn.classList.remove('saving');
+                if (res && res.success) { markDraftSaved(); showEditorToast('✓ 임시저장했어요 — 하객에게 보이려면 \'게시하기\''); }
+                else { renderDraftStatus(); showEditorToast('저장하지 못했어요. 다시 눌러 주세요.', 'error'); }
+            })
+            .catch(function(){
+                btn.classList.remove('saving'); renderDraftStatus();
+                showEditorToast('저장하지 못했어요. 다시 눌러 주세요.', 'error');
+            });
+    });
 })();

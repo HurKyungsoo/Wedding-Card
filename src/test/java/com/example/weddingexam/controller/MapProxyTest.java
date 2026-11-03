@@ -42,6 +42,18 @@ class MapProxyTest {
         assertThat(js).doesNotContain("dapi.kakao.com/v2/local");
     }
 
+    /** 한글 검색어가 두 번 인코딩되면(%EA → %25EA) 카카오가 글자 그대로를 검색해 결과가 0건이 된다 */
+    @Test
+    void kakaoLocalUri_encodesQueryExactlyOnce() {
+        String uri = WeddingController.kakaoLocalUri("keyword", "그랜드 웨딩홀").toString();
+        assertThat(uri).startsWith("https://dapi.kakao.com/v2/local/search/keyword.json?query=");
+        assertThat(uri).contains("%EA%B7%B8%EB%9E%9C%EB%93%9C");
+        assertThat(uri).doesNotContain("%25");
+        assertThat(uri).endsWith("&size=15");
+        assertThat(java.net.URLDecoder.decode(uri.substring(uri.indexOf("query=") + 6, uri.indexOf("&size")),
+                java.nio.charset.StandardCharsets.UTF_8)).isEqualTo("그랜드 웨딩홀");
+    }
+
     /** 키가 없는 환경(로컬 개발 등)에서도 500이 아니라 빈 결과를 돌려줘야 한다 */
     @Test
     void searchProxies_returnEmptyResultWithoutKey() throws Exception {

@@ -88,7 +88,8 @@
     <span class="intro-petal" style="top:82%;left:50%;font-size:10px;color:#e8d5e0;animation-delay:1.4s;">❃</span>
     <div class="intro-mark">♡</div>
     <div class="intro-line"></div>
-    <div class="intro-names" th:text="${(wedding.displayOrder == 'bride') ? (wedding.brideName + ' · ' + wedding.groomName) : (wedding.groomName + ' · ' + wedding.brideName)}">신랑 · 신부</div>
+    <div class="intro-names" th:with="gn=${#strings.isEmpty(wedding.groomName) ? '신랑' : wedding.groomName}, bn=${#strings.isEmpty(wedding.brideName) ? '신부' : wedding.brideName}"
+         th:text="${(wedding.displayOrder == 'bride') ? (bn + ' · ' + gn) : (gn + ' · ' + bn)}">신랑 · 신부</div>
     <div class="intro-date" th:text="${!#strings.isEmpty(wedding.weddingDate) ? #strings.replace(wedding.weddingDate, '-', '.') : ''}">2026.10.24</div>
 </div>
 <div class="scroll-progress" id="scrollProgress"></div>
