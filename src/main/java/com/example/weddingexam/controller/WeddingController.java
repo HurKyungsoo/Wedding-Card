@@ -51,8 +51,16 @@ public class WeddingController {
     @GetMapping("/")
     public String landing(Model model) {
         // "샘플 보기" 링크용 — 가장 먼저 생성된(데모) 청첩장의 slug. 청첩장이 하나도 없으면 null.
-        String sampleSlug = weddingService.findFirst().getSlug();
-        model.addAttribute("sampleSlug", sampleSlug);
+        WeddingDto sample = weddingService.findFirst();
+        model.addAttribute("sampleSlug", sample.getSlug());
+        // 기능 소개의 "오시는 길" 카드 — 샘플 청첩장과 같은 위치를 진짜 카카오 지도로 그린다.
+        // 키나 좌표가 없으면 템플릿이 그려 둔 예시 그림을 그대로 둔다.
+        model.addAttribute("kakaoAppKey", kakaoAppKey);
+        model.addAttribute("sampleMapLat", sample.getMapLat());
+        model.addAttribute("sampleMapLng", sample.getMapLng());
+        String place = sample.getMapPlaceName() != null && !sample.getMapPlaceName().isBlank()
+            ? sample.getMapPlaceName() : sample.getWeddingPlace();
+        model.addAttribute("sampleMapPlace", place);
         return "index";
     }
 

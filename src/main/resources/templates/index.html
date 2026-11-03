@@ -291,6 +291,10 @@
     }
     .lp-map-pin { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -100%); color: var(--color-rose); font-size: 34px; filter: drop-shadow(0 4px 6px rgba(168,93,114,0.35)); }
     .lp-map-tag { position: absolute; left: 50%; top: 52%; transform: translate(-50%, 8px); background: #fff; border-radius: 8px; padding: 4px 9px; font-size: 11px; color: #4a3d34; box-shadow: 0 3px 10px rgba(44,30,20,0.12); white-space: nowrap; }
+    /* 진짜 카카오 지도로 바뀐 뒤 — 예시 그림 배경과 핀·라벨을 걷어낸다 */
+    .lp-map.real { background: #eef0e8; }
+    .lp-map.real > .lp-map-pin, .lp-map.real > .lp-map-tag { display: none; }
+    .lp-map-label { background: #fff; border-radius: 8px; padding: 4px 9px; font-size: 11px; color: #4a3d34; box-shadow: 0 3px 10px rgba(44,30,20,0.15); white-space: nowrap; transform: translateY(8px); font-family: var(--font-sans); }
     .lp-navi { display: flex; gap: 8px; margin-top: 10px; }
     .lp-navi span { flex: 1; height: 34px; border-radius: 9px; border: 1px solid #ece4da; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; color: #5d5047; }
     .lp-navi b { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
@@ -697,10 +701,11 @@
         <div class="lp-bx-row">
           <div class="txt">
             <h3><i class="ti ti-map-pin"></i>오시는 길</h3>
-            <p>주소만 검색하면 지도가 들어가요. 하객은 버튼 한 번으로 카카오내비·티맵·네이버 지도 길안내를 바로 시작해요.</p>
+            <p>주소만 검색하면 카카오 지도가 들어가요. 하객은 버튼 한 번으로 카카오내비·티맵·네이버 지도 길안내를 바로 시작해요.</p>
           </div>
           <div class="lp-bx-ui" aria-hidden="true">
-            <div class="lp-map"><i class="ti ti-map-pin lp-map-pin"></i><span class="lp-map-tag">그랜드 웨딩홀</span></div>
+            <div class="lp-map" id="featMap"
+                 th:attr="data-key=${kakaoAppKey},data-lat=${sampleMapLat},data-lng=${sampleMapLng},data-place=${sampleMapPlace}"><i class="ti ti-map-pin lp-map-pin"></i><span class="lp-map-tag" th:text="${sampleMapPlace ?: '그랜드 웨딩홀'}">그랜드 웨딩홀</span></div>
             <div class="lp-navi">
               <span><b style="background:#fee500;"></b>카카오내비</span>
               <span><b style="background:#3d6af2;"></b>티맵</span>
@@ -1187,6 +1192,42 @@
         STEPS[step](function() { step = (step + 1) % STEPS.length; run(); });
       })();
     }
+  })();
+
+  /* ── 기능 소개 "오시는 길" — 샘플 청첩장 위치를 진짜 카카오 지도로 ──
+     카드가 화면 근처에 오면 그때 SDK 를 불러온다. 키·좌표가 없거나 실패하면 예시 그림을 그대로 둔다.
+     카드 속 지도라 끌기·확대는 끈다(페이지 스크롤을 가로채지 않게). */
+  (function() {
+    const el = document.getElementById('featMap');
+    if (!el) return;
+    const key = el.dataset.key, lat = parseFloat(el.dataset.lat), lng = parseFloat(el.dataset.lng);
+    if (!key || isNaN(lat) || isNaN(lng)) return;
+    function draw() {
+      const box = document.createElement('div');
+      box.style.cssText = 'position:absolute;inset:0;';
+      el.appendChild(box);
+      const pos = new kakao.maps.LatLng(lat, lng);
+      const map = new kakao.maps.Map(box, { center: pos, level: 4, draggable: false, zoomable: false, disableDoubleClickZoom: true });
+      new kakao.maps.Marker({ map: map, position: pos });
+      if (el.dataset.place) {
+        const label = document.createElement('div');
+        label.className = 'lp-map-label';
+        label.textContent = el.dataset.place;
+        new kakao.maps.CustomOverlay({ map: map, position: pos, content: label, yAnchor: 0 });
+      }
+      el.classList.add('real');
+      // 카드 높이가 그리드에 맞춰 정해진 뒤 한 번 더 맞춘다
+      setTimeout(function() { map.relayout(); map.setCenter(pos); }, 150);
+    }
+    new IntersectionObserver(function(entries, obs) {
+      if (!entries[0].isIntersecting) return;
+      obs.disconnect();
+      if (window.kakao && kakao.maps) return kakao.maps.load(draw);
+      const s = document.createElement('script');
+      s.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=' + encodeURIComponent(key) + '&autoload=false';
+      s.onload = function() { kakao.maps.load(draw); };
+      document.head.appendChild(s);
+    }, { rootMargin: '300px 0px' }).observe(el);
   })();
 </script>
 
