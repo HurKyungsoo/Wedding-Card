@@ -432,7 +432,13 @@ function revertSection(evt, sectionKey) {
         'm-d':            (d.getMonth() + 1) + '.' + d2,         /* THE MARRIAGE 큰 날짜 */
         'y-m-d':          y + '. ' + m2 + '. ' + d2 + '.',
         'ymd-dow-pm':     y + '.' + m2 + '.' + d2 + ' ' + DOW[d.getDay()] + ' 2:00 PM',  /* 기본 (랜딩과 동일 형식) */
-        'y-dot-m-dot-d':  y + ' · ' + m2 + ' · ' + d2                                    /* Our story · Getting Married · 아치형 */
+        'y-dot-m-dot-d':  y + ' · ' + m2 + ' · ' + d2,                                   /* Our story · 아치형 */
+        /* Getting Married — 실제 화면처럼 세 칸(24TH / OCT / 2026) */
+        'd-th':           d.getDate() + ((d.getDate() % 10 === 1 && d.getDate() !== 11) ? 'ST' : (d.getDate() % 10 === 2 && d.getDate() !== 12) ? 'ND' : (d.getDate() % 10 === 3 && d.getDate() !== 13) ? 'RD' : 'TH'),
+        'mon':            MON[d.getMonth()],
+        'yyyy':           String(y),
+        /* THE MARRIAGE 하단 */
+        'ymd-dowfull-pm': y + '. ' + m2 + '. ' + d2 + '. ' + ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()] + ' 2:00 PM'
     };
 
     document.querySelectorAll('[data-thumb-date]').forEach(function(el) {

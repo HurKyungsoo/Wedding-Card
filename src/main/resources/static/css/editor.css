@@ -1798,3 +1798,46 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-pubcheck-btn.solid{border:none;background:var(--color-rose);color:#fff;}
 /* 확인 창에서 항목을 눌러 이동했을 때 해당 입력칸을 잠깐 강조 */
 .ed-field-flash{box-shadow:0 0 0 3px rgba(196,116,138,.35) !important;border-color:var(--color-rose) !important;transition:box-shadow .3s;}
+
+/* ── 썸네일을 지금의 실제 청첩장 첫 화면과 맞춤 (2026-11 테마 정리 반영) ── */
+/* 1. 기본 — 사진 아래가 바탕색으로 자연스럽게 이어짐 */
+.ed-dt-basic-photo{position:relative;}
+.ed-dt-basic-photo::after{content:'';position:absolute;left:0;right:0;bottom:0;height:18%;background:linear-gradient(180deg,rgba(253,250,248,0),#fdfaf8);}
+.ed-dt-basic-label{color:#b8865a;}
+
+/* 2. Our story — 실제 서체(Dancing Script), 날짜를 맨 아래로 */
+.ed-dt-story-title{font-family:'Dancing Script',cursive;font-weight:600;font-size:16.5cqw;bottom:25%;}
+.ed-dt-story-names{bottom:14.5%;font-family:var(--font-serif);font-size:5.4cqw;letter-spacing:1.6cqw;color:#1a1a1a;}
+.ed-dt-story-names i{font-style:normal;margin:0 1cqw;}
+.ed-dt-story-date{bottom:4.5%;}
+
+/* 3. 핑크 — 실제 서체(Pinyon Script)·색, 로즈톤 이름 줄, 날짜를 맨 아래로 */
+.ed-dt-pink-title{font-family:'Pinyon Script',cursive;font-weight:400;font-size:19cqw;color:#d9527a;bottom:27%;line-height:.92;}
+.ed-dt-pink-names{position:absolute;left:0;right:0;bottom:17.5%;text-align:center;font-family:var(--font-serif);font-size:5.4cqw;letter-spacing:1.6cqw;color:#a94a66;}
+.ed-dt-pink-names i{font-style:normal;color:#e07a98;margin:0 1cqw;}
+.ed-dt-pink-info{bottom:3.5%;}
+
+/* 4. Getting Married — 세 칸 날짜, 타이틀 위치·하단 어둡게 */
+.ed-dt-married-title{bottom:14%;}
+.ed-dt-married .ed-dt-fade-dark{height:45%;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.5) 100%);}
+.ed-dt-married-date{display:flex;justify-content:space-between;padding:0 6cqw;bottom:3%;font-family:var(--font-serif);font-size:5cqw;letter-spacing:.8cqw;}
+
+/* 5. 아치형 — 배너는 위, 이름~예식장은 남은 공간 가운데 / 필기체 분홍 & + 양옆 선 / 날짜 경기천년바탕 */
+.ed-dt-forever{justify-content:flex-start;gap:0;padding:8% 8.6% 5%;}
+.ed-dt-forever-names{margin-top:auto;font-size:7.8cqw;font-weight:500;gap:0;}
+.ed-dt-forever-amp{display:flex;align-items:center;gap:3cqw;font-family:'Great Vibes','Dancing Script',cursive;font-size:10cqw;line-height:.9;color:#d98aa3;margin:1.4cqw 0;}
+.ed-dt-forever-amp::before,.ed-dt-forever-amp::after{content:'';width:9cqw;height:1px;background:#e8c3cf;}
+.ed-dt-forever-arch{margin-top:3cqw;width:52cqw;height:58cqw;border-radius:30cqw 30cqw 0 0;}
+.ed-dt-forever-date{margin-top:4cqw;font-family:'Gyeonggi Batang','Cormorant Garamond',serif;}
+.ed-dt-forever-place{margin-top:2cqw;margin-bottom:auto;}
+
+/* 6. THE MARRIAGE — 미색 배경, 라벨 양옆 선(세이지), 이탤릭 &, 액자 사진 */
+.ed-dt-marriage{background:#f5f1eb;}
+.ed-dt-marriage-label{display:flex;align-items:center;gap:2px;color:#7d8c74;}
+.ed-dt-marriage-label::before,.ed-dt-marriage-label::after{content:'';width:7px;height:1px;background:#b7c1ae;}
+.ed-dt-marriage-names{font-weight:500;}
+.ed-dt-marriage-names i{font-family:'Cormorant Garamond',serif;font-style:italic;color:#9a8f80;}
+.ed-dt-marriage-photo{width:calc(100% - 6px);margin:7px 3px 2px;position:relative;border-radius:1px;box-shadow:0 0 0 2px #fff,0 3px 7px rgba(80,60,40,.18);}
+.ed-dt-marriage-photo::before{content:'';position:absolute;inset:3px;border:1px solid rgba(255,255,255,.65);}
+.ed-dt-marriage-info{margin-top:5px;}
+.ed-dt-marriage-info::before{content:'';display:block;width:8px;height:1px;background:#b7c1ae;margin:0 auto 3px;}
