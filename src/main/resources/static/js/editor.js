@@ -466,6 +466,53 @@ function revertSection(evt, sectionKey) {
             var fmt = FORMATS[el.dataset.thumbDate];
             if (fmt) el.textContent = fmt;
         });
+        fillCalThumbs(d, timeInput && timeInput.value);
+    }
+
+    /* ── 캘린더 스타일 썸네일 4장 — 같은 날짜로 달력을 다시 그린다 ──
+       예전엔 '2025년 7월 26일' 견본이 박혀 있어 실제 예식 달과 요일 배치가 달랐다.
+       실제 청첩장(invitation.js initCalendarStyle)과 같은 표기를 쓴다. */
+    function fillCalThumbs(d, timeVal) {
+        var grid = document.getElementById('calStyleGrid');
+        if (!grid) return;
+        var y = d.getFullYear(), m = d.getMonth(), day = d.getDate();
+        var KO_MON = ['일월','이월','삼월','사월','오월','유월','칠월','팔월','구월','시월','십일월','십이월'];
+        var KO_ORD = ['','첫','두','세','네','다섯','여섯','일곱','여덟','아홉','열','열한','열두','열세','열네','열다섯',
+                      '열여섯','열일곱','열여덟','열아홉','스무','스물한','스물두','스물세','스물네','스물다섯',
+                      '스물여섯','스물일곱','스물여덟','스물아홉','서른','서른한'];
+        var EN_MON = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+        var KO_DOW = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
+
+        /* 시간 — 입력이 없으면 견본 13:00 */
+        var tm = /^(\d{1,2}):(\d{2})/.exec(timeVal || '') || [null, '13', '00'];
+        var h = +tm[1], ampm = h < 12 ? '오전' : '오후', h12 = (h % 12) || 12;
+        var timeKo = ampm + ' ' + String(h12).padStart(2, '0') + ':' + tm[2];
+
+        /* 달력 칸 — 1일 앞 빈칸 + 그 달 전체 (예식일이 월초면 주 단위로 끊을 때 카드가 텅 비었다) */
+        function cells(en) {
+            var dows = en ? ['SUN','MON','TUE','WED','THU','FRI','SAT'] : ['일','월','화','수','목','금','토'];
+            var html = dows.map(function(w, i) {
+                return '<span class="cs-dow' + (i === 0 ? ' cs-sun' : i === 6 ? ' cs-sat' : '') + '">' + w + '</span>';
+            }).join('');
+            var first = new Date(y, m, 1).getDay();
+            var last = new Date(y, m + 1, 0).getDate();
+            for (var i = 0; i < first; i++) html += '<span class="cs-e"></span>';
+            for (var n = 1; n <= last; n++) {
+                var w = (first + n - 1) % 7;
+                var cls = n === day ? 'cs-wed' : w === 0 ? 'cs-sun' : w === 6 ? 'cs-sat' : '';
+                html += '<span' + (cls ? ' class="' + cls + '"' : '') + '>' + n + '</span>';
+            }
+            return html;
+        }
+        function set(sel, v, isHtml) {
+            grid.querySelectorAll(sel).forEach(function(el) { if (isHtml) el.innerHTML = v; else el.textContent = v; });
+        }
+        set('.cs-month-ko', (m + 1) + '월');
+        set('.cs-month-en', EN_MON[m]);
+        set('.cs-date-big', y + '.' + String(m + 1).padStart(2, '0') + '.' + String(day).padStart(2, '0'));
+        set('.cs-date-time', KO_DOW[d.getDay()] + ' ' + timeKo);
+        set('.cs-text-msg', KO_MON[m] + '의<br>' + (KO_ORD[day] || day) + '번째 날.', true);
+        grid.querySelectorAll('.cs-grid').forEach(function(g) { g.innerHTML = cells(g.classList.contains('cs-grid-en')); });
     }
 
     fill();
