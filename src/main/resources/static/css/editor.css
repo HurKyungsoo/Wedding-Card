@@ -1828,14 +1828,17 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-married .ed-dt-fade-dark{height:45%;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.5) 100%);}
 .ed-dt-married-date{display:flex;justify-content:space-between;padding:0 6cqw;bottom:3%;font-family:var(--font-serif);font-size:5cqw;letter-spacing:.8cqw;}
 
-/* 5. 아치형 — 배너는 위, 이름~예식장은 남은 공간 가운데 / 필기체 분홍 & + 양옆 선 / 날짜 경기천년바탕 */
-.ed-dt-forever{justify-content:flex-start;gap:0;padding:8% 8.6% 5%;}
-.ed-dt-forever-names{margin-top:auto;font-size:7.8cqw;font-weight:500;gap:0;}
-.ed-dt-forever-amp{display:flex;align-items:center;gap:3cqw;font-family:'Great Vibes','Dancing Script',cursive;font-size:10cqw;line-height:.9;color:#d98aa3;margin:1.4cqw 0;}
+/* 5. 아치형 — 실제 첫 화면 비율에 맞춤(배너 6~13% · 이름 17~30% · 아치 33~78% · 날짜 82~90%)
+   필기체 분홍 & + 양옆 선, 배너는 실제 서체(Sacramento), 날짜 경기천년바탕.
+   cqw 는 이 썸네일의 콘텐츠 폭(좌우 패딩 제외) 기준이다 */
+.ed-dt-forever{justify-content:flex-start;gap:0;padding:7% 8.6% 4%;}
+.ed-dt-forever-script{font-family:'Sacramento',cursive;font-weight:400;font-size:12.5cqw;}
+.ed-dt-forever-names{margin-top:6cqw;font-size:6.6cqw;font-weight:500;gap:0;}
+.ed-dt-forever-amp{display:flex;align-items:center;gap:3cqw;font-family:'Great Vibes','Dancing Script',cursive;font-size:8.5cqw;line-height:.9;color:#d98aa3;margin:1cqw 0;}
 .ed-dt-forever-amp::before,.ed-dt-forever-amp::after{content:'';width:9cqw;height:1px;background:#e8c3cf;}
-.ed-dt-forever-arch{margin-top:3cqw;width:52cqw;height:58cqw;border-radius:30cqw 30cqw 0 0;}
-.ed-dt-forever-date{margin-top:4cqw;font-family:'Gyeonggi Batang','Cormorant Garamond',serif;}
-.ed-dt-forever-place{margin-top:2cqw;margin-bottom:auto;}
+.ed-dt-forever-arch{flex-shrink:0;margin-top:6cqw;width:57cqw;height:76cqw;border-radius:29cqw 29cqw 0 0;}
+.ed-dt-forever-date{margin-top:7.5cqw;font-size:8cqw;font-family:'Gyeonggi Batang','Cormorant Garamond',serif;}
+.ed-dt-forever-place{margin-top:1.6cqw;margin-bottom:auto;}
 
 /* 6. THE MARRIAGE — 미색 배경, 라벨 양옆 선(세이지), 이탤릭 &, 액자 사진 */
 .ed-dt-marriage{background:#f5f1eb;}
