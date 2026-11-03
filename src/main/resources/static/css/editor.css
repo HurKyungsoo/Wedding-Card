@@ -1814,14 +1814,14 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-story-info .ed-dt-story-date{position:static;font-family:var(--font-serif);font-size:4.9cqw;letter-spacing:.3cqw;color:#2a2a2a;}
 .ed-dt-story-place{font-family:var(--font-serif);font-size:4.6cqw;color:#3a3a3a;letter-spacing:.3cqw;margin-top:1.2cqw;}
 
-/* 3. 핑크 — 실제 서체(Pinyon Script)·색, 로즈톤 이름 줄(♥ 연분홍), 날짜·예식장은 검정 세리프로 맨 아래 */
+/* 3. 핑크 — 실제 서체(Pinyon Script)·색, 로즈톤 이름 줄(♥ 연분홍), 날짜·예식장도 분홍 세리프로 맨 아래 */
 .ed-dt-pink .ed-dt-fade-pink{height:48%;background:linear-gradient(180deg,transparent 0%,rgba(253,240,243,.35) 45%,rgba(253,240,243,.72) 78%,rgba(253,240,243,.9) 100%);}
 .ed-dt-pink-title{font-family:'Pinyon Script',cursive;font-weight:400;font-size:22cqw;color:#d9527a;bottom:22.5%;line-height:.92;text-shadow:0 1px 6px rgba(255,255,255,.55);}
 .ed-dt-pink-names{position:absolute;left:0;right:0;bottom:15.5%;text-align:center;font-family:var(--font-serif);font-size:5.4cqw;font-weight:400;letter-spacing:1.6cqw;color:#a94a66;}
 .ed-dt-pink-names i{font-style:normal;color:#e8a0b4;margin:0 1cqw;letter-spacing:0;}
 .ed-dt-pink-info{bottom:3.5%;font-family:var(--font-serif);}
-.ed-dt-pink-date{font-size:4.9cqw;color:#2a2a2a;letter-spacing:.3cqw;}
-.ed-dt-pink-place{font-size:4.6cqw;color:#3a3a3a;letter-spacing:.3cqw;}
+.ed-dt-pink-date{font-size:4.9cqw;color:#d9527a;letter-spacing:.3cqw;}
+.ed-dt-pink-place{font-size:4.6cqw;color:#d9527a;letter-spacing:.3cqw;}
 
 /* 4. Getting Married — 세 칸 날짜, 타이틀 위치·하단 어둡게 */
 .ed-dt-married-title{bottom:14%;}
