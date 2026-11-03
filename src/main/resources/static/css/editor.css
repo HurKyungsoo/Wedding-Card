@@ -1798,3 +1798,59 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-pubcheck-btn.solid{border:none;background:var(--color-rose);color:#fff;}
 /* 확인 창에서 항목을 눌러 이동했을 때 해당 입력칸을 잠깐 강조 */
 .ed-field-flash{box-shadow:0 0 0 3px rgba(196,116,138,.35) !important;border-color:var(--color-rose) !important;transition:box-shadow .3s;}
+
+/* ── 썸네일을 지금의 실제 청첩장 첫 화면과 맞춤 (2026-11 테마 정리 반영) ── */
+/* 1. 기본 — 사진 아래가 바탕색으로 자연스럽게 이어짐 */
+.ed-dt-basic-photo{position:relative;}
+.ed-dt-basic-photo::after{content:'';position:absolute;left:0;right:0;bottom:0;height:18%;background:linear-gradient(180deg,rgba(253,250,248,0),#fdfaf8);}
+.ed-dt-basic-label{color:#b8865a;}
+
+/* 2. Our story — 실제 서체(Dancing Script), 날짜를 맨 아래로 */
+.ed-dt-story-title{font-family:'Dancing Script',cursive;font-weight:600;font-size:16.5cqw;bottom:26.5%;}
+.ed-dt-story-names{bottom:17.5%;font-family:var(--font-serif);font-size:5.4cqw;font-weight:400;letter-spacing:1.6cqw;color:#1a1a1a;}
+.ed-dt-story-names i{font-style:normal;margin:0 1cqw;}
+/* 실제처럼 날짜(요일·시간) + 예식장 두 줄을 맨 아래에 */
+.ed-dt-story-info{position:absolute;left:0;right:0;bottom:3.5%;text-align:center;}
+.ed-dt-story-info .ed-dt-story-date{position:static;font-family:var(--font-serif);font-size:4.9cqw;letter-spacing:.3cqw;color:#2a2a2a;}
+.ed-dt-story-place{font-family:var(--font-serif);font-size:4.6cqw;color:#3a3a3a;letter-spacing:.3cqw;margin-top:1.2cqw;}
+
+/* 3. 핑크 — 실제 서체(Pinyon Script)·색, 로즈톤 이름 줄(♥ 연분홍), 날짜·예식장은 검정 세리프로 맨 아래 */
+.ed-dt-pink .ed-dt-fade-pink{height:48%;background:linear-gradient(180deg,transparent 0%,rgba(253,240,243,.35) 45%,rgba(253,240,243,.72) 78%,rgba(253,240,243,.9) 100%);}
+.ed-dt-pink-title{font-family:'Pinyon Script',cursive;font-weight:400;font-size:22cqw;color:#d9527a;bottom:22.5%;line-height:.92;text-shadow:0 1px 6px rgba(255,255,255,.55);}
+.ed-dt-pink-names{position:absolute;left:0;right:0;bottom:15.5%;text-align:center;font-family:var(--font-serif);font-size:5.4cqw;font-weight:400;letter-spacing:1.6cqw;color:#a94a66;}
+.ed-dt-pink-names i{font-style:normal;color:#e8a0b4;margin:0 1cqw;letter-spacing:0;}
+.ed-dt-pink-info{bottom:3.5%;font-family:var(--font-serif);}
+.ed-dt-pink-date{font-size:4.9cqw;color:#2a2a2a;letter-spacing:.3cqw;}
+.ed-dt-pink-place{font-size:4.6cqw;color:#3a3a3a;letter-spacing:.3cqw;}
+
+/* 4. Getting Married — 세 칸 날짜, 타이틀 위치·하단 어둡게 */
+.ed-dt-married-title{bottom:14%;}
+.ed-dt-married .ed-dt-fade-dark{height:45%;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.5) 100%);}
+.ed-dt-married-date{display:flex;justify-content:space-between;padding:0 6cqw;bottom:3%;font-family:var(--font-serif);font-size:5cqw;letter-spacing:.8cqw;}
+
+/* 5. 아치형 — 실제 첫 화면 비율에 맞춤(배너 6~13% · 이름 17~30% · 아치 33~78% · 날짜 82~90%)
+   필기체 분홍 & + 양옆 선, 배너는 실제 서체(Sacramento), 날짜 경기천년바탕.
+   cqw 는 이 썸네일의 콘텐츠 폭(좌우 패딩 제외) 기준이다 */
+.ed-dt-forever{justify-content:flex-start;gap:0;padding:7% 8.6% 4%;}
+.ed-dt-forever-script{font-family:'Sacramento',cursive;font-weight:400;font-size:12.5cqw;}
+.ed-dt-forever-names{margin-top:6cqw;font-size:6.6cqw;font-weight:500;gap:0;}
+.ed-dt-forever-amp{display:flex;align-items:center;gap:3cqw;font-family:'Great Vibes','Dancing Script',cursive;font-size:8.5cqw;line-height:.9;color:#d98aa3;margin:1cqw 0;}
+.ed-dt-forever-amp::before,.ed-dt-forever-amp::after{content:'';width:9cqw;height:1px;background:#e8c3cf;}
+.ed-dt-forever-arch{flex-shrink:0;margin-top:6cqw;width:57cqw;height:76cqw;border-radius:29cqw 29cqw 0 0;}
+.ed-dt-forever-date{margin-top:7.5cqw;font-size:8cqw;font-family:'Gyeonggi Batang','Cormorant Garamond',serif;}
+.ed-dt-forever-place{margin-top:1.6cqw;margin-bottom:auto;}
+
+/* 6. THE MARRIAGE — 실제 첫 화면 비율에 맞춤(라벨 3% · 날짜 8~15% · 이름 16~20% · 사진 23~86% · 하단 89~98%)
+   사진은 실제처럼 세로형(가로:세로 ≈ 0.65), 미색 배경·세이지 라인·이탤릭 &·액자.
+   썸네일 크기가 화면 폭에 따라 100×140 / 90×126 / 82×114 로 바뀌어서 높이 기준(cqh)으로 잡는다.
+   (패딩은 썸네일 자신에 걸려서 cqh 를 쓸 수 없어 % — 폭 기준) */
+.ed-dt-marriage{background:#f5f1eb;padding:4% 6% 3%;}
+.ed-dt-marriage-label{display:flex;align-items:center;gap:1.4cqh;color:#7d8c74;font-size:2.6cqh;line-height:2.9cqh;}
+.ed-dt-marriage-label::before,.ed-dt-marriage-label::after{content:'';width:5cqh;height:1px;background:#b7c1ae;}
+.ed-dt-marriage-date{margin-top:1.4cqh;font-size:7.1cqh;line-height:7.1cqh;}
+.ed-dt-marriage-names{margin-top:1.4cqh;font-size:3.2cqh;line-height:3.6cqh;font-weight:400;}
+.ed-dt-marriage-names i{font-family:'Cormorant Garamond',serif;font-style:italic;color:#9a8f80;}
+.ed-dt-marriage-photo{flex:0 0 auto;width:43.5cqh;height:66cqh;margin-top:2.9cqh;position:relative;border-radius:1px;box-shadow:0 0 0 2px #fff,0 3px 7px rgba(80,60,40,.18);}
+.ed-dt-marriage-photo::before{content:'';position:absolute;inset:3px;border:1px solid rgba(255,255,255,.65);}
+.ed-dt-marriage-info{margin-top:2.9cqh;font-size:2.9cqh;line-height:3.6cqh;}
+.ed-dt-marriage-info::before{content:'';display:block;width:5.7cqh;height:1px;background:#b7c1ae;margin:0 auto 1.4cqh;}
