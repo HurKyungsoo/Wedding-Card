@@ -61,10 +61,13 @@ class GuestRenderStyleSettingsTest {
     @Test
     void colorAndColorEffect_areAppliedOnFirstLoad() throws Exception {
         String html = guestHtml(saveWith("md", "none", "#123456", "warm"));
-        int init = html.indexOf("applyStyleSettings({");
-        assertThat(init).as("첫 로드 호출이 있어야 한다").isGreaterThan(0);
-        String call = html.substring(init, html.indexOf("});", init));
-        assertThat(call).contains("\"#123456\"").contains("\"warm\"");
+        int init = html.indexOf("window.__WEDDING_STYLE = {");
+        assertThat(init).as("첫 로드용 저장값이 있어야 한다").isGreaterThan(0);
+        String block = html.substring(init, html.indexOf("};", init));
+        // th:inline="javascript" 로 실제 값이 들어가야 한다 — 주석으로만 찍히면(/*#123456*/ null) 안 된다
+        assertThat(block).contains("\"#123456\"").contains("\"warm\"");
+        assertThat(block).doesNotContain("/*#123456*/");
+        assertThat(html).contains("applyStyleSettings(initStyle);");
     }
 
     /** 편집기 실시간 반영도 같은 함수를 써야 한다 — 다시 둘로 갈라지면 이 버그가 돌아온다 */

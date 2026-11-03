@@ -888,6 +888,16 @@
     window.QRCode = QRCodeLib;
 </script>
 <script th:src="@{/js/invitation.js}"></script>
+<!-- 하객 화면 첫 로드용 저장값 — applyStyleSettings() 가 읽는다 -->
+<script th:inline="javascript">
+window.__WEDDING_STYLE = {
+    mainFontColor: /*[[${wedding.mainFontColor}]]*/ null,
+    mainFontSize:  /*[[${wedding.mainFontSize}]]*/ null,
+    colorEffect:   /*[[${wedding.colorEffect}]]*/ null,
+    mainEffect:    /*[[${wedding.mainEffect}]]*/ null,
+    photoFilter:   /*[[${wedding.photoFilter}]]*/ null
+};
+</script>
 <script th:inline="javascript">
     /* 저장된 섹션 순서 — 편집기에서 드래그한 결과. 비어 있으면 템플릿 기본 순서를 그대로 쓴다 */
     window._savedSectionOrder = (function() {
@@ -1243,14 +1253,12 @@
 
     }
 
-    /* 첫 로드 — 저장된 값으로 한 번 적용 (편집기 미리보기에서는 곧이어 실시간 값으로 덮인다) */
-    window._livePhotoFilter = /*[[${wedding.photoFilter}]]*/ null;
-    applyStyleSettings({
-        mainFontColor: /*[[${wedding.mainFontColor}]]*/ null,
-        mainFontSize:  /*[[${wedding.mainFontSize}]]*/ null,
-        colorEffect:   /*[[${wedding.colorEffect}]]*/ null,
-        mainEffect:    /*[[${wedding.mainEffect}]]*/ null
-    });
+    /* 첫 로드 — 저장된 값으로 한 번 적용 (편집기 미리보기에서는 곧이어 실시간 값으로 덮인다).
+       값은 바로 위 th:inline="javascript" 스크립트가 window.__WEDDING_STYLE 로 넘겨준다
+       (이 스크립트 블록은 인라인 모드가 아니라서 [[...]] 를 여기 직접 쓰면 값이 주석으로만 찍힌다) */
+    var initStyle = window.__WEDDING_STYLE || {};
+    window._livePhotoFilter = initStyle.photoFilter;
+    applyStyleSettings(initStyle);
 
     window.addEventListener('message', function(e) {
         if (!e.data || e.data.type !== 'WEDDING_LIVE_UPDATE') return;
