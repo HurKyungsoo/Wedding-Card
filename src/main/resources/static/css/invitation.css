@@ -2752,20 +2752,12 @@ body{ -webkit-overflow-scrolling:touch; }
 .hero.design-our_story_pink .hdci-date{ font-size:calc(14px * var(--fs-scale, 1)); }
 .hero.design-our_story_pink .hdci-place{ font-size:calc(13px * var(--fs-scale, 1)); }
 
-/* ── 4. Getting Married — 아래쪽 어둡게(날짜 가독성) + 이름 줄 ── */
+/* ── 4. Getting Married — 아래쪽 어둡게(날짜 가독성). 이 테마는 이름을 넣지 않는다 ── */
 .hero.design-married .hero-fullphoto::after{
     content:''; position:absolute; left:0; right:0; bottom:0; height:42%;
     background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.5));
     z-index:2; pointer-events:none;
 }
-.hero.design-married .hero-design-names{
-    display:flex !important; justify-content:flex-start; left:8%; right:auto;
-    bottom:calc(2.5% + 20px + 3.6dvh) !important; z-index:4;
-    font-family:var(--main-font, var(--font-serif));
-    font-size:calc(15px * var(--fs-scale, 1)); letter-spacing:3px;
-    color:#fff !important;
-}
-.hero.design-married .hero-design-names *{ color:#fff !important; }
 
 /* ── 5. 아치형 ── */
 .hero.design-forever .forever-name-groom,
@@ -2813,10 +2805,7 @@ body{ -webkit-overflow-scrolling:touch; }
     font-size:min(26cqw, 120px, 13dvh) !important;
 }
 
-/* Getting Married — 날짜 줄 → 이름 → 타이틀 */
-.hero.design-married .hero-design-title{
-    bottom:calc(2.5% + 20px + 3.6dvh + 17px + 2.2dvh) !important;
-}
+/* Getting Married — 타이틀 크기를 화면 높이에도 맞춤 */
 .hero.design-married .hero-design-title::before{ font-size:min(22cqw, 105px, 11dvh); }
 .hero.design-married .hero-design-title::after{ font-size:min(27cqw, 130px, 13.5dvh); }
 
