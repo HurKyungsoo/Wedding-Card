@@ -412,6 +412,22 @@ public class WeddingController {
         return proxyKakaoLocal("address", query);
     }
 
+    /**
+     * 카카오 로컬 API 주소 — 검색어를 정확히 한 번만 인코딩한 URI.
+     * 예전엔 URLEncoder 로 인코딩한 문자열을 RestTemplate.exchange(String) 에 넘겼는데,
+     * 문자열 버전은 그것을 URI 템플릿으로 보고 한 번 더 인코딩한다(% → %25).
+     * 카카오는 "%EA%B7%B8..." 라는 글자 그대로를 검색해 한글 검색이 전부 0건이었다.
+     */
+    static java.net.URI kakaoLocalUri(String kind, String query) {
+        return org.springframework.web.util.UriComponentsBuilder
+            .fromHttpUrl("https://dapi.kakao.com/v2/local/search/" + kind + ".json")
+            .queryParam("query", query)
+            .queryParam("size", 15)
+            .encode(StandardCharsets.UTF_8)
+            .build()
+            .toUri();
+    }
+
     /** 카카오 로컬 API(keyword/address) 호출 — 실패해도 편집기가 깨지지 않도록 빈 결과를 반환 */
     private ResponseEntity<String> proxyKakaoLocal(String kind, String query) {
         String key = (kakaoRestKey != null && !kakaoRestKey.isEmpty()) ? kakaoRestKey : kakaoAppKey;
@@ -425,9 +441,7 @@ public class WeddingController {
             RestTemplate rt = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "KakaoAK " + key);
-            String url = "https://dapi.kakao.com/v2/local/search/" + kind + ".json?query="
-                       + URLEncoder.encode(query, StandardCharsets.UTF_8) + "&size=15";
-            ResponseEntity<String> resp = rt.exchange(url, HttpMethod.GET,
+            ResponseEntity<String> resp = rt.exchange(kakaoLocalUri(kind, query), HttpMethod.GET,
                     new HttpEntity<>(headers), String.class);
             return ResponseEntity.ok()
                 .header("Content-Type", "application/json; charset=UTF-8")
