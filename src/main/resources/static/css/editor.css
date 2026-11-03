@@ -1981,3 +1981,12 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-ampm{flex:0 0 auto;}
 .ed-tm-sel{flex:0 0 78px;width:78px;height:38px;}
 .ed-tm-unit{font-size:12.5px;color:#8a7a6c;margin-right:4px;}
+
+/* 날짜: 연·월·일 선택 + 달력 버튼 + 요일·D-day */
+.ed-dt-wrap{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.ed-dt-sel{height:38px;flex:0 0 auto;}
+#dtYear{width:96px;} #dtMonth{width:76px;} #dtDay{width:76px;}
+.ed-dt-cal{width:38px;height:38px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-white);color:var(--color-rose);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:17px;}
+.ed-dt-cal:hover{border-color:var(--color-rose);background:#fff5f7;}
+.ed-dt-wrap .ed-dt-label{font-size:12.5px;color:#6f6056;margin-left:4px;}
+.ed-dt-wrap .ed-dt-dday{margin-left:0;}

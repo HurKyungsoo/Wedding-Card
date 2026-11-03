@@ -2667,17 +2667,43 @@ var syncDateTimeUI = function() {};
         el.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
-    /* 날짜 */
+    /* 날짜 — 연·월·일 선택. 연도는 올해부터 3년 뒤까지(저장된 값이 범위 밖이면 그 해도 넣는다) */
+    var ySel = document.getElementById('dtYear'), moSel = document.getElementById('dtMonth'), daySel = document.getElementById('dtDay');
+    var thisYear = new Date().getFullYear();
+    function opt(sel, v, label) {
+        if ([].some.call(sel.options, function(o) { return o.value === String(v); })) return;
+        var o = document.createElement('option'); o.value = String(v); o.textContent = label; sel.appendChild(o);
+    }
+    for (var yy = thisYear; yy <= thisYear + 3; yy++) opt(ySel, yy, yy + '년');
+    for (var mo = 1; mo <= 12; mo++) opt(moSel, mo, mo + '월');
+    /* 일 목록 — 고른 달의 마지막 날까지만 (2월 30일 같은 날을 못 고르게) */
+    function fillDays() {
+        var last = new Date(+ySel.value || thisYear, +moSel.value || 1, 0).getDate();
+        var keep = daySel.value;
+        while (daySel.options.length > 1) daySel.remove(1);
+        for (var dd = 1; dd <= last; dd++) opt(daySel, dd, dd + '일');
+        daySel.value = (+keep && +keep <= last) ? keep : (keep ? String(last) : '');
+    }
     function paintDate() {
         var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dIn.value || '');
-        if (!m) { dLabel.textContent = '날짜를 골라 주세요'; dLabel.classList.add('empty'); dDday.textContent = ''; return; }
+        if (!m) { ySel.value = ''; moSel.value = ''; fillDays(); daySel.value = ''; dLabel.textContent = ''; dDday.textContent = ''; return; }
+        opt(ySel, +m[1], m[1] + '년');
+        ySel.value = String(+m[1]); moSel.value = String(+m[2]); fillDays(); daySel.value = String(+m[3]);
         var d = new Date(+m[1], +m[2] - 1, +m[3]);
-        dLabel.textContent = m[1] + '년 ' + (+m[2]) + '월 ' + (+m[3]) + '일 ' + DOW[d.getDay()];
-        dLabel.classList.remove('empty');
+        dLabel.textContent = DOW[d.getDay()];
         var today = new Date(); today.setHours(0, 0, 0, 0);
         var diff = Math.round((d - today) / 86400000);
         dDday.textContent = diff > 0 ? 'D-' + diff : diff === 0 ? 'D-Day' : '';
     }
+    /* 세 칸이 다 골라졌을 때만 값을 만든다 — 연도만 고르고 멈추면 아직 날짜가 아니다 */
+    function commitDate() {
+        fillDays();
+        if (!ySel.value || !moSel.value || !daySel.value) return;
+        var v = ySel.value + '-' + String(moSel.value).padStart(2, '0') + '-' + String(daySel.value).padStart(2, '0');
+        if (dIn.value !== v) { dIn.value = v; fire(dIn); }
+        paintDate();
+    }
+    [ySel, moSel, daySel].forEach(function(sel) { sel.addEventListener('change', commitDate); });
     dBtn.addEventListener('click', function() {
         if (dIn.showPicker) { try { dIn.showPicker(); return; } catch (e) {} }
         dIn.focus(); dIn.click();

@@ -512,18 +512,20 @@
             </div>
             <div class="ed-sec-bd" id="bd-wedding">
                 <!-- 날짜·시간 — 브라우저 기본 입력(연도-월-일 / -- --:--)은 칸마다 눌러 타이핑해야 해서 불편했다.
-                     날짜는 넓은 버튼을 누르면 달력이 열리고 '2026년 11월 11일 수요일'로 보여준다.
+                     날짜는 연·월·일을 각각 고르고(요일·D-day 표시), 달력 버튼으로도 고를 수 있다.
                      시간은 오전/오후 + 시 + 분(10분 단위)을 고른다.
                      실제 값은 그대로 원래 입력(type=date/time, name 동일)에 들어가므로 저장·미리보기 코드는 그대로다 (editor.js dateTimeInputs). -->
                 <div class="ed-row">
                     <span class="ed-label">날짜</span>
                     <div class="ed-ctrl ed-dt-wrap">
                         <input class="ed-input ed-dt-native" type="date" th:field="*{weddingDate}" tabindex="-1" aria-hidden="true">
-                        <button type="button" class="ed-dt-btn" id="dateBtn">
-                            <i class="ti ti-calendar-event"></i>
-                            <span id="dateLabel" class="ed-dt-label">날짜를 골라 주세요</span>
-                            <span id="dateDday" class="ed-dt-dday"></span>
-                        </button>
+                        <!-- 연·월·일을 바로 고른다 — 달력에서 화살표로 한 달씩 넘기지 않아도 된다. 달력 버튼은 보조로 남긴다 -->
+                        <select class="ed-input ed-select ed-dt-sel" id="dtYear" aria-label="연도"><option value="">연도</option></select>
+                        <select class="ed-input ed-select ed-dt-sel" id="dtMonth" aria-label="월"><option value="">월</option></select>
+                        <select class="ed-input ed-select ed-dt-sel" id="dtDay" aria-label="일"><option value="">일</option></select>
+                        <button type="button" class="ed-dt-cal" id="dateBtn" title="달력에서 고르기"><i class="ti ti-calendar-event"></i></button>
+                        <span id="dateLabel" class="ed-dt-label"></span>
+                        <span id="dateDday" class="ed-dt-dday"></span>
                     </div>
                 </div>
                 <div class="ed-row">
