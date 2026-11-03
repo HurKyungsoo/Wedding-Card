@@ -595,8 +595,7 @@
              처리한다 — 하객이 보는 결과는 종전과 동일하다. -->
         <div class="map-navi-section" id="mapNaviBtns"
              th:style="${wedding.mapNaviKakao == true or wedding.mapNaviTmap == true or wedding.mapNaviNaver == true} ? '' : 'display:none'">
-            <div class="map-navi-title">내비게이션</div>
-            <div class="map-navi-desc">원하시는 앱을 선택하시면 길안내가 시작됩니다.</div>
+            <div class="map-navi-desc">앱을 누르면 바로 길안내가 시작돼요</div>
             <div class="map-navi-row">
                     <a id="naviKakao"
                        th:href="|https://map.kakao.com/link/to/${wedding.mapPlaceName},${wedding.mapLat},${wedding.mapLng}|"
