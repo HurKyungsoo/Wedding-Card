@@ -718,7 +718,7 @@ function enableDragScroll(el) {
 /* 디자인 카드 + 캘린더 스타일 드래그 스크롤 적용 */
 (function initDragScrolls() {
     enableDragScroll(document.getElementById('designScroll'));
-    enableDragScroll(document.getElementById('calStyleGrid'));
+    /* 캘린더 스타일은 격자로 바뀌어 가로로 끌 일이 없다 */
     enableDragScroll(document.getElementById('galTypeScroll'));
 })();
 
@@ -944,13 +944,14 @@ document.getElementById('galZone').addEventListener('click', function() {
    매번 전부 실려 나가므로, 장수를 넘기면 편집기가 눈에 띄게 느려진다. */
 var MAX_GAL_IMAGES = 60;
 
-document.getElementById('galFile').addEventListener('change', function() {
-    var files = Array.from(this.files);
+/* 파일 고르기와 끌어다 놓기가 같은 길을 탄다 */
+function addGalFiles(files) {
+    files = Array.from(files || []).filter(function(f) { return /^image\//.test(f.type); });
+    if (!files.length) return;
     var room  = MAX_GAL_IMAGES - galImages.length;
 
     if (room <= 0) {
         showEditorToast('사진은 최대 ' + MAX_GAL_IMAGES + '장까지 첨부할 수 있습니다', 'error');
-        this.value = '';
         return;
     }
     if (files.length > room) {
@@ -963,8 +964,22 @@ document.getElementById('galFile').addEventListener('change', function() {
             addGalThumb(dataUrl);
         });
     });
+}
+document.getElementById('galFile').addEventListener('change', function() {
+    addGalFiles(this.files);
     this.value = ''; /* 같은 파일 재선택 가능하게 */
 });
+(function galDrop() {
+    var zone = document.getElementById('galZone');
+    if (!zone) return;
+    ['dragenter', 'dragover'].forEach(function(t) {
+        zone.addEventListener(t, function(e) { e.preventDefault(); zone.classList.add('drag'); });
+    });
+    ['dragleave', 'drop'].forEach(function(t) {
+        zone.addEventListener(t, function(e) { e.preventDefault(); zone.classList.remove('drag'); });
+    });
+    zone.addEventListener('drop', function(e) { addGalFiles(e.dataTransfer && e.dataTransfer.files); });
+})();
 
 /* 이미지 리사이즈 — base64 크기 줄이기 */
 function resizeImage(file, maxWidth, quality, callback) {
@@ -1149,6 +1164,7 @@ function cap(s) { return s.charAt(0).toUpperCase()+s.slice(1); }
 function addAcctRow(side) {
     acctData[side].push({side:side,owner:'',bank:'은행 선택',accountNumber:'',kakaoPayUrl:'',sortOrder:acctData[side].length});
     renderAcctList(side);
+    scheduleLive(100);   /* 다른 섹션처럼 자동 임시저장 + 미리보기 */
 }
 function renderAcctList(side) {
     var c = document.getElementById('acctPanel'+cap(side));
@@ -1169,6 +1185,7 @@ function renderAcctList(side) {
         div.querySelector('.ed-acct-del').addEventListener('click', function() {
             acctData[this.dataset.side].splice(parseInt(this.dataset.idx),1);
             renderAcctList(this.dataset.side);
+            scheduleLive(100);
         });
         div.querySelectorAll('[data-field]').forEach(function(el) {
             el.addEventListener('input',  function(){ acctData[side][idx][this.dataset.field]=this.value; });
@@ -1181,44 +1198,6 @@ function renderAcctList(side) {
 /** 편집기가 다루는 계좌 전체를 한 배열로 — 임시저장/게시 페이로드에 그대로 실린다 */
 function collectAccounts() {
     return acctData.groom.concat(acctData.bride);
-}
-
-/**
- * "계좌 저장" 버튼 — 예전에는 /api/account/bulk 로 실데이터를 즉시 덮어썼다.
- * 그래서 계좌만 게시 전인데 하객 화면에 이미 반영되고, 반대로 미리보기에는
- * 게시 후 새로고침 전까지 안 보이는 (다른 섹션과 정반대인) 동작이었다.
- * 이제는 다른 섹션과 똑같이 임시저장만 하고, 실제 반영은 "게시하기"가 담당한다.
- */
-function saveAllAccounts() {
-    var btn = document.querySelector('.ed-btn-save-acct');
-    var msg = document.getElementById('acctSaveMsg');
-    if (btn) { btn.disabled = true; btn.textContent = '저장 중...'; }
-
-    fetch('/api/admin/autosave', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify(collectData())
-    })
-        .then(function(r){ return r.json(); })
-        .then(function(d) {
-            if (d && d.success) {
-                markDraftSaved();
-                if (msg) {
-                    msg.textContent = '✓ 임시저장했습니다 — "게시하기"를 눌러야 하객 화면에 반영됩니다';
-                    msg.style.color = '#6a8a5a';
-                    setTimeout(function(){ msg.textContent = ''; }, 4000);
-                }
-            } else if (msg) {
-                msg.textContent = (d && d.error) || '저장 실패';
-                msg.style.color = '#c4748a';
-            }
-        })
-        .catch(function() {
-            if (msg) { msg.textContent = '저장 실패'; msg.style.color = '#c4748a'; }
-        })
-        .finally(function() {
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-device-floppy"></i> 계좌 저장'; }
-        });
 }
 
 /* 계좌 초기값 — 서버가 넘겨준 값(임시저장본이 있으면 그것)을 쓴다.
@@ -2521,3 +2500,51 @@ window.addEventListener('load', function() {
     /* 여기까지가 서버 값 복원 — 이제 스냅샷을 떠 두고 이후의 사용자 편집만 되돌리기 대상으로 삼는다 */
     captureSectionSnapshot();
 });
+
+
+/* ── 전화번호 자동 정리 — 숫자만 넣어도 010-1234-5678 꼴로 ──
+   숫자·하이픈·공백 말고 다른 글자가 있으면(내선 번호 메모 등) 건드리지 않는다.
+   커서가 끝에 있을 때만 바꿔서 중간을 고치는 중에 커서가 튀지 않게 한다. */
+function formatPhone(v) {
+    if (!/^[\d\s-]*$/.test(v)) return v;
+    var d = v.replace(/\D/g, '').slice(0, 11);
+    if (d.indexOf('02') === 0) {
+        if (d.length <= 2) return d;
+        if (d.length <= 5) return d.slice(0, 2) + '-' + d.slice(2);
+        if (d.length <= 9) return d.slice(0, 2) + '-' + d.slice(2, d.length - 4) + '-' + d.slice(-4);
+        return d.slice(0, 2) + '-' + d.slice(2, 6) + '-' + d.slice(6, 10);
+    }
+    if (d.length <= 3) return d;
+    if (d.length <= 7) return d.slice(0, 3) + '-' + d.slice(3);
+    return d.slice(0, 3) + '-' + d.slice(3, d.length - 4) + '-' + d.slice(-4);
+}
+document.querySelectorAll('.ed-phone-input').forEach(function(el) {
+    el.addEventListener('input', function() {
+        if (el.selectionStart !== el.value.length) return;
+        var f = formatPhone(el.value);
+        if (f !== el.value) el.value = f;
+    });
+    el.addEventListener('blur', function() {
+        var f = formatPhone(el.value);
+        if (f !== el.value) { el.value = f; scheduleLive(100); }
+    });
+});
+
+
+/* ── 캘린더·D-Day: 날짜가 없으면 안내 + 바로가기 ── */
+function goToWeddingDate() {
+    scrollToSection('wedding');
+    var d = document.querySelector('[name="weddingDate"]');
+    if (d) setTimeout(function() { d.focus(); if (d.showPicker) { try { d.showPicker(); } catch (e) {} } }, 450);
+}
+(function needDateNotice() {
+    var d = document.querySelector('[name="weddingDate"]');
+    if (!d) return;
+    function sync() {
+        var has = !!d.value;
+        document.querySelectorAll('[data-need-date]').forEach(function(el) { el.style.display = has ? 'none' : ''; });
+    }
+    d.addEventListener('input', sync);
+    d.addEventListener('change', sync);
+    sync();
+})();
