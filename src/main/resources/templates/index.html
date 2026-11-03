@@ -114,19 +114,8 @@
     /* 테마를 바꾸는 순간 깜빡임을 가리는 덮개 — 처음 불러올 때도 덮어 둔다 */
     .lp-dphone-fade { position: absolute; inset: 0; background: #f5f1eb; opacity: 0; pointer-events: none; transition: opacity 0.35s; }
     .lp-dphone-fade.on { opacity: 1; }
-    .lp-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 380px; position: relative; z-index: 1; }
-    .lp-chip {
-      position: relative; overflow: hidden; font-family: inherit; font-size: 12px; color: #7a6a60;
-      padding: 6px 13px; border-radius: 999px; border: 1px solid #e6dcd2; background: rgba(255,255,255,0.75);
-      cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s;
-    }
-    .lp-chip:hover { border-color: var(--color-rose); color: var(--color-ink-deepest); }
-    .lp-chip.on { background: #2b2420; color: #fff; border-color: #2b2420; }
-    /* 자동으로 넘어가는 중이면 다음 테마까지 남은 시간을 밑줄로 */
-    .lp-chip.on.auto::after { content: ''; position: absolute; left: 0; bottom: 0; height: 2px; background: #e8a0b4; animation: lpChip 3.6s linear forwards; }
-    @keyframes lpChip { from { width: 0; } to { width: 100%; } }
     .lp-demo-hint { font-size: 11.5px; color: #a89a8c; letter-spacing: 0.3px; display: flex; align-items: center; gap: 6px; position: relative; z-index: 1; }
-    /* 터치 기기 — 폰 안에서 스크롤하면 페이지 스크롤이 막히므로 히어로 폰은 보기만, 끝까지 보기는 미리보기 창에서 */
+    /* 터치 기기 — 폰 안에서 스크롤하면 페이지 스크롤이 막히므로 히어로 폰은 보기만(저절로 스크롤되는 것을 본다) */
     @media (pointer: coarse) { .lp-demo .lp-dphone iframe { pointer-events: none; } }
 
     /* ── 테마 캐러셀 ── */
@@ -288,9 +277,9 @@
         <p data-reveal data-delay="4" style="margin-top:20px;font-size:12px;color:#c0b0a8;letter-spacing:0.5px;">카드 등록 불필요 · 바로 시작</p>
       </div>
 
-      <!-- 체험하는 폰 — 사진이 아니라 실제 샘플 청첩장(/demo)이 들어 있다.
-           아래 테마 버튼을 누르면 같은 청첩장이 그 테마로 바로 바뀌고, 폰 안을 스크롤해 끝까지 볼 수 있다.
-           편집기 실시간 미리보기와 같은 메시지(WEDDING_LIVE_UPDATE)로 바꾸므로 다시 불러오지 않는다. -->
+      <!-- 첫 화면 폰 — 사진이 아니라 실제 샘플 청첩장(/demo)이 들어 있고, 천천히 저절로 스크롤되며
+           표지부터 인사말·갤러리·지도·참석 응답까지 "어떤 청첩장을 받게 되는지"를 보여준다.
+           테마 비교는 아래 테마 섹션(캐러셀·미리보기 창)이 맡는다 — 두 곳이 같은 일을 하지 않게. -->
       <div class="lp-hero-visual" data-reveal="scale" data-delay="2">
         <div class="lp-demo" id="heroDemo">
           <div class="lp-demo-glow" aria-hidden="true"></div>
@@ -300,15 +289,7 @@
               <div class="lp-dphone-fade on" aria-hidden="true"></div>
             </div>
           </div>
-          <div class="lp-chips" aria-label="테마 바꿔보기">
-            <button type="button" class="lp-chip" data-design="basic">기본</button>
-            <button type="button" class="lp-chip" data-design="our_story">Our story</button>
-            <button type="button" class="lp-chip" data-design="our_story_pink">Our story 핑크</button>
-            <button type="button" class="lp-chip" data-design="married">Getting Married</button>
-            <button type="button" class="lp-chip" data-design="forever">아치형</button>
-            <button type="button" class="lp-chip" data-design="the_marriage">THE MARRIAGE</button>
-          </div>
-          <div class="lp-demo-hint"><i class="ti ti-hand-finger"></i><span>테마를 눌러보고, 화면을 스크롤해보세요</span></div>
+          <div class="lp-demo-hint"><i class="ti ti-device-mobile"></i><span>실제 샘플 청첩장이에요 · 마우스를 올리면 멈추고 직접 스크롤할 수 있어요</span></div>
         </div>
       </div>
 
@@ -618,7 +599,7 @@
         w.postMessage({ type: 'WEDDING_LIVE_UPDATE', payload: {
           mainDesign: design, weddingDate: fd && fd.dataset.date, weddingTime: fd && fd.dataset.time } }, location.origin);
         d.querySelectorAll('.hero-fullphoto-img, .forever-arch-img').forEach(function(img) { img.src = DEMO_PHOTO[design]; });
-        w.scrollTo(0, 0);
+        w.scrollTo({ top: 0, behavior: 'instant' });
         setTimeout(function() { fade.classList.remove('on'); }, 120);
       }, instant ? 0 : 220);
     }
@@ -635,31 +616,52 @@
     return { set: function(design) { apply(design, false); }, get: function() { return current; } };
   }
 
-  // ── 히어로 체험 폰 ──
+  // ── 히어로 폰 — 저절로 천천히 스크롤 ──
+  // 표지에서 잠깐 멈췄다가 아래로 흘러가고, 끝에 닿으면 표지로 돌아간다.
+  // 마우스를 올리면 멈추고(직접 스크롤 가능) 내려놓고 잠시 뒤 이어간다. 모션 최소화 설정이면 움직이지 않는다.
   const heroDemo = document.getElementById('heroDemo');
   if (heroDemo) {
-    const phone = bindPhone(heroDemo.querySelector('.lp-dphone'), 'our_story');
-    const chips = Array.from(heroDemo.querySelectorAll('.lp-chip'));
-    if (coarse) heroDemo.querySelector('.lp-demo-hint span').textContent = '테마를 눌러 바꿔보세요';
-    let auto = !reduceMotion, idx = chips.findIndex(function(c) { return c.dataset.design === 'our_story'; });
-    function mark(design, isAuto) {
-      chips.forEach(function(c) { c.classList.toggle('on', c.dataset.design === design); c.classList.remove('auto'); });
-      if (isAuto) { const c = chips[idx]; void c.offsetWidth; c.classList.add('auto'); }
+    const phoneEl = heroDemo.querySelector('.lp-dphone');
+    bindPhone(phoneEl, 'our_story');
+    if (coarse) heroDemo.querySelector('.lp-demo-hint span').textContent = '실제 샘플 청첩장이에요';
+    const iframe = phoneEl.querySelector('iframe');
+    // 청첩장 쪽 html 에 scroll-behavior:smooth 가 걸려 있어 매 프레임 scrollTo 가 부드러운 스크롤을 새로 시작하며
+    // 제자리걸음을 한다 — 그래서 behavior:'instant' 로 직접 옮긴다
+    const SPEED = 38;          // px/초 (청첩장 기준 폭 390px)
+    const HOLD_TOP = 3600;     // 표지에서 머무는 시간 — 첫 오프닝 애니메이션(2.9s)까지 보이게
+    const HOLD_END = 1800;
+    let hovering = false, resumeAt = 0, holdUntil = 0, last = 0, y = 0, resetting = false;
+    function step(now) {
+      requestAnimationFrame(step);
+      const w = iframe.contentWindow, d = iframe.contentDocument;
+      if (!w || !d || !d.scrollingElement || d.readyState !== 'complete') { last = now; return; }
+      const dt = last ? Math.min(now - last, 100) : 0; last = now;
+      if (!holdUntil) holdUntil = now + HOLD_TOP;
+      if (resetting) return;
+      if (hovering || now < resumeAt) { y = w.scrollY; return; }   // 사용자가 직접 움직인 위치에서 이어간다
+      if (now < holdUntil) return;
+      const max = d.scrollingElement.scrollHeight - w.innerHeight;
+      if (y >= max - 1) {
+        // 끝 — 잠깐 멈췄다가 덮개로 가리고 표지로 돌아간다
+        resetting = true;
+        setTimeout(function() {
+          const fade = phoneEl.querySelector('.lp-dphone-fade');
+          fade.classList.add('on');
+          setTimeout(function() {
+            w.scrollTo({ top: 0, behavior: 'instant' }); y = 0;
+            holdUntil = performance.now() + HOLD_TOP;
+            fade.classList.remove('on');
+            resetting = false;
+          }, 380);
+        }, HOLD_END);
+        return;
+      }
+      y = Math.min(max, y + SPEED * dt / 1000);
+      w.scrollTo({ top: y, behavior: 'instant' });
     }
-    function stopAuto() { if (!auto) return; auto = false; clearInterval(timer); chips.forEach(function(c) { c.classList.remove('auto'); }); }
-    mark('our_story', auto);
-    // 3.6초마다 다음 테마 — 버튼을 누르거나 폰에 손을 대면 멈춘다
-    const timer = auto ? setInterval(function() {
-      idx = (idx + 1) % chips.length;
-      phone.set(chips[idx].dataset.design);
-      mark(chips[idx].dataset.design, true);
-    }, 3600) : null;
-    chips.forEach(function(c, i) {
-      c.addEventListener('click', function() { stopAuto(); idx = i; phone.set(c.dataset.design); mark(c.dataset.design, false); });
-    });
-    const ph = heroDemo.querySelector('.lp-dphone');
-    ph.addEventListener('pointerenter', stopAuto);
-    ph.addEventListener('wheel', stopAuto, { passive: true });
+    if (!reduceMotion) requestAnimationFrame(step);
+    phoneEl.addEventListener('pointerenter', function() { hovering = true; });
+    phoneEl.addEventListener('pointerleave', function() { hovering = false; resumeAt = performance.now() + 1500; });
   }
 
   // ── 테마 캐러셀 ──
