@@ -2390,6 +2390,15 @@ function renderMapPage(page) {
     }
 }
 
+function fillIfAuto(input, value) {
+    if (!input || !value) return;
+    var cur = input.value.trim();
+    if (cur === '' || cur === (input.dataset.auto || '')) {
+        input.value = value;
+        input.dataset.auto = value;
+    }
+}
+
 function selectMapPlace(p) {
     var addr = p.road_address_name || p.address_name;
     var si = document.getElementById('mapSearchInput');
@@ -2404,6 +2413,11 @@ function selectMapPlace(p) {
     if (lati) lati.value = p.y;
     if (lngi) lngi.value = p.x;
     if (ni && p.place_name) ni.value = p.place_name;
+
+    /* 예식 정보의 예식장 이름·주소도 함께 — 비어 있거나 지난번 검색으로 채운 값 그대로일 때만.
+       사용자가 "그랜드웨딩홀 5층 로즈홀"처럼 고쳐 쓴 값은 다시 검색해도 지키기 위해 data-auto 와 비교한다. */
+    fillIfAuto(document.querySelector('[name="weddingPlace"]'), p.place_name || '');
+    fillIfAuto(document.querySelector('[name="weddingAddress"]'), addr || '');
 
     /* 지도 표시 */
     var lat = parseFloat(p.y), lng = parseFloat(p.x);
