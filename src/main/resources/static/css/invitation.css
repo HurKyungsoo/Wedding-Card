@@ -2669,7 +2669,9 @@ body{ -webkit-overflow-scrolling:touch; }
 .hero.design-forever .forever-name-sep{
     display:flex; align-items:center; gap:10px;
     font-family:'Great Vibes','Dancing Script',cursive; font-size:34px; line-height:.9;
-    color:#d98aa3; letter-spacing:0; margin:2px 0;
+    /* !important — 글꼴 색 설정이 이름 블록 span 에 인라인 색을 넣어 &까지 검게 칠한다 */
+    color:#d98aa3 !important; letter-spacing:0;
+    margin:max(6px, 1.1dvh) 0;   /* 이름과 & 사이 여유 */
 }
 .hero.design-forever .forever-name-sep::before,
 .hero.design-forever .forever-name-sep::after{ content:''; width:34px; height:1px; background:#e8c3cf; }
