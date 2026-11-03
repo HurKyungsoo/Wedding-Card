@@ -88,34 +88,34 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-sans);}
 .ed-back:focus-visible{outline:2px solid var(--color-rose);outline-offset:2px;}
 
 /* 보조 버튼 — 테두리 없이 가볍게, 주 동작(게시하기)만 눈에 띄게 */
-.ed-btn-ghost{
+.ed-hbtn{
     padding:7px 12px;border-radius:20px;border:none;background:transparent;
     color:#6f6056;font-size:12px;cursor:pointer;font-family:var(--font-sans);
     transition:background-color .2s,color .2s;white-space:nowrap;flex-shrink:0;
 }
-.ed-btn-ghost:hover{background:#f6efea;color:var(--color-rose);}
-.ed-btn-ghost:focus-visible{outline:2px solid var(--color-rose);outline-offset:2px;}
+.ed-hbtn:hover{background:#f6efea;color:var(--color-rose);}
+.ed-hbtn:focus-visible{outline:2px solid var(--color-rose);outline-offset:2px;}
 
 /* 계정 메뉴 */
-.ed-acct{position:relative;flex-shrink:0;}
-.ed-acct-btn{display:flex;align-items:center;gap:4px;padding:3px 6px 3px 3px;border:1px solid #ede4da;border-radius:20px;background:var(--color-white);cursor:pointer;color:#9a8a7c;}
-.ed-acct-btn:hover,.ed-acct.open .ed-acct-btn{border-color:var(--color-rose);}
-.ed-acct-btn:focus-visible{outline:2px solid var(--color-rose);outline-offset:2px;}
-.ed-acct-btn > i{font-size:13px;transition:transform .2s;}
-.ed-acct.open .ed-acct-btn > i{transform:rotate(180deg);}
-.ed-acct-av{width:26px;height:26px;border-radius:50%;background:#f6e6ea;color:#a85d72;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;}
-.ed-acct-menu{
+.ed-me{position:relative;flex-shrink:0;}
+.ed-me-btn{display:flex;align-items:center;gap:4px;padding:3px 6px 3px 3px;border:1px solid #ede4da;border-radius:20px;background:var(--color-white);cursor:pointer;color:#9a8a7c;}
+.ed-me-btn:hover,.ed-me.open .ed-me-btn{border-color:var(--color-rose);}
+.ed-me-btn:focus-visible{outline:2px solid var(--color-rose);outline-offset:2px;}
+.ed-me-btn > i{font-size:13px;transition:transform .2s;}
+.ed-me.open .ed-me-btn > i{transform:rotate(180deg);}
+.ed-me-av{width:26px;height:26px;border-radius:50%;background:#f6e6ea;color:#a85d72;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;}
+.ed-me-menu{
     position:absolute;right:0;top:calc(100% + 8px);min-width:180px;padding:6px;
     background:var(--color-white);border:1px solid #ede4da;border-radius:12px;
     box-shadow:0 12px 32px rgba(44,30,20,.12);
     opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .15s,transform .15s,visibility .15s;
 }
-.ed-acct.open .ed-acct-menu{opacity:1;visibility:visible;transform:none;}
-.ed-acct-name{font-size:12.5px;font-weight:500;color:var(--color-ink);padding:8px 10px 10px;border-bottom:1px solid #f1ebe4;margin-bottom:4px;}
-.ed-acct-item{display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;border:none;background:none;border-radius:8px;font:inherit;font-size:12.5px;color:#5d5047;cursor:pointer;text-align:left;}
-.ed-acct-item i{font-size:15px;color:#9a8a7c;}
-.ed-acct-item:hover{background:#faf5f0;color:var(--color-rose);}
-.ed-acct-item:hover i{color:var(--color-rose);}
+.ed-me.open .ed-me-menu{opacity:1;visibility:visible;transform:none;}
+.ed-me-name{font-size:12.5px;font-weight:500;color:var(--color-ink);padding:8px 10px 10px;border-bottom:1px solid #f1ebe4;margin-bottom:4px;}
+.ed-me-item{display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;border:none;background:none;border-radius:8px;font:inherit;font-size:12.5px;color:#5d5047;cursor:pointer;text-align:left;}
+.ed-me-item i{font-size:15px;color:#9a8a7c;}
+.ed-me-item:hover{background:#faf5f0;color:var(--color-rose);}
+.ed-me-item:hover i{color:var(--color-rose);}
 
 /* ── 헤더 반응형 ──
    헤더에는 지금까지 브레이크포인트가 하나도 없어서(미리보기·본문만 다뤘다),
