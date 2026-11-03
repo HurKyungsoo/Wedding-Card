@@ -9,6 +9,8 @@
   <title>WeddingCard — 모바일 청첩장</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Dancing+Script:wght@600&family=Great+Vibes&family=Pinyon+Script&family=Sacramento&family=Patrick+Hand&display=swap" rel="stylesheet">
+<!-- 편집기 소개 패널의 글꼴 버튼 이름만 (text= 로 그 글자 조각만 받는다) -->
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Nanum+Pen+Script&text=%EA%B3%A0%EC%9A%B4%EB%B0%94%ED%83%95%EC%86%90%EA%B8%80%EC%94%A8%ED%8E%9C&display=swap" rel="stylesheet">
 <!-- 아치형 카드 날짜 숫자 — 실제 청첩장 기본값과 같은 경기천년바탕 (unicode-range subset 이라 쓰인 글자 조각만 받음) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/GyeonggiBatang/subsets/GyeonggiBatang-dynamic-subset.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
@@ -196,6 +198,69 @@
       border-bottom: 1px solid var(--color-border-soft);
     }
 
+    /* ── 편집기 소개 ──
+       왼쪽은 할 수 있는 것 목록, 오른쪽은 편집 패널 + 실제 샘플 청첩장(/demo) 폰.
+       패널을 만지면 편집기와 같은 postMessage(WEDDING_LIVE_UPDATE)로 폰 화면이 바로 바뀐다. */
+    .lp-ed-grid { display: grid; grid-template-columns: 40fr 60fr; gap: 56px; align-items: center; }
+    .lp-ed-list { list-style: none; margin-top: 30px; display: flex; flex-direction: column; gap: 4px; }
+    .lp-ed-list li {
+      display: flex; gap: 14px; align-items: flex-start; padding: 12px 14px; border-radius: 14px;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .lp-ed-list li.on { background: #fff; box-shadow: 0 6px 22px rgba(44,30,20,0.07); }
+    .lp-ed-list .ic {
+      flex: 0 0 34px; height: 34px; border-radius: 10px; background: #fbf1ee; color: var(--color-rose);
+      display: flex; align-items: center; justify-content: center; font-size: 18px; transition: background 0.3s, color 0.3s;
+    }
+    .lp-ed-list li.on .ic { background: var(--color-rose); color: #fff; }
+    .lp-ed-list .t { font-size: 14.5px; color: var(--color-ink-deepest); font-weight: 500; }
+    .lp-ed-list .d { font-size: 12.5px; color: #8f7f70; margin-top: 3px; line-height: 1.6; font-weight: 300; }
+
+    .lp-ed-visual { display: flex; justify-content: center; align-items: flex-start; }
+    .lp-ed-visual .lp-dphone { flex: 0 0 auto; }
+    .lp-ed-visual .lp-dphone iframe { pointer-events: none; }
+    .lp-ed-panel {
+      position: relative; z-index: 2; flex: 0 0 322px; margin: 48px -34px 0 0; padding: 18px 18px 20px;
+      background: #fff; border-radius: 18px; border: 1px solid #eee6dd;
+      box-shadow: 0 24px 50px rgba(44,30,20,0.13), 0 2px 6px rgba(44,30,20,0.04);
+    }
+    .lp-ed-head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; margin-bottom: 4px; border-bottom: 1px solid #f1ebe4; }
+    .lp-ed-head b { font-size: 13.5px; font-weight: 600; color: var(--color-ink-deepest); display: flex; align-items: center; gap: 6px; }
+    .lp-ed-live { font-size: 11px; color: #5f8f6b; display: flex; align-items: center; gap: 5px; }
+    .lp-ed-live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #6cbf82; box-shadow: 0 0 0 3px rgba(108,191,130,0.2); }
+    .lp-ed-lbl { font-size: 11.5px; color: #9a8a7c; margin: 12px 0 6px; }
+    .lp-ed-names { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .lp-ed-names input {
+      width: 100%; height: 36px; padding: 0 10px; border: 1px solid #e6ddd3; border-radius: 9px; background: #fdfbf9;
+      font: inherit; font-size: 13.5px; color: var(--color-ink-deepest); outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .lp-ed-names input:focus, .lp-ed-names input.typing { border-color: var(--color-rose); box-shadow: 0 0 0 3px rgba(196,116,138,0.14); }
+    .lp-ed-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .lp-ed-chip {
+      height: 30px; padding: 0 10px; border-radius: 999px; border: 1px solid #e6ddd3; background: #fff; color: #6f6056;
+      font-size: 12.5px; cursor: pointer; transition: all 0.2s; font-family: inherit;
+    }
+    .lp-ed-chip:hover { border-color: #d9b8c1; }
+    .lp-ed-chip.on { border-color: var(--color-rose); background: #fbf1ee; color: #a85d72; }
+    .lp-ed-sw { display: flex; gap: 8px; }
+    .lp-ed-sw button {
+      width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; padding: 0;
+      box-shadow: 0 0 0 1px #e2d8ce; transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .lp-ed-sw button.on { box-shadow: 0 0 0 2px var(--color-rose); transform: scale(1.08); }
+    .lp-ed-panel .pulse { animation: edPulse 0.9s ease-out; }
+    @keyframes edPulse { 0% { box-shadow: 0 0 0 0 rgba(196,116,138,0.45); } 100% { box-shadow: 0 0 0 10px rgba(196,116,138,0); } }
+    .lp-ed-note { font-size: 11px; color: #b0a194; margin-top: 14px; display: flex; gap: 5px; align-items: center; }
+    @media (max-width: 960px) {
+      .lp-ed-grid { grid-template-columns: 1fr; gap: 40px; }
+      .lp-ed-copy { text-align: center; }
+      .lp-ed-list { max-width: 440px; margin-left: auto; margin-right: auto; text-align: left; }
+    }
+    @media (max-width: 640px) {
+      .lp-ed-visual { flex-direction: column-reverse; align-items: center; }
+      .lp-ed-panel { flex: 0 0 auto; width: min(100%, 340px); margin: -48px 0 0; }
+    }
+
     /* ── 반응형 ── */
     @media (max-width: 960px) {
       .lp-wrap { padding: 0 32px; }
@@ -234,6 +299,7 @@
     <a href="/" style="font-family:var(--font-serif);font-size:18px;font-weight:600;color:var(--color-ink-deepest);letter-spacing:1.5px;text-decoration:none;">WeddingCard</a>
     <div style="display:flex;align-items:center;gap:36px;">
       <a href="#themes" class="nav-link" style="text-decoration:none;color:#7a6a60;font-size:13px;font-weight:300;letter-spacing:0.5px;transition:color 0.2s;">테마</a>
+      <a href="#editor" class="nav-link" style="text-decoration:none;color:#7a6a60;font-size:13px;font-weight:300;letter-spacing:0.5px;transition:color 0.2s;">편집기</a>
       <a href="/superadmin" class="nav-link" style="text-decoration:none;color:#c0b0a8;font-size:12px;transition:color 0.2s;">관리자</a>
       <a href="/my/create" class="lp-dark-btn" style="background:var(--color-ink-deepest);color:var(--color-white);text-decoration:none;padding:10px 24px;border-radius:24px;font-size:13px;font-weight:500;letter-spacing:0.5px;transition:background 0.2s;">시작하기</a>
     </div>
@@ -451,6 +517,75 @@
         <a class="lp-btn-r" id="cfStart" href="/start?design=forever"><i class="ti ti-pencil"></i>이 테마로 만들기</a>
       </div>
       <div class="lp-cf-dots" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── EDITOR ──
+     편집 화면을 직접 만져 보는 느낌. 오른쪽 패널은 진짜 편집기처럼 폰 속 샘플 청첩장을 바로 바꾼다.
+     화면에 들어오면 저절로 시연하고, 패널을 한 번이라도 만지면 시연을 멈추고 직접 쓰게 둔다. -->
+<section id="editor" style="padding:108px 0;background:linear-gradient(180deg,#fdfaf7 0%,#f9f2ec 100%);">
+  <div class="lp-wrap">
+    <div class="lp-ed-grid">
+      <div class="lp-ed-copy" data-reveal>
+        <div style="font-size:10px;letter-spacing:5px;color:var(--color-gold);font-weight:500;text-transform:uppercase;margin-bottom:14px;">EDITOR</div>
+        <h2 style="font-family:var(--font-serif);font-size:clamp(26px,3.5vw,40px);font-weight:300;color:var(--color-ink-deepest);line-height:1.35;">쓰는 대로,<br>바로 보여요</h2>
+        <p style="font-size:14px;color:#9a8a78;margin-top:14px;font-weight:300;line-height:1.8;">왼쪽에서 고치면 오른쪽 청첩장이 그 자리에서 바뀌어요.<br>저장하고 새로고침할 필요가 없어요.</p>
+        <ul class="lp-ed-list" id="edList">
+          <li data-step="names"><span class="ic"><i class="ti ti-eye"></i></span><div><div class="t">실시간 미리보기</div><div class="d">입력하는 즉시 하객이 볼 화면 그대로 반영돼요</div></div></li>
+          <li data-step="font"><span class="ic"><i class="ti ti-typography"></i></span><div><div class="t">한글·영문 글꼴 13종</div><div class="d">명조, 고딕, 손글씨까지 — 목록이 그 글꼴로 보여 고르기 쉬워요</div></div></li>
+          <li data-step="color"><span class="ic"><i class="ti ti-palette"></i></span><div><div class="t">글꼴 색·크기</div><div class="d">사진 분위기에 맞춰 이름과 날짜의 색과 크기를 바꿔요</div></div></li>
+          <li data-step="filter"><span class="ic"><i class="ti ti-photo-edit"></i></span><div><div class="t">사진 필터·색감 보정</div><div class="d">흑백, 따뜻하게, 빈티지 — 사진을 다시 고르지 않아도 돼요</div></div></li>
+          <li data-step="effect"><span class="ic"><i class="ti ti-sparkles"></i></span><div><div class="t">연출 효과</div><div class="d">안개·물결·페이퍼 효과로 첫 화면에 움직임을 더해요</div></div></li>
+          <li data-step="save"><span class="ic"><i class="ti ti-cloud-check"></i></span><div><div class="t">임시저장 후 게시</div><div class="d">고치는 동안은 나만 보고, '게시하기'를 눌러야 하객에게 보여요</div></div></li>
+        </ul>
+      </div>
+
+      <div class="lp-ed-visual" id="edDemo" data-reveal data-delay="1">
+        <div class="lp-ed-panel" role="group" aria-label="편집 체험">
+          <div class="lp-ed-head"><b><i class="ti ti-adjustments-horizontal" style="color:var(--color-rose);"></i>메인 화면</b><span class="lp-ed-live">실시간 반영</span></div>
+          <div class="lp-ed-lbl">이름</div>
+          <div class="lp-ed-names">
+            <input type="text" id="edGroom" maxlength="6" aria-label="신랑 이름" placeholder="신랑">
+            <input type="text" id="edBride" maxlength="6" aria-label="신부 이름" placeholder="신부">
+          </div>
+          <div class="lp-ed-lbl">글꼴</div>
+          <div class="lp-ed-chips" data-key="font">
+            <button type="button" class="lp-ed-chip on" data-v="noto" style="font-family:'Noto Serif KR',serif;">기본</button>
+            <button type="button" class="lp-ed-chip" data-v="gowun_batang" style="font-family:'Gowun Batang',serif;">고운바탕</button>
+            <button type="button" class="lp-ed-chip" data-v="gyeonggi_batang" style="font-family:'Gyeonggi Batang',serif;">경기천년바탕</button>
+            <button type="button" class="lp-ed-chip" data-v="nanum_pen" style="font-family:'Nanum Pen Script',cursive;font-size:15px;">손글씨 펜</button>
+          </div>
+          <div class="lp-ed-lbl">글꼴 색</div>
+          <div class="lp-ed-sw" data-key="color">
+            <button type="button" class="on" data-v="" aria-label="기본 색" style="background:#3a2e22;"></button>
+            <button type="button" data-v="#b85f7a" aria-label="로즈" style="background:#b85f7a;"></button>
+            <button type="button" data-v="#8a6d4b" aria-label="브라운" style="background:#8a6d4b;"></button>
+            <button type="button" data-v="#56708c" aria-label="블루" style="background:#56708c;"></button>
+          </div>
+          <div class="lp-ed-lbl">사진 필터</div>
+          <div class="lp-ed-chips" data-key="filter">
+            <button type="button" class="lp-ed-chip on" data-v="none">원본</button>
+            <button type="button" class="lp-ed-chip" data-v="grayscale(1)">흑백</button>
+            <button type="button" class="lp-ed-chip" data-v="sepia(0.18) saturate(1.3) brightness(1.04)">따뜻하게</button>
+            <button type="button" class="lp-ed-chip" data-v="sepia(0.45) contrast(0.9) brightness(1.05)">빈티지</button>
+          </div>
+          <div class="lp-ed-lbl">연출 효과</div>
+          <div class="lp-ed-chips" data-key="effect">
+            <button type="button" class="lp-ed-chip on" data-v="none">없음</button>
+            <button type="button" class="lp-ed-chip" data-v="fog">안개</button>
+            <button type="button" class="lp-ed-chip" data-v="wave">물결</button>
+            <button type="button" class="lp-ed-chip" data-v="paper">페이퍼</button>
+          </div>
+          <div class="lp-ed-note"><i class="ti ti-hand-finger"></i>직접 눌러 보세요 · 체험용이라 저장되지 않아요</div>
+        </div>
+        <div class="lp-dphone">
+          <div class="lp-dphone-screen">
+            <iframe data-src="/demo?theme=forever" title="편집 체험용 샘플 청첩장" tabindex="-1"></iframe>
+            <div class="lp-dphone-fade on" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -771,6 +906,115 @@
       pv.querySelector('.lp-pv-close').focus();
     }
   }
+
+  /* ── 편집기 소개 — 패널을 만지면 폰 속 샘플이 바로 바뀐다 ──
+     편집기(editor.js sendLive)와 같은 WEDDING_LIVE_UPDATE 메시지를 쓴다.
+     화면에 보이는 동안 저절로 시연하고, 사용자가 패널을 한 번 만지면 시연을 끝낸다. */
+  (function() {
+    const demo = document.getElementById('edDemo');
+    if (!demo) return;
+    const iframe = demo.querySelector('iframe');
+    const fade = demo.querySelector('.lp-dphone-fade');
+    const groom = document.getElementById('edGroom'), bride = document.getElementById('edBride');
+    const items = document.querySelectorAll('#edList li');
+    const state = { font: 'noto', color: '', filter: 'none', effect: 'none' };
+    let ready = false, baseColor = '', autoplay = !reduceMotion, visible = false, timer = null, loop = 0;
+
+    function send() {
+      if (!ready) return;
+      iframe.contentWindow.postMessage({ type: 'WEDDING_LIVE_UPDATE', payload: {
+        groomName: groom.value, brideName: bride.value, displayOrder: 'groom',
+        mainFont: state.font, mainFontColor: state.color || baseColor,
+        photoFilter: state.filter, mainEffect: state.effect } }, location.origin);
+    }
+    function pick(key, v) {
+      state[key] = v;
+      const box = demo.querySelector('[data-key="' + key + '"]');
+      let btn = null;
+      box.querySelectorAll('button').forEach(function(b) {
+        const on = b.dataset.v === v; b.classList.toggle('on', on); if (on) btn = b;
+      });
+      send();
+      return btn;
+    }
+    demo.querySelectorAll('[data-key] button').forEach(function(b) {
+      b.addEventListener('click', function() { pick(b.parentElement.dataset.key, b.dataset.v); });
+    });
+    [groom, bride].forEach(function(el) { el.addEventListener('input', send); });
+
+    // 사용자가 패널을 만지면 시연 종료 — 쓰는 도중에 값이 바뀌면 안 된다
+    demo.querySelector('.lp-ed-panel').addEventListener('pointerdown', stopAuto);
+    demo.querySelector('.lp-ed-panel').addEventListener('focusin', stopAuto);
+    function stopAuto() {
+      autoplay = false; clearTimeout(timer);
+      groom.classList.remove('typing'); bride.classList.remove('typing');
+      items.forEach(function(li) { li.classList.remove('on'); });
+    }
+
+    // 처음엔 화면 근처에 왔을 때만 샘플을 불러온다 — 히어로 폰과 동시에 부르지 않도록
+    new IntersectionObserver(function(entries, obs) {
+      if (!entries[0].isIntersecting) return;
+      obs.disconnect();
+      iframe.src = iframe.dataset.src;
+    }, { rootMargin: '300px 0px' }).observe(demo);
+
+    iframe.addEventListener('load', function() {
+      const d = iframe.contentDocument;
+      const g = d.querySelector('.forever-name-groom'), b = d.querySelector('.forever-name-bride');
+      groom.value = g ? g.textContent.trim() : '';
+      bride.value = b ? b.textContent.trim() : '';
+      if (g) {
+        const c = iframe.contentWindow.getComputedStyle(g).color.match(/\d+/g);
+        if (c) baseColor = '#' + c.slice(0, 3).map(function(n) { return (+n).toString(16).padStart(2, '0'); }).join('');
+        demo.querySelector('[data-key="color"] [data-v=""]').style.background = baseColor;
+      }
+      ready = true;
+      setTimeout(function() { fade.classList.remove('on'); kick(); }, 250);
+    });
+
+    new IntersectionObserver(function(entries) {
+      visible = entries[0].isIntersecting; kick();
+    }, { threshold: 0.45 }).observe(demo);
+
+    /* ── 저절로 시연 ── */
+    const NAMES = [['김민준', '이서연'], ['박도윤', '최하은']];
+    function mark(step) { items.forEach(function(li) { li.classList.toggle('on', li.dataset.step === step); }); }
+    function pulse(el) { if (!el) return; el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
+    function type(input, text, done) {
+      input.classList.add('typing'); input.value = '';
+      let i = 0;
+      (function next() {
+        if (!autoplay) return;
+        if (i > text.length) { input.classList.remove('typing'); return done(); }
+        input.value = text.slice(0, i++); send();
+        timer = setTimeout(next, i === 1 ? 300 : 230);
+      })();
+    }
+    const STEPS = [
+      function(go) { mark('names'); const n = NAMES[loop % NAMES.length]; type(groom, n[0], function() { type(bride, n[1], go); }); },
+      function(go) { mark('font'); pulse(pick('font', 'gowun_batang')); timer = setTimeout(function() { pulse(pick('font', 'nanum_pen')); timer = setTimeout(go, 1500); }, 1500); },
+      function(go) { mark('color'); pulse(pick('color', '#b85f7a')); timer = setTimeout(go, 1700); },
+      function(go) { mark('filter'); pulse(pick('filter', 'grayscale(1)')); timer = setTimeout(function() { pulse(pick('filter', 'sepia(0.18) saturate(1.3) brightness(1.04)')); timer = setTimeout(go, 1500); }, 1500); },
+      function(go) { mark('effect'); pulse(pick('effect', 'fog')); timer = setTimeout(go, 2600); },
+      function(go) {
+        mark('save');
+        timer = setTimeout(function() {
+          pick('font', 'noto'); pick('color', ''); pick('filter', 'none'); pick('effect', 'none');
+          loop++; timer = setTimeout(go, 1400);
+        }, 1600);
+      }
+    ];
+    let step = 0, running = false;
+    function kick() {
+      if (!autoplay || !ready || !visible || running) return;
+      running = true;
+      (function run() {
+        if (!autoplay) { running = false; return; }
+        if (!visible) { running = false; return; }   // 화면 밖이면 그 자리에서 쉬었다가 다시 보일 때 이어간다
+        STEPS[step](function() { step = (step + 1) % STEPS.length; run(); });
+      })();
+    }
+  })();
 </script>
 
 </body>
