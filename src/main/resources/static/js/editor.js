@@ -2549,3 +2549,20 @@ window.addEventListener('load', function() {
     if (desktop.addEventListener) desktop.addEventListener('change', fit);
     fit();
 })();
+
+
+/* ── 헤더 계정 메뉴 (이름 · 가이드 다시 보기 · 로그아웃) ── */
+(function accountMenu() {
+    var box = document.getElementById('edAcct');
+    var btn = document.getElementById('edAcctBtn');
+    if (!box || !btn) return;
+    function set(open) {
+        box.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    btn.addEventListener('click', function(e) { e.stopPropagation(); set(!box.classList.contains('open')); });
+    document.addEventListener('click', function(e) { if (!box.contains(e.target)) set(false); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') set(false); });
+    // 메뉴 안 항목을 누르면 닫는다 (가이드 다시 보기 등)
+    box.querySelector('.ed-acct-menu').addEventListener('click', function(e) { if (e.target.closest('.ed-acct-item')) set(false); });
+})();
