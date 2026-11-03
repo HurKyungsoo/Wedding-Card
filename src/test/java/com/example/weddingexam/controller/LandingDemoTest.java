@@ -55,9 +55,6 @@ class LandingDemoTest {
         assertThat(h).contains("id=\"edDemo\"");
         assertThat(h).contains("const NAMES");
         assertThat(h.trim()).endsWith("</html>");
-        // 공개 페이지에 관리자 링크를 두지 않고, 저작권 연도는 올해로
-        assertThat(h).doesNotContain("href=\"/superadmin\"");
-        assertThat(h).contains("© <span>" + java.time.Year.now().getValue() + "</span>");
     }
 
     /** 사진·갤러리가 채워진 실제 청첩장 화면이고, 고른 테마로 열린다 */

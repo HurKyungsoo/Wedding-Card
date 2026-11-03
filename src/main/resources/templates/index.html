@@ -366,9 +366,6 @@
     .lp-foot-in { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px 32px; }
     .lp-foot-logo { font-family: var(--font-serif); font-size: 16px; font-weight: 600; color: var(--color-ink-deepest); letter-spacing: 1.5px; text-decoration: none; }
     .lp-foot-tag { font-size: 12px; color: #8a7a6e; margin-top: 6px; font-weight: 300; }
-    .lp-foot-links { display: flex; gap: 8px 24px; flex-wrap: wrap; }
-    .lp-foot-links a { color: #6f6056; font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s; }
-    .lp-foot-links a:hover { color: var(--color-rose); }
     .lp-foot-copy { font-size: 12px; color: #8a7a6e; }
     @media (max-width: 640px) { .lp-foot-in { flex-direction: column; align-items: flex-start; } }
 
@@ -845,7 +842,7 @@
 </section>
 
 <!-- ── FOOTER ──
-     관리자 링크는 누구나 보이는 곳에 둘 이유가 없어 뺐다.
+     링크 목록은 빼고 로고·소개·연도만 둔다.
      연도는 서버 시각으로 찍고, 작은 글자는 크림 배경 위에서 읽히는 대비로 올렸다. -->
 <footer class="lp-foot">
   <div class="lp-wrap lp-foot-in">
@@ -853,14 +850,6 @@
       <a href="/" class="lp-foot-logo">WeddingCard</a>
       <p class="lp-foot-tag">5분 안에 완성하는 모바일 청첩장</p>
     </div>
-    <nav class="lp-foot-links" aria-label="바닥글">
-      <a href="#themes">테마</a>
-      <a href="#editor">편집기</a>
-      <a href="#features">기능</a>
-      <a href="/demo" target="_blank" rel="noopener">샘플 보기</a>
-      <a href="/my/edit">내 청첩장</a>
-      <a href="https://github.com/HurKyungsoo/Wedding-Card" target="_blank" rel="noopener"><i class="ti ti-brand-github"></i>GitHub</a>
-    </nav>
     <p class="lp-foot-copy">© <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}">2026</span> WeddingCard</p>
   </div>
 </footer>
