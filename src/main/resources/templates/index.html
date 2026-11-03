@@ -297,7 +297,9 @@
     .lp-map-label { background: #fff; border-radius: 8px; padding: 4px 9px; font-size: 11px; color: #4a3d34; box-shadow: 0 3px 10px rgba(44,30,20,0.15); white-space: nowrap; transform: translateY(8px); font-family: var(--font-sans); }
     .lp-navi { display: flex; gap: 8px; margin-top: 10px; }
     .lp-navi span { flex: 1; height: 34px; border-radius: 9px; border: 1px solid #ece4da; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; color: #5d5047; }
-    .lp-navi b { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+    /* 청첩장 길안내 버튼과 같은 앱 아이콘·테두리 색 (invitation.css .map-navi-btn) */
+    .lp-navi img { width: 20px; height: 20px; border-radius: 5px; object-fit: cover; }
+    .lp-navi .k { border-color: #fee500; } .lp-navi .t { border-color: #d0b8e0; } .lp-navi .n { border-color: #b8e8cc; }
 
     /* 카카오톡 공유 */
     .lp-kakao { background: #b2c7d9; border-radius: 14px; padding: 14px 12px 14px 14px; display: flex; gap: 8px; align-items: flex-start; }
@@ -701,15 +703,15 @@
         <div class="lp-bx-row">
           <div class="txt">
             <h3><i class="ti ti-map-pin"></i>오시는 길</h3>
-            <p>주소만 검색하면 카카오 지도가 들어가요. 하객은 버튼 한 번으로 카카오내비·티맵·네이버 지도 길안내를 바로 시작해요.</p>
+            <p>주소만 검색하면 카카오 지도가 들어가요. 하객은 버튼 한 번으로 카카오내비·티맵·네이버지도 길안내를 바로 시작해요.</p>
           </div>
           <div class="lp-bx-ui" aria-hidden="true">
             <div class="lp-map" id="featMap"
                  th:attr="data-key=${kakaoAppKey},data-lat=${sampleMapLat},data-lng=${sampleMapLng},data-place=${sampleMapPlace}"><i class="ti ti-map-pin lp-map-pin"></i><span class="lp-map-tag" th:text="${sampleMapPlace ?: '그랜드 웨딩홀'}">그랜드 웨딩홀</span></div>
             <div class="lp-navi">
-              <span><b style="background:#fee500;"></b>카카오내비</span>
-              <span><b style="background:#3d6af2;"></b>티맵</span>
-              <span><b style="background:#03c75a;"></b>네이버 지도</span>
+              <span class="k"><img src="/images/navi/kakao.png" alt="">카카오내비</span>
+              <span class="t"><img src="/images/navi/tmap.png" alt="">티맵</span>
+              <span class="n"><img src="/images/navi/naver.png" alt="">네이버지도</span>
             </div>
           </div>
         </div>
