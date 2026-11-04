@@ -2784,3 +2784,26 @@ body{ -webkit-overflow-scrolling:touch; }
     pointer-events:none;
 }
 .wc.is-editor .forever-arch-placeholder::after{ content:'샘플 사진'; top:auto; bottom:12px; }
+
+/* ════════════════════════════════════════
+   섹션 등장 효과 통일 (2026-11)
+   예전엔 섹션마다 소제목·제목·카드가 따로(56개) 각기 다른 효과 6종으로, 1.1~1.2초 + 순서 지연으로 나타나
+   한 섹션이 다 보이기까지 1.5초 가까이 걸리고 통일감이 없었다.
+   이제 섹션(.sec) 전체가 한 번에 아래에서 올라오는 한 가지 효과(0.8초)만 쓴다 — 국내 청첩장 서비스들의 방식.
+   개성 있는 연출은 갤러리(.reveal-zoom)·엔딩 사진·히어로에만 남긴다.
+   .sec-rv 는 JS(initScrollEffects)가 붙인다 — 스크립트가 안 돌면 처음부터 다 보인다.
+   ════════════════════════════════════════ */
+.sec .reveal,
+.sec .reveal-left,
+.sec .reveal-right,
+.sec .reveal-scale:not(.ending-photo-wrap){
+    opacity:1 !important;transform:none !important;transition:none !important;
+}
+.sec-rv{
+    opacity:0;transform:translateY(40px);
+    transition:opacity .8s cubic-bezier(.25,.46,.45,.94), transform .8s cubic-bezier(.25,.46,.45,.94);
+}
+.sec-rv.on{opacity:1;transform:none;}
+@media (prefers-reduced-motion: reduce){
+    .sec-rv{opacity:1 !important;transform:none !important;transition:none !important;}
+}
