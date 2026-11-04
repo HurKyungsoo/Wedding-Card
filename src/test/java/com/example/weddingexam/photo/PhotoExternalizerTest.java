@@ -77,6 +77,7 @@ class PhotoExternalizerTest {
         d.setEndingPhotoBase64(JPEG_B64);
         d.setEndingPhotos(JPEG_B64 + "|||" + PNG_B64);
         d.setGalleryImages("data:image/jpeg;base64," + JPEG_B64 + "|||/images/demo/basic.jpg|||data:image/png;base64," + PNG_B64);
+        d.setSharePhoto("data:image/png;base64," + PNG_B64);
 
         assertThat(ex.externalize(d)).isTrue();
 
@@ -88,6 +89,7 @@ class PhotoExternalizerTest {
         assertThat(gal[0]).startsWith("/uploads/");
         assertThat(gal[1]).isEqualTo("/images/demo/basic.jpg");   // 순서 유지
         assertThat(gal[2]).endsWith(".png");
+        assertThat(d.getSharePhoto()).startsWith("/uploads/").endsWith(".png");
 
         // 두 번째부터는 바뀔 게 없다
         assertThat(ex.externalize(d)).isFalse();

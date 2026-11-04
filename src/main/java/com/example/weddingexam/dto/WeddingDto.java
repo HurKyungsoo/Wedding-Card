@@ -71,6 +71,8 @@ public class WeddingDto {
     private String endingPhotoBase64;
     /** 엔딩 사진 여러 장(최대 5) — base64 를 '|||' 로 이어 붙인 값. 첫 장은 endingPhotoBase64 에도 같이 들어 있다(예전 코드 호환). */
     private String endingPhotos;
+    /** 카카오톡 공유용 사진 — 비어 있으면 메인 사진을 쓴다 (파일 URL, 예전 값은 base64) */
+    private String sharePhoto;
     private String endingCaption;
     private String endingEffect;
 
@@ -347,6 +349,7 @@ public class WeddingDto {
     public String getEndingCaption() { return endingCaption; } public void setEndingCaption(String v) { this.endingCaption = v; }
     public String getEndingEffect() { return endingEffect; } public void setEndingEffect(String v) { this.endingEffect = v; }
     public String getEndingPhotos() { return endingPhotos; } public void setEndingPhotos(String v) { this.endingPhotos = v; }
+    public String getSharePhoto() { return sharePhoto; } public void setSharePhoto(String v) { this.sharePhoto = v; }
 
     /**
      * 사진 값 → img src. 사진은 이제 파일 URL(/uploads/...)로 저장되지만, 예전 데이터나 저장 전 값은
@@ -357,6 +360,40 @@ public class WeddingDto {
         String t = v.trim();
         if (t.startsWith("data:") || com.example.weddingexam.photo.PhotoExternalizer.isUrl(t)) return t;
         return "data:image/jpeg;base64," + t;
+    }
+
+    /** 공유 미리보기 제목 — 이름이 비어 있으면 "null ♥ null" 대신 기본 문구 */
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public String getShareTitle() {
+        boolean noNames = (groomName == null || groomName.isBlank()) && (brideName == null || brideName.isBlank());
+        if (noNames) return "모바일 청첩장";
+        return (groomName == null || groomName.isBlank() ? "신랑" : groomName.trim()) + " ♥ "
+             + (brideName == null || brideName.isBlank() ? "신부" : brideName.trim()) + " 결혼합니다";
+    }
+
+    /** 공유 미리보기 설명 — "2026년 5월 23일 토요일 오후 1시 · 그랜드웨딩홀". 모르는 부분은 뺀다 */
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public String getShareDescription() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            if (weddingDate != null && !weddingDate.isBlank()) {
+                java.time.LocalDate d = java.time.LocalDate.parse(weddingDate.trim());
+                sb.append(d.getYear()).append("년 ").append(d.getMonthValue()).append("월 ").append(d.getDayOfMonth()).append("일 ")
+                  .append(d.getDayOfWeek().getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.KOREAN));
+            }
+        } catch (java.time.format.DateTimeParseException ignored) { }
+        try {
+            if (weddingTime != null && !weddingTime.isBlank()) {
+                java.time.LocalTime t = java.time.LocalTime.parse(weddingTime.trim());
+                int h = t.getHour() % 12 == 0 ? 12 : t.getHour() % 12;
+                if (sb.length() > 0) sb.append(' ');
+                sb.append(t.getHour() < 12 ? "오전 " : "오후 ").append(h).append("시");
+                if (t.getMinute() > 0) sb.append(' ').append(t.getMinute()).append("분");
+            }
+        } catch (java.time.format.DateTimeParseException ignored) { }
+        String place = (weddingPlace != null && !weddingPlace.isBlank()) ? weddingPlace.trim() : null;
+        if (place != null) sb.append(sb.length() > 0 ? " · " : "").append(place);
+        return sb.length() > 0 ? sb.toString() : "저희 결혼식에 초대합니다. 청첩장을 확인해 주세요";
     }
 
     @com.fasterxml.jackson.annotation.JsonIgnore
@@ -470,6 +507,7 @@ public class WeddingDto {
         public Builder endingVisible(Boolean v) { d.endingVisible=v; return this; }
         public Builder endingPhotoBase64(String v) { d.endingPhotoBase64=v; return this; }
         public Builder endingPhotos(String v) { d.endingPhotos=v; return this; }
+        public Builder sharePhoto(String v) { d.sharePhoto=v; return this; }
         public Builder endingCaption(String v) { d.endingCaption=v; return this; }
         public Builder endingEffect(String v) { d.endingEffect=v; return this; }
         public Builder sectionOrder(String v) { d.sectionOrder=v; return this; }

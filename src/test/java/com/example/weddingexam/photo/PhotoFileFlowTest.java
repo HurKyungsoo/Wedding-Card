@@ -117,4 +117,33 @@ class PhotoFileFlowTest {
         assertThat(orphanNew).exists();   // 막 올린 파일은 아직 저장 전일 수 있다
         assertThat(used).exists();
     }
+
+    @Test
+    void guestPage_hasOgTags_withSquareCoupleThumbnail() throws Exception {
+        Long id = weddingId();
+        WeddingDto dto = weddingService.findById(id);
+        dto.setMainPhotoBase64(java.util.Base64.getEncoder().encodeToString(ShareImageServiceTest.portraitJpeg(600, 900)));
+        dto.setGroomName("지훈");
+        dto.setBrideName("수아");
+        weddingService.update(id, dto);
+
+        String html = mockMvc.perform(get("/wedding/" + id)).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        assertThat(html).contains("property=\"og:title\" content=\"지훈 ♥ 수아 결혼합니다\"");
+        assertThat(html).containsPattern("property=\"og:image\" content=\"http://localhost(:\\d+)?/uploads/share/[0-9a-f]{64}\\.jpg\"");
+        assertThat(html).contains("property=\"og:image:height\" content=\"800\"");
+    }
+
+    @Test
+    void editor_hasShareSection_withHiddenInputInside() throws Exception {
+        String html = mockMvc.perform(get("/admin/edit")).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        int sec = html.indexOf("id=\"sec-share\"");
+        int input = html.indexOf("id=\"sharePhotoInput\"");
+        int end = html.indexOf("class=\"ed-end-note\"");
+        assertThat(sec).isPositive();
+        assertThat(input).isGreaterThan(sec).isLessThan(end);
+        assertThat(html).contains("name=\"sharePhoto\"");
+        assertThat(html).contains("data-sec=\"share\">카카오톡 공유");   // 메뉴에서 바로 이동
+    }
 }
