@@ -351,6 +351,12 @@ body{
 .cbtn{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--color-gold);background:#fdf9f5;border:0.5px solid var(--color-tan);border-radius:14px;padding:4px 9px;cursor:pointer;letter-spacing:1px;font-family:var(--font-sans);transition:all 0.2s;}
 .cbtn:hover,.cbtn:active{background:#fdf4ec;transform:scale(0.96);}
 .cbtn i{font-size:11px;}
+/* 좁은 화면: 혼주 연락 버튼(신랑·부·모)이 두세 줄로 흩어지지 않게 한 줄로 — 아이콘은 첫 버튼에만 */
+@media (max-width:440px){
+  .contact-row{flex-wrap:nowrap;gap:3px;}
+  .cbtn{padding:4px 7px;letter-spacing:.5px;gap:2px;white-space:nowrap;}
+  .cbtn + .cbtn i{display:none;}
+}
 
 /* 하트 펄스 */
 .heart-pulse{animation:heartPulse 1.5s ease infinite;}

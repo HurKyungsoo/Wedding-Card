@@ -42,4 +42,13 @@ class QualityGuardTest {
         assertThat(props).contains("server.compression.enabled=true");
         assertThat(props).contains("spring.web.resources.cache.cachecontrol.max-age=");
     }
+
+    @Test
+    void invitationMessageListeners_checkOrigin() throws Exception {
+        String html = read("templates/invitation.html");
+        int listeners = html.split("addEventListener\\('message'", -1).length - 1;
+        int checks = html.split("e.origin !== window.location.origin", -1).length - 1;
+        assertThat(listeners).isPositive();
+        assertThat(checks).isEqualTo(listeners);
+    }
 }

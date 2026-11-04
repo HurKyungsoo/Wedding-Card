@@ -1273,6 +1273,7 @@ window.__WEDDING_STYLE = {
     applyStyleSettings(initStyle);
 
     window.addEventListener('message', function(e) {
+        if (e.origin !== window.location.origin) return; /* 같은 사이트(편집기)에서 온 메시지만 */
         if (!e.data || e.data.type !== 'WEDDING_LIVE_UPDATE') return;
         var d = e.data.payload;
         if (!d) return;
@@ -2156,6 +2157,7 @@ window.__WEDDING_STYLE = {
 
     /* ── 메인 사진 / 필터 별도 수신 (WEDDING_PHOTO_UPDATE) ── */
     window.addEventListener('message', function(e) {
+        if (e.origin !== window.location.origin) return; /* 같은 사이트(편집기)에서 온 메시지만 */
         if (!e.data || e.data.type !== 'WEDDING_PHOTO_UPDATE') return;
         var d = e.data.payload;
         if (!d) return;
@@ -2257,6 +2259,7 @@ window.__WEDDING_STYLE = {
 
     /* 편집기에서 드래그로 순서를 바꾸는 동안 실시간 반영 */
     window.addEventListener('message', function(e) {
+        if (e.origin !== window.location.origin) return; /* 같은 사이트(편집기)에서 온 메시지만 */
         if (!e.data || e.data.type !== 'WEDDING_SECTION_ORDER') return;
         applySectionOrder(e.data.order);
     });
@@ -2265,6 +2268,7 @@ window.__WEDDING_STYLE = {
     applySectionOrder(window._savedSectionOrder || []);
 
     window.addEventListener('message', function(e) {
+        if (e.origin !== window.location.origin) return; /* 같은 사이트(편집기)에서 온 메시지만 */
         /* 스크롤 위치 복원 (새로고침 후 위치 유지) */
         if (e.data && e.data.type === 'WEDDING_SCROLL_RESTORE') {
             var y = e.data.scrollY || 0;
@@ -2586,6 +2590,7 @@ window.__WEDDING_STYLE = {
 
     // 테마 전환 시 재렌더 (postMessage 수신 후)
     window.addEventListener('message', function(e) {
+        if (e.origin !== window.location.origin) return; /* 같은 사이트(편집기)에서 온 메시지만 */
         if (!e.data) return;
         var d = e.data.payload || e.data;
         if (d && d.mainDesign === 'forever') {
