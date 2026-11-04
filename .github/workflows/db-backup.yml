@@ -1,0 +1,49 @@
+name: db-backup
+
+# 운영 DB 백업 — 서버(self-hosted runner)에서 pg_dump 로 /home/ubuntu/backups 에 저장한다.
+# 접속 정보는 실행 중인 서비스 프로세스의 환경변수(PGHOST 등)를 그대로 읽는다 — 저장소에 비밀값을 두지 않는다.
+on:
+  workflow_dispatch:
+  push:
+    branches: [ops/db-backup]
+
+jobs:
+  backup:
+    runs-on: [self-hosted, wedding-card-deploy]
+    steps:
+      - name: Load DB env from running service
+        run: |
+          PID=$(systemctl show -p MainPID --value weddingcard.service)
+          if [ -z "$PID" ] || [ "$PID" = "0" ]; then echo "service not running" >&2; exit 1; fi
+          sudo cat /proc/$PID/environ | tr '\0' '\n' | grep -E '^PG(HOST|PORT|DATABASE|USER|PASSWORD)=' > /tmp/pgenv || true
+          echo "found vars: $(cut -d= -f1 /tmp/pgenv | tr '\n' ' ')"
+          while IFS='=' read -r k v; do
+            [ "$k" = "PGPASSWORD" ] && echo "::add-mask::$v"
+            echo "$k=$v" >> "$GITHUB_ENV"
+          done < /tmp/pgenv
+          rm -f /tmp/pgenv
+
+      - name: Ensure pg_dump
+        run: |
+          if ! command -v psql >/dev/null || ! command -v pg_dump >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+          fi
+          SERVER_MAJOR=$(psql -tAc "show server_version" | cut -d. -f1)
+          CLIENT_MAJOR=$(pg_dump --version | grep -oE '[0-9]+' | head -1)
+          echo "server=$SERVER_MAJOR client=$CLIENT_MAJOR"
+          if [ "$CLIENT_MAJOR" -lt "$SERVER_MAJOR" ]; then
+            sudo apt-get install -y -qq postgresql-client-$SERVER_MAJOR || true
+            echo "PATH=/usr/lib/postgresql/$SERVER_MAJOR/bin:$PATH" >> "$GITHUB_ENV"
+          fi
+
+      - name: Dump
+        run: |
+          pg_dump --version
+          mkdir -p /home/ubuntu/backups
+          OUT=/home/ubuntu/backups/wedding_$(TZ=Asia/Seoul date +%Y%m%d_%H%M).sql.gz
+          set -o pipefail
+          pg_dump --no-owner --no-privileges | gzip > "$OUT"
+          ls -lh "$OUT"
+          echo "tables in dump: $(zcat "$OUT" | grep -cE '^COPY public\.')"
+          echo "weddings in db: $(psql -tAc 'select count(*) from wedding')"
+          ls -lh /home/ubuntu/backups
