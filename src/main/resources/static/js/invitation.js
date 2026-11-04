@@ -805,6 +805,7 @@ window.initPage = function(data) {
     initPetals();
     initScrollEffects();
     photoMotion();          /* initScrollEffects 의 예전 시차 스크롤을 걷어내고 바꿔 끼우므로 반드시 그 뒤에 */
+    endingSlides();
     initGreetingTypewriter();
     initHeartBurst();
     initScrollProgress();
@@ -1472,7 +1473,6 @@ function photoMotion() {
         var veil = document.createElement('div');
         veil.className = 'pm-veil';
         endWrap.appendChild(veil);
-        endImg.classList.add('pm-end');
         if (cap) cap.classList.add('pm-cap');
         var endTick = false;
         var endScroll = function() {
@@ -1483,7 +1483,7 @@ function photoMotion() {
             p = Math.max(0, Math.min(1, p));
             var e = 1 - Math.pow(1 - p, 3);
             endWrap.style.setProperty('--veil', ((1 - e) * 0.7).toFixed(3));
-            endImg.style.setProperty('--es', (1.12 - 0.12 * e).toFixed(4));
+            endWrap.style.setProperty('--es', (1.12 - 0.12 * e).toFixed(4));   /* 여러 장이어도 모두 같은 배율 */
             if (cap && p >= 0.98) cap.classList.add('on');
         };
         window.addEventListener('scroll', function() {
@@ -1491,4 +1491,53 @@ function photoMotion() {
         }, { passive: true });
         endScroll();
     }
+}
+
+/* ════════════════════════════════════════
+   엔딩 사진 여러 장 — 같은 자리에서 4초마다 겹쳐 넘기기
+   화면에 절반 이상 보일 때만 넘기고(지나가면 멈춤), 한 장이면 아무것도 하지 않는다.
+   편집기에서 사진을 바꾸면 라이브 미리보기 핸들러가 window._endingSlidesReset() 을 부른다.
+   ════════════════════════════════════════ */
+function endingSlides() {
+    var wrap = document.querySelector('.ending-photo-wrap');
+    if (!wrap) return;
+    var dots = document.getElementById('endingDots');
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var idx = 0, timer = null, visible = false;
+
+    function photos() {
+        var first = document.getElementById('endingPhotoImg');
+        return [first].concat([].slice.call(wrap.querySelectorAll('.ending-extra')))
+            .filter(function(img) { return img && img.getAttribute('src'); });
+    }
+    function paint() {
+        var ps = photos();
+        if (idx >= ps.length) idx = 0;
+        ps.forEach(function(p, i) {
+            var on = i === idx;
+            p.classList.toggle('es-on', on && ps.length > 1);
+            p.classList.toggle('es-off', !on && ps.length > 1);
+            if (on && ps.length > 1 && !reduce) {
+                p.classList.remove('kb'); void p.offsetWidth; p.classList.add('kb');
+            } else {
+                p.classList.remove('kb');
+            }
+        });
+        if (dots) {
+            dots.innerHTML = ps.length > 1 ? ps.map(function(_, i) { return '<span' + (i === idx ? ' class="on"' : '') + '></span>'; }).join('') : '';
+        }
+    }
+    function schedule() {
+        clearInterval(timer); timer = null;
+        if (!reduce && visible && photos().length > 1) {
+            timer = setInterval(function() { idx = (idx + 1) % photos().length; paint(); }, 4000);
+        }
+    }
+    new IntersectionObserver(function(entries) {
+        visible = entries[0].isIntersecting;
+        schedule();
+    }, { threshold: 0.5 }).observe(wrap);
+
+    window._endingSlidesReset = function() { idx = 0; paint(); schedule(); };
+    paint();
 }

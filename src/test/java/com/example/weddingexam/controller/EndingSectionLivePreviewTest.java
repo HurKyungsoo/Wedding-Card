@@ -78,8 +78,8 @@ class EndingSectionLivePreviewTest {
         String html = editorHtml();
 
         assertThat(html)
-            .as("th:if로 썸네일 img를 빼면 업로드해도 편집기 자체 미리보기에 사진이 안 보인다")
-            .contains("id=\"endingThumbImg\"");
+            .as("썸네일 목록을 th:if로 빼면 업로드해도 편집기 자체 미리보기에 사진이 안 보인다")
+            .contains("id=\"endingThumbs\"");
     }
 
     /** 사진 + 노출 둘 다 켜졌을 때만 섹션이 보인다 */
@@ -94,6 +94,21 @@ class EndingSectionLivePreviewTest {
         assertThat(html).containsPattern("ending-sec[^>]*(?<!display:none)\"");
         assertThat(html).contains("Zm9v");
         assertThat(html).contains("고맙습니다");
+    }
+
+    /** 엔딩 사진 여러 장 — 첫 장은 #endingPhotoImg, 두 번째 장부터는 같은 자리에 겹쳐 넘길 .ending-extra 로 */
+    @Test
+    void multiplePhotos_renderExtrasForSlideshow() throws Exception {
+        WeddingDto dto = weddingWithout();
+        dto.setEndingPhotoBase64("Zm9v");
+        dto.setEndingPhotos("Zm9v|||YmFy|||YmF6");
+        weddingService.update(dto.getId(), dto);
+
+        String html = guestHtml();
+        assertThat(html).contains("id=\"endingPhotoImg\"");
+        assertThat(html.split("ending-photo ending-extra", -1).length - 1).isEqualTo(2);
+        assertThat(html).contains("base64,YmFy").contains("base64,YmF6");
+        assertThat(html).contains("id=\"endingDots\"");
     }
 
     /** 사진이 없으면 endingVisible=true여도 빈 섹션이 노출되면 안 된다 */

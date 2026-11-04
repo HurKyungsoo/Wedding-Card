@@ -69,6 +69,8 @@ public class WeddingDto {
     /** 엔딩(마지막 인사) 섹션 — 방명록·공유하기 직전, 사진 한 장 + 문구로 마무리하는 클로징 섹션 */
     private Boolean endingVisible;
     private String endingPhotoBase64;
+    /** 엔딩 사진 여러 장(최대 5) — base64 를 '|||' 로 이어 붙인 값. 첫 장은 endingPhotoBase64 에도 같이 들어 있다(예전 코드 호환). */
+    private String endingPhotos;
     private String endingCaption;
     private String endingEffect;
 
@@ -344,6 +346,20 @@ public class WeddingDto {
     public String getEndingPhotoBase64() { return endingPhotoBase64; } public void setEndingPhotoBase64(String v) { this.endingPhotoBase64 = v; }
     public String getEndingCaption() { return endingCaption; } public void setEndingCaption(String v) { this.endingCaption = v; }
     public String getEndingEffect() { return endingEffect; } public void setEndingEffect(String v) { this.endingEffect = v; }
+    public String getEndingPhotos() { return endingPhotos; } public void setEndingPhotos(String v) { this.endingPhotos = v; }
+
+    /** 엔딩 사진 목록 — 여러 장 값이 있으면 그것, 없으면 예전 한 장 값. 최대 5장. */
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public java.util.List<String> getEndingPhotoList() {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        if (endingPhotos != null && !endingPhotos.isBlank()) {
+            for (String p : endingPhotos.split("\\|\\|\\|")) {
+                if (!p.isBlank() && out.size() < 5) out.add(p.trim());
+            }
+        }
+        if (out.isEmpty() && endingPhotoBase64 != null && !endingPhotoBase64.isBlank()) out.add(endingPhotoBase64);
+        return out;
+    }
     public String getSectionOrder() { return sectionOrder; } public void setSectionOrder(String v) { this.sectionOrder = v; }
     public java.util.List<com.example.weddingexam.account.AccountDto> getAccounts() { return accounts; }
     public void setAccounts(java.util.List<com.example.weddingexam.account.AccountDto> v) { this.accounts = v; }
@@ -430,6 +446,7 @@ public class WeddingDto {
         public Builder guestbookVisible(Boolean v) { d.guestbookVisible=v; return this; }
         public Builder endingVisible(Boolean v) { d.endingVisible=v; return this; }
         public Builder endingPhotoBase64(String v) { d.endingPhotoBase64=v; return this; }
+        public Builder endingPhotos(String v) { d.endingPhotos=v; return this; }
         public Builder endingCaption(String v) { d.endingCaption=v; return this; }
         public Builder endingEffect(String v) { d.endingEffect=v; return this; }
         public Builder sectionOrder(String v) { d.sectionOrder=v; return this; }
