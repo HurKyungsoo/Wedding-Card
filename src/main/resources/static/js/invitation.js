@@ -1,3 +1,11 @@
+/* 사진 값 → img src. 저장된 사진은 파일 URL(/uploads/...), 막 고른 사진·예전 데이터는 접두어 없는 base64 */
+function photoSrc(v) {
+    v = String(v || '').trim();
+    if (!v) return '';
+    if (/^(\/|https?:|data:)/.test(v)) return v;
+    return 'data:image/jpeg;base64,' + v;
+}
+
 'use strict';
 
 /* ── 날짜·시간 포맷 ── */

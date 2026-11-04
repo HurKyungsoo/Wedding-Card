@@ -11,3 +11,6 @@ src/main/resources/application-secret.properties
 # css-diff 작업 파일
 tools/css-diff/*.tpl.html
 tools/css-diff/*.css
+
+# 업로드 사진 (서버 디스크)
+uploads/

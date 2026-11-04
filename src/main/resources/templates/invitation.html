@@ -126,7 +126,7 @@
         <!-- 풀블리드 사진 -->
         <div class="hero-fullphoto" th:classappend="${wedding.mainPhotoBase64 != null and !#strings.isEmpty(wedding.mainPhotoBase64)} ? 'has-photo' : ''">
             <img th:if="${wedding.mainPhotoBase64 != null and !#strings.isEmpty(wedding.mainPhotoBase64)}"
-                 th:src="|data:image/jpeg;base64,${wedding.mainPhotoBase64}|"
+                 th:src="${wedding.mainPhotoSrc}"
                  alt="메인 사진"
                  class="hero-fullphoto-img"
                  th:style="${wedding.mainPhotoImgStyle}">
@@ -177,7 +177,7 @@
             </div>
             <div class="forever-arch">
                 <img th:if="${wedding.mainPhotoBase64 != null and !#strings.isEmpty(wedding.mainPhotoBase64)}"
-                     th:src="|data:image/jpeg;base64,${wedding.mainPhotoBase64}|"
+                     th:src="${wedding.mainPhotoSrc}"
                      class="forever-arch-img"
                      alt="메인 사진"
                      th:style="${wedding.mainPhotoImgStyle}">
@@ -811,11 +811,11 @@
          th:style="${endingOk} ? '' : 'display:none'">
         <div class="ending-photo-wrap reveal-scale">
             <img id="endingPhotoImg" class="ending-photo" alt="엔딩 사진"
-                 th:src="${wedding.endingPhotoBase64 != null and !#strings.isEmpty(wedding.endingPhotoBase64)} ? ('data:image/jpeg;base64,' + ${wedding.endingPhotoBase64}) : ''"
+                 th:src="${wedding.endingPhotoSrc}"
                  th:style="${wedding.endingPhotoBase64 != null and !#strings.isEmpty(wedding.endingPhotoBase64)} ? '' : 'display:none'">
             <!-- 두 번째 장부터 — 같은 자리에 겹쳐 두고 차례로 겹쳐 넘긴다 (invitation.js endingSlides) -->
-            <img th:each="p, st : ${wedding.endingPhotoList}" th:if="${st.index > 0}"
-                 class="ending-photo ending-extra" alt="엔딩 사진" th:src="'data:image/jpeg;base64,' + ${p}">
+            <img th:each="p, st : ${wedding.endingPhotoSrcList}" th:if="${st.index > 0}"
+                 class="ending-photo ending-extra" alt="엔딩 사진" th:src="${p}">
             <div id="endingEffectLayer" class="effect-layer"
                  th:classappend="${wedding.endingEffect != null and wedding.endingEffect != 'none'} ? 'eff-' + ${wedding.endingEffect} : ''"></div>
         </div>
@@ -1007,7 +1007,7 @@ window.__WEDDING_STYLE = {
      */
     function applyMainPhotoPresence(b64) {
         var has = !!(b64 && b64.trim());
-        var src = has ? 'data:image/jpeg;base64,' + b64 : '';
+        var src = has ? photoSrc(b64) : '';
 
         /* 히어로 (기본·Our story·Getting Married·THE MARRIAGE) */
         var wrap = document.querySelector('.hero-fullphoto');
@@ -1628,7 +1628,7 @@ window.__WEDDING_STYLE = {
             var endingImgEl = document.getElementById('endingPhotoImg');
             if (endingImgEl) {
                 if (hasEndingPhoto) {
-                    endingImgEl.src = 'data:image/jpeg;base64,' + d.endingPhotoBase64;
+                    endingImgEl.src = photoSrc(d.endingPhotoBase64);
                     endingImgEl.style.display = '';
                 } else {
                     endingImgEl.removeAttribute('src');
@@ -1647,7 +1647,7 @@ window.__WEDDING_STYLE = {
                     var im = document.createElement('img');
                     im.className = 'ending-photo ending-extra';
                     im.alt = '엔딩 사진';
-                    im.src = 'data:image/jpeg;base64,' + b64.trim();
+                    im.src = photoSrc(b64);
                     ew.insertBefore(im, layer);
                 });
                 if (typeof window._endingSlidesReset === 'function') window._endingSlidesReset();

@@ -62,8 +62,9 @@ class LandingDemoTest {
     void demo_rendersSampleWithPhotoAndRequestedTheme() throws Exception {
         String h = html("/demo?theme=forever");
         assertThat(h).contains("design-forever");
-        assertThat(h).contains("data:image/jpeg;base64,");
-        assertThat(h).contains("/images/demo/");
+        // 메인 사진은 파일 URL — 예전처럼 base64 로 HTML 에 박지 않는다 (데모 HTML 350KB → 수십 KB)
+        assertThat(h).contains("src=\"/images/demo/forever.jpg\"");
+        assertThat(h).doesNotContain("data:image/jpeg;base64,/9j");
         assertThat(h).contains("name=\"robots\" content=\"noindex\"");
         // 방명록·참석 응답 제출을 막는 스크립트
         assertThat(h).contains("체험용 샘플이라 실제로 저장되지는 않아요");
