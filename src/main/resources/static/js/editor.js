@@ -1651,6 +1651,7 @@ document.getElementById('topSaveBtn').addEventListener('click', function() {
             showEditorToast('✓ 게시되었습니다');
             markPublished();
             sendLive();
+            if (typeof shareSheet !== 'undefined') shareSheet.open();   /* 모바일 — 바로 보내기 */
         } else {
             showEditorToast('게시 실패: ' + (res.error || ''), 'error');
         }
@@ -3200,4 +3201,170 @@ var syncDateTimeUI = function() {};
         if (list.some(function(m) { return m.target === form; })) build();
     }).observe(form, { childList: true });
     build();
+})();
+
+function isMobileEditor() { return window.matchMedia('(max-width:720px)').matches; }
+
+/* ──────────────────────────────────────
+   미리보기 → 바로 고치기 (모바일)
+   미리보기를 스크롤하면 화면 가운데 섹션을 따라 「○○ 고치기」 이름이 바뀌고,
+   누르면 미리보기를 닫고 그 섹션 편집으로 간다(닫혀 있으면 연다).
+   청첩장 안을 직접 눌러 고치게 하면 갤러리·계좌 복사·지도 같은 원래 버튼과 부딪힌다 — 그래서 버튼 하나로.
+────────────────────────────────────── */
+(function previewToEdit() {
+    var frame = document.getElementById('fullPrevFrame');
+    var editBtn = document.getElementById('fpEditBtn');
+    var closeBtn = document.getElementById('fpCloseBtn');
+    var nameEl = document.getElementById('fpEditName');
+    if (!frame || !editBtn) return;
+    /* 청첩장 쪽 WEDDING_SCROLL_TO 의 targetMap 과 같은 짝 */
+    var MAP = [['wedding','.info-block'],['greet','.greet-card'],['hosts','.hosts-wrap'],['cal','#calCard'],
+               ['dday','#ddayCard'],['gal','#galleryOuter'],['map','.map-full'],['acct','.acct-tab-wrap'],
+               ['rsvp','#rsvpCard'],['guest','#guestbookCard'],['ending','.ending-photo-wrap'],['share','.share-grid']];
+    var NAME = { main:'메인', wedding:'예식 정보', greet:'인사말', hosts:'혼주 정보', cal:'캘린더', dday:'D-Day',
+                 gal:'갤러리', map:'지도', acct:'계좌', rsvp:'참석 여부', guest:'방명록', ending:'엔딩', share:'공유' };
+    var current = 'main', raf = 0, bound = null;
+
+    function detect() {
+        raf = 0;
+        var d = frame.contentDocument, w = frame.contentWindow;
+        if (!d || !w) return;
+        var mid = w.innerHeight * 0.45, best = 'main';
+        MAP.forEach(function(p) {
+            var el = d.querySelector(p[1]);
+            if (!el || !el.offsetParent) return;
+            var box = el.closest('.sec') || el;
+            var r = box.getBoundingClientRect();
+            if (r.top <= mid && r.bottom >= mid) best = p[0];
+        });
+        current = best;
+        nameEl.textContent = NAME[best] || best;
+    }
+    function bind() {
+        var w = frame.contentWindow;
+        if (!w || bound === w) return;
+        bound = w;
+        w.addEventListener('scroll', function() { if (!raf) raf = requestAnimationFrame(detect); }, { passive: true });
+    }
+    /* 미리보기가 열릴 때마다(처음 불러온 뒤 포함) 연결하고 이름을 맞춘다 */
+    new MutationObserver(function() {
+        if (!frame.classList.contains('positioning')) { bind(); detect(); }
+    }).observe(frame, { attributes: true, attributeFilter: ['class'] });
+    nameEl.textContent = NAME[lastEditedSection] || '메인';
+
+    if (closeBtn) closeBtn.addEventListener('click', function() { document.getElementById('fullPrevClose').click(); });
+    editBtn.addEventListener('click', function() {
+        document.getElementById('fullPrevClose').click();
+        var chip = document.querySelector('.ed-chip[data-sec="' + current + '"]');
+        if (chip) chip.click();
+    });
+})();
+
+/* ──────────────────────────────────────
+   모바일 — 섹션 하나를 열면 나머지는 접는다
+   열어 둔 섹션이 계속 쌓이면 화면이 끝없이 길어진다. 칩으로 오가니 접혀 있어도 불편하지 않다.
+────────────────────────────────────── */
+(function accordion() {
+    var main = document.querySelector('.ed-main');
+    function collapse(sec) {
+        var hd = sec.querySelector('.ed-sec-hd');
+        var bd = hd && document.getElementById('bd-' + hd.dataset.sec);
+        sec.classList.remove('open'); sec.classList.add('collapsed');
+        if (bd) bd.style.display = 'none';
+        var chev = hd && hd.querySelector('.ed-chevron');
+        if (chev) chev.style.transform = 'rotate(-90deg)';
+    }
+    var wasOpen = false;
+    document.querySelectorAll('.ed-sec-hd').forEach(function(hd) {
+        var sec = hd.closest('.ed-section');
+        hd.addEventListener('click', function() { wasOpen = sec.classList.contains('open'); }, true);
+        hd.addEventListener('click', function() {
+            if (!isMobileEditor() || wasOpen || !sec.classList.contains('open')) return;
+            document.querySelectorAll('.ed-section.open').forEach(function(o) { if (o !== sec) collapse(o); });
+            /* 위 섹션이 접히면 방금 연 섹션이 위로 밀려 올라간다 — 머리가 보이게 맞춘다 */
+            if (main) {
+                var bar = document.querySelector('.ed-chipbar');
+                var top = sec.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop
+                          - (bar ? bar.offsetHeight : 0);
+                main.scrollTop = Math.max(0, top);
+            }
+        });
+    });
+    /* 처음 열 때도 — 데스크톱 기본(메인·기본 정보·예식 펼침) 대신 메인만 */
+    if (isMobileEditor()) {
+        var opened = document.querySelectorAll('.ed-section.open');
+        for (var i = 1; i < opened.length; i++) collapse(opened[i]);
+    }
+})();
+
+/* ──────────────────────────────────────
+   키보드 — 한 줄 입력칸에서 Enter(키보드의 '다음')를 누르면 다음 칸으로
+   예전엔 Enter 가 폼을 통째로 제출(예전 저장 주소로 이동)해 버릴 수 있었다.
+────────────────────────────────────── */
+(function enterToNext() {
+    var form = document.getElementById('editForm');
+    if (!form) return;
+    var SEL = 'input[type="text"],input[type="tel"],input[type="number"],input[type="email"],input[type="url"],input:not([type])';
+    function fields() {
+        return Array.prototype.filter.call(form.querySelectorAll(SEL), function(el) {
+            return el.offsetParent !== null && !el.disabled && !el.readOnly;
+        });
+    }
+    function mark() {
+        var list = fields();
+        list.forEach(function(el, i) {
+            var sec = el.closest('.ed-section');
+            var next = list[i + 1];
+            el.setAttribute('enterkeyhint', next && next.closest('.ed-section') === sec ? 'next' : 'done');
+        });
+    }
+    form.addEventListener('keydown', function(e) {
+        if (e.key !== 'Enter' || e.isComposing || e.keyCode === 229) return;   /* 한글 조합 중 Enter 는 그대로 */
+        var el = e.target;
+        if (!el.matches || !el.matches(SEL)) return;
+        e.preventDefault();
+        var list = fields(), i = list.indexOf(el), next = list[i + 1];
+        if (next && next.closest('.ed-section') === el.closest('.ed-section')) next.focus();
+        else el.blur();                                               /* 섹션의 마지막 칸 — 키보드를 닫는다 */
+    });
+    form.addEventListener('focusin', mark);
+    mark();
+})();
+
+/* ──────────────────────────────────────
+   게시하면 바로 보내기 (모바일)
+   '보내기'는 폰의 공유 창 — 카카오톡·문자·메신저 중에서 고른다. 없으면 링크 복사로.
+────────────────────────────────────── */
+var shareSheet = (function() {
+    var sheet = document.getElementById('shareSheet');
+    if (!sheet) return { open: function() {} };
+    var link = document.getElementById('viewInviteLink');
+    function url() { return link ? new URL(link.getAttribute('href'), window.location.origin).href : window.location.origin; }
+    function title() {
+        var g = (document.querySelector('#editForm [name="groomName"]') || {}).value || '';
+        var b = (document.querySelector('#editForm [name="brideName"]') || {}).value || '';
+        return (g || b) ? (g || '신랑') + ' ♥ ' + (b || '신부') + ' 결혼합니다' : '모바일 청첩장';
+    }
+    function close() { sheet.hidden = true; }
+    document.getElementById('ssClose').addEventListener('click', close);
+    sheet.addEventListener('click', function(e) { if (e.target === sheet) close(); });
+    document.getElementById('ssCopy').addEventListener('click', function() {
+        var u = url();
+        (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject())
+            .then(function() { showEditorToast('링크를 복사했어요'); })
+            .catch(function() { window.prompt('링크를 길게 눌러 복사하세요', u); });
+    });
+    var nativeBtn = document.getElementById('ssNative');
+    if (!navigator.share) nativeBtn.style.display = 'none';
+    nativeBtn.addEventListener('click', function() {
+        navigator.share({ title: title(), text: '저희 결혼식에 초대합니다 💌', url: url() }).catch(function() {});
+    });
+    return {
+        open: function() {
+            if (!isMobileEditor() || !link) return;
+            document.getElementById('ssOpen').href = url();
+            sheet.hidden = false;
+            (navigator.share ? nativeBtn : document.getElementById('ssCopy')).focus();
+        }
+    };
 })();

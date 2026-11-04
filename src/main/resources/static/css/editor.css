@@ -2136,3 +2136,36 @@ textarea.ed-input{resize:none;line-height:1.75;}
     .ed-draft-status.saving::after{content:'저장 중';}
     .ed-status-save{display:none;}
 }
+
+/* ── 모바일 편집 3: 미리보기에서 바로 고치기 · 게시 후 보내기 ── */
+.fp-actions{display:none;}
+.ed-sharesheet[hidden]{display:none;}
+@media (max-width:720px){
+    .fullprev-close{display:none !important;}   /* 닫기는 아래 버튼 줄로 */
+    .fp-actions{position:fixed;left:0;right:0;bottom:18px;display:flex;justify-content:center;gap:8px;z-index:9200;}
+    .fp-actions button{
+        height:44px;border-radius:22px;border:none;font-size:14px;font-family:inherit;
+        display:inline-flex;align-items:center;gap:6px;padding:0 16px;cursor:pointer;
+        box-shadow:0 8px 24px rgba(0,0,0,.25);
+    }
+    .fp-actions i{font-size:16px;}
+    .fp-close{background:#fff;color:#3a2e28;}
+    .fp-edit{background:#2b2320;color:#fff;}
+    .fp-actions button:focus-visible{outline:2px solid var(--color-rose);outline-offset:2px;}
+
+    .ed-sharesheet{position:fixed;inset:0;z-index:9500;background:rgba(28,22,18,.42);display:flex;align-items:flex-end;}
+    .ed-sharesheet-panel{
+        width:100%;background:#fff;border-radius:20px 20px 0 0;padding:22px 18px calc(18px + env(safe-area-inset-bottom));
+        display:flex;flex-direction:column;gap:8px;animation:edSheetUp .25s ease-out;
+    }
+    @keyframes edSheetUp{from{transform:translateY(40px);opacity:0;}to{transform:none;opacity:1;}}
+    .ed-sharesheet-title{font-size:17px;font-weight:600;color:var(--color-ink);}
+    .ed-sharesheet-desc{font-size:13px;color:#8a7b6e;margin-bottom:8px;}
+    .ed-ss-btn{
+        height:48px;border-radius:12px;border:1px solid #e3d9ce;background:#fff;color:#3a2e28;
+        font-size:15px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;
+        text-decoration:none;cursor:pointer;
+    }
+    .ed-ss-btn.primary{background:#FEE500;border-color:#FEE500;color:#3C1E1E;font-weight:600;}
+    .ed-ss-close{height:44px;border:none;background:none;color:#8a7b6e;font-size:14px;font-family:inherit;cursor:pointer;}
+}

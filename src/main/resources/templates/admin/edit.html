@@ -36,6 +36,23 @@
         </div>
         <div class="fullprev-bar"></div>
     </div>
+    <!-- 모바일 — 미리보기를 보다가 지금 보이는 섹션을 바로 고치러 간다 -->
+    <div class="fp-actions">
+        <button type="button" class="fp-close" id="fpCloseBtn"><i class="ti ti-x" aria-hidden="true"></i>닫기</button>
+        <button type="button" class="fp-edit" id="fpEditBtn"><i class="ti ti-pencil" aria-hidden="true"></i><span id="fpEditName">메인</span> 고치기</button>
+    </div>
+</div>
+
+<!-- 모바일 — 게시하면 바로 보내기 (결국 하려는 건 청첩장을 보내는 것) -->
+<div class="ed-sharesheet" id="shareSheet" role="dialog" aria-modal="true" aria-labelledby="shareSheetTitle" hidden>
+    <div class="ed-sharesheet-panel">
+        <div class="ed-sharesheet-title" id="shareSheetTitle">게시했어요 🎉</div>
+        <div class="ed-sharesheet-desc">이제 하객에게 청첩장을 보내 보세요.</div>
+        <button type="button" class="ed-ss-btn primary" id="ssNative"><i class="ti ti-share" aria-hidden="true"></i>보내기 (카카오톡 · 문자 등)</button>
+        <button type="button" class="ed-ss-btn" id="ssCopy"><i class="ti ti-link" aria-hidden="true"></i>링크 복사</button>
+        <a class="ed-ss-btn" id="ssOpen" target="_blank"><i class="ti ti-external-link" aria-hidden="true"></i>청첩장 열어 보기</a>
+        <button type="button" class="ed-ss-close" id="ssClose">닫기</button>
+    </div>
 </div>
 
 <!-- 첫 방문 온보딩 가이드 -->
