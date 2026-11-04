@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500&family=Noto+Sans+KR:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Pinyon+Script&family=Sacramento&display=swap');
+/* 글꼴은 HTML <link> 에서만 받는다 — 여기서 @import 하면 같은 구글폰트 CSS(한글 subset 수백 KB)를
+   CSS 를 다 받은 뒤 한 번 더, 렌더링을 막으며 받는다. (invitation.html 의 <link> 가 같은 글꼴(+선택 글꼴)을 이미 받는다) */
 
 /* ── 전역 스크롤바 숨김 + 풀화면 레이아웃 ── */
 *{box-sizing:border-box;margin:0;padding:0;}

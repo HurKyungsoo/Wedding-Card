@@ -1,7 +1,8 @@
 /* ════════════════════════════════════════
    Wedding Editor CSS — 청첩장 맞춤 편집기
    ════════════════════════════════════════ */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&family=Cormorant+Garamond:ital,wght@1,400&display=swap');
+/* 글꼴은 HTML <link> 에서만 받는다 — 여기서 @import 하면 같은 구글폰트 CSS(한글 subset 수백 KB)를
+   CSS 를 다 받은 뒤 한 번 더, 렌더링을 막으며 받는다. (admin/edit.html 의 <link> 가 같은 글꼴을 이미 받는다) */
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;font-family:var(--font-sans);}
 
