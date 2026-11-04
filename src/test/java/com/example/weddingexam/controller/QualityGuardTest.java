@@ -51,4 +51,22 @@ class QualityGuardTest {
         assertThat(listeners).isPositive();
         assertThat(checks).isEqualTo(listeners);
     }
+
+    /**
+     * ★ 아이콘 CSS 경로 — 2.x 는 패키지 루트에, 3.x 는 dist/ 아래에 있다.
+     * @latest 를 버전으로 고정하면서 루트 경로에 3.x 를 적었다가 404 → 청첩장·편집기 아이콘이 전부 사라졌다.
+     * 루트 경로는 예전 @latest 가 실제로 주던 2.47.0, dist 경로는 3.x 로만 쓴다.
+     */
+    @Test
+    void tablerIconCss_versionMatchesPath() throws Exception {
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile("icons-webfont@([0-9.]+)/(dist/)?tabler-icons\\.min\\.css");
+        for (String t : List.of("templates/index.html", "templates/invitation.html", "templates/admin/edit.html",
+                "templates/my/list.html", "templates/superadmin/dashboard.html")) {
+            java.util.regex.Matcher m = p.matcher(read(t));
+            while (m.find()) {
+                boolean v3 = m.group(1).startsWith("3.");
+                assertThat(m.group(2) != null).as(t + " — " + m.group()).isEqualTo(v3);
+            }
+        }
+    }
 }
