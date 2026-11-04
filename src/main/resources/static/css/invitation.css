@@ -2807,3 +2807,41 @@ body{ -webkit-overflow-scrolling:touch; }
 @media (prefers-reduced-motion: reduce){
     .sec-rv{opacity:1 !important;transform:none !important;transition:none !important;}
 }
+
+/* ════════════════════════════════════════
+   사진 연출 (2026-11) — 메인 사진 · 갤러리 · 엔딩 사진
+   invitation.js photoMotion() 과 짝. 전부 transform/opacity/clip-path 만 움직인다.
+   ════════════════════════════════════════ */
+/* 메인 사진: 처음 열릴 때 1.1배 → 원래 크기로 아주 천천히 줌아웃 (Ken Burns), 스크롤 시차는 JS 가 --py 로 */
+@property --kb { syntax:'<number>'; inherits:false; initial-value:1; }
+.pm-hero{
+    --py:0px;
+    transform:translate3d(0,var(--py),0) scale(calc(var(--kb) * var(--base, 1))) !important;
+    animation:pmKenBurns 7s cubic-bezier(.16,.8,.3,1) both;
+}
+@keyframes pmKenBurns{ from{ --kb:1.1; } to{ --kb:1; } }
+
+/* 갤러리: 겹겹이던 효과(전체 축소 + 장마다 축소 + 섹션 등장)를 걷고, 사진이 현상되듯 아래에서 위로 열린다 */
+.gallery-outer.reveal-zoom{ opacity:1 !important; transform:none !important; transition:none !important; }
+#galleryOuter img.pm-dev{
+    opacity:1 !important; transform:none !important;
+    clip-path:inset(100% 0 0 0);
+    transition:clip-path .9s cubic-bezier(.65,0,.35,1) !important;
+}
+#galleryOuter img.pm-dev.on{ clip-path:inset(0 0 0 0); }
+
+/* 라이트박스: 누른 사진이 그 자리에서 커져 열린다 (JS 가 FLIP) — 기존 가운데서 튀어나오는 애니메이션은 끈다 */
+.lightbox.pm-flip .lightbox-img{ animation:none; }
+
+/* 엔딩: 스크롤에 따라 밝게 번진 사진이 선명해지며 줌아웃, 자리 잡으면 문구가 나타난다 */
+.ending-photo-wrap.reveal-scale{ opacity:1 !important; transform:none !important; transition:none !important; }
+.ending-photo-wrap .pm-veil{ position:absolute; inset:0; background:#fffaf5; pointer-events:none; opacity:var(--veil, 0); }
+.ending-photo.pm-end{ transform:scale(var(--es, 1)); transform-origin:center 40%; }
+.ending-caption.pm-cap{ opacity:0 !important; transform:translateY(14px) !important; transition:opacity 1s ease, transform 1s cubic-bezier(.25,.46,.45,.94) !important; }
+.ending-caption.pm-cap.on{ opacity:1 !important; transform:none !important; }
+
+@media (prefers-reduced-motion: reduce){
+    .pm-hero{ animation:none; }
+    #galleryOuter img.pm-dev{ clip-path:none; transition:none !important; }
+    .ending-caption.pm-cap{ opacity:1 !important; transform:none !important; }
+}
