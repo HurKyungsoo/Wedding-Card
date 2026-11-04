@@ -1192,30 +1192,24 @@
             </div>
             <div class="ed-sec-bd" id="bd-ending" style="display:none;">
                 <div class="ed-hint">
-                    ⓘ 방명록·공유하기 바로 앞에 사진 한 장과 문구로 마무리하는 클로징 섹션입니다.<br>
-                    ⓘ 사진을 올려야 하객 화면에 표시됩니다.
+                    ⓘ 방명록·공유하기 바로 앞에 사진과 문구로 마무리하는 클로징 섹션입니다.<br>
+                    ⓘ 사진은 최대 5장 — 여러 장이면 같은 자리에서 4초마다 차례로 넘어가요. 사진을 올려야 하객 화면에 표시됩니다.
                 </div>
+                <!-- endingPhotoBase64 = 첫 장(예전 코드 호환), endingPhotos = 전부('|||' 로 이음). editor.js endingPhotosUI 가 둘 다 맞춘다 -->
                 <input type="hidden" th:field="*{endingPhotoBase64}" id="endingPhotoBase64">
+                <input type="hidden" th:field="*{endingPhotos}" id="endingPhotosInput">
                 <div class="ed-row" style="align-items:flex-start">
                     <span class="ed-label" style="padding-top:10px">사진</span>
                     <div class="ed-ctrl">
-                        <div class="ed-upload" id="endingZone" style="min-height:140px;"
-                             th:style="${wedding.endingPhotoBase64 != null and !#strings.isEmpty(wedding.endingPhotoBase64)} ? 'display:none' : ''">
+                        <!-- 썸네일 목록은 항상 DOM 에 둔다 — 비어 있다가 처음 올릴 때도 JS 가 찾아 채울 수 있게 -->
+                        <div class="ed-end-thumbs" id="endingThumbs"></div>
+                        <div class="ed-upload ed-end-zone" id="endingZone">
                             <div>
-                                <i class="ti ti-photo" style="font-size:28px;"></i>
-                                <p>클릭 또는 드래그하여<br>이미지를 업로드 해주세요.</p>
+                                <i class="ti ti-photo-plus" style="font-size:26px;"></i>
+                                <p><span id="endingZoneText">클릭 또는 드래그하여<br>이미지를 업로드 해주세요.</span></p>
                             </div>
                         </div>
-                        <!-- img는 항상 DOM에 둔다 — th:if로 뺐다가, 사진이 없던 청첩장에서 처음
-                             업로드해도 handleEndingPhotoFile()이 #endingThumbImg를 못 찾아
-                             썸네일이 안 보이는(빈 박스 + ✕ 버튼만) 버그가 났었다 -->
-                        <div class="ed-thumb" id="endingThumb" style="width:100%;height:180px;"
-                             th:style="${wedding.endingPhotoBase64 != null and !#strings.isEmpty(wedding.endingPhotoBase64)} ? '' : 'display:none'">
-                            <img id="endingThumbImg" alt=""
-                                 th:src="${wedding.endingPhotoBase64 != null and !#strings.isEmpty(wedding.endingPhotoBase64)} ? ('data:image/jpeg;base64,' + ${wedding.endingPhotoBase64}) : ''">
-                            <button type="button" class="gal-del-btn" id="removeEndingPhoto">✕</button>
-                        </div>
-                        <input type="file" id="endingPhotoFile" accept="image/*" style="display:none">
+                        <input type="file" id="endingPhotoFile" accept="image/*" multiple style="display:none">
                     </div>
                 </div>
                 <div class="ed-row">

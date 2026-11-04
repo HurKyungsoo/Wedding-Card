@@ -302,15 +302,8 @@ var SECTION_REVERT_HOOKS = {
         if (lat && lng && typeof showStaticMap === 'function') showStaticMap(lng, lat, ni ? ni.value : '');
     },
     ending: function() {
-        /* 되돌아간 사진 값으로 업로드 영역 ↔ 썸네일 표시를 다시 맞춘다 */
-        var b64 = document.getElementById('endingPhotoBase64');
-        var zone = document.getElementById('endingZone');
-        var thumb = document.getElementById('endingThumb');
-        var img = document.getElementById('endingThumbImg');
-        var has = !!(b64 && b64.value);
-        if (zone) zone.style.display = has ? 'none' : '';
-        if (thumb) thumb.style.display = has ? '' : 'none';
-        if (img) img.src = has ? 'data:image/jpeg;base64,' + b64.value : '';
+        /* 되돌아간 사진 값(endingPhotos / endingPhotoBase64)으로 썸네일 목록을 다시 그린다 */
+        if (typeof renderEndingPhotos === 'function') renderEndingPhotos(true);
     },
     gal: function() {
         /* 히든 galleryImagesInput 값은 revertSection()이 이미 복원해줬다 —
@@ -1061,23 +1054,71 @@ function resizeImage(file, maxWidth, quality, callback) {
 }
 
 /* ──────────────────────────────────────
-   엔딩(마지막 인사) 사진 업로드 — 메인 사진과 달리 크롭 UI 없이
-   갤러리처럼 리사이즈만 해서 바로 저장한다 (한 장뿐이라 굳이 크롭할 필요는 적다고 판단)
+   엔딩(마지막 인사) 사진 — 최대 5장
+   갤러리처럼 리사이즈만 해서 넣는다. 첫 장은 endingPhotoBase64 에도 넣어 예전 코드(섹션 표시 여부 등)가 그대로 동작한다.
 ────────────────────────────────────── */
-function handleEndingPhotoFile(file) {
-    if (!file) return;
-    resizeImage(file, 1440, 0.85, function(dataUrl) {
-        var b64 = document.getElementById('endingPhotoBase64');
-        if (b64) b64.value = dataUrl.split(',')[1];
-        var img = document.getElementById('endingThumbImg');
-        if (img) img.src = dataUrl;
-        var zone = document.getElementById('endingZone');
-        var thumb = document.getElementById('endingThumb');
-        if (zone) zone.style.display = 'none';
-        if (thumb) thumb.style.display = '';
-        scheduleLive(150);
+var MAX_ENDING_PHOTOS = 5;
+var endingPhotos = [];
+function readEndingPhotos() {
+    var all = document.getElementById('endingPhotosInput');
+    var one = document.getElementById('endingPhotoBase64');
+    var list = (all && all.value ? all.value.split('|||') : []).filter(function(x) { return x.trim(); });
+    if (!list.length && one && one.value) list = [one.value];
+    return list.slice(0, MAX_ENDING_PHOTOS);
+}
+function syncEndingInputs() {
+    var all = document.getElementById('endingPhotosInput');
+    var one = document.getElementById('endingPhotoBase64');
+    if (all) all.value = endingPhotos.join('|||');
+    if (one) one.value = endingPhotos[0] || '';
+}
+/* fromInputs — 되돌리기·첫 로드처럼 히든 값에서 다시 읽어야 할 때 */
+function renderEndingPhotos(fromInputs) {
+    if (fromInputs) endingPhotos = readEndingPhotos();
+    var box = document.getElementById('endingThumbs');
+    var zone = document.getElementById('endingZone');
+    var zoneText = document.getElementById('endingZoneText');
+    if (!box) return;
+    box.innerHTML = '';
+    endingPhotos.forEach(function(b64, i) {
+        var t = document.createElement('div');
+        t.className = 'ed-thumb ed-end-thumb';
+        t.innerHTML = '<img alt=""><span class="ed-end-num">' + (i + 1) + '</span>' +
+                      '<button type="button" class="gal-del-btn" aria-label="사진 빼기">✕</button>';
+        t.querySelector('img').src = 'data:image/jpeg;base64,' + b64;
+        t.querySelector('button').addEventListener('click', function(e) {
+            e.stopPropagation();
+            endingPhotos.splice(i, 1);
+            syncEndingInputs(); renderEndingPhotos(); scheduleLive(150);
+        });
+        box.appendChild(t);
+    });
+    box.style.display = endingPhotos.length ? '' : 'none';
+    if (zone) zone.style.display = endingPhotos.length >= MAX_ENDING_PHOTOS ? 'none' : '';
+    if (zoneText) zoneText.innerHTML = endingPhotos.length
+        ? '사진 추가 (' + endingPhotos.length + '/' + MAX_ENDING_PHOTOS + ') — 여러 장이면 차례로 넘어가요'
+        : '클릭 또는 드래그하여<br>이미지를 업로드 해주세요. (최대 ' + MAX_ENDING_PHOTOS + '장)';
+    if (zone) zone.classList.toggle('compact', endingPhotos.length > 0);
+}
+function handleEndingPhotoFiles(files) {
+    files = Array.from(files || []).filter(function(f) { return f.type.indexOf('image/') === 0; });
+    var room = MAX_ENDING_PHOTOS - endingPhotos.length;
+    if (!files.length) return;
+    if (room <= 0) { showEditorToast('엔딩 사진은 최대 ' + MAX_ENDING_PHOTOS + '장까지예요', 'error'); return; }
+    if (files.length > room) { showEditorToast(room + '장만 추가했어요 (최대 ' + MAX_ENDING_PHOTOS + '장)', 'error'); files = files.slice(0, room); }
+    var pending = files.length, added = new Array(files.length);
+    files.forEach(function(file, i) {
+        resizeImage(file, 1440, 0.85, function(dataUrl) {
+            added[i] = dataUrl.split(',')[1];
+            if (--pending === 0) {          /* 고른 순서대로 붙인다 (리사이즈는 끝나는 순서가 제각각) */
+                endingPhotos = endingPhotos.concat(added.filter(Boolean)).slice(0, MAX_ENDING_PHOTOS);
+                syncEndingInputs(); renderEndingPhotos(); scheduleLive(150);
+            }
+        });
     });
 }
+/* 예전 이름 — 다른 곳에서 한 장씩 부를 수 있게 남겨 둔다 */
+function handleEndingPhotoFile(file) { if (file) handleEndingPhotoFiles([file]); }
 
 var endingZoneEl = document.getElementById('endingZone');
 if (endingZoneEl) {
@@ -1099,32 +1140,17 @@ if (endingZoneEl) {
     endingZoneEl.addEventListener('drop', function(e) {
         e.preventDefault(); e.stopPropagation();
         endingZoneEl.classList.remove('drag-over');
-        var file = e.dataTransfer.files && e.dataTransfer.files[0];
-        if (file && file.type.indexOf('image/') === 0) handleEndingPhotoFile(file);
+        handleEndingPhotoFiles(e.dataTransfer && e.dataTransfer.files);
     });
 }
 var endingPhotoFileEl = document.getElementById('endingPhotoFile');
 if (endingPhotoFileEl) {
     endingPhotoFileEl.addEventListener('change', function() {
-        handleEndingPhotoFile(this.files[0]);
+        handleEndingPhotoFiles(this.files);
         this.value = '';
     });
 }
-var removeEndingPhotoBtn = document.getElementById('removeEndingPhoto');
-if (removeEndingPhotoBtn) {
-    removeEndingPhotoBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var b64 = document.getElementById('endingPhotoBase64');
-        if (b64) b64.value = '';
-        var fileEl = document.getElementById('endingPhotoFile');
-        if (fileEl) fileEl.value = '';
-        var zone = document.getElementById('endingZone');
-        var thumb = document.getElementById('endingThumb');
-        if (zone) zone.style.display = '';
-        if (thumb) thumb.style.display = 'none';
-        scheduleLive(150);
-    });
-}
+renderEndingPhotos(true);
 
 /* 엔딩 문구 샘플 칩 — 누르면 textarea 값을 채울 뿐 확정이 아니라 계속 고쳐 쓸 수 있다 */
 var endingCaptionChipsEl = document.getElementById('endingCaptionChips');
@@ -1338,6 +1364,8 @@ function collectData() {
     /* endingPhotoBase64 — hidden input 직접 읽기 (FormData에서 누락 방지) */
     var endB64El = document.getElementById('endingPhotoBase64');
     if (endB64El) data.endingPhotoBase64 = endB64El.value || '';
+    var endAllEl = document.getElementById('endingPhotosInput');
+    if (endAllEl) data.endingPhotos = endAllEl.value || '';
 
     /* deceasedDisplayType — 혼주섹션 탭 값 명시 읽기 */
     var ddEl = document.getElementById('deceasedInput');

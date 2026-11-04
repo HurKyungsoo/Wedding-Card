@@ -2835,8 +2835,8 @@ body{ -webkit-overflow-scrolling:touch; }
 
 /* 엔딩: 스크롤에 따라 밝게 번진 사진이 선명해지며 줌아웃, 자리 잡으면 문구가 나타난다 */
 .ending-photo-wrap.reveal-scale{ opacity:1 !important; transform:none !important; transition:none !important; }
-.ending-photo-wrap .pm-veil{ position:absolute; inset:0; background:#fffaf5; pointer-events:none; opacity:var(--veil, 0); }
-.ending-photo.pm-end{ transform:scale(var(--es, 1)); transform-origin:center 40%; }
+.ending-photo-wrap .pm-veil{ position:absolute; inset:0; z-index:3; background:#fffaf5; pointer-events:none; opacity:var(--veil, 0); }
+.ending-photo-wrap .ending-photo{ transform:scale(var(--es, 1)); transform-origin:center 40%; }
 .ending-caption.pm-cap{ opacity:0 !important; transform:translateY(14px) !important; transition:opacity 1s ease, transform 1s cubic-bezier(.25,.46,.45,.94) !important; }
 .ending-caption.pm-cap.on{ opacity:1 !important; transform:none !important; }
 
@@ -2845,3 +2845,19 @@ body{ -webkit-overflow-scrolling:touch; }
     #galleryOuter img.pm-dev{ clip-path:none; transition:none !important; }
     .ending-caption.pm-cap{ opacity:1 !important; transform:none !important; }
 }
+
+/* ── 엔딩 사진 여러 장 — 같은 자리에서 차례로 겹쳐 넘기기 (invitation.js endingSlides) ──
+   두 번째 장부터는 첫 장 위에 겹쳐 두고 투명도로 넘긴다. 보이는 장은 5초 동안 1.06배 → 1배로 아주 천천히 줌아웃
+   (individual `scale` 속성이라 스크롤 연출의 transform 과 겹쳐도 서로 덮어쓰지 않는다). */
+.ending-photo-wrap .ending-photo{ transition:opacity 1.2s ease; }
+.ending-extra{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; }
+.ending-photo.es-off{ opacity:0; }
+.ending-photo.es-on{ opacity:1; z-index:1; }
+.ending-photo.kb{ animation:endKb 5.5s cubic-bezier(.16,.8,.3,1) both; }
+@keyframes endKb{ from{ scale:1.06; } to{ scale:1; } }
+.ending-photo-wrap #endingEffectLayer{ z-index:2; }
+.ending-dots{ display:flex; justify-content:center; gap:6px; margin:-0.9rem 0 1.5rem; }
+.ending-dots:empty{ display:none; }
+.ending-dots span{ width:6px; height:6px; border-radius:3px; background:#dccfc2; transition:width .4s, background .4s; }
+.ending-dots span.on{ width:18px; background:var(--color-rose); }
+@media (prefers-reduced-motion: reduce){ .ending-photo.kb{ animation:none; } }

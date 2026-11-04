@@ -813,9 +813,14 @@
             <img id="endingPhotoImg" class="ending-photo" alt="엔딩 사진"
                  th:src="${wedding.endingPhotoBase64 != null and !#strings.isEmpty(wedding.endingPhotoBase64)} ? ('data:image/jpeg;base64,' + ${wedding.endingPhotoBase64}) : ''"
                  th:style="${wedding.endingPhotoBase64 != null and !#strings.isEmpty(wedding.endingPhotoBase64)} ? '' : 'display:none'">
+            <!-- 두 번째 장부터 — 같은 자리에 겹쳐 두고 차례로 겹쳐 넘긴다 (invitation.js endingSlides) -->
+            <img th:each="p, st : ${wedding.endingPhotoList}" th:if="${st.index > 0}"
+                 class="ending-photo ending-extra" alt="엔딩 사진" th:src="'data:image/jpeg;base64,' + ${p}">
             <div id="endingEffectLayer" class="effect-layer"
                  th:classappend="${wedding.endingEffect != null and wedding.endingEffect != 'none'} ? 'eff-' + ${wedding.endingEffect} : ''"></div>
         </div>
+        <!-- 여러 장일 때 몇 번째 사진인지 — JS 가 채운다 -->
+        <div class="ending-dots" id="endingDots" aria-hidden="true"></div>
         <div class="ending-caption reveal delay-1" id="endingCaptionEl" th:utext="${endingCaptionHtml}"></div>
     </div>
 
@@ -1628,6 +1633,23 @@ window.__WEDDING_STYLE = {
                     endingImgEl.removeAttribute('src');
                     endingImgEl.style.display = 'none';
                 }
+            }
+        }
+        /* 엔딩 사진 여러 장 — 두 번째 장부터 다시 깔고 넘김 재시작 */
+        if (d.endingPhotos !== undefined) {
+            var ew = q('.ending-photo-wrap');
+            if (ew) {
+                qa('.ending-extra').forEach(function(el) { el.remove(); });
+                var list = String(d.endingPhotos || '').split('|||').filter(function(x) { return x.trim(); }).slice(0, 5);
+                var layer = document.getElementById('endingEffectLayer');
+                list.slice(1).forEach(function(b64) {
+                    var im = document.createElement('img');
+                    im.className = 'ending-photo ending-extra';
+                    im.alt = '엔딩 사진';
+                    im.src = 'data:image/jpeg;base64,' + b64.trim();
+                    ew.insertBefore(im, layer);
+                });
+                if (typeof window._endingSlidesReset === 'function') window._endingSlidesReset();
             }
         }
         if (d.endingCaption !== undefined) {
