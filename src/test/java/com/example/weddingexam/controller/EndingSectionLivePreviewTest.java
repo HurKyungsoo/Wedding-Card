@@ -106,7 +106,7 @@ class EndingSectionLivePreviewTest {
 
         String html = guestHtml();
         assertThat(html).contains("id=\"endingPhotoImg\"");
-        assertThat(html.split("ending-photo ending-extra", -1).length - 1).isEqualTo(2);
+        assertThat(html.split("class=\"ending-photo ending-extra\"", -1).length - 1).isEqualTo(2);
         assertThat(html).contains("base64,YmFy").contains("base64,YmF6");
         assertThat(html).contains("id=\"endingDots\"");
     }
