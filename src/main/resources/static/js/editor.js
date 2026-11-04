@@ -1,3 +1,13 @@
+/* 사진 값 → img src. 저장된 사진은 파일 URL(/uploads/...), 막 고른 사진·예전 데이터는 접두어 없는 base64 */
+function photoSrc(v) {
+    v = String(v || '').trim();
+    if (!v) return '';
+    if (/^(https?:|data:)/.test(v)) return v;
+    /* JPEG base64 는 항상 "/9j/" 로 시작 — '/' 만 보고 경로로 판단하면 안 된다. base64 에 없는 문자가 있어야 경로 */
+    if (v.charAt(0) === '/' && /[.?_%:-]/.test(v)) return v;
+    return 'data:image/jpeg;base64,' + v;
+}
+
 /* ════════════════════════════════════════
    Wedding Editor JS
    ════════════════════════════════════════ */
@@ -279,7 +289,7 @@ var SECTION_REVERT_HOOKS = {
         var b64 = document.getElementById('mainPhotoBase64');
         if (b64) {
             if (b64.value) {
-                openMainCropper('data:image/jpeg;base64,' + b64.value);
+                openMainCropper(photoSrc(b64.value));
             } else {
                 closeMainCropper();
             }
@@ -1085,7 +1095,7 @@ function renderEndingPhotos(fromInputs) {
         t.className = 'ed-thumb ed-end-thumb';
         t.innerHTML = '<img alt=""><span class="ed-end-num">' + (i + 1) + '</span>' +
                       '<button type="button" class="gal-del-btn" aria-label="사진 빼기">✕</button>';
-        t.querySelector('img').src = 'data:image/jpeg;base64,' + b64;
+        t.querySelector('img').src = photoSrc(b64);
         t.querySelector('button').addEventListener('click', function(e) {
             e.stopPropagation();
             endingPhotos.splice(i, 1);
@@ -1414,11 +1424,43 @@ function scheduleLive(ms) {
 }
 var savePending = false;
 
+
+/* ──────────────────────────────────────
+   저장 응답의 사진 URL 반영
+   서버는 저장할 때 base64 사진을 파일로 바꾸고 URL(/uploads/...)을 돌려준다.
+   보낸 값이 아직 그대로일 때만(그 사이 사진을 또 바꾸지 않았을 때만) 입력값을 URL 로 바꾼다 —
+   그래야 다음 자동저장부터 몇 MB 짜리 사진을 매번 다시 보내지 않는다.
+────────────────────────────────────── */
+var PHOTO_INPUTS = {
+    mainPhotoBase64:   'mainPhotoBase64',
+    endingPhotoBase64: 'endingPhotoBase64',
+    endingPhotos:      'endingPhotosInput',
+    galleryImages:     'galleryImagesInput'
+};
+function applySavedPhotoUrls(sent, photos) {
+    if (!sent || !photos) return;
+    var endingChanged = false;
+    Object.keys(PHOTO_INPUTS).forEach(function(key) {
+        var el = document.getElementById(PHOTO_INPUTS[key]);
+        var now = photos[key];
+        if (!el || typeof now !== 'string') return;
+        if ((sent[key] || '') !== el.value) return;   /* 그 사이 바뀜 — 다음 저장 때 다시 */
+        if (el.value === now) return;
+        el.value = now;
+        if (key === 'galleryImages' && typeof galImages !== 'undefined') {
+            galImages = now ? now.split('|||').filter(function(x) { return x.trim(); }) : [];
+        }
+        if (key === 'endingPhotos' || key === 'endingPhotoBase64') endingChanged = true;
+    });
+    if (endingChanged && typeof renderEndingPhotos === 'function') renderEndingPhotos(true);
+}
+
 function autoSave() {
     savePending = false;
-    fetch('/api/admin/autosave', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(collectData())})
+    var data = collectData();
+    fetch('/api/admin/autosave', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)})
         .then(function(r){ return r.json(); })
-        .then(function(res){ if (res && res.success) markDraftSaved(); })
+        .then(function(res){ if (res && res.success) { markDraftSaved(); applySavedPhotoUrls(data, res.photos); } })
         .catch(function(){});
 }
 
@@ -1432,7 +1474,7 @@ function autoSaveAndRefresh() {
         body:JSON.stringify(data)
     })
         .then(function(r){ return r.json(); })
-        .then(function(res){ if (res && res.success) markDraftSaved(); })
+        .then(function(res){ if (res && res.success) { markDraftSaved(); applySavedPhotoUrls(data, res.photos); } })
         .catch(function(){});
     /* iframe 리로드 제거 — postMessage로 미리보기는 이미 갱신됨 (깜빡임 방지) */
 }
@@ -1601,6 +1643,7 @@ document.getElementById('topSaveBtn').addEventListener('click', function() {
         btn.disabled = false;
         btn.textContent = '게시하기';
         if (res.success) {
+            applySavedPhotoUrls(data, res.photos);
             showEditorToast('✓ 게시되었습니다');
             markPublished();
             sendLive();
@@ -1639,6 +1682,7 @@ if (bottomSaveBtn) {
             btn.disabled = false;
             btn.innerHTML = '<i class="ti ti-external-link" style="font-size:14px;"></i> 게시하기';
             if (res.success) {
+                applySavedPhotoUrls(data, res.photos);
                 markPublished();
                 showEditorToast('✓ 게시 완료! 청첩장을 엽니다.');
                 /* 저장 완료 후 새 창으로 청첩장 열기 */
@@ -2552,7 +2596,7 @@ window.addEventListener('load', function() {
     if (WEDDING.hasPhoto) {
         /* /api/admin/photo는 청첩장별로 스코프되지 않으므로 이미 폼에 있는 base64 값을 사용 */
         var b64Input = document.getElementById('mainPhotoBase64');
-        var photoDataUrl = (b64Input && b64Input.value) ? 'data:image/jpeg;base64,' + b64Input.value : '/api/admin/photo';
+        var photoDataUrl = (b64Input && b64Input.value) ? photoSrc(b64Input.value) : '/api/admin/photo';
 
         /* 저장된 사진으로 크롭 UI를 연다. 이때 applyCropToPhoto()는 부르지 않는다 —
            여는 것만으로 base64를 다시 써버리면 아무것도 안 했는데 "변경됨"이 되고,
@@ -2716,11 +2760,12 @@ function goToWeddingDate() {
         savePending = false;
         btn.classList.add('saving');
         if (label) label.textContent = '저장 중…';
-        fetch('/api/admin/autosave', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(collectData())})
+        var data = collectData();
+        fetch('/api/admin/autosave', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)})
             .then(function(r){ return r.json(); })
             .then(function(res){
                 btn.classList.remove('saving');
-                if (res && res.success) { markDraftSaved(); showEditorToast('✓ 임시저장했어요 — 하객에게 보이려면 \'게시하기\''); }
+                if (res && res.success) { markDraftSaved(); applySavedPhotoUrls(data, res.photos); showEditorToast('✓ 임시저장했어요 — 하객에게 보이려면 \'게시하기\''); }
                 else { renderDraftStatus(); showEditorToast('저장하지 못했어요. 다시 눌러 주세요.', 'error'); }
             })
             .catch(function(){

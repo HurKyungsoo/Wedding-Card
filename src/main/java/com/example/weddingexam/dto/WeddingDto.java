@@ -348,6 +348,29 @@ public class WeddingDto {
     public String getEndingEffect() { return endingEffect; } public void setEndingEffect(String v) { this.endingEffect = v; }
     public String getEndingPhotos() { return endingPhotos; } public void setEndingPhotos(String v) { this.endingPhotos = v; }
 
+    /**
+     * 사진 값 → img src. 사진은 이제 파일 URL(/uploads/...)로 저장되지만, 예전 데이터나 저장 전 값은
+     * 접두어 없는 base64 일 수 있어 그때만 data: 를 붙인다.
+     */
+    public static String photoSrc(String v) {
+        if (v == null || v.isBlank()) return "";
+        String t = v.trim();
+        if (t.startsWith("data:") || com.example.weddingexam.photo.PhotoExternalizer.isUrl(t)) return t;
+        return "data:image/jpeg;base64," + t;
+    }
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public String getMainPhotoSrc() { return photoSrc(mainPhotoBase64); }
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public String getEndingPhotoSrc() { return photoSrc(endingPhotoBase64); }
+
+    /** 엔딩 사진 목록을 img src 로 */
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public java.util.List<String> getEndingPhotoSrcList() {
+        return getEndingPhotoList().stream().map(WeddingDto::photoSrc).toList();
+    }
+
     /** 엔딩 사진 목록 — 여러 장 값이 있으면 그것, 없으면 예전 한 장 값. 최대 5장. */
     @com.fasterxml.jackson.annotation.JsonIgnore
     public java.util.List<String> getEndingPhotoList() {

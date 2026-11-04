@@ -4,6 +4,10 @@ import com.example.weddingexam.dto.WeddingDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import com.example.weddingexam.photo.PhotoExternalizer;
+import com.example.weddingexam.photo.PhotoStorage;
+import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -18,9 +22,13 @@ class WeddingServiceTest {
 
     private WeddingService weddingService;
 
+    @TempDir
+    Path uploadDir;
+
     @BeforeEach
     void setUp() {
-        weddingService = new WeddingService(weddingRepository, new ObjectMapper());
+        weddingService = new WeddingService(weddingRepository, new ObjectMapper(),
+                new PhotoExternalizer(new PhotoStorage(uploadDir.toString())));
     }
 
     @Test

@@ -47,6 +47,8 @@ public class SecurityConfig {
                     // 랜딩 체험 폰·테마 미리보기(/demo)와 "이 테마로 만들기" 진입점(/start)
                     "/demo", "/start",
                     "/css/**", "/js/**", "/images/**", "/fonts/**",
+                    // 업로드 사진 — 하객이 보는 청첩장의 사진이라 공개 (파일 이름이 추측 불가능한 해시)
+                    "/uploads/**",
                     // 파비콘류는 루트 경로라 위 정적 패턴에 안 걸린다 — 따로 열어줘야
                     // 브라우저가 탭 아이콘을 못 받고 로그인 페이지로 튕긴다
                     "/favicon.svg", "/favicon-32.png", "/favicon.ico", "/apple-touch-icon.png",

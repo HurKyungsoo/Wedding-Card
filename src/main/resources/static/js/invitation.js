@@ -1,3 +1,13 @@
+/* 사진 값 → img src. 저장된 사진은 파일 URL(/uploads/...), 막 고른 사진·예전 데이터는 접두어 없는 base64 */
+function photoSrc(v) {
+    v = String(v || '').trim();
+    if (!v) return '';
+    if (/^(https?:|data:)/.test(v)) return v;
+    /* JPEG base64 는 항상 "/9j/" 로 시작 — '/' 만 보고 경로로 판단하면 안 된다. base64 에 없는 문자가 있어야 경로 */
+    if (v.charAt(0) === '/' && /[.?_%:-]/.test(v)) return v;
+    return 'data:image/jpeg;base64,' + v;
+}
+
 'use strict';
 
 /* ── 날짜·시간 포맷 ── */

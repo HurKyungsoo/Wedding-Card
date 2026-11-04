@@ -76,7 +76,7 @@ public class WeddingController {
         WeddingDto dto = weddingService.findFirst();
         String design = DemoPhotos.isDesign(theme) ? theme : "our_story";
         dto.setMainDesign(design);
-        dto.setMainPhotoBase64(DemoPhotos.photoBase64(design));
+        dto.setMainPhotoBase64(DemoPhotos.photoUrl(design));   // 파일 URL — HTML 에 사진을 박지 않는다
         dto.setMainPhotoPosX(null);
         dto.setMainPhotoPosY(null);
         dto.setMainPhotoScale(null);
@@ -462,6 +462,10 @@ public class WeddingController {
             if (dto.getMainPhotoBase64() == null || dto.getMainPhotoBase64().isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
+            String src = WeddingDto.photoSrc(dto.getMainPhotoBase64());
+            if (src.startsWith("/")) {   // 파일로 저장된 사진 — 그 주소로 보낸다
+                return ResponseEntity.status(302).header("Location", src).build();
+            }
             byte[] bytes = java.util.Base64.getDecoder().decode(dto.getMainPhotoBase64());
             return ResponseEntity.ok()
                 .header("Content-Type","image/jpeg")
@@ -486,7 +490,8 @@ public class WeddingController {
                 dto.setId(weddingId);
                 if (principal != null) dto.setUserId(principal.getUserId());
                 weddingService.saveDraft(weddingId, dto);
-                return ResponseEntity.ok(Map.of("success", true, "draftSavedAt", LocalDateTime.now().toString()));
+                return ResponseEntity.ok(Map.of("success", true, "draftSavedAt", LocalDateTime.now().toString(),
+                        "photos", photoFields(dto)));
             } else {
                 weddingService.save(dto);
                 return ResponseEntity.ok(Map.of("success", true));
@@ -518,11 +523,26 @@ public class WeddingController {
             } else {
                 weddingService.save(dto);
             }
-            return ResponseEntity.ok(Map.of("success", true));
+            return ResponseEntity.ok(Map.of("success", true, "photos", photoFields(dto)));
         } catch (Exception e) {
             return ResponseEntity.ok(Map.of("success", false, "error", e.getMessage()));
         }
     }
+
+    /**
+     * 저장하면서 파일로 바뀐 사진 값 — 편집기가 받아서 자기 입력값(base64)을 URL 로 바꿔 둔다.
+     * 그래야 다음 자동저장부터는 사진을 다시 보내지 않는다.
+     */
+    private static Map<String, String> photoFields(WeddingDto dto) {
+        Map<String, String> m = new java.util.HashMap<>();
+        m.put("mainPhotoBase64",   nz(dto.getMainPhotoBase64()));
+        m.put("endingPhotoBase64", nz(dto.getEndingPhotoBase64()));
+        m.put("endingPhotos",      nz(dto.getEndingPhotos()));
+        m.put("galleryImages",     nz(dto.getGalleryImages()));
+        return m;
+    }
+
+    private static String nz(String v) { return v == null ? "" : v; }
 
     /** 폼에서 체크박스가 빠져 null로 들어오는 토글 필드의 기본값 보정 */
     private void normalizeToggleDefaults(WeddingDto dto) {

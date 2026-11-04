@@ -1,5 +1,7 @@
 package com.example.weddingexam.service;
 
+import com.example.weddingexam.photo.PhotoExternalizer;
+
 import com.example.weddingexam.dto.WeddingDto;
 import com.example.weddingexam.dto.WeddingEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,10 +17,12 @@ import java.util.stream.Collectors;
 public class WeddingService {
     private final WeddingRepository repo;
     private final ObjectMapper objectMapper;
+    private final PhotoExternalizer photos;
 
-    public WeddingService(WeddingRepository repo, ObjectMapper objectMapper) {
+    public WeddingService(WeddingRepository repo, ObjectMapper objectMapper, PhotoExternalizer photos) {
         this.repo = repo;
         this.objectMapper = objectMapper;
+        this.photos = photos;
     }
 
     @Transactional(readOnly = true)
@@ -138,6 +142,7 @@ public class WeddingService {
 
     @Transactional
     public WeddingDto save(WeddingDto dto) {
+        photos.externalize(dto);   // base64 사진 → 파일 URL (dto 도 함께 바뀐다)
         return repo.save(WeddingEntity.fromDto(dto)).toDto();
     }
 
@@ -146,6 +151,7 @@ public class WeddingService {
         WeddingEntity existing = repo.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("없음 id=" + id));
         dto.setId(id);
+        photos.externalize(dto);   // base64 사진 → 파일 URL (dto 도 함께 바뀐다)
         if (dto.getSlug() == null || dto.getSlug().isEmpty()) dto.setSlug(existing.getSlug());
         if (dto.getCreatedAt() == null) dto.setCreatedAt(existing.getCreatedAt());
         if (dto.getViewCount() == null) dto.setViewCount(existing.getViewCount());
@@ -181,6 +187,7 @@ public class WeddingService {
         WeddingEntity existing = repo.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("없음 id=" + id));
         dto.setId(id);
+        photos.externalize(dto);   // 임시저장본에도 사진은 URL 로만 — 편집기는 응답으로 받은 URL 로 바꿔 쓴다
         try {
             existing.setDraftData(objectMapper.writeValueAsString(dto));
         } catch (JsonProcessingException e) {
