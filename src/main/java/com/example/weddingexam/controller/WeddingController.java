@@ -542,6 +542,7 @@ public class WeddingController {
         m.put("endingPhotoBase64", nz(dto.getEndingPhotoBase64()));
         m.put("endingPhotos",      nz(dto.getEndingPhotos()));
         m.put("galleryImages",     nz(dto.getGalleryImages()));
+        m.put("sharePhoto",        nz(dto.getSharePhoto()));
         return m;
     }
 

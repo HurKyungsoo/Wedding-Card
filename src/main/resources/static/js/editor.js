@@ -1435,7 +1435,8 @@ var PHOTO_INPUTS = {
     mainPhotoBase64:   'mainPhotoBase64',
     endingPhotoBase64: 'endingPhotoBase64',
     endingPhotos:      'endingPhotosInput',
-    galleryImages:     'galleryImagesInput'
+    galleryImages:     'galleryImagesInput',
+    sharePhoto:        'sharePhotoInput'
 };
 function applySavedPhotoUrls(sent, photos) {
     if (!sent || !photos) return;
@@ -1453,6 +1454,7 @@ function applySavedPhotoUrls(sent, photos) {
         if (key === 'endingPhotos' || key === 'endingPhotoBase64') endingChanged = true;
     });
     if (endingChanged && typeof renderEndingPhotos === 'function') renderEndingPhotos(true);
+    if (typeof window._renderSharePreview === 'function') window._renderSharePreview();
 }
 
 function autoSave() {
@@ -2881,4 +2883,138 @@ var syncDateTimeUI = function() {};
 
     syncDateTimeUI = function() { paintDate(); paintTime(); };
     syncDateTimeUI();
+})();
+
+/* ──────────────────────────────────────
+   카카오톡 공유 사진 — "메인 사진 사용" / "다른 사진 고르기"
+   sharePhotoInput 이 비어 있으면 메인 사진을 쓴다(서버 ShareImageService 와 같은 규칙).
+   미리보기 카드는 서버 썸네일과 같은 자리(가로 가운데·세로 30%)로 잘라 보여 준다.
+────────────────────────────────────── */
+(function sharePhotoUI() {
+    var input = document.getElementById('sharePhotoInput');
+    var tabs  = document.getElementById('shareSrcTabs');
+    if (!input || !tabs) return;
+    var uploadRow = document.getElementById('shareUploadRow');
+    var zone      = document.getElementById('shareZone');
+    var zoneText  = document.getElementById('shareZoneText');
+    var fileEl    = document.getElementById('sharePhotoFile');
+    var mode      = input.value ? 'custom' : 'main';
+    var lastCustom = input.value;   /* "메인 사진"으로 돌렸다가 다시 돌아오면 고른 사진을 되살린다 */
+
+    function fieldVal(name) {
+        var el = document.querySelector('#editForm [name="' + name + '"]');
+        return el ? (el.value || '').trim() : '';
+    }
+    function shareDescription() {
+        var out = [];
+        var d = fieldVal('weddingDate'), t = fieldVal('weddingTime'), place = fieldVal('weddingPlace');
+        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d);
+        if (m) {
+            var dt = new Date(+m[1], +m[2] - 1, +m[3]);
+            out.push(m[1] + '년 ' + (+m[2]) + '월 ' + (+m[3]) + '일 ' + '일월화수목금토'.charAt(dt.getDay()) + '요일');
+        }
+        var tm = /^(\d{1,2}):(\d{2})/.exec(t);
+        if (tm) {
+            var h = +tm[1], mi = +tm[2];
+            out.push((h < 12 ? '오전 ' : '오후 ') + (h % 12 === 0 ? 12 : h % 12) + '시' + (mi ? ' ' + mi + '분' : ''));
+        }
+        var s = out.join(' ');
+        if (place) s += (s ? ' · ' : '') + place;
+        return s || '저희 결혼식에 초대합니다. 청첩장을 확인해 주세요';
+    }
+
+    function render() {
+        tabs.querySelectorAll('.ed-zoom-btn').forEach(function(b) {
+            b.classList.toggle('active', b.dataset.mode === mode);
+        });
+        if (uploadRow) uploadRow.style.display = mode === 'custom' ? '' : 'none';
+        if (zoneText) zoneText.innerHTML = input.value
+            ? '다른 사진으로 바꾸기'
+            : '클릭 또는 드래그하여<br>공유용 사진을 올려 주세요.';
+        if (zone) zone.classList.toggle('has-photo', !!input.value);
+
+        var mainEl = document.getElementById('mainPhotoBase64');
+        var src = input.value || (mainEl && mainEl.value) || '';
+        var img = document.getElementById('shareCardImg');
+        var empty = document.getElementById('shareCardEmpty');
+        var box = img ? img.parentNode : null;
+        if (img) {
+            if (src) { img.src = photoSrc(src); img.style.display = ''; }
+            else { img.removeAttribute('src'); img.style.display = 'none'; }
+        }
+        if (empty) empty.style.display = src ? 'none' : '';
+        if (box) box.classList.toggle('wide', !src);   /* 사진이 없으면 기본 2:1 썸네일이 나간다 */
+
+        var g = fieldVal('groomName'), b = fieldVal('brideName');
+        var title = document.getElementById('shareCardTitle');
+        if (title) title.textContent = (!g && !b) ? '모바일 청첩장' : (g || '신랑') + ' ♥ ' + (b || '신부') + ' 결혼합니다';
+        var desc = document.getElementById('shareCardDesc');
+        if (desc) desc.textContent = shareDescription();
+    }
+    window._renderSharePreview = render;
+
+    function setValue(v) {
+        if (input.value === v) { render(); return; }
+        input.value = v;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        render();
+        scheduleLive(150);   /* 자동저장 — 공유 사진은 청첩장 화면엔 안 보이지만 저장은 같은 흐름으로 */
+    }
+
+    tabs.addEventListener('click', function(e) {
+        var btn = e.target.closest('.ed-zoom-btn');
+        if (!btn) return;
+        mode = btn.dataset.mode;
+        if (mode === 'main') {
+            if (input.value) lastCustom = input.value;
+            setValue('');
+        } else {
+            setValue(lastCustom || '');
+            if (!input.value && fileEl) fileEl.click();
+        }
+    });
+
+    function handleFile(file) {
+        if (!file || file.type.indexOf('image/') !== 0) return;
+        resizeImage(file, 1200, 0.88, function(dataUrl) {
+            lastCustom = dataUrl;
+            mode = 'custom';
+            setValue(dataUrl);
+            showEditorToast('공유 사진을 바꿨어요');
+        });
+    }
+    if (zone && fileEl) {
+        zone.addEventListener('click', function() { fileEl.click(); });
+        fileEl.addEventListener('change', function() { handleFile(this.files && this.files[0]); this.value = ''; });
+        ['dragenter', 'dragover'].forEach(function(evt) {
+            zone.addEventListener(evt, function(e) { e.preventDefault(); zone.classList.add('drag-over'); });
+        });
+        ['dragleave', 'drop'].forEach(function(evt) {
+            zone.addEventListener(evt, function(e) { e.preventDefault(); zone.classList.remove('drag-over'); });
+        });
+        zone.addEventListener('drop', function(e) {
+            handleFile(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]);
+        });
+    }
+
+    /* 이름·날짜·장소·메인 사진이 바뀌면 카드 미리보기도 바로 */
+    var form = document.getElementById('editForm');
+    if (form) {
+        form.addEventListener('input', function(e) {
+            var n = e.target && e.target.name;
+            if (/^(groomName|brideName|weddingDate|weddingTime|weddingPlace|mainPhotoBase64)$/.test(n || '')) render();
+        });
+        form.addEventListener('change', function() { render(); });
+    }
+    /* 메인 사진은 크롭할 때 hidden 값만 바뀌고 이벤트가 안 날 수 있다 — 섹션을 열 때도 다시 그린다 */
+    var hd = document.querySelector('.ed-sec-hd[data-sec="share"]');
+    if (hd) hd.addEventListener('click', function() { setTimeout(render, 0); });
+
+    if (typeof SECTION_REVERT_HOOKS === 'object') {
+        SECTION_REVERT_HOOKS.share = function() {
+            mode = input.value ? 'custom' : 'main';
+            render();
+        };
+    }
+    render();
 })();

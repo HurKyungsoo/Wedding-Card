@@ -71,6 +71,21 @@ class ShareImageServiceTest {
     }
 
     @Test
+    void separateSharePhoto_winsOverMainPhoto() throws Exception {
+        String main  = storage.store(portraitJpeg(900, 1200), "jpg");
+        String share = storage.store(portraitJpeg(1200, 900), "jpg");
+        WeddingDto d = withMain(main);
+        String fromMain = service.shareImagePath(d);
+
+        d.setSharePhoto(share);
+        String fromShare = service.shareImagePath(d);
+        assertThat(fromShare).startsWith("/uploads/share/").isNotEqualTo(fromMain);
+
+        d.setSharePhoto("");               // "메인 사진 사용"으로 되돌리면 다시 메인 사진
+        assertThat(service.shareImagePath(d)).isEqualTo(fromMain);
+    }
+
+    @Test
     void samePhoto_reusesTheSameFile() throws Exception {
         String url = storage.store(portraitJpeg(900, 1200), "jpg");
         assertThat(service.shareImagePath(withMain(url))).isEqualTo(service.shareImagePath(withMain(url)));

@@ -133,4 +133,17 @@ class PhotoFileFlowTest {
         assertThat(html).containsPattern("property=\"og:image\" content=\"http://localhost(:\\d+)?/uploads/share/[0-9a-f]{64}\\.jpg\"");
         assertThat(html).contains("property=\"og:image:height\" content=\"800\"");
     }
+
+    @Test
+    void editor_hasShareSection_withHiddenInputInside() throws Exception {
+        String html = mockMvc.perform(get("/admin/edit")).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        int sec = html.indexOf("id=\"sec-share\"");
+        int input = html.indexOf("id=\"sharePhotoInput\"");
+        int end = html.indexOf("class=\"ed-end-note\"");
+        assertThat(sec).isPositive();
+        assertThat(input).isGreaterThan(sec).isLessThan(end);
+        assertThat(html).contains("name=\"sharePhoto\"");
+        assertThat(html).contains("data-sec=\"share\">카카오톡 공유");   // 메뉴에서 바로 이동
+    }
 }

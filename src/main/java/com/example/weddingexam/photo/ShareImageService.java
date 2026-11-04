@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 카카오톡 공유·링크 미리보기용 썸네일 — 커플 메인 사진을 정사각형(800×800)으로 잘라 만든다.
+ * 카카오톡 공유·링크 미리보기용 썸네일 — 공유용 사진(없으면 커플 메인 사진)을 정사각형(800×800)으로 잘라 만든다.
  *
  * 카카오는 1:1·4:3·2:1 이 아닌 이미지를 자동으로 잘라 버리는데, 청첩장 메인 사진은 대부분 세로라
  * 얼굴이 잘리기 쉽다. 그래서 서버에서 직접 1:1 로 자르고, 세로 사진은 얼굴이 있는 위쪽을 더 남긴다.
@@ -53,7 +53,10 @@ public class ShareImageService {
 
     /** 공유 썸네일 경로 (사이트 기준 상대 경로). 만들 수 없으면 기본 썸네일 */
     public String shareImagePath(WeddingDto dto) {
-        String main = dto == null ? null : dto.getMainPhotoBase64();
+        /* 공유용 사진을 따로 골랐으면 그것, 아니면 메인 사진 */
+        String main = dto == null ? null
+                : (dto.getSharePhoto() != null && !dto.getSharePhoto().isBlank()) ? dto.getSharePhoto()
+                : dto.getMainPhotoBase64();
         if (main == null || main.isBlank()) return FALLBACK;
         String key = main.length() > 300 ? Integer.toHexString(main.hashCode()) + ":" + main.length() : main;
         String hit = cache.get(key);

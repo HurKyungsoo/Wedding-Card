@@ -85,11 +85,13 @@ public class PhotoMaintenance implements ApplicationRunner {
         published.setEndingPhotoBase64(e.getEndingPhotoBase64());
         published.setGalleryImages(e.getGalleryImages());
         published.setEndingPhotos(e.getEndingPhotos());
+        published.setSharePhoto(e.getSharePhoto());
         if (externalizer.externalize(published)) {
             e.setMainPhotoBase64(published.getMainPhotoBase64());
             e.setEndingPhotoBase64(published.getEndingPhotoBase64());
             e.setGalleryImages(published.getGalleryImages());
             e.setEndingPhotos(published.getEndingPhotos());
+            e.setSharePhoto(published.getSharePhoto());
             changed = true;
         }
 
@@ -143,7 +145,7 @@ public class PhotoMaintenance implements ApplicationRunner {
         Set<String> used = new HashSet<>();
         for (WeddingEntity e : repo.findAll()) {
             for (String text : new String[] { e.getMainPhotoBase64(), e.getEndingPhotoBase64(),
-                    e.getGalleryImages(), e.getEndingPhotos(), e.getDraftData() }) {
+                    e.getGalleryImages(), e.getEndingPhotos(), e.getSharePhoto(), e.getDraftData() }) {
                 if (text == null) continue;
                 Matcher m = FILE_REF.matcher(text);
                 while (m.find()) used.add(m.group(1));

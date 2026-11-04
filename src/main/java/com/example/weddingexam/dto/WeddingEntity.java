@@ -76,6 +76,7 @@ public class WeddingEntity {
     private Boolean endingVisible;
     @Column(columnDefinition = "TEXT") private String endingPhotoBase64;
     @Column(columnDefinition = "TEXT") private String endingPhotos;
+    @Column(columnDefinition = "TEXT") private String sharePhoto;
     @Column(length = 2000) private String endingCaption;
     /** 메인 사진과 같은 어휘: none/fog/wave/paper */
     private String endingEffect;
@@ -184,6 +185,7 @@ public class WeddingEntity {
     public Boolean getEndingVisible() { return endingVisible; } public void setEndingVisible(Boolean v) { this.endingVisible=v; }
     public String getEndingPhotoBase64() { return endingPhotoBase64; } public void setEndingPhotoBase64(String v) { this.endingPhotoBase64=v; }
     public String getEndingPhotos() { return endingPhotos; } public void setEndingPhotos(String v) { this.endingPhotos=v; }
+    public String getSharePhoto() { return sharePhoto; } public void setSharePhoto(String v) { this.sharePhoto=v; }
     public String getEndingCaption() { return endingCaption; } public void setEndingCaption(String v) { this.endingCaption=v; }
     public String getEndingEffect() { return endingEffect; } public void setEndingEffect(String v) { this.endingEffect=v; }
     public String getSectionOrder() { return sectionOrder; } public void setSectionOrder(String v) { this.sectionOrder=v; }
@@ -218,7 +220,7 @@ public class WeddingEntity {
             .colorEffect(colorEffect).mainEffect(mainEffect).bgm(bgm)
             .displayOrder(displayOrder)
             .rsvpEnabled(rsvpEnabled).guestbookVisible(guestbookVisible)
-            .endingVisible(endingVisible).endingPhotoBase64(endingPhotoBase64).endingPhotos(endingPhotos)
+            .endingVisible(endingVisible).endingPhotoBase64(endingPhotoBase64).endingPhotos(endingPhotos).sharePhoto(sharePhoto)
             .endingCaption(endingCaption).endingEffect(endingEffect)
             .sectionOrder(sectionOrder)
             .build();
@@ -268,6 +270,7 @@ public class WeddingEntity {
         e.setEndingVisible(d.getEndingVisible());
         e.setEndingPhotoBase64(d.getEndingPhotoBase64());
         e.setEndingPhotos(d.getEndingPhotos());
+        e.setSharePhoto(d.getSharePhoto());
         e.setEndingCaption(d.getEndingCaption());
         e.setEndingEffect(d.getEndingEffect());
         e.setSectionOrder(d.getSectionOrder());

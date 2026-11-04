@@ -32,19 +32,22 @@ public class PhotoExternalizer {
         this.storage = storage;
     }
 
-    /** 사진 필드 네 곳을 URL 로 바꾼다. 하나라도 바뀌었으면 true */
+    /** 사진 필드(메인·엔딩·갤러리·공유)를 URL 로 바꾼다. 하나라도 바뀌었으면 true */
     public boolean externalize(WeddingDto d) {
         if (d == null) return false;
         String main = toUrl(d.getMainPhotoBase64());
         String endingOne = toUrl(d.getEndingPhotoBase64());
         String gallery = toUrlList(d.getGalleryImages());
         String endingAll = toUrlList(d.getEndingPhotos());
+        String share = toUrl(d.getSharePhoto());
         boolean changed = !eq(main, d.getMainPhotoBase64()) || !eq(endingOne, d.getEndingPhotoBase64())
-                || !eq(gallery, d.getGalleryImages()) || !eq(endingAll, d.getEndingPhotos());
+                || !eq(gallery, d.getGalleryImages()) || !eq(endingAll, d.getEndingPhotos())
+                || !eq(share, d.getSharePhoto());
         d.setMainPhotoBase64(main);
         d.setEndingPhotoBase64(endingOne);
         d.setGalleryImages(gallery);
         d.setEndingPhotos(endingAll);
+        d.setSharePhoto(share);
         return changed;
     }
 

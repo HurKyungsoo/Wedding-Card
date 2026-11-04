@@ -71,6 +71,8 @@ public class WeddingDto {
     private String endingPhotoBase64;
     /** 엔딩 사진 여러 장(최대 5) — base64 를 '|||' 로 이어 붙인 값. 첫 장은 endingPhotoBase64 에도 같이 들어 있다(예전 코드 호환). */
     private String endingPhotos;
+    /** 카카오톡 공유용 사진 — 비어 있으면 메인 사진을 쓴다 (파일 URL, 예전 값은 base64) */
+    private String sharePhoto;
     private String endingCaption;
     private String endingEffect;
 
@@ -347,6 +349,7 @@ public class WeddingDto {
     public String getEndingCaption() { return endingCaption; } public void setEndingCaption(String v) { this.endingCaption = v; }
     public String getEndingEffect() { return endingEffect; } public void setEndingEffect(String v) { this.endingEffect = v; }
     public String getEndingPhotos() { return endingPhotos; } public void setEndingPhotos(String v) { this.endingPhotos = v; }
+    public String getSharePhoto() { return sharePhoto; } public void setSharePhoto(String v) { this.sharePhoto = v; }
 
     /**
      * 사진 값 → img src. 사진은 이제 파일 URL(/uploads/...)로 저장되지만, 예전 데이터나 저장 전 값은
@@ -504,6 +507,7 @@ public class WeddingDto {
         public Builder endingVisible(Boolean v) { d.endingVisible=v; return this; }
         public Builder endingPhotoBase64(String v) { d.endingPhotoBase64=v; return this; }
         public Builder endingPhotos(String v) { d.endingPhotos=v; return this; }
+        public Builder sharePhoto(String v) { d.sharePhoto=v; return this; }
         public Builder endingCaption(String v) { d.endingCaption=v; return this; }
         public Builder endingEffect(String v) { d.endingEffect=v; return this; }
         public Builder sectionOrder(String v) { d.sectionOrder=v; return this; }
