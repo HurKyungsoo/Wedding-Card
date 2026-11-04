@@ -130,7 +130,7 @@ class PhotoFileFlowTest {
         String html = mockMvc.perform(get("/wedding/" + id)).andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         assertThat(html).contains("property=\"og:title\" content=\"지훈 ♥ 수아 결혼합니다\"");
-        assertThat(html).containsPattern("property=\"og:image\" content=\"http://localhost(:\\d+)?/uploads/share/[0-9a-f]{64}\\.jpg\"");
+        assertThat(html).containsPattern("property=\"og:image\" content=\"http://localhost(:\\d+)?/uploads/share/[0-9a-f]{64}-800\\.jpg\"");
         assertThat(html).contains("property=\"og:image:height\" content=\"800\"");
     }
 

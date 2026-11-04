@@ -74,7 +74,8 @@ public class ShareImageService {
         try {
             byte[] src = readSource(main.trim());
             if (src == null) return FALLBACK;
-            String name = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(src)) + ".jpg";
+            // 이름에 크기를 붙인다 — 만드는 규칙이 바뀌면 이름도 바뀌어 예전 파일(예: 512px)을 재사용하지 않는다
+            String name = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(src)) + "-" + SIZE + ".jpg";
             Path out = storage.dir().resolve("share").resolve(name);
             String url = PhotoStorage.URL_PREFIX + "share/" + name;
             if (Files.exists(out)) return url;
