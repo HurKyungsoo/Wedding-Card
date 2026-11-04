@@ -804,6 +804,7 @@ window.initPage = function(data) {
     initGallery();
     initPetals();
     initScrollEffects();
+    photoMotion();          /* initScrollEffects 의 예전 시차 스크롤을 걷어내고 바꿔 끼우므로 반드시 그 뒤에 */
     initGreetingTypewriter();
     initHeartBurst();
     initScrollProgress();
@@ -1374,4 +1375,120 @@ function deleteGuestbook(id) {
             loadGuestbook();
         })
         .catch(function() { window.alert('삭제하지 못했습니다.'); });
+}
+
+/* ════════════════════════════════════════
+   사진 연출 — 메인 사진 · 갤러리 · 엔딩 (invitation.css "사진 연출" 과 짝)
+   - 메인: 처음 7초 Ken Burns 줌아웃 + 스크롤 시차(사진이 화면보다 천천히). 예전엔 늘 1.15배로 확대해 가장자리 15%가 잘렸다.
+   - 갤러리: 화면에 들어오면 사진이 아래에서 위로 '현상'되듯 열림(차례로). 누르면 그 자리에서 커지며 라이트박스가 열림.
+   - 엔딩: 스크롤 진행에 맞춰 밝게 번진 사진이 선명해지며 줌아웃, 다 보이면 감사 문구.
+   ════════════════════════════════════════ */
+function photoMotion() {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ── 메인 사진 ── */
+    var heroImgs = document.querySelectorAll('.hero-fullphoto-img, .forever-arch-img');
+    if (heroImgs.length) {
+        if (window._invitationParallaxScroll) window.removeEventListener('scroll', window._invitationParallaxScroll);
+        heroImgs.forEach(function(img) { img.classList.add('pm-hero'); img.style.transform = ''; });
+        var ticking = false;
+        var heroParallax = function() {
+            ticking = false;
+            /* 편집기에서 지정한 확대 배율이 있으면 그 배율을 바탕으로 */
+            var base = (window._mainPhotoZoom != null && window._mainPhotoZoom > 0) ? window._mainPhotoZoom : 1;
+            heroImgs.forEach(function(img) {
+                img.style.setProperty('--base', base);
+                var r = img.getBoundingClientRect();
+                if (r.bottom < 0 || r.top > window.innerHeight) return;
+                /* 위로 지나가는 만큼의 30% 를 되돌려 사진이 천천히 올라가게 (아래쪽 빈틈은 1.05배 여유로 덮는다) */
+                var py = reduce ? 0 : Math.max(0, -r.top) * 0.3;
+                img.style.setProperty('--py', py.toFixed(1) + 'px');
+                if (!reduce && py > 0) img.style.setProperty('--base', Math.max(base, 1.05));
+            });
+        };
+        window.addEventListener('scroll', function() {
+            if (!ticking) { ticking = true; requestAnimationFrame(heroParallax); }
+        }, { passive: true });
+        /* 편집기 확대 슬라이더가 부르는 이름을 그대로 넘겨준다 */
+        window._invitationParallaxScroll = heroParallax;
+        heroParallax();
+    }
+
+    /* ── 갤러리: 현상되듯 열기 ── */
+    var gal = document.getElementById('galleryOuter');
+    if (gal && !reduce) {
+        var galObs2 = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (!entry.isIntersecting) return;
+                galObs2.unobserve(entry.target);
+                var imgs = entry.target.querySelectorAll('img:not(.ts-thumb)');
+                imgs.forEach(function(img, i) {
+                    img.classList.add('pm-dev');
+                    img.style.transitionDelay = Math.min(i, 6) * 0.08 + 's';
+                    requestAnimationFrame(function() { requestAnimationFrame(function() { img.classList.add('on'); }); });
+                });
+            });
+        }, { threshold: 0.15 });
+        galObs2.observe(gal);
+    }
+
+    /* ── 라이트박스: 누른 사진 자리에서 커지며 열기 (FLIP) ── */
+    var lb = document.getElementById('lightbox');
+    var lbImg = document.getElementById('lightboxImg');
+    var fromRect = null;
+    if (lb && lbImg && !reduce) {
+        document.addEventListener('click', function(e) {
+            var img = e.target.closest && e.target.closest('#galleryOuter img');
+            fromRect = img ? img.getBoundingClientRect() : null;
+        }, true);
+        new MutationObserver(function() {
+            if (!lb.classList.contains('open') || !fromRect) return;
+            var from = fromRect; fromRect = null;
+            lb.classList.add('pm-flip');
+            var run = function() {
+                var to = lbImg.getBoundingClientRect();
+                if (!to.width) return;
+                var sx = from.width / to.width, sy = from.height / to.height, s = Math.max(sx, sy);
+                var dx = (from.left + from.width / 2) - (to.left + to.width / 2);
+                var dy = (from.top + from.height / 2) - (to.top + to.height / 2);
+                lbImg.style.transition = 'none';
+                lbImg.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + s + ')';
+                lbImg.style.opacity = '0.6';
+                requestAnimationFrame(function() { requestAnimationFrame(function() {
+                    lbImg.style.transition = 'transform .45s cubic-bezier(.2,.8,.2,1), opacity .3s ease';
+                    lbImg.style.transform = '';
+                    lbImg.style.opacity = '';
+                }); });
+            };
+            if (lbImg.complete && lbImg.naturalWidth) run(); else lbImg.addEventListener('load', run, { once: true });
+        }).observe(lb, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    /* ── 엔딩: 스크롤에 맞춰 선명해지기 ── */
+    var endWrap = document.querySelector('.ending-photo-wrap');
+    var endImg = document.getElementById('endingPhotoImg');
+    var cap = document.getElementById('endingCaptionEl');
+    if (endWrap && endImg && !reduce) {
+        var veil = document.createElement('div');
+        veil.className = 'pm-veil';
+        endWrap.appendChild(veil);
+        endImg.classList.add('pm-end');
+        if (cap) cap.classList.add('pm-cap');
+        var endTick = false;
+        var endScroll = function() {
+            endTick = false;
+            var r = endWrap.getBoundingClientRect(), vh = window.innerHeight;
+            /* 사진 윗변이 화면 아래에 닿을 때 0 → 사진 가운데가 화면 55% 에 오면 1 */
+            var p = (vh - r.top) / (vh * 0.45 + r.height / 2);
+            p = Math.max(0, Math.min(1, p));
+            var e = 1 - Math.pow(1 - p, 3);
+            endWrap.style.setProperty('--veil', ((1 - e) * 0.7).toFixed(3));
+            endImg.style.setProperty('--es', (1.12 - 0.12 * e).toFixed(4));
+            if (cap && p >= 0.98) cap.classList.add('on');
+        };
+        window.addEventListener('scroll', function() {
+            if (!endTick) { endTick = true; requestAnimationFrame(endScroll); }
+        }, { passive: true });
+        endScroll();
+    }
 }
