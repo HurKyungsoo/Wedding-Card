@@ -2310,22 +2310,26 @@ window.__WEDDING_STYLE = {
             'rsvp':    '#rsvpCard',
             'guest':   '#guestbookCard',
             'share':   '.share-grid',
+            'ending':  '.ending-photo-wrap',
         };
+        /* instant — 전체 미리보기처럼 "그 자리부터 보여 주기"일 땐 부드러운 스크롤 없이 바로 */
+        var behavior = e.data.instant ? 'instant' : 'smooth';
 
         var selector = targetMap[sec];
 
         if (selector === undefined) return;  /* 매핑 없으면 무시 */
 
         if (!selector) {
-            window.scrollTo({top: 0, behavior: 'smooth'});
+            window.scrollTo({top: 0, behavior: behavior});
             return;
         }
 
         var el = document.querySelector(selector);
         if (el) {
-            /* 약간 위 여백을 두고 이동 */
-            var top = el.getBoundingClientRect().top + window.pageYOffset - 20;
-            window.scrollTo({top: top, behavior: 'smooth'});
+            /* 섹션 제목(예: Greeting / 인사말)까지 보이게 섹션 시작점으로, 약간 위 여백을 두고 */
+            var box = (e.data.instant && el.closest('.sec')) || el;
+            var top = box.getBoundingClientRect().top + window.pageYOffset - 20;
+            window.scrollTo({top: top, behavior: behavior});
         }
     });
 

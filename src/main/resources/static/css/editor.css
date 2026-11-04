@@ -2048,3 +2048,54 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-acct-del{min-width:32px;min-height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;}
 .nav-panel-handle{min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center;}
 .ed-kakao-img.can:focus-visible{outline:2px solid var(--color-rose);outline-offset:2px;}
+
+/* ── 모바일(≤720px) 편집 — 폼이 화면을 다 쓴다 ──
+   위아래로 나누면 미리보기도 입력칸도 둘 다 좁다(실제 폰은 주소창까지 빠져 더 좁다).
+   미리보기는 아래 가운데 「미리보기」 버튼으로 — 마지막으로 만진 섹션부터, 화면 가득 연다. */
+.ed-mprev{display:none;}
+@media (max-width:720px){
+    .ed-header{height:50px;}
+    .ed-preview{display:none;}
+    #fullPrevBtn{display:none;}
+    .ed-main{padding:.55rem .55rem 6rem;}
+    .ed-section{border-radius:12px;margin-bottom:8px;}
+    .ed-sec-hd{padding:.65rem .85rem;min-height:50px;}
+    .ed-sec-bd{padding:.7rem .9rem 1.1rem;}
+    .ed-mprev{
+        position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:600;
+        display:inline-flex;align-items:center;gap:7px;height:46px;padding:0 20px;
+        border:none;border-radius:23px;background:#2b2320;color:#fff;
+        font-size:14px;font-family:inherit;cursor:pointer;
+        box-shadow:0 8px 24px rgba(40,25,20,.28);
+    }
+    .ed-mprev i{font-size:18px;}
+    .ed-mprev:focus-visible{outline:2px solid var(--color-rose);outline-offset:3px;}
+    .ed-mprev-dot{display:none;width:7px;height:7px;border-radius:50%;background:#e6a23c;margin-left:2px;}
+    body:has(#draftStatus.dirty) .ed-mprev-dot{display:inline-block;}
+
+    /* 전체 미리보기 — PC 용 폰 틀(검은 테두리·79% 축소)을 빼고 화면 가득 */
+    .fullprev-overlay{background:#fff;backdrop-filter:none;}
+    .fullprev-phone{width:100%;max-width:none;height:100%;padding:0;border-radius:0;background:#fff;box-shadow:none;}
+    .fullprev-screen{height:100%;border-radius:0;background:#fff;}
+    .fullprev-statusbar,.fullprev-bar{display:none;}
+    #fullPrevFrame{width:100% !important;height:100% !important;transform:none !important;}
+    .fullprev-close{
+        position:fixed;top:auto;right:auto;bottom:20px;left:50%;transform:translateX(-50%);
+        width:auto;height:44px;padding:0 18px;gap:6px;border-radius:22px;
+        background:#2b2320;color:#fff;font-size:14px;font-family:inherit;z-index:9100;
+        box-shadow:0 8px 24px rgba(0,0,0,.28);
+    }
+    .fullprev-close::after{content:'편집으로 돌아가기';}
+}
+/* 미리보기가 그 섹션으로 옮겨 가기 전엔 감춘다 — 표지가 잠깐 보였다가 튀는 것 방지 */
+#fullPrevFrame.positioning{visibility:hidden;}
+
+/* ── 좁은 폰(≤480px) — 라벨을 입력칸 위로 ──
+   라벨이 왼쪽 82px 를 차지하면 셀렉트 두 개가 한 줄에 끼어 "석감 보정 없…"처럼 잘린다.
+   라벨을 위로 올려 입력칸이 폭을 다 쓰게 한다. 토글 하나뿐인 줄은 그대로 옆에 둔다. */
+@media (max-width:480px){
+    .ed-row{flex-direction:column;align-items:stretch;gap:7px;}
+    .ed-row > .ed-label{min-width:0;max-width:none;padding-top:0 !important;}
+    .ed-row:has(> .ed-ctrl > .ed-toggle-wrap:only-child),
+    .ed-row:has(> .ed-toggle-wrap){flex-direction:row;align-items:center;}
+}

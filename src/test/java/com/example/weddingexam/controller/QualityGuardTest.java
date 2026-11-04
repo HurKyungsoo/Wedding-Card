@@ -105,4 +105,15 @@ class QualityGuardTest {
         assertThat(html).contains("id=\"navPanelClose\" aria-label=\"메뉴 닫기\"");
         assertThat(html).contains("id=\"fontColorReset\" aria-label=");
     }
+
+    /** 모바일 편집 — 폼 전체 화면 + 「미리보기」는 마지막으로 만진 섹션부터 바로(표지부터 X) */
+    @Test
+    void mobilePreview_opensAtTheEditedSection() throws Exception {
+        assertThat(read("templates/admin/edit.html")).contains("id=\"mobilePreviewBtn\"");
+        String js = read("static/js/editor.js");
+        assertThat(js).contains("lastEditedSection").contains("instant: true");
+        assertThat(js).as("닫아도 미리보기를 남겨 둬야 다음엔 바로 그 섹션으로 열린다")
+                .doesNotContain("getElementById('fullPrevFrame').src = ''");
+        assertThat(read("templates/invitation.html")).contains("e.data.instant ? 'instant' : 'smooth'");
+    }
 }
