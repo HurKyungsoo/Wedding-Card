@@ -1728,43 +1728,69 @@ function showEditorToast(msg, type) {
 /* ──────────────────────────────────────
    전체화면 미리보기
 ────────────────────────────────────── */
-document.getElementById('fullPrevBtn').addEventListener('click', function() {
+/* 마지막으로 만진 섹션 — 전체 미리보기를 그 자리부터 연다 (편집한 걸 확인하려고 여는 거니까) */
+var lastEditedSection = null;
+(function trackLastSection() {
+    function mark(e) {
+        var sec = e.target && e.target.closest && e.target.closest('.ed-section');
+        if (sec && sec.id) lastEditedSection = sec.id.replace(/^sec-/, '');
+    }
+    document.addEventListener('focusin', mark);
+    document.addEventListener('click', mark, true);
+})();
+
+function sendFullPreviewData(frame) {
+    var data = collectData();
+    var photoB64 = data.mainPhotoBase64 || '';
+    var photoFilter = data.photoFilter || 'none';
+    var photoPosX = data.mainPhotoPosX !== undefined && data.mainPhotoPosX !== '' ? parseFloat(data.mainPhotoPosX) : null;
+    var photoPosY = data.mainPhotoPosY !== undefined && data.mainPhotoPosY !== '' ? parseFloat(data.mainPhotoPosY) : null;
+    var photoScale = data.mainPhotoScale !== undefined && data.mainPhotoScale !== '' ? parseFloat(data.mainPhotoScale) : null;
+    delete data.mainPhotoBase64;
+    try {
+        frame.contentWindow.postMessage({type:'WEDDING_LIVE_UPDATE', payload:data}, window.location.origin);
+        frame.contentWindow.postMessage({
+            type:'WEDDING_PHOTO_UPDATE',
+            payload:{mainPhotoBase64:photoB64, photoFilter:photoFilter, mainPhotoPosX:photoPosX, mainPhotoPosY:photoPosY, mainPhotoScale:photoScale}
+        }, window.location.origin);
+    } catch(e) {}
+}
+
+/* 최신 내용 반영 → 그 섹션으로 바로(애니메이션 없이) 옮긴 뒤에 보여 준다 */
+function positionFullPreview(frame) {
+    frame.classList.add('positioning');
+    sendFullPreviewData(frame);
+    setTimeout(function() {
+        try {
+            frame.contentWindow.postMessage({type:'WEDDING_SCROLL_TO', section: lastEditedSection || 'main', instant: true},
+                                            window.location.origin);
+        } catch(e) {}
+        setTimeout(function() { frame.classList.remove('positioning'); }, 120);
+    }, 120);
+}
+
+function openFullPreview() {
     var overlay = document.getElementById('fullPrevOverlay');
     var frame = document.getElementById('fullPrevFrame');
-
-    frame.onload = function() {
-        frame.onload = null;
-        setTimeout(function() {
-            var data = collectData();
-            var photoB64 = data.mainPhotoBase64 || '';
-            var photoFilter = data.photoFilter || 'none';
-            var photoPosX = data.mainPhotoPosX !== undefined && data.mainPhotoPosX !== '' ? parseFloat(data.mainPhotoPosX) : null;
-            var photoPosY = data.mainPhotoPosY !== undefined && data.mainPhotoPosY !== '' ? parseFloat(data.mainPhotoPosY) : null;
-            var photoScale = data.mainPhotoScale !== undefined && data.mainPhotoScale !== '' ? parseFloat(data.mainPhotoScale) : null;
-            delete data.mainPhotoBase64;
-            try {
-                frame.contentWindow.postMessage({type:'WEDDING_LIVE_UPDATE', payload:data}, window.location.origin);
-                setTimeout(function() {
-                    try {
-                        frame.contentWindow.postMessage({
-                            type:'WEDDING_PHOTO_UPDATE',
-                            payload:{mainPhotoBase64:photoB64, photoFilter:photoFilter, mainPhotoPosX:photoPosX, mainPhotoPosY:photoPosY, mainPhotoScale:photoScale}
-                        }, window.location.origin);
-                    } catch(e2) {}
-                }, 60);
-            } catch(e) {}
-        }, 400);
-    };
-
-    frame.src = INVITATION_URL;
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
     var t = new Date(); document.getElementById('fullPrevTime').textContent = t.getHours()+':'+String(t.getMinutes()).padStart(2,'0');
-});
+    /* 한 번 띄운 미리보기는 닫아도 남겨 둔다 — 다음엔 다시 불러오지 않고 바로 그 섹션으로 */
+    if (frame.dataset.loaded === '1') { positionFullPreview(frame); return; }
+    frame.classList.add('positioning');
+    frame.onload = function() {
+        frame.onload = null;
+        frame.dataset.loaded = '1';
+        setTimeout(function() { positionFullPreview(frame); }, 300);
+    };
+    frame.src = INVITATION_URL;
+}
+document.getElementById('fullPrevBtn').addEventListener('click', openFullPreview);
+var mobilePreviewBtn = document.getElementById('mobilePreviewBtn');
+if (mobilePreviewBtn) mobilePreviewBtn.addEventListener('click', openFullPreview);
 document.getElementById('fullPrevClose').addEventListener('click', function() {
     document.getElementById('fullPrevOverlay').classList.remove('open');
     document.body.style.overflow = '';
-    document.getElementById('fullPrevFrame').src = '';
 });
 document.getElementById('fullPrevOverlay').addEventListener('click', function(e) {
     if (e.target===this) document.getElementById('fullPrevClose').click();
@@ -3096,26 +3122,4 @@ var syncDateTimeUI = function() {};
     var t = null;
     new MutationObserver(function() { clearTimeout(t); t = setTimeout(labelAll, 120); })
         .observe(document.body, { childList: true, subtree: true });
-})();
-
-/* 모바일 — 미리보기 접기/펼치기 (고른 상태는 이 브라우저에 기억) */
-(function previewCollapse() {
-    var btn = document.getElementById('prevCollapseBtn');
-    var center = document.getElementById('edCenter');
-    if (!btn || !center) return;
-    var KEY = 'wc.editor.previewCollapsed';
-    function apply(collapsed) {
-        center.classList.toggle('prev-collapsed', collapsed);
-        btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-        btn.querySelector('span').textContent = collapsed ? '미리보기 펼치기' : '미리보기 접기';
-    }
-    var saved = false;
-    try { saved = localStorage.getItem(KEY) === '1'; } catch (e) {}
-    apply(saved);
-    btn.addEventListener('click', function() {
-        var collapsed = !center.classList.contains('prev-collapsed');
-        apply(collapsed);
-        try { localStorage.setItem(KEY, collapsed ? '1' : '0'); } catch (e) {}
-        /* 접혀 있어도 iframe 은 살아 있어 실시간 반영 메시지를 계속 받는다 — 펼치면 바로 최신 상태 */
-    });
 })();

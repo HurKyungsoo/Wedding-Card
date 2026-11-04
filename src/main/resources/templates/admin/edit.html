@@ -154,10 +154,6 @@
                 <div class="ed-mini-toggle on" id="scrollToggle"></div>
                 <span>편집 시 해당 화면으로 이동</span>
             </label>
-            <!-- 모바일 전용 — 미리보기가 화면 절반을 차지해 입력칸이 좁다. 접으면 편집 폼이 화면을 다 쓴다 -->
-            <button type="button" class="ed-prev-collapse" id="prevCollapseBtn" aria-expanded="true" aria-controls="edPhone">
-                <i class="ti ti-chevron-up" aria-hidden="true"></i><span>미리보기 접기</span>
-            </button>
         </div>
     </aside>
 
@@ -1346,6 +1342,11 @@
         </div>
     </div>
 </div>
+
+<!-- 모바일 전용 — 편집 폼이 화면을 다 쓰고, 결과는 이 버튼으로 본다(마지막으로 만진 섹션부터, 화면 가득) -->
+<button type="button" class="ed-mprev" id="mobilePreviewBtn" aria-label="미리보기 — 지금 편집 중인 섹션부터">
+    <i class="ti ti-device-mobile" aria-hidden="true"></i>미리보기<span class="ed-mprev-dot" title="게시 전 변경 있음"></span>
+</button>
 
 <!-- 우하단 햄버거 버튼 -->
 <div class="ed-float">
