@@ -64,6 +64,14 @@ class ShareImageServiceTest {
     }
 
     @Test
+    void smallerPhoto_isStill800_matchingTheOgSize() throws Exception {
+        String share = service.shareImagePath(withMain(storage.store(portraitJpeg(512, 512), "jpg")));
+        BufferedImage out = ImageIO.read(dir.resolve(share.substring("/uploads/".length())).toFile());
+        assertThat(out.getWidth()).isEqualTo(800);
+        assertThat(out.getHeight()).isEqualTo(800);
+    }
+
+    @Test
     void legacyBase64_andStaticDemoPhoto_work() throws Exception {
         String b64 = java.util.Base64.getEncoder().encodeToString(portraitJpeg(600, 900));
         assertThat(service.shareImagePath(withMain(b64))).startsWith("/uploads/share/");
