@@ -56,8 +56,10 @@ function calcDday(dateStr) {
 var _invMap = null;
 var _invMarker = null;
 
-/* 편집기 "지도 줌" 값(20M~500M) → 카카오맵 level */
-var MAP_ZOOM_LEVELS = {'20M':3, '30M':4, '50M':5, '100M':6, '250M':7, '500M':8};
+/* 편집기 "지도 줌" 값 → 카카오맵 level. 값은 축척 막대 거리 — level 3 = 50m(가깝게), 4 = 100m(보통), 5 = 250m(넓게).
+   예전 6단계 값(20M·30M·500M)은 가까운 단계로 읽는다.
+   ⚠ editor.js ZOOM_LEVEL 과 같아야 한다 */
+var MAP_ZOOM_LEVELS = {'20M':3,'30M':3,'50M':3,'100M':4,'250M':5,'500M':5};
 
 function initInvitationMap() {
     var mapDiv = document.getElementById('invitationMap');
@@ -67,7 +69,7 @@ function initInvitationMap() {
     var lng       = parseFloat(mapDiv.getAttribute('data-lng'));
     var place     = mapDiv.getAttribute('data-place') || '';
     var kakaoLink = mapDiv.getAttribute('data-kakaolink') || '';
-    var zoomLevel = mapDiv.getAttribute('data-zoom') || '50M';
+    var zoomLevel = mapDiv.getAttribute('data-zoom') || '100M';
     var locked    = mapDiv.getAttribute('data-locked') === 'true'; /* 명시적으로 true일 때만 잠금, 그 외(미설정 포함)는 인터랙티브 */
 
     if (!lat || !lng || isNaN(lat) || isNaN(lng)) return;
@@ -91,7 +93,7 @@ function initInvitationMap() {
 
 function _drawInvitationMap(mapDiv, lat, lng, place, kakaoLink, zoomLevel, locked) {
     var pos = new kakao.maps.LatLng(lat, lng);
-    var level = MAP_ZOOM_LEVELS[zoomLevel] || 5;
+    var level = MAP_ZOOM_LEVELS[zoomLevel] || 4;
 
     if (_invMap) {
         _invMap.relayout();

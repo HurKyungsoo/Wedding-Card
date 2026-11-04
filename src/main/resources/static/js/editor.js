@@ -92,7 +92,7 @@ var PICKER_GROUPS = [
     { hiddenId: 'contactInput',     itemSelector: '#contactTabs .ed-tab',   dataAttr: 'val' },
     { hiddenId: 'mapLockVal',       itemSelector: '#mapLockTabs .ed-tab',   dataAttr: 'val' },
     { hiddenId: 'mapDetailVal',     itemSelector: '#mapDetailTabs .ed-tab', dataAttr: 'val' },
-    { hiddenId: 'mapZoomInput',     itemSelector: '.ed-zoom-btn',           dataAttr: 'val' },
+    /* mapZoomInput 은 예전 값(20M·30M·500M)을 가까운 버튼으로 읽어야 해서 resyncPickerVisuals 안에서 따로 맞춘다 */
     { hiddenId: 'galTypeVal',       itemSelector: '.gal-type-card',         dataAttr: 'galtype' },
     { hiddenId: 'galScrollVal',     itemSelector: '#galScrollTabs .ed-tab', dataAttr: 'val' },
     { hiddenId: 'fontVal',          itemSelector: '#fontPickList .ed-font-opt',   dataAttr: 'font' },
@@ -121,6 +121,13 @@ function showBaptism(btn) {
 }
 
 function resyncPickerVisuals() {
+    /* 지도 줌: 예전 6단계 값(20M·30M·500M)이면 가까운 버튼으로 보이게 — 값 자체는 사용자가 바꿀 때 새 값으로 저장된다 */
+    var zIn = document.getElementById('mapZoomInput');
+    if (zIn) {
+        var zv = zIn.value || '100M';
+        var alias = (typeof ZOOM_ALIAS !== 'undefined' && ZOOM_ALIAS[zv]) || zv;
+        document.querySelectorAll('#mapZoomTabs .ed-zoom-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.val === alias); });
+    }
     syncBaptismVisibility();   /* 되돌리기로 세례명 값이 바뀌어도 표시를 맞춘다 */
     syncDateTimeUI();          /* 날짜·시간 버튼/선택도 원래 입력값에 맞춘다 */
     PICKER_GROUPS.forEach(function(g) {
@@ -2076,8 +2083,13 @@ document.addEventListener('keydown', function(e) {
    지도 (카카오)
 ────────────────────────────────────── */
 /* ── 지도 줌 선택 ── */
-var ZOOM_LEVEL = {'20M':3,'30M':4,'50M':5,'100M':6,'250M':7,'500M':8};
-var currentZoomVal = '50M'; /* 현재 줌 값 저장 */
+/* 저장값(50M·100M·250M)은 카카오맵 축척 막대 거리 — level 3 = 50m, 4 = 100m, 5 = 250m.
+   예전엔 6단계(20M~500M)였고 두 단계씩 밀려(50M → level 5) 고른 것보다 넓게 보였다.
+   세 단계(가깝게·보통·넓게)로 줄였고, 예전에 저장된 20M·30M 은 가깝게, 500M 은 넓게로 읽는다.
+   ⚠ invitation.js MAP_ZOOM_LEVELS 와 같아야 한다 (MapZoomLevelTest) */
+var ZOOM_LEVEL = {'20M':3,'30M':3,'50M':3,'100M':4,'250M':5,'500M':5};
+var ZOOM_ALIAS = {'20M':'50M','30M':'50M','500M':'250M'};
+var currentZoomVal = '100M'; /* 현재 줌 값 저장 — 기본 '보통' */
 
 function pickZoom(el, val) {
     document.querySelectorAll('#mapZoomTabs .ed-zoom-btn').forEach(function(b){ b.classList.remove('active'); });
@@ -2085,10 +2097,9 @@ function pickZoom(el, val) {
     var input = document.getElementById('mapZoomInput');
     if (input) input.value = val;
     currentZoomVal = val;
-    var levelMap = {'20M':3,'30M':4,'50M':5,'100M':6,'250M':7,'500M':8};
     /* 이미 지도가 그려져 있으면 레벨만 변경 */
     if (_adminMap) {
-        _adminMap.setLevel(levelMap[val] || 5);
+        _adminMap.setLevel(ZOOM_LEVEL[val] || 4);
     } else {
         var lati = document.getElementById('mapLatInput');
         var lngi = document.getElementById('mapLngInput');
@@ -2259,9 +2270,8 @@ function showStaticMap(lng, lat, name) {
     lat = parseFloat(lat); lng = parseFloat(lng);
 
     var zoomInput = document.getElementById('mapZoomInput');
-    var zoomVal   = (zoomInput && zoomInput.value) ? zoomInput.value : (currentZoomVal || '50M');
-    var levelMap  = {'20M':3,'30M':4,'50M':5,'100M':6,'250M':7,'500M':8};
-    var level     = levelMap[zoomVal] || 5;
+    var zoomVal   = (zoomInput && zoomInput.value) ? zoomInput.value : (currentZoomVal || '100M');
+    var level     = ZOOM_LEVEL[zoomVal] || 4;
 
     if (mapDiv) mapDiv.style.display = 'block';
     if (ph)     ph.style.display     = 'none';
