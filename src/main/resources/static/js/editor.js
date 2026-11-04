@@ -2894,12 +2894,15 @@ var syncDateTimeUI = function() {};
     var input = document.getElementById('sharePhotoInput');
     var tabs  = document.getElementById('shareSrcTabs');
     if (!input || !tabs) return;
-    var uploadRow = document.getElementById('shareUploadRow');
-    var zone      = document.getElementById('shareZone');
-    var zoneText  = document.getElementById('shareZoneText');
+    var box       = document.getElementById('shareCardImgBox');
+    var img       = document.getElementById('shareCardImg');
+    var empty     = document.getElementById('shareCardEmpty');
+    var changeBtn = document.getElementById('shareChangeBtn');
+    var tip       = document.getElementById('shareTip');
     var fileEl    = document.getElementById('sharePhotoFile');
     var mode      = input.value ? 'custom' : 'main';
     var lastCustom = input.value;   /* "메인 사진"으로 돌렸다가 다시 돌아오면 고른 사진을 되살린다 */
+    var CROP_TIP = '정사각형으로 잘려요.<br>세로 사진은 얼굴이 있는 위쪽을 더 남겨요.';
 
     function fieldVal(name) {
         var el = document.querySelector('#editForm [name="' + name + '"]');
@@ -2927,23 +2930,24 @@ var syncDateTimeUI = function() {};
         tabs.querySelectorAll('.ed-zoom-btn').forEach(function(b) {
             b.classList.toggle('active', b.dataset.mode === mode);
         });
-        if (uploadRow) uploadRow.style.display = mode === 'custom' ? '' : 'none';
-        if (zoneText) zoneText.innerHTML = input.value
-            ? '다른 사진으로 바꾸기'
-            : '클릭 또는 드래그하여<br>공유용 사진을 올려 주세요.';
-        if (zone) zone.classList.toggle('has-photo', !!input.value);
-
         var mainEl = document.getElementById('mainPhotoBase64');
-        var src = input.value || (mainEl && mainEl.value) || '';
-        var img = document.getElementById('shareCardImg');
-        var empty = document.getElementById('shareCardEmpty');
-        var box = img ? img.parentNode : null;
-        if (img) {
-            if (src) { img.src = photoSrc(src); img.style.display = ''; }
-            else { img.removeAttribute('src'); img.style.display = 'none'; }
-        }
-        if (empty) empty.style.display = src ? 'none' : '';
-        if (box) box.classList.toggle('wide', !src);   /* 사진이 없으면 기본 2:1 썸네일이 나간다 */
+        var mainVal = (mainEl && mainEl.value) || '';
+        var custom = mode === 'custom';
+        var src = custom ? input.value : mainVal;
+
+        if (src) { img.src = photoSrc(src); img.style.display = ''; }
+        else { img.removeAttribute('src'); img.style.display = 'none'; }
+        box.classList.toggle('can', custom);                 /* 고른 사진 모드에서만 눌러서 바꾼다 */
+        box.classList.toggle('empty', !src);
+        box.classList.toggle('wide', !src && !custom);       /* 메인 사진도 없으면 기본 2:1 썸네일이 나간다 */
+        empty.innerHTML = custom
+            ? '<i class="ti ti-photo-plus"></i>눌러서 공유 사진<br>올리기'
+            : '메인 사진이 없으면<br>기본 이미지가 나가요';
+
+        if (changeBtn) changeBtn.style.display = (custom && src) ? '' : 'none';
+        if (tip) tip.innerHTML = !custom
+            ? (mainVal ? '메인 사진이 그대로 나가요.<br>' + CROP_TIP : '메인 사진을 올리면 그 사진이 나가요.')
+            : (src ? CROP_TIP : '카드의 사진 칸을 누르거나 사진을 끌어다 놓으세요.<br><br>정사각형으로 잘려요.');
 
         var g = fieldVal('groomName'), b = fieldVal('brideName');
         var title = document.getElementById('shareCardTitle');
@@ -2963,16 +2967,19 @@ var syncDateTimeUI = function() {};
 
     tabs.addEventListener('click', function(e) {
         var btn = e.target.closest('.ed-zoom-btn');
-        if (!btn) return;
+        if (!btn || btn.dataset.mode === mode) return;
         mode = btn.dataset.mode;
         if (mode === 'main') {
             if (input.value) lastCustom = input.value;
             setValue('');
         } else {
             setValue(lastCustom || '');
-            if (!input.value && fileEl) fileEl.click();
         }
     });
+
+    function pick() { if (mode === 'custom' && fileEl) fileEl.click(); }
+    box.addEventListener('click', pick);
+    if (changeBtn) changeBtn.addEventListener('click', pick);
 
     function handleFile(file) {
         if (!file || file.type.indexOf('image/') !== 0) return;
@@ -2983,21 +2990,21 @@ var syncDateTimeUI = function() {};
             showEditorToast('공유 사진을 바꿨어요');
         });
     }
-    if (zone && fileEl) {
-        zone.addEventListener('click', function() { fileEl.click(); });
-        fileEl.addEventListener('change', function() { handleFile(this.files && this.files[0]); this.value = ''; });
-        ['dragenter', 'dragover'].forEach(function(evt) {
-            zone.addEventListener(evt, function(e) { e.preventDefault(); zone.classList.add('drag-over'); });
+    if (fileEl) fileEl.addEventListener('change', function() { handleFile(this.files && this.files[0]); this.value = ''; });
+    ['dragenter', 'dragover'].forEach(function(evt) {
+        box.addEventListener(evt, function(e) {
+            if (mode !== 'custom') return;
+            e.preventDefault(); box.classList.add('drag-over');
         });
-        ['dragleave', 'drop'].forEach(function(evt) {
-            zone.addEventListener(evt, function(e) { e.preventDefault(); zone.classList.remove('drag-over'); });
-        });
-        zone.addEventListener('drop', function(e) {
-            handleFile(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]);
-        });
-    }
+    });
+    ['dragleave', 'drop'].forEach(function(evt) {
+        box.addEventListener(evt, function(e) { e.preventDefault(); box.classList.remove('drag-over'); });
+    });
+    box.addEventListener('drop', function(e) {
+        if (mode === 'custom') handleFile(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]);
+    });
 
-    /* 이름·날짜·장소·메인 사진이 바뀌면 카드 미리보기도 바로 */
+    /* 이름·날짜·장소·메인 사진이 바뀌면 카드도 바로 */
     var form = document.getElementById('editForm');
     if (form) {
         form.addEventListener('input', function(e) {

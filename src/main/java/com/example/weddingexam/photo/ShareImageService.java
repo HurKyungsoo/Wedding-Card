@@ -74,7 +74,8 @@ public class ShareImageService {
         try {
             byte[] src = readSource(main.trim());
             if (src == null) return FALLBACK;
-            String name = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(src)) + ".jpg";
+            // 이름에 크기를 붙인다 — 만드는 규칙이 바뀌면 이름도 바뀌어 예전 파일(예: 512px)을 재사용하지 않는다
+            String name = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(src)) + "-" + SIZE + ".jpg";
             Path out = storage.dir().resolve("share").resolve(name);
             String url = PhotoStorage.URL_PREFIX + "share/" + name;
             if (Files.exists(out)) return url;
@@ -119,7 +120,9 @@ public class ShareImageService {
         int side = Math.min(w, h);
         int x = (w - side) / 2;
         int y = (int) Math.round((h - side) * (h > w ? TOP_BIAS : 0.5));
-        int target = Math.min(SIZE, side);
+        // 항상 800 — og:image 크기·카카오 imageWidth/Height 로 800 을 알려 주므로 실제 크기도 맞춘다
+        // (원본이 작으면 살짝 키운다. MIN_SOURCE 200px 미만은 위에서 이미 기본 썸네일로 돌렸다)
+        int target = SIZE;
         BufferedImage out = new BufferedImage(target, target, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = out.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);

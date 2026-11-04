@@ -1256,8 +1256,7 @@
             </div>
             <div class="ed-sec-bd" id="bd-share" style="display:none;">
                 <div class="ed-hint">
-                    ⓘ 카카오톡으로 공유하거나 링크를 보낼 때 카드에 나오는 사진이에요.<br>
-                    ⓘ 정사각형으로 잘려서 나가요 — 세로 사진은 얼굴이 있는 위쪽을 더 남겨요.
+                    ⓘ 카카오톡으로 공유하거나 링크를 보낼 때 카드에 나오는 사진이에요.
                 </div>
                 <!-- 비어 있으면 메인 사진을 쓴다. 값은 저장할 때 서버가 파일(/uploads/...)로 바꾼다 -->
                 <input type="hidden" th:field="*{sharePhoto}" id="sharePhotoInput">
@@ -1270,33 +1269,30 @@
                         </div>
                     </div>
                 </div>
-                <div class="ed-row" id="shareUploadRow" style="align-items:flex-start;display:none;">
-                    <span class="ed-label" style="padding-top:10px">공유 사진</span>
+                <div class="ed-row" style="align-items:flex-start;">
+                    <span class="ed-label" style="padding-top:4px">공유 카드</span>
                     <div class="ed-ctrl">
-                        <div class="ed-upload ed-share-zone" id="shareZone">
-                            <div>
-                                <i class="ti ti-photo-plus" style="font-size:26px;"></i>
-                                <p id="shareZoneText">클릭 또는 드래그하여<br>공유용 사진을 올려 주세요.</p>
+                        <!-- 카카오톡 공유 카드 모양 그대로 — 사진 칸을 눌러 바로 고르고 바꾼다("다른 사진 고르기"일 때).
+                             자르는 자리는 서버 썸네일과 같다(가로 가운데, 세로 30%). -->
+                        <div class="ed-share-wrap">
+                            <div class="ed-kakao-card" id="shareCardPreview">
+                                <div class="ed-kakao-img" id="shareCardImgBox">
+                                    <img id="shareCardImg" alt="공유 사진 미리보기">
+                                    <div class="ed-kakao-ov"><i class="ti ti-camera"></i>사진 바꾸기</div>
+                                    <div class="ed-kakao-empty" id="shareCardEmpty"></div>
+                                </div>
+                                <div class="ed-kakao-body">
+                                    <b id="shareCardTitle">신랑 ♥ 신부 결혼합니다</b>
+                                    <span id="shareCardDesc"></span>
+                                    <em>자세히 보기</em>
+                                </div>
+                            </div>
+                            <div class="ed-share-side">
+                                <button type="button" class="ed-share-change" id="shareChangeBtn"><i class="ti ti-photo-edit"></i>사진 바꾸기</button>
+                                <div class="ed-share-tip" id="shareTip"></div>
                             </div>
                         </div>
                         <input type="file" id="sharePhotoFile" accept="image/*" style="display:none">
-                    </div>
-                </div>
-                <div class="ed-row" style="align-items:flex-start;">
-                    <span class="ed-label" style="padding-top:4px">미리보기</span>
-                    <div class="ed-ctrl">
-                        <!-- 카카오톡 공유 카드 모양 — 서버가 만드는 썸네일과 같은 자리(가로 가운데, 세로 30%)로 자른다 -->
-                        <div class="ed-kakao-card" id="shareCardPreview">
-                            <div class="ed-kakao-img">
-                                <img id="shareCardImg" alt="공유 사진 미리보기">
-                                <span id="shareCardEmpty">사진이 없으면 기본 이미지가 나가요</span>
-                            </div>
-                            <div class="ed-kakao-body">
-                                <b id="shareCardTitle">신랑 ♥ 신부 결혼합니다</b>
-                                <span id="shareCardDesc"></span>
-                                <em>자세히 보기</em>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

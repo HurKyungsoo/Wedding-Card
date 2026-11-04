@@ -2004,15 +2004,29 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-end-zone.compact p{margin:4px 0 0;}
 
 
-/* ── 카카오톡 공유 카드 미리보기 ── */
-.ed-kakao-card{width:220px;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e8e2da;box-shadow:0 2px 8px rgba(40,30,20,.08);}
-.ed-kakao-img{position:relative;width:100%;aspect-ratio:1/1;background:#f3efe9;display:flex;align-items:center;justify-content:center;}
-.ed-kakao-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%;}
+/* ── 카카오톡 공유 카드 (사진 칸을 눌러 고르고 바꾼다) ── */
+.ed-share-wrap{display:flex;gap:16px;align-items:flex-start;}
+.ed-kakao-card{width:210px;flex:none;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e8e2da;box-shadow:0 2px 8px rgba(40,30,20,.08);}
+.ed-kakao-img{position:relative;width:100%;aspect-ratio:1/1;background:#f3efe9;overflow:hidden;}
 .ed-kakao-img.wide{aspect-ratio:2/1;}
-.ed-kakao-img span{font-size:11px;color:#a89c90;padding:0 12px;text-align:center;}
+.ed-kakao-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%;}
+.ed-kakao-ov{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(30,22,18,.42);color:#fff;font-size:12px;opacity:0;transition:opacity .2s;}
+.ed-kakao-ov i{font-size:20px;}
+.ed-kakao-img.can{cursor:pointer;}
+.ed-kakao-img.can .ed-kakao-ov{display:flex;}
+.ed-kakao-img.can:hover .ed-kakao-ov{opacity:1;}
+.ed-kakao-empty{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#a08b78;font-size:12px;text-align:center;line-height:1.5;padding:0 12px;}
+.ed-kakao-empty i{font-size:26px;}
+.ed-kakao-img.empty .ed-kakao-empty{display:flex;}
+.ed-kakao-img.empty.can{border:1.5px dashed #d9c9b8;background:#fbf8f4;}
+.ed-kakao-img.empty.can .ed-kakao-ov{display:none;}
+.ed-kakao-img.drag-over{border:1.5px dashed var(--color-rose, #c47a8a);background:#fbf1f3;}
 .ed-kakao-body{padding:9px 11px 11px;display:flex;flex-direction:column;gap:3px;}
 .ed-kakao-body b{font-size:13px;font-weight:600;color:#222;line-height:1.4;}
 .ed-kakao-body span{font-size:11.5px;color:#777;line-height:1.45;}
 .ed-kakao-body em{font-style:normal;margin-top:7px;border:1px solid #e3e3e3;border-radius:4px;text-align:center;font-size:11.5px;padding:6px;color:#333;}
-.ed-share-zone{min-height:96px;}
-.ed-share-zone.has-photo{min-height:0;padding:10px;}
+.ed-share-side{display:flex;flex-direction:column;gap:10px;padding-top:2px;min-width:0;}
+.ed-share-change{display:inline-flex;align-items:center;gap:5px;border:1px solid #e3d9ce;background:#fff;border-radius:8px;padding:7px 11px;font-size:12px;color:#5d5047;cursor:pointer;width:max-content;font-family:inherit;}
+.ed-share-change:hover{border-color:#cbb9a8;}
+.ed-share-tip{font-size:11.5px;color:#a89a8d;line-height:1.6;word-break:keep-all;}
+@media (max-width:480px){ .ed-share-wrap{flex-direction:column;} }
