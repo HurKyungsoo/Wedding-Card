@@ -2099,3 +2099,73 @@ textarea.ed-input{resize:none;line-height:1.75;}
     .ed-row:has(> .ed-ctrl > .ed-toggle-wrap:only-child),
     .ed-row:has(> .ed-toggle-wrap){flex-direction:row;align-items:center;}
 }
+
+/* ── 모바일 편집 2 ── */
+.ed-me-mobile{display:none !important;}
+.ed-chipbar{display:none;}
+@media (max-width:720px){
+    /* ① 아이폰 사파리는 16px 보다 작은 입력칸을 누르면 화면을 확대해 버린다 — 입력칸만 16px */
+    .ed-main input[type="text"],.ed-main input[type="tel"],.ed-main input[type="number"],
+    .ed-main input[type="email"],.ed-main input[type="url"],.ed-main input[type="search"],
+    .ed-main input:not([type]),.ed-main select,.ed-main textarea,
+    .map-modal input,#mapModalInput{font-size:16px !important;}
+
+    /* ② 섹션 바로가기 — 편집 폼 위에 가로로 넘기는 칩 (스크롤해도 붙어 있다) */
+    .ed-chipbar{
+        display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;
+        position:sticky;top:-.55rem;z-index:20;
+        margin:-.55rem -.55rem .55rem;padding:.55rem .55rem .5rem;
+        background:linear-gradient(#ede9e3 80%,rgba(237,233,227,0));
+    }
+    .ed-chipbar::-webkit-scrollbar{display:none;}
+    .ed-chip{
+        flex:none;height:32px;padding:0 13px;border-radius:16px;
+        border:1px solid #e1d7cc;background:#fff;color:#6a5a4c;
+        font-size:12.5px;font-family:inherit;white-space:nowrap;cursor:pointer;
+    }
+    .ed-chip.on{background:#2b2320;border-color:#2b2320;color:#fff;}
+    .ed-chip.off{color:#b6aa9f;}
+    .ed-chip:focus-visible{outline:2px solid var(--color-rose);outline-offset:2px;}
+
+    /* ③ 상단바 — 아이콘만 있던 저장 상태를 짧은 글자로, '청첩장 보기'는 계정 메뉴로 */
+    #viewInviteLink{display:none;}
+    .ed-me-mobile{display:flex !important;}
+    .ed-draft-status{gap:4px !important;font-size:11.5px;padding:6px 6px !important;}
+    .ed-draft-status.dirty::after{content:'미게시';}
+    .ed-draft-status.clean::after{content:'게시됨';}
+    .ed-draft-status.saving::after{content:'저장 중';}
+    .ed-status-save{display:none;}
+}
+
+/* ── 모바일 편집 3: 미리보기에서 바로 고치기 · 게시 후 보내기 ── */
+.fp-actions{display:none;}
+.ed-sharesheet[hidden]{display:none;}
+@media (max-width:720px){
+    .fullprev-close{display:none !important;}   /* 닫기는 아래 버튼 줄로 */
+    .fp-actions{position:fixed;left:0;right:0;bottom:18px;display:flex;justify-content:center;gap:8px;z-index:9200;}
+    .fp-actions button{
+        height:44px;border-radius:22px;border:none;font-size:14px;font-family:inherit;
+        display:inline-flex;align-items:center;gap:6px;padding:0 16px;cursor:pointer;
+        box-shadow:0 8px 24px rgba(0,0,0,.25);
+    }
+    .fp-actions i{font-size:16px;}
+    .fp-close{background:#fff;color:#3a2e28;}
+    .fp-edit{background:#2b2320;color:#fff;}
+    .fp-actions button:focus-visible{outline:2px solid var(--color-rose);outline-offset:2px;}
+
+    .ed-sharesheet{position:fixed;inset:0;z-index:9500;background:rgba(28,22,18,.42);display:flex;align-items:flex-end;}
+    .ed-sharesheet-panel{
+        width:100%;background:#fff;border-radius:20px 20px 0 0;padding:22px 18px calc(18px + env(safe-area-inset-bottom));
+        display:flex;flex-direction:column;gap:8px;animation:edSheetUp .25s ease-out;
+    }
+    @keyframes edSheetUp{from{transform:translateY(40px);opacity:0;}to{transform:none;opacity:1;}}
+    .ed-sharesheet-title{font-size:17px;font-weight:600;color:var(--color-ink);}
+    .ed-sharesheet-desc{font-size:13px;color:#8a7b6e;margin-bottom:8px;}
+    .ed-ss-btn{
+        height:48px;border-radius:12px;border:1px solid #e3d9ce;background:#fff;color:#3a2e28;
+        font-size:15px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;
+        text-decoration:none;cursor:pointer;
+    }
+    .ed-ss-btn.primary{background:#FEE500;border-color:#FEE500;color:#3C1E1E;font-weight:600;}
+    .ed-ss-close{height:44px;border:none;background:none;color:#8a7b6e;font-size:14px;font-family:inherit;cursor:pointer;}
+}

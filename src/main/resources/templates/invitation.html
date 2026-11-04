@@ -83,6 +83,17 @@
     document.head.appendChild(s);
 })();
 </script>
+<!-- 편집기 미리보기에선 오프닝 인트로(2.9초)를 처음 한 번만 — 고칠 때마다 미리보기를 열거나 새로 그리면
+     매번 인트로가 화면을 덮어 결과가 늦게 보였다. 하객 화면(실제 청첩장)은 늘 인트로부터. -->
+<script th:if="${editorPreview}">
+(function() {
+    try {
+        if (sessionStorage.getItem('wc.introSeen')) document.documentElement.classList.add('no-intro');
+        else sessionStorage.setItem('wc.introSeen', '1');
+    } catch (e) {}
+})();
+</script>
+<style th:if="${editorPreview}">html.no-intro .intro-screen{display:none !important;}</style>
 </head>
 <body>
 

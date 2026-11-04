@@ -116,4 +116,12 @@ class QualityGuardTest {
                 .doesNotContain("getElementById('fullPrevFrame').src = ''");
         assertThat(read("templates/invitation.html")).contains("e.data.instant ? 'instant' : 'smooth'");
     }
+
+    /** 인트로는 하객 화면에선 늘, 편집기 미리보기에선 처음 한 번만 */
+    @Test
+    void intro_isSkippedOnlyInEditorPreviewAfterFirstTime() throws Exception {
+        String html = read("templates/invitation.html");
+        assertThat(html).contains("<script th:if=\"${editorPreview}\">").contains("wc.introSeen")
+                .contains("html.no-intro .intro-screen{display:none !important;}");
+    }
 }
