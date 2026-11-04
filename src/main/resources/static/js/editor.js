@@ -3229,13 +3229,14 @@ function isMobileEditor() { return window.matchMedia('(max-width:720px)').matche
         raf = 0;
         var d = frame.contentDocument, w = frame.contentWindow;
         if (!d || !w) return;
-        var mid = w.innerHeight * 0.45, best = 'main';
+        /* 화면 45% 선을 이미 지나간 섹션 중 가장 아래 것 — 섹션 사이 구분선에 걸려도 바로 위 섹션으로.
+           섹션 순서는 사용자가 바꿀 수 있으니 목록 순서가 아니라 실제 위치로 고른다 */
+        var mid = w.innerHeight * 0.45, best = 'main', bestTop = -Infinity;
         MAP.forEach(function(p) {
             var el = d.querySelector(p[1]);
             if (!el || !el.offsetParent) return;
-            var box = el.closest('.sec') || el;
-            var r = box.getBoundingClientRect();
-            if (r.top <= mid && r.bottom >= mid) best = p[0];
+            var top = (el.closest('.sec') || el).getBoundingClientRect().top;
+            if (top <= mid && top > bestTop) { bestTop = top; best = p[0]; }
         });
         current = best;
         nameEl.textContent = NAME[best] || best;
