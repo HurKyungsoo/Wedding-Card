@@ -33,6 +33,7 @@ public class WeddingController {
     private final WeddingService weddingService;
     private final AccountService accountService;
     private final ViewLogService viewLogService;
+    private final com.example.weddingexam.photo.ShareImageService shareImageService;
 
     @Value("${kakao.map.appkey:}")
     private String kakaoAppKey;
@@ -41,10 +42,12 @@ public class WeddingController {
     private String kakaoRestKey;
 
     public WeddingController(WeddingService weddingService, AccountService accountService,
-                              ViewLogService viewLogService) {
+                              ViewLogService viewLogService,
+                              com.example.weddingexam.photo.ShareImageService shareImageService) {
         this.weddingService = weddingService;
         this.accountService = accountService;
         this.viewLogService = viewLogService;
+        this.shareImageService = shareImageService;
     }
 
     /* ── 랜딩 페이지 ── */
@@ -620,6 +623,14 @@ public class WeddingController {
 
     private void addFormattedFields(Model model, WeddingDto dto) {
         model.addAttribute("wedding", dto);
+        // 카카오톡 공유·링크 미리보기 — 절대 주소여야 카카오/슬랙 스크래퍼가 읽는다
+        String base = org.springframework.web.servlet.support.ServletUriComponentsBuilder
+                .fromCurrentContextPath().build().toUriString();
+        String sharePath = shareImageService.shareImagePath(dto);
+        model.addAttribute("shareImageUrl", base + sharePath);
+        model.addAttribute("shareImageSquare", shareImageService.isSquare(sharePath));
+        model.addAttribute("sharePageUrl", dto.getSlug() != null && !dto.getSlug().isBlank()
+                ? base + "/w/" + dto.getSlug() : null);
         model.addAttribute("greetingTitleHtml",
                 dto.getGreetingTitle() != null
                         ? HtmlUtils.htmlEscape(dto.getGreetingTitle()).replace("\n", "<br>") : "");

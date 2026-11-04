@@ -840,10 +840,15 @@ window.initPage = function(data) {
 /* ════════════════════════════════════════
    공유하기 (Share)
    ════════════════════════════════════════ */
-function initShare(groomName, brideName) {
-    var pageUrl   = window.location.href;
-    var shareTitle = groomName + ' ♥ ' + brideName + ' 결혼합니다';
-    var shareText  = '저희 결혼식에 초대합니다. 청첩장을 확인해 주세요 💌';
+function initShare(groomName, brideName, share) {
+    share = share || {};
+    /* 게시된 청첩장 주소(/w/slug)가 있으면 그걸 — 미리보기용 ?preview=1 같은 꼬리가 공유되지 않게 */
+    var pageUrl   = share.pageUrl || window.location.href;
+    var shareTitle = (groomName || '신랑') + ' ♥ ' + (brideName || '신부') + ' 결혼합니다';
+    var shareText  = share.description || '저희 결혼식에 초대합니다. 청첩장을 확인해 주세요 💌';
+    /* 커플 메인 사진을 서버가 1:1(800x800)로 잘라 둔 썸네일. 사진이 없으면 기본 2:1 썸네일 */
+    var imageUrl = share.imageUrl || (window.location.origin + '/images/share-thumbnail.jpg');
+    var imageH   = share.square ? 800 : 400;
 
     // 카카오톡
     document.getElementById('shareKakao').addEventListener('click', function() {
@@ -853,10 +858,10 @@ function initShare(groomName, brideName) {
                 content: {
                     title: shareTitle,
                     description: shareText,
-                    /* 카카오 피드 템플릿은 2:1(800x400) 가로 이미지를 권장한다.
-                       예전엔 963x1181 세로 원본(1.4MB)을 그대로 넘겨서 양옆이 잘렸다.
-                       WebP는 카카오 쪽 지원이 불확실해 JPEG로 둔다. */
-                    imageUrl: window.location.origin + '/images/share-thumbnail.jpg',
+                    /* 카카오는 1:1·4:3·2:1 이 아니면 자동으로 잘라 버린다 — 크기를 알려 줘야 그 비율로 보인다 */
+                    imageUrl: imageUrl,
+                    imageWidth: 800,
+                    imageHeight: imageH,
                     link: { mobileWebUrl: pageUrl, webUrl: pageUrl }
                 }
             });
