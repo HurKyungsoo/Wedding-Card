@@ -354,6 +354,8 @@ button.ed-draft-status.saving .ed-status-mark{animation:edSavePulse .8s ease-in-
     transition:background .2s, color .2s;
 }
 .ed-section.open .ed-sec-icon{background:var(--color-bg-soft);color:var(--color-ink);}
+/* 카카오톡 공유 섹션 — 청첩장 공유 버튼과 같은 노란 말풍선 */
+.ed-sec-icon.ed-sec-icon-kakao,.ed-section.open .ed-sec-icon.ed-sec-icon-kakao{background:#FEE500;}
 
 /* ── 인라인 행 ── */
 .ed-row{
