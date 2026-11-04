@@ -116,6 +116,9 @@
             </button>
             <div class="ed-me-menu" id="edMeMenu" role="menu">
                 <div class="ed-me-name" th:if="${currentUser != null}" th:text="${currentUser.name}">사용자</div>
+                <!-- 모바일 — 상단의 '청첩장 보기' 아이콘 대신 여기서 -->
+                <a th:if="${wedding.slug != null}" th:href="'/w/' + ${wedding.slug}" target="_blank"
+                   class="ed-me-item ed-me-mobile" role="menuitem"><i class="ti ti-external-link"></i>게시된 청첩장 보기</a>
                 <button type="button" class="ed-me-item" id="onboardingReopenBtn" role="menuitem">
                     <i class="ti ti-help-hexagon"></i>가이드 다시 보기
                 </button>

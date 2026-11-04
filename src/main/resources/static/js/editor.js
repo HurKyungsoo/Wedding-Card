@@ -3123,3 +3123,81 @@ var syncDateTimeUI = function() {};
     new MutationObserver(function() { clearTimeout(t); t = setTimeout(labelAll, 120); })
         .observe(document.body, { childList: true, subtree: true });
 })();
+
+/* ──────────────────────────────────────
+   모바일 섹션 바로가기 칩 — 섹션이 14개라 끝(계좌·방명록)까지 가려면 한참 스크롤해야 했다.
+   편집 폼 위에 붙은 가로 칩으로 바로 이동하고, 닫혀 있으면 열어 준다.
+   섹션 순서를 바꾸면(메뉴에서 드래그) 칩도 그 순서로 다시 그린다.
+────────────────────────────────────── */
+(function sectionChips() {
+    var main = document.querySelector('.ed-main');
+    var form = document.getElementById('editForm');
+    if (!main || !form) return;
+    var SHORT = { main:'메인', basic:'기본 정보', wedding:'예식', greet:'인사말', hosts:'혼주', cal:'캘린더',
+                  dday:'D-Day', gal:'갤러리', map:'지도', acct:'계좌', guest:'방명록', rsvp:'참석',
+                  ending:'엔딩', share:'공유' };
+    var bar = document.createElement('nav');
+    bar.className = 'ed-chipbar';
+    bar.setAttribute('aria-label', '섹션 바로가기');
+    main.insertBefore(bar, main.firstChild);
+
+    function sections() { return Array.prototype.slice.call(form.querySelectorAll(':scope > .ed-section')); }
+    function keyOf(sec) { return sec.id.replace(/^sec-/, ''); }
+
+    function build() {
+        bar.innerHTML = '';
+        sections().forEach(function(sec) {
+            var key = keyOf(sec);
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'ed-chip';
+            b.dataset.sec = key;
+            var title = sec.querySelector('.ed-sec-title');
+            b.textContent = SHORT[key] || (title ? title.textContent.trim() : key);
+            var chk = sec.querySelector('.ed-sec-hd .ed-toggle-wrap input');
+            if (chk && !chk.checked) b.classList.add('off');   /* 청첩장에서 끈 섹션은 흐리게 */
+            b.addEventListener('click', function() { go(sec); });
+            bar.appendChild(b);
+        });
+        markActive();
+    }
+
+    function go(sec) {
+        lastEditedSection = keyOf(sec);            /* 「미리보기」도 이 섹션부터 */
+        if (!sec.classList.contains('open')) {
+            var hd = sec.querySelector('.ed-sec-hd');
+            if (hd) hd.click();                    /* 기존 열기 동작 그대로 — 방명록·참석 목록 불러오기 포함 */
+        }
+        var top = sec.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop - bar.offsetHeight;
+        main.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    }
+
+    var raf = 0;
+    function markActive() {
+        var line = main.getBoundingClientRect().top + bar.offsetHeight + 12;
+        var cur = null;
+        sections().forEach(function(sec) { if (sec.getBoundingClientRect().top <= line) cur = keyOf(sec); });
+        if (!cur && sections()[0]) cur = keyOf(sections()[0]);
+        bar.querySelectorAll('.ed-chip').forEach(function(c) {
+            var on = c.dataset.sec === cur;
+            if (on && !c.classList.contains('on')) {
+                c.classList.add('on');
+                /* 칩 줄도 따라 넘겨 지금 칩이 보이게 */
+                var l = c.offsetLeft - bar.clientWidth / 2 + c.offsetWidth / 2;
+                bar.scrollTo({ left: Math.max(0, l), behavior: 'smooth' });
+            } else if (!on) c.classList.remove('on');
+        });
+    }
+    main.addEventListener('scroll', function() {
+        if (raf) return;
+        raf = requestAnimationFrame(function() { raf = 0; markActive(); });
+    }, { passive: true });
+
+    form.addEventListener('change', function(e) {
+        if (e.target && e.target.closest && e.target.closest('.ed-sec-hd .ed-toggle-wrap')) build();
+    });
+    new MutationObserver(function(list) {
+        if (list.some(function(m) { return m.target === form; })) build();
+    }).observe(form, { childList: true });
+    build();
+})();
