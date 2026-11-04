@@ -1990,3 +1990,6 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-dt-cal:hover{border-color:var(--color-rose);background:#fff5f7;}
 .ed-dt-wrap .ed-dt-label{font-size:12.5px;color:#6f6056;margin-left:4px;}
 .ed-dt-wrap .ed-dt-dday{margin-left:0;}
+
+/* 지도 줌 — 세 단계, 거리는 작게 */
+.ed-zoom-btn small{font-size:10.5px;opacity:.65;margin-left:2px;}

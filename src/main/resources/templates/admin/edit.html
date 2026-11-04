@@ -999,12 +999,10 @@
                     <span class="ed-label">지도 줌</span>
                     <div class="ed-ctrl">
                         <div class="ed-zoom-tabs" id="mapZoomTabs">
-                            <button type="button" class="ed-zoom-btn" data-val="20M"  onclick="pickZoom(this,'20M')">20M</button>
-                            <button type="button" class="ed-zoom-btn" data-val="30M"  onclick="pickZoom(this,'30M')">30M</button>
-                            <button type="button" class="ed-zoom-btn active" data-val="50M"  onclick="pickZoom(this,'50M')">50M</button>
-                            <button type="button" class="ed-zoom-btn" data-val="100M" onclick="pickZoom(this,'100M')">100M</button>
-                            <button type="button" class="ed-zoom-btn" data-val="250M" onclick="pickZoom(this,'250M')">250M</button>
-                            <button type="button" class="ed-zoom-btn" data-val="500M" onclick="pickZoom(this,'500M')">500M</button>
+                            <!-- 예전엔 20M~500M 6단계 — 청첩장 지도에서 차이가 잘 안 보이는 단계(20·30·500m)를 빼고 셋으로 -->
+                            <button type="button" class="ed-zoom-btn" data-val="50M"  onclick="pickZoom(this,'50M')">가깝게 <small>50m</small></button>
+                            <button type="button" class="ed-zoom-btn active" data-val="100M" onclick="pickZoom(this,'100M')">보통 <small>100m</small></button>
+                            <button type="button" class="ed-zoom-btn" data-val="250M" onclick="pickZoom(this,'250M')">넓게 <small>250m</small></button>
                         </div>
                         <input type="hidden" th:field="*{mapZoomLevel}" id="mapZoomInput">
                     </div>

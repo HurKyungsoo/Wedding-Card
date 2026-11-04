@@ -574,7 +574,7 @@
                  th:style="${wedding.mapLat == null or wedding.mapLng == null} ? 'display:none' : ''"
                  th:attr="data-lat=${wedding.mapLat},data-lng=${wedding.mapLng},data-place=${wedding.mapPlaceName},
                            data-kakaolink=|https://map.kakao.com/link/map/${wedding.mapPlaceName},${wedding.mapLat},${wedding.mapLng}|,
-                           data-zoom=${wedding.mapZoomLevel ?: '50M'},
+                           data-zoom=${wedding.mapZoomLevel ?: '100M'},
                            data-locked=${wedding.mapLocked == true}">
                 <!-- JS(initInvitationMap)가 카카오맵 인스턴스를 주입 -->
             </div>
@@ -1527,7 +1527,7 @@ window.__WEDDING_STYLE = {
                 if (d.mapLat) smDiv.setAttribute('data-lat', d.mapLat);
                 if (d.mapLng) smDiv.setAttribute('data-lng', d.mapLng);
                 if (d.mapPlaceName) smDiv.setAttribute('data-place', d.mapPlaceName);
-                if (d.mapZoomLevel !== undefined) smDiv.setAttribute('data-zoom', d.mapZoomLevel || '50M');
+                if (d.mapZoomLevel !== undefined) smDiv.setAttribute('data-zoom', d.mapZoomLevel || '100M');
                 if (d.mapLocked !== undefined) smDiv.setAttribute('data-locked', String(d.mapLocked) === 'true');
                 var smLat   = smDiv.getAttribute('data-lat');
                 var smLng   = smDiv.getAttribute('data-lng');
