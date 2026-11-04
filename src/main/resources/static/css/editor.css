@@ -2048,3 +2048,35 @@ textarea.ed-input{resize:none;line-height:1.75;}
 .ed-acct-del{min-width:32px;min-height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;}
 .nav-panel-handle{min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center;}
 .ed-kakao-img.can:focus-visible{outline:2px solid var(--color-rose);outline-offset:2px;}
+
+/* ── 모바일 미리보기 접기/펼치기 ──
+   720px 이하에선 미리보기가 위, 편집 폼이 아래로 쌓인다. 미리보기가 화면의 절반을 차지하면
+   실제 폰(주소창 포함)에선 입력칸이 손바닥만 해진다 — 높이를 줄이고, 아예 접을 수도 있게 한다. */
+.ed-prev-collapse{display:none;}
+@media (max-width:720px){
+    .ed-preview{height:42vh;}
+    .ed-preview-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px 6px 14px;}
+    .ed-prev-collapse{
+        display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 10px;
+        border:1px solid #e3d9ce;border-radius:16px;background:#fff;color:#6a5a4c;
+        font-size:12px;font-family:inherit;cursor:pointer;flex-shrink:0;
+    }
+    .ed-prev-collapse i{font-size:14px;transition:transform .2s;}
+    .ed-prev-collapse:focus-visible{outline:2px solid var(--color-rose);outline-offset:2px;}
+    .ed-center.prev-collapsed .ed-preview{height:auto;min-height:0;}
+    .ed-center.prev-collapsed .ed-preview-badge,
+    .ed-center.prev-collapsed .ed-preview iframe,
+    .ed-center.prev-collapsed .ed-scroll-label{display:none;}
+    .ed-center.prev-collapsed .ed-preview-bottom{justify-content:flex-end;}
+    .ed-center.prev-collapsed .ed-prev-collapse i{transform:rotate(180deg);}
+}
+
+/* ── 좁은 폰(≤480px) — 라벨을 입력칸 위로 ──
+   라벨이 왼쪽 82px 를 차지하면 셀렉트 두 개가 한 줄에 끼어 "석감 보정 없…"처럼 잘린다.
+   라벨을 위로 올려 입력칸이 폭을 다 쓰게 한다. 토글 하나뿐인 줄은 그대로 옆에 둔다. */
+@media (max-width:480px){
+    .ed-row{flex-direction:column;align-items:stretch;gap:7px;}
+    .ed-row > .ed-label{min-width:0;max-width:none;padding-top:0 !important;}
+    .ed-row:has(> .ed-ctrl > .ed-toggle-wrap:only-child),
+    .ed-row:has(> .ed-toggle-wrap){flex-direction:row;align-items:center;}
+}

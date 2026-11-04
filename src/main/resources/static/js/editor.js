@@ -3097,3 +3097,25 @@ var syncDateTimeUI = function() {};
     new MutationObserver(function() { clearTimeout(t); t = setTimeout(labelAll, 120); })
         .observe(document.body, { childList: true, subtree: true });
 })();
+
+/* 모바일 — 미리보기 접기/펼치기 (고른 상태는 이 브라우저에 기억) */
+(function previewCollapse() {
+    var btn = document.getElementById('prevCollapseBtn');
+    var center = document.getElementById('edCenter');
+    if (!btn || !center) return;
+    var KEY = 'wc.editor.previewCollapsed';
+    function apply(collapsed) {
+        center.classList.toggle('prev-collapsed', collapsed);
+        btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        btn.querySelector('span').textContent = collapsed ? '미리보기 펼치기' : '미리보기 접기';
+    }
+    var saved = false;
+    try { saved = localStorage.getItem(KEY) === '1'; } catch (e) {}
+    apply(saved);
+    btn.addEventListener('click', function() {
+        var collapsed = !center.classList.contains('prev-collapsed');
+        apply(collapsed);
+        try { localStorage.setItem(KEY, collapsed ? '1' : '0'); } catch (e) {}
+        /* 접혀 있어도 iframe 은 살아 있어 실시간 반영 메시지를 계속 받는다 — 펼치면 바로 최신 상태 */
+    });
+})();
