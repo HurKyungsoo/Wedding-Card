@@ -49,6 +49,10 @@ jobs:
           sudo systemctl stop weddingcard.service 2>/dev/null || true
           pkill -f 'java -jar target/weddingexam' 2>/dev/null || true
           sleep 5
+          # 배포 직전 DB 백업 — 서비스가 멈춘 상태라 H2 파일이 일관된 상태로 복사된다. 최근 14개만 남긴다.
+          BK=/home/ubuntu/backups/deploy_$(TZ=Asia/Seoul date +%Y%m%d_%H%M%S)
+          mkdir -p "$BK" && cp -p /home/ubuntu/Wedding-Card/data/*.db "$BK"/ && ls -la "$BK"
+          ls -1dt /home/ubuntu/backups/deploy_* | tail -n +15 | xargs -r rm -rf
           sudo systemctl start weddingcard.service
 
       - name: Health check
