@@ -700,6 +700,8 @@ function updateThemeColorPresets(design) {
         btn.type = 'button';
         btn.className = 'ed-color-swatch';
         btn.style.background = color;
+        btn.setAttribute('aria-label', '글자색 ' + color);
+        btn.title = color;
         if (color.toLowerCase() === '#ffffff') btn.style.border = '1px solid #ddd';
         btn.addEventListener('click', function() { pickFontColor(color); });
         container.appendChild(btn);
@@ -1215,7 +1217,7 @@ function renderGalThumbs() {
     galImages.forEach(function(url) {
         var wrap = document.createElement('div');
         wrap.className = 'ed-thumb';
-        wrap.innerHTML = '<img src="' + url + '" alt=""><button type="button" class="gal-del-btn">✕</button>';
+        wrap.innerHTML = '<img src="' + url + '" alt=""><button type="button" class="gal-del-btn" aria-label="사진 빼기">✕</button>';
         wrap.querySelector('.gal-del-btn').addEventListener('click', function() {
             var idx = Array.from(c.children).indexOf(wrap);
             galImages.splice(idx, 1);
@@ -1266,7 +1268,7 @@ function renderAcctList(side) {
         var opts = BANKS.map(function(b){ return '<option'+(acct.bank===b?' selected':'')+'>'+b+'</option>'; }).join('');
         div.innerHTML =
             '<div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:11px;color:#b89870;">'+(idx+1)+'</span>'+
-            '<button type="button" class="ed-acct-del" data-idx="'+idx+'" data-side="'+side+'"><i class="ti ti-trash"></i></button></div>'+
+            '<button type="button" class="ed-acct-del" aria-label="계좌 삭제" data-idx="'+idx+'" data-side="'+side+'"><i class="ti ti-trash" aria-hidden="true"></i></button></div>'+
             '<div class="ed-acct-fields">'+
                 '<div class="ed-acct-field-row"><span class="ed-acct-label">예금주</span><input class="ed-input" type="text" placeholder="예금주" value="'+(acct.owner||'')+'" data-field="owner"></div>'+
                 '<div class="ed-acct-field-row"><span class="ed-acct-label">은행</span><select class="ed-select" data-field="bank">'+opts+'</select></div>'+
@@ -2938,6 +2940,12 @@ var syncDateTimeUI = function() {};
         if (src) { img.src = photoSrc(src); img.style.display = ''; }
         else { img.removeAttribute('src'); img.style.display = 'none'; }
         box.classList.toggle('can', custom);                 /* 고른 사진 모드에서만 눌러서 바꾼다 */
+        if (custom) {
+            box.setAttribute('role', 'button'); box.tabIndex = 0;
+            box.setAttribute('aria-label', src ? '공유 사진 바꾸기' : '공유 사진 올리기');
+        } else {
+            box.removeAttribute('role'); box.removeAttribute('tabindex'); box.removeAttribute('aria-label');
+        }
         box.classList.toggle('empty', !src);
         box.classList.toggle('wide', !src && !custom);       /* 메인 사진도 없으면 기본 2:1 썸네일이 나간다 */
         empty.innerHTML = custom
@@ -2979,6 +2987,9 @@ var syncDateTimeUI = function() {};
 
     function pick() { if (mode === 'custom' && fileEl) fileEl.click(); }
     box.addEventListener('click', pick);
+    box.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); }
+    });
     if (changeBtn) changeBtn.addEventListener('click', pick);
 
     function handleFile(file) {
@@ -3024,4 +3035,65 @@ var syncDateTimeUI = function() {};
         };
     }
     render();
+})();
+
+/* ──────────────────────────────────────
+   접근성 — 키보드·스크린리더로도 편집기를 쓸 수 있게
+   ① 섹션 헤더(div)는 마우스로만 열렸다 → 버튼 역할·Tab 이동·Enter/Space·펼침 상태(aria-expanded)
+   ② 섹션 on/off 토글은 체크박스가 display:none 이라 키보드로 못 켰다 → CSS 로 '보이지 않게만' 숨기고 이름을 붙인다
+   ③ 입력칸 상당수가 placeholder 만 있고 이름이 없었다 → 같은 줄의 라벨(+placeholder)로 이름을 붙인다
+   나중에 생기는 행(계좌·사진 등)도 잡도록 폼 변화를 지켜보며 다시 붙인다.
+────────────────────────────────────── */
+(function editorA11y() {
+    function text(el) { return el ? (el.textContent || '').replace(/\s+/g, ' ').trim() : ''; }
+    function hasName(el) {
+        return !!(el.getAttribute('aria-label') || el.getAttribute('aria-labelledby') || el.title ||
+                  (el.labels && el.labels.length));
+    }
+
+    /* ① 섹션 헤더 */
+    document.querySelectorAll('.ed-sec-hd').forEach(function(hd) {
+        var sec = hd.closest('.ed-section');
+        var bd = document.getElementById('bd-' + hd.dataset.sec);
+        hd.setAttribute('role', 'button');
+        hd.setAttribute('tabindex', '0');
+        if (bd) hd.setAttribute('aria-controls', bd.id);
+        function sync() { hd.setAttribute('aria-expanded', sec && sec.classList.contains('open') ? 'true' : 'false'); }
+        sync();
+        if (sec) new MutationObserver(sync).observe(sec, { attributes: true, attributeFilter: ['class'] });
+        hd.addEventListener('keydown', function(e) {
+            if (e.target !== hd) return;              /* 헤더 안의 토글·되돌리기 버튼은 각자 처리 */
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hd.click(); }
+        });
+        /* ② 헤더의 on/off 토글 */
+        var chk = hd.querySelector('.ed-toggle-wrap input[type="checkbox"]');
+        if (chk && !hasName(chk)) chk.setAttribute('aria-label', text(hd.querySelector('.ed-sec-title')) + ' 섹션 보이기');
+    });
+
+    /* ③ 이름 없는 입력칸·버튼 */
+    function labelAll() {
+        document.querySelectorAll('#editForm input:not([type="hidden"]):not([type="file"]), #editForm select, #editForm textarea, .nav-panel input').forEach(function(el) {
+            if (hasName(el)) return;
+            var row = el.closest('.ed-row, .nav-panel-toggle-row');
+            var label = text(row && row.querySelector('.ed-label, .nav-panel-toggle-name'));
+            var ph = el.getAttribute('placeholder') || '';
+            var name = label && ph && label !== ph ? label + ' — ' + ph : (label || ph);
+            if (!name) {
+                var sec = el.closest('.ed-section');
+                name = text(sec && sec.querySelector('.ed-sec-title'));
+            }
+            if (name) el.setAttribute('aria-label', name);
+        });
+        document.querySelectorAll('.gal-del-btn:not([aria-label])').forEach(function(b) { b.setAttribute('aria-label', '사진 빼기'); });
+        document.querySelectorAll('.ed-sec-undo-btn:not([aria-label])').forEach(function(b) {
+            b.setAttribute('aria-label', '이 섹션 되돌리기');
+        });
+        document.querySelectorAll('.ti').forEach(function(i) {
+            if (!i.hasAttribute('aria-hidden')) i.setAttribute('aria-hidden', 'true');   /* 아이콘 글자를 읽지 않게 */
+        });
+    }
+    labelAll();
+    var t = null;
+    new MutationObserver(function() { clearTimeout(t); t = setTimeout(labelAll, 120); })
+        .observe(document.body, { childList: true, subtree: true });
 })();

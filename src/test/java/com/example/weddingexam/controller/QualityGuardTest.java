@@ -91,4 +91,18 @@ class QualityGuardTest {
             assertThat(read(c)).as(c).doesNotContain("@import url('https://fonts.googleapis.com");
         }
     }
+
+    /** 편집기 접근성 — 키보드로 섹션 열기·토글 켜기, 아이콘만 있는 버튼의 이름 */
+    @Test
+    void editor_isUsableWithKeyboardAndScreenReader() throws Exception {
+        String css = read("static/css/editor.css");
+        assertThat(css).as("토글 체크박스를 display:none 으로 숨기면 키보드로 못 켠다")
+                .doesNotContain(".ed-toggle-wrap input{display:none;}");
+        String js = read("static/js/editor.js");
+        assertThat(js).contains("(function editorA11y()").contains("setAttribute('role', 'button')")
+                .contains("aria-expanded");
+        String html = read("templates/admin/edit.html");
+        assertThat(html).contains("id=\"navPanelClose\" aria-label=\"메뉴 닫기\"");
+        assertThat(html).contains("id=\"fontColorReset\" aria-label=");
+    }
 }
