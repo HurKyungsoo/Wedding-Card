@@ -409,6 +409,25 @@ function initScrollEffects() {
     // 0) 고급 스크롤 효과 자동 적용 (모바일 청첩장 스타일)
     initAdvancedScrollEffects();
 
+    // 0-1) 섹션 단위 등장 — 섹션 전체가 한 번에 아래에서 올라온다 (invitation.css .sec-rv).
+    //      처음부터 화면 안에 있는 섹션은 바로 보이고, 동작 줄이기 설정이면 효과 없이 둔다.
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var secRvObs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('on');
+                    secRvObs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
+        document.querySelectorAll('.sec').forEach(function(sec) {
+            var r = sec.getBoundingClientRect();
+            if (r.top < window.innerHeight && r.bottom > 0) return;   // 이미 보이는 섹션은 건드리지 않는다
+            sec.classList.add('sec-rv');
+            secRvObs.observe(sec);
+        });
+    }
+
     // 1) 일반 reveal 요소들 (모든 타입 포함)
     var revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur, .reveal-zoom, .reveal-fade, .section-divider');
 
