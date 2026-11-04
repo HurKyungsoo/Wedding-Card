@@ -2,7 +2,9 @@
 function photoSrc(v) {
     v = String(v || '').trim();
     if (!v) return '';
-    if (/^(\/|https?:|data:)/.test(v)) return v;
+    if (/^(https?:|data:)/.test(v)) return v;
+    /* JPEG base64 는 항상 "/9j/" 로 시작 — '/' 만 보고 경로로 판단하면 안 된다. base64 에 없는 문자가 있어야 경로 */
+    if (v.charAt(0) === '/' && /[.?_%:-]/.test(v)) return v;
     return 'data:image/jpeg;base64,' + v;
 }
 

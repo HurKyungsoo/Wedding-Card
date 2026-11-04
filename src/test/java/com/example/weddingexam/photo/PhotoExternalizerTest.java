@@ -97,6 +97,10 @@ class PhotoExternalizerTest {
     void photoSrc_handlesUrlsAndLegacyBase64() {
         assertThat(WeddingDto.photoSrc("/uploads/a.jpg")).isEqualTo("/uploads/a.jpg");
         assertThat(WeddingDto.photoSrc("Zm9v")).isEqualTo("data:image/jpeg;base64,Zm9v");
+        // ★ JPEG base64 는 항상 "/9j/" 로 시작 — '/' 로 시작한다고 경로로 보면 예전 사진이 전부 깨진다
+        assertThat(JPEG_B64).startsWith("/9j/");
+        assertThat(WeddingDto.photoSrc(JPEG_B64)).isEqualTo("data:image/jpeg;base64," + JPEG_B64);
+        assertThat(WeddingDto.photoSrc("/images/demo/basic.jpg")).isEqualTo("/images/demo/basic.jpg");
         assertThat(WeddingDto.photoSrc("data:image/png;base64,AA")).isEqualTo("data:image/png;base64,AA");
         assertThat(WeddingDto.photoSrc(null)).isEmpty();
     }

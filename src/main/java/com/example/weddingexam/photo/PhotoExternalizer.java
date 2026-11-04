@@ -82,8 +82,17 @@ public class PhotoExternalizer {
         return storage.store(bytes, ext);
     }
 
-    static boolean isUrl(String v) {
-        return v.startsWith("/") || v.startsWith("http://") || v.startsWith("https://");
+    /**
+     * 이미 URL 인가. 주의: JPEG 의 base64 는 항상 "/9j/" 로 시작한다 — '/' 로 시작한다고 경로로 보면 안 된다.
+     * base64 에 없는 문자('.', '?', '-', '_', '%', ':')가 있어야 경로로 본다 (/uploads/x.jpg, /images/demo/a.jpg).
+     */
+    public static boolean isUrl(String v) {
+        if (v.startsWith("http://") || v.startsWith("https://")) return true;
+        if (!v.startsWith("/")) return false;
+        for (int i = 0; i < v.length(); i++) {
+            if (".?-_%:".indexOf(v.charAt(i)) >= 0) return true;
+        }
+        return false;
     }
 
     /** 이미 전부 URL 인 목록은 split 없이 빨리 넘긴다 */

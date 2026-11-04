@@ -355,7 +355,7 @@ public class WeddingDto {
     public static String photoSrc(String v) {
         if (v == null || v.isBlank()) return "";
         String t = v.trim();
-        if (t.startsWith("/") || t.startsWith("http://") || t.startsWith("https://") || t.startsWith("data:")) return t;
+        if (t.startsWith("data:") || com.example.weddingexam.photo.PhotoExternalizer.isUrl(t)) return t;
         return "data:image/jpeg;base64," + t;
     }
 
