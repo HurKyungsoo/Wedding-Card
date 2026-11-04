@@ -24,7 +24,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Nanum+Pen+Script&text=%20%21%EA%B0%80%EA%B2%8C%EA%B2%B0%EA%B3%A0%EA%B8%80%EA%B8%B0%EA%B8%B8%EB%82%A0%EB%84%88%EB%8B%88%EB%8C%80%EB%8F%99%EB%91%90%EB%91%98%EB%93%9D%EB%9E%91%EB%A0%A4%EB%A1%9C%EB%A7%8C%EB%AC%B4%EB%AF%BC%EB%B0%94%EB%B0%B0%EB%B3%B4%EB%B3%B5%EB%B6%84%EC%82%AC%EC%82%B4%EC%83%9D%EC%84%9C%EC%84%A0%EC%86%90%EC%8B%9D%EC%8B%AC%EC%94%A8%EC%95%84%EC%95%9E%EC%96%B4%EC%96%B8%EC%97%90%EC%98%88%EC%9A%B4%EC%9A%B8%EC%9B%83%EC%9C%BC%EC%9D%84%EC%9D%B4%EC%9D%BC%EC%9E%90%EC%9E%98%EC%9E%A5%EC%A7%80%EC%A7%84%EC%B4%8C%EC%B6%95%ED%83%95%ED%8E%9C%ED%95%98%ED%95%99%ED%95%B4%ED%96%89%ED%98%BC%ED%9A%8C&display=swap" rel="stylesheet">
 <!-- 아치형 카드 날짜 숫자 — 실제 청첩장 기본값과 같은 경기천년바탕 (unicode-range subset 이라 쓰인 글자 조각만 받음) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/GyeonggiBatang/subsets/GyeonggiBatang-dynamic-subset.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.50.0/dist/tabler-icons.min.css">
   <link rel="stylesheet" th:href="@{/css/tokens.css}">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -429,7 +429,17 @@
       .lp-nav-inner { padding: 0 20px !important; }
       .lp-cf { height: 400px; }
       .lp-cf-nav { display: none; }
+      /* 좁은 화면: 메뉴 글자가 두 줄로 쪼개지지 않게 */
+      .lp-nav-inner > div { gap: 16px !important; }
+      .lp-nav-inner a { white-space: nowrap; }
+      .lp-nav-inner .lp-dark-btn { padding: 9px 16px !important; }
     }
+    @media (max-width: 360px) {
+      .lp-nav-inner .nav-link[href="#editor"] { display: none; }
+    }
+    /* 테마 커버플로우 양옆 카드가 화면 밖으로 나가 가로 스크롤이 생기지 않게 */
+    #themes { overflow-x: clip; }
+    .lp-keep { word-break: keep-all; }
     @media (prefers-reduced-motion: reduce) {
       [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
       .feat-card { transition: none !important; }
@@ -730,7 +740,7 @@
     <div data-reveal style="text-align:center;margin-bottom:56px;">
       <div style="font-size:10px;letter-spacing:5px;color:var(--color-gold);font-weight:500;text-transform:uppercase;margin-bottom:14px;">FEATURES</div>
       <div class="lp-script" aria-hidden="true">Features</div>
-      <h2 style="font-family:var(--font-serif);font-size:clamp(26px,3.5vw,40px);font-weight:300;color:var(--color-ink-deepest);">하객에게 필요한 건 다 담았어요</h2>
+      <h2 style="font-family:var(--font-serif);font-size:clamp(26px,3.5vw,40px);font-weight:300;color:var(--color-ink-deepest);" class="lp-keep">하객에게 필요한 건 다 담았어요</h2>
       <p style="font-size:14px;color:#9a8a78;margin-top:12px;font-weight:300;">아래 그림은 청첩장 속 화면을 옮겨 그린 예시예요</p>
     </div>
     <div class="lp-bento">

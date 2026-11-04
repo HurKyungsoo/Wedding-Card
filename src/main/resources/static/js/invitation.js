@@ -1041,6 +1041,12 @@ function initCalendarStyle(data) {
    ════════════════════════════════════════ */
 var _ddayTimer = null;
 
+function _escHtml(v) {
+    return String(v).replace(/[&<>"']/g, function(c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+}
+
 function initDdayStyle(data) {
     var card = document.getElementById('ddayCard');
     if (!card) return;
@@ -1053,8 +1059,9 @@ function initDdayStyle(data) {
 
     var style   = data.ddayStyle || 'text';
     var dateStr = data.weddingDate;
-    var groomRaw = data.groomName || '신랑';
-    var brideRaw = data.brideName || '신부';
+    /* 이름은 innerHTML 로 들어가므로 반드시 이스케이프 (사용자 입력 → 하객 화면 XSS 방지) */
+    var groomRaw = _escHtml(data.groomName || '신랑');
+    var brideRaw = _escHtml(data.brideName || '신부');
     /* 표시 순서 반영 */
     var heroNamesEl = document.querySelector('.hero-top-names');
     var ord = heroNamesEl ? (heroNamesEl.getAttribute('data-order') || data.displayOrder || 'groom') : (data.displayOrder || 'groom');
