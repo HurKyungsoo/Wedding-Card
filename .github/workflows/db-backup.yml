@@ -11,12 +11,26 @@ jobs:
   backup:
     runs-on: [self-hosted, wedding-card-deploy]
     steps:
+      - name: Diagnose (names only, no values)
+        run: |
+          PID=$(systemctl show -p MainPID --value weddingcard.service)
+          echo "pid=$PID"
+          systemctl show weddingcard.service -p ExecStart -p WorkingDirectory -p EnvironmentFiles | sed 's/=.*argv\[\]=/=/' | cut -c1-200
+          echo "env var names:"; sudo cat /proc/$PID/environ | tr '\0' '\n' | cut -d= -f1 | grep -vE '^(LS_COLORS|PATH|HOME|LANG|USER|LOGNAME|SHELL|INVOCATION_ID|JOURNAL_STREAM|SYSTEMD_EXEC_PID)$' | sort | tr '\n' ' '; echo
+          echo "cmdline:"; sudo cat /proc/$PID/cmdline | tr '\0' ' ' | sed -E 's/(password|secret)[^ ]*/\1=***/Ig'; echo
+          CWD=$(sudo readlink /proc/$PID/cwd); echo "cwd=$CWD"
+          sudo ls -la "$CWD" | awk '{print $5, $9}'
+          sudo ls -la "$CWD/data" 2>/dev/null | awk '{print $5, $9}' || true
+          sudo ls "$CWD"/*.properties "$CWD"/config 2>/dev/null || true
+          df -h "$CWD" | tail -1
+
       - name: Load DB env from running service
         run: |
           PID=$(systemctl show -p MainPID --value weddingcard.service)
           if [ -z "$PID" ] || [ "$PID" = "0" ]; then echo "service not running" >&2; exit 1; fi
           sudo cat /proc/$PID/environ | tr '\0' '\n' | grep -E '^PG(HOST|PORT|DATABASE|USER|PASSWORD)=' > /tmp/pgenv || true
           echo "found vars: $(cut -d= -f1 /tmp/pgenv | tr '\n' ' ')"
+          if [ ! -s /tmp/pgenv ]; then echo "no PG* env — stop after diagnose"; exit 1; fi
           while IFS='=' read -r k v; do
             [ "$k" = "PGPASSWORD" ] && echo "::add-mask::$v"
             echo "$k=$v" >> "$GITHUB_ENV"
