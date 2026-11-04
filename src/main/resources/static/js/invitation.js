@@ -56,8 +56,10 @@ function calcDday(dateStr) {
 var _invMap = null;
 var _invMarker = null;
 
-/* 편집기 "지도 줌" 값(20M~500M) → 카카오맵 level */
-var MAP_ZOOM_LEVELS = {'20M':3, '30M':4, '50M':5, '100M':6, '250M':7, '500M':8};
+/* 편집기 "지도 줌" 값(20M~500M) → 카카오맵 level.
+   버튼 글자는 축척 막대 거리 — level 1 = 20m … 6 = 500m. 예전엔 두 단계 밀려 있었다(50M 이 250m 축척으로 보임).
+   ⚠ editor.js ZOOM_LEVEL 과 같아야 한다 */
+var MAP_ZOOM_LEVELS = {'20M':1,'30M':2,'50M':3,'100M':4,'250M':5,'500M':6};
 
 function initInvitationMap() {
     var mapDiv = document.getElementById('invitationMap');
@@ -91,7 +93,7 @@ function initInvitationMap() {
 
 function _drawInvitationMap(mapDiv, lat, lng, place, kakaoLink, zoomLevel, locked) {
     var pos = new kakao.maps.LatLng(lat, lng);
-    var level = MAP_ZOOM_LEVELS[zoomLevel] || 5;
+    var level = MAP_ZOOM_LEVELS[zoomLevel] || 3;
 
     if (_invMap) {
         _invMap.relayout();

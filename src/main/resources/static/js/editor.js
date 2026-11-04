@@ -2076,7 +2076,10 @@ document.addEventListener('keydown', function(e) {
    지도 (카카오)
 ────────────────────────────────────── */
 /* ── 지도 줌 선택 ── */
-var ZOOM_LEVEL = {'20M':3,'30M':4,'50M':5,'100M':6,'250M':7,'500M':8};
+/* 버튼 글자(20M~500M)는 카카오맵 축척 막대에 찍히는 거리다 — level 1 = 20m, 2 = 30m, 3 = 50m, 4 = 100m, 5 = 250m, 6 = 500m.
+   예전엔 두 단계씩 밀려(50M → level 5) 고른 것보다 훨씬 넓게(축척 250m) 보였다.
+   ⚠ invitation.js MAP_ZOOM_LEVELS 와 같아야 한다 (MapZoomLevelTest) */
+var ZOOM_LEVEL = {'20M':1,'30M':2,'50M':3,'100M':4,'250M':5,'500M':6};
 var currentZoomVal = '50M'; /* 현재 줌 값 저장 */
 
 function pickZoom(el, val) {
@@ -2085,10 +2088,9 @@ function pickZoom(el, val) {
     var input = document.getElementById('mapZoomInput');
     if (input) input.value = val;
     currentZoomVal = val;
-    var levelMap = {'20M':3,'30M':4,'50M':5,'100M':6,'250M':7,'500M':8};
     /* 이미 지도가 그려져 있으면 레벨만 변경 */
     if (_adminMap) {
-        _adminMap.setLevel(levelMap[val] || 5);
+        _adminMap.setLevel(ZOOM_LEVEL[val] || 3);
     } else {
         var lati = document.getElementById('mapLatInput');
         var lngi = document.getElementById('mapLngInput');
@@ -2260,8 +2262,7 @@ function showStaticMap(lng, lat, name) {
 
     var zoomInput = document.getElementById('mapZoomInput');
     var zoomVal   = (zoomInput && zoomInput.value) ? zoomInput.value : (currentZoomVal || '50M');
-    var levelMap  = {'20M':3,'30M':4,'50M':5,'100M':6,'250M':7,'500M':8};
-    var level     = levelMap[zoomVal] || 5;
+    var level     = ZOOM_LEVEL[zoomVal] || 3;
 
     if (mapDiv) mapDiv.style.display = 'block';
     if (ph)     ph.style.display     = 'none';
